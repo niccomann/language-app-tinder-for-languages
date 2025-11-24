@@ -27,12 +27,8 @@ export function VideoReel({ word, translation, language, onClose }: VideoReelPro
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRefs = useRef<{ [key: string]: any }>({});
 
-  console.log('🎬 VideoReel render - currentIndex:', currentIndex, 'videos:', videos.length);
-
   // Load videos
   useEffect(() => {
-    console.log('📥 Loading videos for:', word);
-    
     fetch('http://localhost:8000/videos/search-multiple', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -40,12 +36,10 @@ export function VideoReel({ word, translation, language, onClose }: VideoReelPro
     })
       .then(res => res.json())
       .then(data => {
-        console.log('✅ Videos loaded:', data.videos.length);
         setVideos(data.videos || []);
         setLoading(false);
       })
       .catch(err => {
-        console.error('❌ Error loading videos:', err);
         setError(err.message);
         setLoading(false);
       });
@@ -53,47 +47,29 @@ export function VideoReel({ word, translation, language, onClose }: VideoReelPro
 
   // Initialize YouTube IFrame API
   useEffect(() => {
-    console.log('🔧 Initializing YouTube IFrame API');
-    
-    if (window.YT) {
-      console.log('✅ YouTube API already loaded');
-      return;
-    }
+    if (window.YT) return;
 
     const tag = document.createElement('script');
     tag.src = 'https://www.youtube.com/iframe_api';
     const firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
 
-    window.onYouTubeIframeAPIReady = () => {
-      console.log('✅ YouTube IFrame API ready');
-    };
+    window.onYouTubeIframeAPIReady = () => {};
   }, []);
 
   // Create YouTube players when videos are loaded
   useEffect(() => {
     if (!videos.length || !window.YT?.Player) return;
 
-    console.log('🎥 Creating YouTube players for', videos.length, 'videos');
-
-    // Wait a bit for DOM to be ready
+    // Wait for DOM to be ready
     const timer = setTimeout(() => {
       videos.forEach((video, index) => {
         const playerId = `player-${video.video_id}`;
         
-        if (playerRefs.current[playerId]) {
-          console.log(`⏭️  Player already exists for ${video.video_id}`);
-          return;
-        }
+        if (playerRefs.current[playerId]) return;
 
-        // Check if div exists
         const div = document.getElementById(playerId);
-        if (!div) {
-          console.log(`❌ Div not found for ${playerId}`);
-          return;
-        }
-
-        console.log(`🆕 Creating player ${index + 1}/${videos.length}: ${video.video_id}`);
+        if (!div) return;
 
       try {
         const player = new window.YT.Player(playerId, {
@@ -107,37 +83,17 @@ export function VideoReel({ word, translation, language, onClose }: VideoReelPro
           },
           events: {
             onReady: (event: any) => {
-              console.log(`✅ Player ready: ${video.video_id} (index ${index})`);
               playerRefs.current[playerId] = event.target;
               
-              // Track ready players
-              setPlayersReady(prev => {
-                const newCount = prev + 1;
-                console.log(`📊 Players ready: ${newCount}/${videos.length}`);
-                return newCount;
-              });
+              setPlayersReady(prev => prev + 1);
               
               // Auto-play first video
               if (index === 0) {
-                console.log('▶️  Auto-playing first video');
-                setTimeout(() => {
-                  event.target.playVideo();
-                }, 500);
+                setTimeout(() => event.target.playVideo(), 500);
               }
             },
             onStateChange: (event: any) => {
-              const states: any = {
-                '-1': 'unstarted',
-                '0': 'ended',
-                '1': 'playing',
-                '2': 'paused',
-                '3': 'buffering',
-                '5': 'cued'
-              };
               const state = event.data;
-              console.log(`🎬 Player state changed: ${video.video_id} → ${states[state] || state}`);
-              
-              // Update state
               setPlayerStates(prev => ({
                 ...prev,
                 [playerId]: state
@@ -151,21 +107,18 @@ export function VideoReel({ word, translation, language, onClose }: VideoReelPro
                 }));
               }
               
-              // If video ended and it's the current one, go to next
-              if (state === 0 && index === currentIndex) {
-                console.log('📹 Video ended, moving to next');
-                if (index < videos.length - 1) {
-                  setTimeout(() => setCurrentIndex(index + 1), 500);
-                }
+              // Auto-advance when video ends
+              if (state === 0 && index === currentIndex && index < videos.length - 1) {
+                setTimeout(() => setCurrentIndex(index + 1), 500);
               }
             },
           },
         });
         } catch (error) {
-          console.error(`❌ Error creating player for ${video.video_id}:`, error);
+          console.error('Error creating player:', error);
         }
       });
-    }, 500); // Wait 500ms for DOM
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [videos]);
@@ -174,44 +127,25 @@ export function VideoReel({ word, translation, language, onClose }: VideoReelPro
   useEffect(() => {
     if (!videos.length) return;
 
-    console.log(`\n🔄 Index changed to ${currentIndex}`);
-    console.log(`   Current video: ${videos[currentIndex]?.video_id}`);
-
-    // Wait a bit for players to be ready
     const timer = setTimeout(() => {
       videos.forEach((video, index) => {
         const playerId = `player-${video.video_id}`;
         const player = playerRefs.current[playerId];
-
-        if (!player) {
-          console.log(`   ⚠️  Player not ready yet: ${video.video_id}`);
-          return;
-        }
+        if (!player) return;
 
         try {
           if (index === currentIndex) {
-            console.log(`   ▶️  PLAY: ${video.video_id} (index ${index})`);
             const state = player.getPlayerState();
-            console.log(`      Current state: ${state}`);
-            
-            if (state !== 1) { // Not playing
-              player.playVideo();
-              console.log(`      Play command sent`);
-            }
+            if (state !== 1) player.playVideo();
           } else {
-            console.log(`   ⏸️  PAUSE: ${video.video_id} (index ${index})`);
             const state = player.getPlayerState();
-            
-            if (state === 1) { // Playing
-              player.pauseVideo();
-              console.log(`      Pause command sent`);
-            }
+            if (state === 1) player.pauseVideo();
           }
         } catch (error) {
-          console.error(`   ❌ Error controlling ${video.video_id}:`, error);
+          // Silently handle player control errors
         }
       });
-    }, 500); // Wait 500ms for scroll to complete
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [currentIndex, videos]);
@@ -230,10 +164,7 @@ export function VideoReel({ word, translation, language, onClose }: VideoReelPro
         const viewportHeight = window.innerHeight;
         const newIndex = Math.round(scrollTop / viewportHeight);
         
-        console.log(`📜 Scroll detected: scrollTop=${scrollTop}, newIndex=${newIndex}`);
-        
         if (newIndex !== currentIndex && newIndex >= 0 && newIndex < videos.length) {
-          console.log(`   Updating index: ${currentIndex} → ${newIndex}`);
           setCurrentIndex(newIndex);
         }
       }, 150);
