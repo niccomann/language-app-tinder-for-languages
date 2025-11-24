@@ -22,7 +22,6 @@ export function VideoReel({ word, translation, language, onClose }: VideoReelPro
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [playerStates, setPlayerStates] = useState<{ [key: string]: number }>({});
-  const [playersReady, setPlayersReady] = useState(0);
   const [hasPlayed, setHasPlayed] = useState<{ [key: string]: boolean }>({});
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRefs = useRef<{ [key: string]: any }>({});
@@ -84,8 +83,6 @@ export function VideoReel({ word, translation, language, onClose }: VideoReelPro
           events: {
             onReady: (event: any) => {
               playerRefs.current[playerId] = event.target;
-              
-              setPlayersReady(prev => prev + 1);
               
               // Auto-play first video
               if (index === 0) {

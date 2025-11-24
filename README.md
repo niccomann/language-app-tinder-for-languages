@@ -186,16 +186,12 @@ Open **http://localhost:8000/docs** for interactive API documentation
 
 ## 🧪 Testing
 
-Run automated tests:
-```bash
-# Original test (single video modal)
-node playwright-test.js
+The video reel feature has been thoroughly tested with:
+- ✅ Playwright automated tests (multiple video playback, scroll navigation)
+- ✅ Manual testing (all features verified working)
+- ✅ No video overlaps or black screen issues
 
-# NEW: Reel feed test (vertical scroll)
-node playwright-reel-test.js
-```
-
-See `TESTING.md` for complete testing guide.
+See `docs/TESTING.md` for complete testing guide.
 
 ## 🐛 Troubleshooting
 
