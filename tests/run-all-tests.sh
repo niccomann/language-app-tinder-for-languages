@@ -3,9 +3,18 @@
 # Run All E2E Tests
 # This script runs all working Playwright tests in sequence
 
+# Get the directory where the script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# Get the project root (parent of tests/)
+PROJECT_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
+
+# Change to project root
+cd "$PROJECT_ROOT"
+
 echo ""
 echo "🧪 Running All E2E Tests"
 echo "════════════════════════════════════════"
+echo "📁 Project root: $PROJECT_ROOT"
 echo ""
 
 # Check if services are running
