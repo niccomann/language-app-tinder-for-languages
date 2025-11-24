@@ -219,7 +219,22 @@ The video reel feature has been thoroughly tested with:
 - ✅ Manual testing (all features verified working)
 - ✅ No video overlaps or black screen issues
 
-See `docs/TESTING.md` for complete testing guide.
+**Run tests:**
+```bash
+# Quick check (15 seconds)
+node tests/test-quick-check.js
+
+# Full E2E test (40 seconds)
+node tests/test-video-reel-e2e.js
+
+# Detailed playback test (35 seconds)
+node tests/test-video-playback.js
+
+# Or run all tests at once
+./tests/run-all-tests.sh
+```
+
+See `tests/README.md` for complete testing guide.
 
 ## 🐛 Troubleshooting
 
