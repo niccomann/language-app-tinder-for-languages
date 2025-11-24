@@ -3,12 +3,12 @@
 ## 📋 Available Tests
 
 ### 1. Quick Check Test ⚡
-**File**: `test-quick-check.js`  
+**File**: `tests/test-quick-check.js`  
 **Duration**: ~15 seconds  
 **Purpose**: Fast verification that core functionality works
 
 ```bash
-node test-quick-check.js
+node tests/test-quick-check.js
 ```
 
 **What it tests:**
@@ -22,12 +22,12 @@ node test-quick-check.js
 ---
 
 ### 2. Video Reel E2E Test 🎬
-**File**: `test-video-reel-e2e.js`  
+**File**: `tests/test-video-reel-e2e.js`  
 **Duration**: ~40 seconds  
 **Purpose**: Complete end-to-end flow testing
 
 ```bash
-node test-video-reel-e2e.js
+node tests/test-video-reel-e2e.js
 ```
 
 **What it tests:**
@@ -45,12 +45,12 @@ node test-video-reel-e2e.js
 ---
 
 ### 3. Video Playback Test 🎥
-**File**: `test-video-playback.js`  
+**File**: `tests/test-video-playback.js`  
 **Duration**: ~35 seconds  
 **Purpose**: Detailed video functionality verification
 
 ```bash
-node test-video-playback.js
+node tests/test-video-playback.js
 ```
 
 **What it tests:**
@@ -139,13 +139,13 @@ To run all tests in sequence:
 
 ```bash
 # Quick check first
-node test-quick-check.js
+node tests/test-quick-check.js
 
 # Then full E2E
-node test-video-reel-e2e.js
+node tests/test-video-reel-e2e.js
 
 # Finally detailed playback test
-node test-video-playback.js
+node tests/test-video-playback.js
 ```
 
 ---

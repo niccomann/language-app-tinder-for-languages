@@ -8,6 +8,8 @@ import { CategorySelector } from './CategorySelector';
 import { SoraVideoModal } from './SoraVideoModal';
 import { VideoModal } from './VideoModal';
 import { VideoReel } from './VideoReel';
+import { VideoSourceSelector } from './VideoSourceSelector';
+import { AIVideoReel } from './AIVideoReel';
 import { useCategories } from '../hooks/useCategories';
 import { useLearningSession } from '../hooks/useLearningSession';
 
@@ -193,13 +195,36 @@ export const CardStack = () => {
         />
       )}
 
-      {/* Video Reel - NEW Autonomous Component */}
+      {/* Video Source Selector - Choose between YouTube and AI */}
+      {session.showVideoSourceSelector && session.currentWord && (
+        <VideoSourceSelector
+          isOpen={session.showVideoSourceSelector}
+          word={session.currentWord.word}
+          translation={session.currentWord.translation}
+          onSelectYouTube={session.selectYouTubeVideos}
+          onSelectAI={session.selectAIVideos}
+          onClose={session.closeVideoSourceSelector}
+        />
+      )}
+
+      {/* YouTube Video Reel */}
       {session.showReelFeed && session.currentWord && (
         <VideoReel
           word={session.currentWord.word}
           translation={session.currentWord.translation}
           language="de"
           onClose={session.closeReelFeed}
+        />
+      )}
+
+      {/* AI Video Reel */}
+      {session.showAIReelFeed && session.currentWord && (
+        <AIVideoReel
+          word={session.currentWord.word}
+          translation={session.currentWord.translation}
+          language="de"
+          onClose={session.closeAIReelFeed}
+          videoCount={3}
         />
       )}
 

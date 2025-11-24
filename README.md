@@ -8,13 +8,18 @@
 - Docker (PostgreSQL)
 - Python 3.13+ with venv
 - Node.js 18+
-- YouTube API Key ([get it here](https://console.cloud.google.com/))
+- YouTube API Key ([get it here](https://console.cloud.google.com/)) - for YouTube videos
+- OpenAI API Key ([get it here](https://platform.openai.com/)) - for AI-generated videos (optional)
 
 ### Setup
 
-1. **Configure API Key** - Create `backend/.env`:
+1. **Configure API Keys** - Create `backend/.env`:
    ```bash
+   # For YouTube videos (required)
    YOUTUBE_API_KEY=your_youtube_api_key_here
+   
+   # For AI-generated videos (optional)
+   OPENAI_API_KEY=your_openai_api_key_here
    ```
 
 2. **Start Services**:
@@ -37,8 +42,9 @@
 
 - **Category Selection** - Choose topics to learn (animals, food, etc.)
 - **Swipe Interface** - Left (don't know) / Right (know)
-- **Video Reel Feed** ⭐ NEW - TikTok-style vertical scroll with multiple videos
-- **YouTube Video Learning** - Automatic video search when you don't know a word
+- **Video Source Choice** ⭐ NEW - Choose between YouTube or AI-generated videos
+- **YouTube Video Reel** - TikTok-style vertical scroll with 8 educational videos
+- **AI Video Reel** 🤖 NEW - Personalized AI-generated videos using OpenAI Sora
 - **Progress Tracking** - Real-time statistics
 - **Keyboard Support** - Arrow keys navigation
 - **Responsive Design** - Mobile-first
@@ -93,36 +99,58 @@ docker-compose.yml              # PostgreSQL container
 | `/api/progress` | POST | Record swipe: `{card_id, known}` |
 | `/api/progress` | GET | Get statistics |
 | `/api/progress/reset` | POST | Reset progress |
-| `/videos/search` | POST | Search single YouTube video: `{word, translation, language}` |
-| `/videos/search-multiple` ⭐ NEW | POST | Search multiple videos: `{word, translation, language, limit}` |
+| `/videos/search` | POST | Search single YouTube video |
+| `/videos/search-multiple` | POST | Search multiple YouTube videos (8 videos) |
+| `/api/sora/generate` | POST | Generate single AI video |
+| `/api/sora/generate-multiple` 🤖 NEW | POST | Generate multiple AI videos (3 videos) |
+| `/api/sora/status/{job_id}` | GET | Check AI video generation status |
 
 ## 🎮 How to Use
 
 1. **Select categories** - Choose topics you want to learn
 2. **Swipe cards** - Right (know) or Left (don't know)
-3. **Watch videos** - When you swipe left, a YouTube video appears automatically
-4. **Use keyboard** - Arrow keys for navigation
-5. **Track progress** - See real-time statistics
+3. **Choose video source** - When you swipe left, select YouTube or AI-generated videos
+4. **Watch videos** - Scroll through educational content in reel format
+5. **Use keyboard** - Arrow keys for navigation
+6. **Track progress** - See real-time statistics
 
-## 🎬 Video Reel Integration ⭐ NEW
+## 🎬 Video Learning System ⭐ NEW
 
-When you swipe **left** (don't know a word), the app opens an immersive video reel:
-- **8 educational videos** loaded automatically
+When you swipe **left** (don't know a word), you can choose between two video sources:
+
+### 🎥 YouTube Videos (Fast & Free)
+- **8 educational videos** from real teachers and creators
+- **Instant loading** - no waiting
+- **Diverse content** - multiple teaching styles
+- **Free** - uses YouTube API quota
+
+### 🤖 AI-Generated Videos (Personalized)
+- **3 custom videos** generated specifically for the word
+- **High quality** - consistent, professional content
+- **Personalized** - tailored to the exact word and context
+- **Powered by OpenAI Sora** - cutting-edge AI video generation
+
+### Common Features (Both Options)
 - **Vertical scroll** navigation (like TikTok/Instagram Reels)
 - **Keyboard controls**: Arrow Up/Down to navigate
 - **Touch gestures**: Swipe up/down on mobile
 - **Video counter**: Shows current position (e.g., "3 / 8")
-- **Easy exit**: ESC or swipe right to return to flashcards
+- **Easy exit**: ESC to return to flashcards
 
 ### How It Works
 1. Swipe left on a flashcard
-2. Reel feed opens with loading animation
-3. Multiple videos load from YouTube
-4. Scroll vertically to explore different videos
-5. Press ESC or swipe right to continue learning
+2. **Choose your video source**: YouTube or AI
+3. Reel feed opens (with loading for AI videos)
+4. Scroll vertically to explore videos
+5. Press ESC to continue learning
 
-**Setup**: Add `YOUTUBE_API_KEY` to `backend/.env` (see `docs/YOUTUBE_API_SETUP.md`)  
-**Documentation**: See `docs/VIDEO_REEL_FEATURE.md` for complete details
+**Setup**: 
+- YouTube: Add `YOUTUBE_API_KEY` to `backend/.env`
+- AI Videos: Add `OPENAI_API_KEY` to `backend/.env`
+
+**Documentation**: 
+- `docs/VIDEO_REEL_FEATURE.md` - YouTube integration details
+- `docs/AI_VIDEO_FEATURE.md` ⭐ NEW - AI video generation guide
 
 ## 🏗️ Architecture
 
@@ -200,7 +228,8 @@ See `docs/TESTING.md` for complete testing guide.
 **Frontend can't connect**: Ensure backend is running at localhost:8000  
 **VPN issues**: Setup script includes retry logic for pip install  
 **No flashcards**: Backend will auto-seed on first startup, check logs  
-**YouTube video not appearing**: Verify `YOUTUBE_API_KEY` in `backend/.env`
+**YouTube video not appearing**: Verify `YOUTUBE_API_KEY` in `backend/.env`  
+**AI videos not generating**: Check `OPENAI_API_KEY` in `backend/.env` and ensure Sora API access
 
 ## 📚 Documentation
 
@@ -208,7 +237,8 @@ See `docs/` folder:
 - `QUICKSTART.md` - 5-minute setup guide
 - `STATUS.md` - Current project status
 - `TESTING.md` - Testing guide
-- `VIDEO_REEL_FEATURE.md` ⭐ NEW - Video reel implementation details
+- `VIDEO_REEL_FEATURE.md` - YouTube video reel implementation
+- `AI_VIDEO_FEATURE.md` 🤖 NEW - AI video generation guide
 - `ROADMAP.md` - Future enhancements
 - `RECOMMENDATION_SYSTEM.md` - Video recommendation system (proposed)
 - `NEURAL_RECOMMENDATION_PYTORCH.md` - Neural network implementation with PyTorch

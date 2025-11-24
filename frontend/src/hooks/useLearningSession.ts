@@ -21,6 +21,8 @@ export const useLearningSession = () => {
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [showSoraModal, setShowSoraModal] = useState(false);
   const [showReelFeed, setShowReelFeed] = useState(false);
+  const [showAIReelFeed, setShowAIReelFeed] = useState(false);
+  const [showVideoSourceSelector, setShowVideoSourceSelector] = useState(false);
   const [currentWord, setCurrentWord] = useState<{ word: string; translation: string } | null>(null);
   const [youtubeVideo, setYoutubeVideo] = useState<VideoData | null>(null);
   const [loadingVideo, setLoadingVideo] = useState(false);
@@ -53,15 +55,15 @@ export const useLearningSession = () => {
       const updatedProgress = await api.recordProgress(currentCard.id, known);
       setProgress(updatedProgress);
       
-      // If user doesn't know the word (swipe left), open reel feed
+      // If user doesn't know the word (swipe left), show video source selector
       if (!known) {
         setCurrentWord({
           word: currentCard.word,
           translation: currentCard.translation
         });
         
-        // Open reel feed with multiple videos
-        setShowReelFeed(true);
+        // Show selector to choose between YouTube and AI videos
+        setShowVideoSourceSelector(true);
       } else {
         // If user knows the word, just move to next card
         setCurrentIndex(prev => prev + 1);
@@ -82,6 +84,28 @@ export const useLearningSession = () => {
     setShowReelFeed(false);
     setCurrentWord(null);
     setCurrentIndex(prev => prev + 1);
+  };
+
+  const closeAIReelFeed = () => {
+    setShowAIReelFeed(false);
+    setCurrentWord(null);
+    setCurrentIndex(prev => prev + 1);
+  };
+
+  const closeVideoSourceSelector = () => {
+    setShowVideoSourceSelector(false);
+    setCurrentWord(null);
+    setCurrentIndex(prev => prev + 1);
+  };
+
+  const selectYouTubeVideos = () => {
+    setShowVideoSourceSelector(false);
+    setShowReelFeed(true);
+  };
+
+  const selectAIVideos = () => {
+    setShowVideoSourceSelector(false);
+    setShowAIReelFeed(true);
   };
 
   const generateSoraVideo = async () => {
@@ -143,10 +167,16 @@ export const useLearningSession = () => {
     showVideoModal,
     showSoraModal,
     showReelFeed,
+    showAIReelFeed,
+    showVideoSourceSelector,
     currentWord,
     closeVideoModal,
     closeSoraModal,
     closeReelFeed,
+    closeAIReelFeed,
+    closeVideoSourceSelector,
+    selectYouTubeVideos,
+    selectAIVideos,
     youtubeVideo,
     loadingVideo,
     generateSoraVideo,

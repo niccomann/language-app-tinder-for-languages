@@ -182,6 +182,88 @@ async def generate_video_and_wait(request: VideoGenerationRequest, timeout: int 
         )
 
 
+@router.post("/generate-multiple", response_model=Dict[str, Any])
+async def generate_multiple_videos(request: VideoGenerationRequest, count: int = 3):
+    """
+    Generate multiple AI videos for a word (for reel-style viewing)
+    
+    This endpoint starts generation of multiple videos and returns job IDs.
+    Use the /status/{job_id} endpoint to poll for completion of each video.
+    
+    Args:
+        request: VideoGenerationRequest with word details
+        count: Number of videos to generate (default: 3, max: 5)
+    
+    Returns:
+        Dict with list of job_ids and their initial status
+    """
+    try:
+        if count > 5:
+            raise HTTPException(
+                status_code=400,
+                detail="Maximum 5 videos can be generated at once"
+            )
+        
+        sora_service = get_sora_service()
+        
+        logger.info(f"Received request to generate {count} videos for word: {request.word}")
+        
+        jobs = []
+        for index in range(count):
+            try:
+                job_info = await sora_service.generate_video(
+                    word=request.word,
+                    translation=request.translation,
+                    language=request.language,
+                    category=request.category,
+                    model=request.model,
+                    duration=request.duration,
+                    resolution=request.resolution
+                )
+                
+                jobs.append({
+                    "job_id": job_info["job_id"],
+                    "status": job_info["status"],
+                    "index": index
+                })
+                
+                logger.info(f"Started video generation {index + 1}/{count}: {job_info['job_id']}")
+                
+            except Exception as error:
+                logger.error(f"Failed to start video generation {index + 1}: {str(error)}")
+                # Continue with other videos even if one fails
+                continue
+        
+        if not jobs:
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to start any video generation"
+            )
+        
+        return {
+            "word": request.word,
+            "translation": request.translation,
+            "count": len(jobs),
+            "jobs": jobs,
+            "message": f"Started generation of {len(jobs)} videos. Poll each job_id for status."
+        }
+        
+    except HTTPException:
+        raise
+    except ValueError as error:
+        logger.error(f"Configuration error: {str(error)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Configuration error: {str(error)}. Please check OPENAI_API_KEY."
+        )
+    except Exception as error:
+        logger.error(f"Error generating multiple videos: {str(error)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to generate videos: {str(error)}"
+        )
+
+
 @router.get("/health")
 async def health_check():
     """Check if Sora service is configured correctly"""
