@@ -1,7 +1,6 @@
 # Tinder for Languages 🌍
 
 > Learn German vocabulary with a Tinder-style swipe interface + YouTube videos
-
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -36,7 +35,7 @@
 
 3. **Open** http://localhost:5173 🎉
 
-> Backend auto-creates database and seeds 100 German flashcards on first startup.
+> Backend runs on port **8500** and auto-creates database and seeds 100 German flashcards on first startup.
 
 ## 🎯 Features
 
@@ -200,7 +199,7 @@ npm run build       # Production build
 ```
 
 ### API Documentation
-Open **http://localhost:8000/docs** for interactive API documentation
+Open **http://localhost:8500/docs** for interactive API documentation
 
 ## 📝 Key Implementation Details
 
@@ -239,8 +238,8 @@ See `tests/README.md` for complete testing guide.
 ## 🐛 Troubleshooting
 
 **Database connection failed**: Check if PostgreSQL is running with `docker ps`  
-**Backend won't start**: Check if port 8000 is free and database is accessible  
-**Frontend can't connect**: Ensure backend is running at localhost:8000  
+**Backend won't start**: Check if port 8500 is free and database is accessible  
+**Frontend can't connect**: Ensure backend is running at localhost:8500  
 **VPN issues**: Setup script includes retry logic for pip install  
 **No flashcards**: Backend will auto-seed on first startup, check logs  
 **YouTube video not appearing**: Verify `YOUTUBE_API_KEY` in `backend/.env`  

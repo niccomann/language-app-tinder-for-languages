@@ -12,7 +12,7 @@ class ServerSettings(BaseSettings):
     env: str = Field(default="dev", pattern="^(dev|prod)$")
     log_level: str = Field(default="INFO", pattern="^(DEBUG|INFO|WARNING|ERROR)$")
     host: str = "0.0.0.0"
-    port: str = "8000"
+    port: str = "8500"
     youtube_api_key: str = Field(default="")
 
     model_config = {
@@ -25,13 +25,14 @@ class ServerSettings(BaseSettings):
 
 class DatabaseConfig(BaseSettings):
     """Database configuration settings"""
-    host: str
-    port: str
-    user: str
-    password: str
-    db_schema: str = Field(alias="db_schema")
-    database: str
+    host: str = "localhost"
+    port: str = "5432"
+    user: str = "postgres"
+    password: str = "postgres"
+    db_schema: str = Field(default="public", alias="db_schema")
+    database: str = "tinder_languages"
     recreate_db: bool = Field(default=False, validation_alias="RECREATE_DB")
+    use_sqlite: bool = Field(default=False, validation_alias="USE_SQLITE")
 
     model_config = {
         "env_prefix": "db_",
@@ -43,6 +44,10 @@ class DatabaseConfig(BaseSettings):
     @property
     def url(self) -> str:
         """Generate database URL for SQLAlchemy"""
+        if self.use_sqlite:
+            log.info("Using SQLite database (in-memory or file)")
+            return "sqlite:///./app.db"
+        
         log.debug(f"Building DB URL - Components check:")
         log.debug(f"  - host: '{self.host}' (type: {type(self.host).__name__})")
         log.debug(f"  - port: '{self.port}' (type: {type(self.port).__name__})")

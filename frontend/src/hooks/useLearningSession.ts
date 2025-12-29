@@ -23,7 +23,9 @@ export const useLearningSession = () => {
   const [showReelFeed, setShowReelFeed] = useState(false);
   const [showAIReelFeed, setShowAIReelFeed] = useState(false);
   const [showVideoSourceSelector, setShowVideoSourceSelector] = useState(false);
+  const [showLearnedConfirmation, setShowLearnedConfirmation] = useState(false);
   const [currentWord, setCurrentWord] = useState<{ word: string; translation: string } | null>(null);
+  const [currentCardForConfirmation, setCurrentCardForConfirmation] = useState<Flashcard | null>(null);
   const [youtubeVideo, setYoutubeVideo] = useState<VideoData | null>(null);
   const [loadingVideo, setLoadingVideo] = useState(false);
 
@@ -61,6 +63,7 @@ export const useLearningSession = () => {
           word: currentCard.word,
           translation: currentCard.translation
         });
+        setCurrentCardForConfirmation(currentCard);
         
         // Show selector to choose between YouTube and AI videos
         setShowVideoSourceSelector(true);
@@ -82,13 +85,37 @@ export const useLearningSession = () => {
 
   const closeReelFeed = () => {
     setShowReelFeed(false);
-    setCurrentWord(null);
-    setCurrentIndex(prev => prev + 1);
   };
 
   const closeAIReelFeed = () => {
     setShowAIReelFeed(false);
+  };
+
+  const showLearnedWordConfirmation = () => {
+    setShowLearnedConfirmation(true);
+  };
+
+  const confirmWordLearned = async () => {
+    if (!currentCardForConfirmation) return;
+
+    try {
+      const updatedProgress = await api.recordProgress(currentCardForConfirmation.id, true);
+      setProgress(updatedProgress);
+      console.log(`✅ Word "${currentCardForConfirmation.word}" marked as learned in database`);
+    } catch (err) {
+      console.error('Failed to mark word as learned:', err);
+    }
+
+    setShowLearnedConfirmation(false);
     setCurrentWord(null);
+    setCurrentCardForConfirmation(null);
+    setCurrentIndex(prev => prev + 1);
+  };
+
+  const skipWordConfirmation = () => {
+    setShowLearnedConfirmation(false);
+    setCurrentWord(null);
+    setCurrentCardForConfirmation(null);
     setCurrentIndex(prev => prev + 1);
   };
 
@@ -169,6 +196,7 @@ export const useLearningSession = () => {
     showReelFeed,
     showAIReelFeed,
     showVideoSourceSelector,
+    showLearnedConfirmation,
     currentWord,
     closeVideoModal,
     closeSoraModal,
@@ -177,6 +205,9 @@ export const useLearningSession = () => {
     closeVideoSourceSelector,
     selectYouTubeVideos,
     selectAIVideos,
+    showLearnedWordConfirmation,
+    confirmWordLearned,
+    skipWordConfirmation,
     youtubeVideo,
     loadingVideo,
     generateSoraVideo,

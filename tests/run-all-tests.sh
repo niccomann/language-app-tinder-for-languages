@@ -17,6 +17,12 @@ echo "════════════════════════�
 echo "📁 Project root: $PROJECT_ROOT"
 echo ""
 
+# Clean up old screenshots
+echo "🧹 Cleaning up old screenshots..."
+rm -f "$PROJECT_ROOT"/*.png 2>/dev/null
+echo "✅ Old screenshots removed"
+echo ""
+
 # Check if services are running
 echo "🔍 Checking if services are running..."
 if ! curl -s http://localhost:5173 > /dev/null; then
@@ -25,8 +31,8 @@ if ! curl -s http://localhost:5173 > /dev/null; then
     exit 1
 fi
 
-if ! curl -s http://localhost:8000/docs > /dev/null; then
-    echo "❌ Backend not running on port 8000"
+if ! curl -s http://localhost:8500/docs > /dev/null; then
+    echo "❌ Backend not running on port 8500"
     echo "   Please start: cd backend && python -m app.main"
     exit 1
 fi
@@ -58,11 +64,55 @@ echo ""
 
 # Test 3: Video Playback
 echo "════════════════════════════════════════"
-echo "Test 3/3: Video Playback 🎥"
+echo "Test 3/4: Video Playback 🎥"
 echo "════════════════════════════════════════"
 node tests/test-video-playback.js
 if [ $? -ne 0 ]; then
     echo "❌ Video playback test failed!"
+    exit 1
+fi
+echo ""
+
+# Test 4: AI Video Selector
+echo "════════════════════════════════════════"
+echo "Test 4/7: AI Video Selector 🤖"
+echo "════════════════════════════════════════"
+node tests/test-ai-video-selector.js
+if [ $? -ne 0 ]; then
+    echo "❌ AI video selector test failed!"
+    exit 1
+fi
+echo ""
+
+# Test 5: Grammar Lab
+echo "════════════════════════════════════════"
+echo "Test 5/7: Grammar Lab 🧪"
+echo "════════════════════════════════════════"
+node tests/test-grammar-lab.js
+if [ $? -ne 0 ]; then
+    echo "❌ Grammar Lab test failed!"
+    exit 1
+fi
+echo ""
+
+# Test 6: Words Library
+echo "════════════════════════════════════════"
+echo "Test 6/7: Words Library 📚"
+echo "════════════════════════════════════════"
+node tests/test-words-library.js
+if [ $? -ne 0 ]; then
+    echo "❌ Words Library test failed!"
+    exit 1
+fi
+echo ""
+
+# Test 7: Flashcard Flow
+echo "════════════════════════════════════════"
+echo "Test 7/7: Flashcard Flow 🎴"
+echo "════════════════════════════════════════"
+node tests/test-flashcard-flow.js
+if [ $? -ne 0 ]; then
+    echo "❌ Flashcard flow test failed!"
     exit 1
 fi
 echo ""
@@ -72,11 +122,15 @@ echo "════════════════════════�
 echo "✅ ALL TESTS PASSED!"
 echo "════════════════════════════════════════"
 echo ""
-echo "📸 Screenshots saved:"
-echo "   - quick-check.png"
-echo "   - test-video-1.png"
-echo "   - test-video-2.png"
-echo "   - test-final.png"
-echo "   - test-playback-1.png"
-echo "   - test-playback-2.png"
+echo "📸 Screenshots were saved during tests"
+echo ""
+
+# Clean up screenshots after tests
+echo "🧹 Cleaning up test screenshots..."
+sleep 2  # Give time to view the summary
+rm -f "$PROJECT_ROOT"/*.png 2>/dev/null
+echo "✅ Screenshots cleaned up"
+echo ""
+echo "💡 To test full AI video generation (5-10 min, costs money):"
+echo "   node tests/test-ai-video-generation.js"
 echo ""

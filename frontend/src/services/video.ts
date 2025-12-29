@@ -1,9 +1,12 @@
 import type { VideoData } from '../types';
-
-const API_BASE_URL = 'http://localhost:8000';
+import { API_BASE_URL, isFeatureEnabled } from '../config/appMode';
 
 export const videoApi = {
   async searchVideo(word: string, translation: string, language: string = 'de'): Promise<VideoData> {
+    if (!isFeatureEnabled('youtubeVideos')) {
+      throw new Error('YouTube videos are not available in offline mode');
+    }
+    
     const response = await fetch(`${API_BASE_URL}/videos/search`, {
       method: 'POST',
       headers: {

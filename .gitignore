@@ -35,7 +35,6 @@ env/
 .DS_Store
 
 # Environment variables
-.env
 .env.local
 
 # Logs
@@ -78,3 +77,4 @@ client_secrets.json
 # Playwright
 playwright-report/
 test-results/
+

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
+import { API_BASE_URL } from '../config/appMode';
 
 interface Video {
   video_id: string;
@@ -14,9 +15,10 @@ interface VideoReelProps {
   translation: string;
   language: string;
   onClose: () => void;
+  onShowConfirmation: () => void;
 }
 
-export function VideoReel({ word, translation, language, onClose }: VideoReelProps) {
+export function VideoReel({ word, translation, language, onClose, onShowConfirmation }: VideoReelProps) {
   const [videos, setVideos] = useState<Video[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -28,49 +30,72 @@ export function VideoReel({ word, translation, language, onClose }: VideoReelPro
 
   // Load videos
   useEffect(() => {
-    fetch('http://localhost:8000/videos/search-multiple', {
+    console.log(`📹 Loading videos for: ${word} (${translation})`);
+    fetch(`${API_BASE_URL}/videos/search-multiple`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ word, translation, language, limit: 8 }),
     })
       .then(res => res.json())
       .then(data => {
+        console.log(`✅ Loaded ${data.videos?.length || 0} videos`);
         setVideos(data.videos || []);
         setLoading(false);
       })
       .catch(err => {
+        console.error(`❌ Failed to load videos:`, err);
         setError(err.message);
         setLoading(false);
       });
   }, [word, translation, language]);
 
-  // Initialize YouTube IFrame API
-  useEffect(() => {
-    if (window.YT) return;
+  const [apiReady, setApiReady] = useState(false);
 
+  useEffect(() => {
+    if (window.YT?.Player) {
+      console.log('✅ YouTube API already loaded');
+      setApiReady(true);
+      return;
+    }
+
+    console.log('📡 Loading YouTube IFrame API...');
     const tag = document.createElement('script');
     tag.src = 'https://www.youtube.com/iframe_api';
     const firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
 
-    window.onYouTubeIframeAPIReady = () => {};
+    window.onYouTubeIframeAPIReady = () => {
+      console.log('✅ YouTube API ready');
+      setApiReady(true);
+    };
   }, []);
 
   // Create YouTube players when videos are loaded
   useEffect(() => {
-    if (!videos.length || !window.YT?.Player) return;
+    if (!videos.length || !apiReady || !window.YT?.Player) {
+      console.log(`⏸️ Waiting for player creation: videos=${videos.length}, apiReady=${apiReady}, YT.Player=${!!window.YT?.Player}`);
+      return;
+    }
 
-    // Wait for DOM to be ready
+    console.log(`🎬 Creating ${videos.length} YouTube players...`);
+    
     const timer = setTimeout(() => {
       videos.forEach((video, index) => {
         const playerId = `player-${video.video_id}`;
         
-        if (playerRefs.current[playerId]) return;
+        if (playerRefs.current[playerId]) {
+          console.log(`⏭️ Player ${playerId} already exists`);
+          return;
+        }
 
         const div = document.getElementById(playerId);
-        if (!div) return;
+        if (!div) {
+          console.log(`❌ Div not found for ${playerId}`);
+          return;
+        }
 
       try {
+        console.log(`🎥 Creating player ${index + 1}/${videos.length}: ${playerId}`);
         const player = new window.YT.Player(playerId, {
           videoId: video.video_id,
           playerVars: {
@@ -83,10 +108,14 @@ export function VideoReel({ word, translation, language, onClose }: VideoReelPro
           events: {
             onReady: (event: any) => {
               playerRefs.current[playerId] = event.target;
+              console.log(`✅ Player ready: ${playerId}`);
               
               // Auto-play first video
               if (index === 0) {
-                setTimeout(() => event.target.playVideo(), 500);
+                setTimeout(() => {
+                  console.log(`▶️ Auto-playing first video`);
+                  event.target.playVideo();
+                }, 500);
               }
             },
             onStateChange: (event: any) => {
@@ -112,13 +141,13 @@ export function VideoReel({ word, translation, language, onClose }: VideoReelPro
           },
         });
         } catch (error) {
-          console.error('Error creating player:', error);
+          console.error(`❌ Error creating player ${playerId}:`, error);
         }
       });
-    }, 500);
+    }, 100);
 
     return () => clearTimeout(timer);
-  }, [videos]);
+  }, [videos, apiReady]);
 
   // Control playback when currentIndex changes
   useEffect(() => {
@@ -174,6 +203,12 @@ export function VideoReel({ word, translation, language, onClose }: VideoReelPro
     };
   }, [currentIndex, videos.length]);
 
+  const handleClose = () => {
+    console.log('🚪 Closing reel and showing confirmation');
+    onClose();
+    onShowConfirmation();
+  };
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -181,7 +216,7 @@ export function VideoReel({ word, translation, language, onClose }: VideoReelPro
       
       if (e.key === 'Escape') {
         console.log('🚪 Closing reel');
-        onClose();
+        handleClose();
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
         if (currentIndex < videos.length - 1) {
@@ -219,7 +254,7 @@ export function VideoReel({ word, translation, language, onClose }: VideoReelPro
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex, videos.length, onClose]);
+  }, [currentIndex, videos.length]);
 
   if (loading) {
     return (
@@ -239,8 +274,8 @@ export function VideoReel({ word, translation, language, onClose }: VideoReelPro
           <p className="text-red-500 text-xl mb-4">Error loading videos</p>
           <p className="text-gray-400 mb-6">{error}</p>
           <button
-            onClick={onClose}
-            className="px-6 py-3 bg-white text-black rounded-full font-semibold"
+            onClick={handleClose}
+            className="px-8 py-4 bg-white text-black rounded-full font-semibold whitespace-nowrap min-w-fit"
           >
             Go Back
           </button>
@@ -253,7 +288,7 @@ export function VideoReel({ word, translation, language, onClose }: VideoReelPro
     <div className="fixed inset-0 z-50 bg-black">
       {/* Close Button */}
       <button
-        onClick={onClose}
+        onClick={handleClose}
         className="absolute top-6 right-6 z-50 p-3 bg-black/50 backdrop-blur-sm rounded-full text-white hover:bg-black/70 transition-all shadow-lg"
       >
         <X size={24} />

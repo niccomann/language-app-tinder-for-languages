@@ -1,0 +1,67 @@
+/**
+ * App Mode Configuration
+ * 
+ * Determines whether the app runs in:
+ * - ONLINE: Full features with remote backend (AWS/localhost)
+ * - OFFLINE: Limited features with embedded Python backend (Chaquopy)
+ * 
+ * The mode is determined at build time via environment variable.
+ */
+
+export type AppMode = 'online' | 'offline';
+
+export interface FeatureFlags {
+  flashcards: boolean;
+  progress: boolean;
+  wordsLibrary: boolean;
+  grammarSentences: boolean;
+  grammarValidation: boolean;
+  youtubeVideos: boolean;
+  aiVideos: boolean;
+  textToSpeech: boolean;
+}
+
+const ONLINE_FEATURES: FeatureFlags = {
+  flashcards: true,
+  progress: true,
+  wordsLibrary: true,
+  grammarSentences: true,
+  grammarValidation: true,
+  youtubeVideos: true,
+  aiVideos: true,
+  textToSpeech: true,
+};
+
+const OFFLINE_FEATURES: FeatureFlags = {
+  flashcards: true,
+  progress: true,
+  wordsLibrary: true,
+  grammarSentences: true,
+  grammarValidation: false,
+  youtubeVideos: false,
+  aiVideos: false,
+  textToSpeech: false,
+};
+
+export const APP_MODE: AppMode = (import.meta.env.VITE_APP_MODE as AppMode) || 'online';
+
+export const FEATURES: FeatureFlags = APP_MODE === 'offline' ? OFFLINE_FEATURES : ONLINE_FEATURES;
+
+// Use relative URLs in production (empty string), localhost for development
+const getApiBaseUrl = (): string => {
+  if (APP_MODE === 'offline') {
+    return 'http://localhost:8500';
+  }
+  // Check if we're running on localhost (development)
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    return (import.meta.env.VITE_API_URL as string) || 'http://localhost:8500';
+  }
+  // Production: use relative URLs (nginx proxies /api to backend)
+  return (import.meta.env.VITE_API_URL as string) || '';
+};
+
+export const API_BASE_URL = getApiBaseUrl();
+
+export function isFeatureEnabled(feature: keyof FeatureFlags): boolean {
+  return FEATURES[feature];
+}

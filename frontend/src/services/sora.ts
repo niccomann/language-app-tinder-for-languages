@@ -9,15 +9,23 @@ import type {
   SoraJobStatus 
 } from '../types';
 
-const API_BASE_URL = 'http://localhost:8000';
+import { API_BASE_URL, isFeatureEnabled } from '../config/appMode';
 
 class SoraService {
+  private checkAiVideosEnabled(): void {
+    if (!isFeatureEnabled('aiVideos')) {
+      throw new Error('AI video generation is not available in offline mode');
+    }
+  }
+
   /**
    * Initiate video generation for a flashcard word
    */
   async generateVideo(
     request: SoraVideoGenerationRequest
   ): Promise<SoraVideoGenerationResponse> {
+    this.checkAiVideosEnabled();
+    
     const response = await fetch(`${API_BASE_URL}/api/sora/generate`, {
       method: 'POST',
       headers: {

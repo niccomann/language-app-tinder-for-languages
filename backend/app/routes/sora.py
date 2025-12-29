@@ -7,7 +7,8 @@ from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any
 import logging
 
-from app.services.sora import get_sora_service
+# Use Gemini/Veo service for real video generation
+from app.services.gemini_video import get_gemini_service
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +57,7 @@ async def generate_video(request: VideoGenerationRequest):
     Note: Video generation can take several minutes.
     """
     try:
-        sora_service = get_sora_service()
+        sora_service = get_gemini_service()
         
         logger.info(f"Received video generation request for word: {request.word}")
         
@@ -103,7 +104,7 @@ async def get_job_status(job_id: str):
     When status is "completed", the response includes video_url.
     """
     try:
-        sora_service = get_sora_service()
+        sora_service = get_gemini_service()
         
         logger.info(f"Checking status for job: {job_id}")
         
@@ -131,7 +132,7 @@ async def generate_video_and_wait(request: VideoGenerationRequest, timeout: int 
         timeout: Maximum wait time in seconds (default: 300 = 5 minutes)
     """
     try:
-        sora_service = get_sora_service()
+        sora_service = get_gemini_service()
         
         logger.info(f"Received blocking video generation request for word: {request.word}")
         
@@ -204,7 +205,7 @@ async def generate_multiple_videos(request: VideoGenerationRequest, count: int =
                 detail="Maximum 5 videos can be generated at once"
             )
         
-        sora_service = get_sora_service()
+        sora_service = get_gemini_service()
         
         logger.info(f"Received request to generate {count} videos for word: {request.word}")
         
@@ -268,7 +269,7 @@ async def generate_multiple_videos(request: VideoGenerationRequest, count: int =
 async def health_check():
     """Check if Sora service is configured correctly"""
     try:
-        sora_service = get_sora_service()
+        sora_service = get_gemini_service()
         return {
             "status": "healthy",
             "service": "sora",

@@ -1,4 +1,5 @@
-import { Check } from 'lucide-react';
+import { Check, BookOpen } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface CategorySelectorProps {
   categories: string[];
@@ -7,6 +8,8 @@ interface CategorySelectorProps {
   onStart: () => void;
   onSelectAll: () => void;
   onDeselectAll: () => void;
+  onOpenLibrary: () => void;
+  onOpenGrammarLab: () => void;
 }
 
 const CATEGORY_EMOJIS: Record<string, string> = {
@@ -25,9 +28,11 @@ const CATEGORY_EMOJIS: Record<string, string> = {
   music: '🎵',
   sports: '⚽',
   places: '🏙️',
+  verbs: '✍️',
+  adjectives: '⭐',
 };
 
-const BASE_BUTTON_CLASSES = 'px-10 py-4 text-base font-bold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95';
+const BASE_BUTTON_CLASSES = 'px-10 py-4 text-base font-bold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 whitespace-nowrap flex-shrink-0';
 
 export const CategorySelector = ({
   categories,
@@ -36,31 +41,46 @@ export const CategorySelector = ({
   onStart,
   onSelectAll,
   onDeselectAll,
+  onOpenLibrary,
+  onOpenGrammarLab,
 }: CategorySelectorProps) => {
+  const { isDark } = useTheme();
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      <div className="w-full max-w-3xl bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-100 p-8">
+    <div className={`flex flex-col items-center justify-center min-h-screen p-6 transition-colors duration-300 ${isDark ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900' : 'bg-gradient-to-br from-indigo-50 via-white to-purple-50'}`}>
+      <div className={`w-full max-w-5xl backdrop-blur-sm rounded-3xl shadow-xl border p-8 transition-colors duration-300 ${isDark ? 'bg-slate-800/80 border-slate-700' : 'bg-white/80 border-gray-100'}`}>
         <div className="text-center mb-8">
           <h1 className="text-5xl font-extrabold mb-3 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             Learn German
           </h1>
-          <p className="text-lg text-gray-600 px-4">
+          <p className={`text-lg px-4 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
             Choose your learning path
           </p>
         </div>
 
-        <div className="flex gap-5 justify-center mb-8">
+        <div className="flex gap-5 justify-center mb-8 flex-wrap">
           <button onClick={onSelectAll} className={`${BASE_BUTTON_CLASSES} bg-gradient-to-r from-indigo-500 to-indigo-600 text-white hover:from-indigo-600 hover:to-indigo-700`}>
             <span className="flex items-center gap-4">
               <span className="text-xl">✓</span>
               <span>Select All</span>
             </span>
           </button>
-          <button onClick={onDeselectAll} className={`${BASE_BUTTON_CLASSES} bg-white text-gray-700 border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50`}>
+          <button onClick={onDeselectAll} className={`${BASE_BUTTON_CLASSES} ${isDark ? 'bg-slate-700 text-slate-200 border-2 border-slate-600 hover:border-slate-500 hover:bg-slate-600' : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50'}`}>
             <span className="flex items-center gap-4">
               <span className="text-xl">✕</span>
               <span>Deselect All</span>
+            </span>
+          </button>
+          <button onClick={onOpenLibrary} className={`${BASE_BUTTON_CLASSES} bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700`}>
+            <span className="flex items-center gap-4">
+              <BookOpen size={20} />
+              <span>View Library</span>
+            </span>
+          </button>
+          <button onClick={onOpenGrammarLab} className={`${BASE_BUTTON_CLASSES} bg-gradient-to-r from-blue-500 to-cyan-600 text-white hover:from-blue-600 hover:to-cyan-700`}>
+            <span className="flex items-center gap-4">
+              <span>🧪</span>
+              <span>Grammar Lab</span>
             </span>
           </button>
         </div>
@@ -77,7 +97,7 @@ export const CategorySelector = ({
                   ${
                     isSelected
                       ? 'bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-200 border-2 border-indigo-400'
-                      : 'bg-white border-2 border-gray-200 hover:border-indigo-300 hover:shadow-md'
+                      : isDark ? 'bg-slate-700 border-2 border-slate-600 hover:border-indigo-400 hover:shadow-md' : 'bg-white border-2 border-gray-200 hover:border-indigo-300 hover:shadow-md'
                   }
                 `}
               >
@@ -86,7 +106,7 @@ export const CategorySelector = ({
                     {CATEGORY_EMOJIS[category] || '📚'}
                   </span>
                   <span className={`text-lg font-extrabold capitalize tracking-wide ${
-                    isSelected ? 'text-white' : 'text-gray-800'
+                    isSelected ? 'text-white' : isDark ? 'text-slate-200' : 'text-gray-800'
                   }`}>
                     {category}
                   </span>
@@ -102,10 +122,10 @@ export const CategorySelector = ({
         </div>
 
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 rounded-full">
-            <span className="text-gray-700 font-medium">Selected:</span>
-            <span className="text-xl font-bold text-indigo-600">{selectedCategories.length}</span>
-            <span className="text-gray-500">/ {categories.length}</span>
+          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${isDark ? 'bg-slate-700' : 'bg-indigo-50'}`}>
+            <span className={`font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Selected:</span>
+            <span className="text-xl font-bold text-indigo-500">{selectedCategories.length}</span>
+            <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>/ {categories.length}</span>
           </div>
         </div>
 

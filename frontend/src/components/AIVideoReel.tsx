@@ -21,6 +21,7 @@ interface AIVideoReelProps {
   translation: string;
   language: string;
   onClose: () => void;
+  onShowConfirmation: () => void;
   videoCount?: number;
 }
 
@@ -29,6 +30,7 @@ export function AIVideoReel({
   translation, 
   language, 
   onClose,
+  onShowConfirmation,
   videoCount = 3 
 }: AIVideoReelProps) {
   const [videos, setVideos] = useState<AIVideo[]>([]);
@@ -187,11 +189,16 @@ export function AIVideoReel({
     });
   }, [currentIndex, videos]);
 
+  const handleClose = () => {
+    onClose();
+    onShowConfirmation();
+  };
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onClose();
+        handleClose();
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
         if (currentIndex < videos.length - 1) {
@@ -223,14 +230,14 @@ export function AIVideoReel({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex, videos.length, onClose]);
+  }, [currentIndex, videos.length]);
 
   if (loading) {
     return (
-      <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
+      <div className="fixed inset-0 z-50 bg-black flex items-center justify-center" data-testid="ai-loading-screen">
         <div className="text-center max-w-md px-6">
-          <Loader2 className="w-16 h-16 text-purple-500 animate-spin mx-auto mb-6" />
-          <h3 className="text-white text-2xl font-bold mb-4">
+          <Loader2 className="w-16 h-16 text-purple-500 animate-spin mx-auto mb-6" data-testid="ai-loading-spinner" />
+          <h3 className="text-white text-2xl font-bold mb-4" data-testid="ai-loading-title">
             Generating AI Videos
           </h3>
           <p className="text-gray-400 mb-6">
@@ -240,10 +247,9 @@ export function AIVideoReel({
             This may take a few minutes
           </p>
           
-          {/* Progress indicators */}
-          <div className="mt-8 space-y-3">
+          <div className="mt-8 space-y-3" data-testid="ai-progress-container">
             {Object.entries(generationProgress).map(([jobId, progress], index) => (
-              <div key={jobId} className="space-y-1">
+              <div key={jobId} className="space-y-1" data-testid={`ai-progress-bar-${index}`}>
                 <div className="flex justify-between text-xs text-gray-400">
                   <span>Video {index + 1}</span>
                   <span>{Math.round(progress)}%</span>
@@ -272,8 +278,8 @@ export function AIVideoReel({
           </h3>
           <p className="text-gray-400 mb-6">{error}</p>
           <button
-            onClick={onClose}
-            className="px-6 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition-colors"
+            onClick={handleClose}
+            className="px-8 py-4 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition-colors whitespace-nowrap min-w-fit"
           >
             Go Back
           </button>
@@ -286,7 +292,7 @@ export function AIVideoReel({
     <div className="fixed inset-0 z-50 bg-black">
       {/* Close Button */}
       <button
-        onClick={onClose}
+        onClick={handleClose}
         className="absolute top-6 right-6 z-50 p-3 bg-black/50 backdrop-blur-sm rounded-full text-white hover:bg-black/70 transition-all shadow-lg"
       >
         <X size={24} />

@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react';
 import { X, Loader2, AlertCircle } from 'lucide-react';
 import type { SoraJobStatus } from '../types';
+import { API_BASE_URL } from '../config/appMode';
 
 interface SoraVideoModalProps {
   isOpen: boolean;
@@ -43,7 +44,7 @@ export function SoraVideoModal({
 
     const pollJobStatus = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/sora/status/${jobId}`);
+        const response = await fetch(`${API_BASE_URL}/api/sora/status/${jobId}`);
         
         if (!response.ok) {
           throw new Error('Failed to check video status');
@@ -164,7 +165,7 @@ export function SoraVideoModal({
               </div>
               <button
                 onClick={onClose}
-                className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
+                className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors whitespace-nowrap min-w-fit"
               >
                 Close
               </button>
@@ -191,7 +192,7 @@ export function SoraVideoModal({
 
               <button
                 onClick={onClose}
-                className="w-full px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors font-medium"
+                className="w-full px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors font-medium whitespace-nowrap"
               >
                 Continue Learning
               </button>

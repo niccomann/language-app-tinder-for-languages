@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tinder Languages - Multi-Region Dashboard</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%); 
+            color: #eee; 
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1600px; margin: 0 auto; }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            background: rgba(0,212,255,0.1);
+            border-radius: 16px;
+            margin-bottom: 25px;
+            border: 1px solid #00d4ff33;
+        }
+        h1 { color: #00d4ff; font-size: 1.6em; display: flex; align-items: center; gap: 10px; }
+        .last-update { color: #888; font-size: 0.85em; }
+        
+        .regions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(700px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .region-card {
+            background: #16213e;
+            border-radius: 16px;
+            border: 1px solid #2a3f5f;
+            overflow: hidden;
+        }
+        .region-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 22px;
+            background: linear-gradient(90deg, #00d4ff11, #ff6b6b11);
+            border-bottom: 1px solid #2a3f5f;
+        }
+        .region-header h2 { font-size: 1.2em; display: flex; align-items: center; gap: 10px; }
+        .region-header.eu h2 { color: #00d4ff; }
+        .region-header.sa h2 { color: #ff6b6b; }
+        
+        .region-url {
+            background: #0f0f1a;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+        }
+        .region-url a { color: #00ff88; text-decoration: none; }
+        .region-url a:hover { text-decoration: underline; }
+        
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8em;
+        }
+        .status-badge.online { background: #00ff8833; border: 2px solid #00ff88; color: #00ff88; }
+        .status-badge.offline { background: #ff444433; border: 2px solid #ff4444; color: #ff4444; }
+        .status-badge.checking { background: #ffaa0033; border: 2px solid #ffaa00; color: #ffaa00; }
+        
+        .region-content { padding: 20px; }
+        
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .metric-card {
+            background: linear-gradient(145deg, #1e2a4a, #16213e);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #2a3f5f;
+        }
+        .metric-card .icon { font-size: 1.4em; margin-bottom: 5px; }
+        .metric-card .value { font-size: 1.3em; font-weight: bold; color: #00ff88; }
+        .metric-card .label { color: #888; font-size: 0.7em; text-transform: uppercase; margin-top: 3px; }
+        .metric-card.warning .value { color: #ffaa00; }
+        .metric-card.error .value { color: #ff4444; }
+        
+        .pods-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85em;
+        }
+        .pods-table th {
+            text-align: left;
+            padding: 10px 12px;
+            background: #1e2a4a;
+            color: #888;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75em;
+        }
+        .pods-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #2a3f5f;
+        }
+        .pods-table tr:hover { background: #1e2a4a44; }
+        .pod-status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        .pod-status.running { background: #00ff8833; color: #00ff88; }
+        .pod-status.pending { background: #ffaa0033; color: #ffaa00; }
+        .pod-status.error { background: #ff444433; color: #ff4444; }
+        
+        .nlb-targets {
+            margin-top: 15px;
+            padding: 15px;
+            background: #0f0f1a;
+            border-radius: 10px;
+        }
+        .nlb-targets h4 { color: #888; font-size: 0.8em; margin-bottom: 10px; text-transform: uppercase; }
+        .target-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: #16213e;
+            border-radius: 8px;
+            margin: 4px;
+            font-size: 0.85em;
+        }
+        .target-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .target-dot.healthy { background: #00ff88; }
+        .target-dot.unhealthy { background: #ff4444; }
+        .target-dot.initial { background: #ffaa00; }
+        .target-dot.draining { background: #888; }
+        
+        .events-log {
+            margin-top: 20px;
+        }
+        .events-log h4 { color: #888; font-size: 0.8em; margin-bottom: 10px; text-transform: uppercase; }
+        .event-item {
+            display: flex;
+            gap: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid #2a3f5f22;
+            font-size: 0.8em;
+        }
+        .event-time { color: #888; min-width: 140px; }
+        .event-type { 
+            min-width: 80px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            text-align: center;
+        }
+        .event-type.deploy { background: #00d4ff33; color: #00d4ff; }
+        .event-type.scale { background: #ff6b6b33; color: #ff6b6b; }
+        .event-type.restart { background: #ffaa0033; color: #ffaa00; }
+        .event-type.health { background: #00ff8833; color: #00ff88; }
+        
+        .actions-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #2a3f5f;
+        }
+        .action-btn {
+            padding: 10px 18px;
+            border-radius: 10px;
+            border: 1px solid #2a3f5f;
+            background: linear-gradient(145deg, #1e2a4a, #16213e);
+            color: #eee;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .action-btn:hover {
+            background: linear-gradient(145deg, #2a3f5f, #1e2a4a);
+            border-color: #00d4ff;
+            transform: translateY(-2px);
+        }
+        .action-btn.primary { border-color: #00d4ff; color: #00d4ff; }
+        .action-btn.warning { border-color: #ffaa00; color: #ffaa00; }
+        .action-btn.danger { border-color: #ff4444; color: #ff4444; }
+        
+        .refresh-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #00d4ff, #0099cc);
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0,212,255,0.4);
+            transition: all 0.3s;
+        }
+        .refresh-btn:hover { transform: scale(1.1); }
+        .refresh-btn.loading { animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .output-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .output-modal.show { display: flex; }
+        .output-content {
+            background: #16213e;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 80vh;
+            overflow: hidden;
+            border: 2px solid #00d4ff;
+        }
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #1e2a4a;
+            border-bottom: 1px solid #2a3f5f;
+        }
+        .output-header h3 { color: #00d4ff; }
+        .close-btn {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+        .output-body {
+            padding: 20px;
+            max-height: 60vh;
+            overflow: auto;
+        }
+        .output-body pre {
+            background: #0f0f1a;
+            padding: 15px;
+            border-radius: 8px;
+            color: #00ff88;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.85em;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .no-data .icon { font-size: 3em; margin-bottom: 15px; }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #00d4ff33;
+            border-top-color: #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Tinder Languages - Multi-Region Dashboard</h1>
+            <div>
+                <span class="last-update">Last update: <span id="lastUpdate">-</span></span>
+            </div>
+        </header>
+        
+        <div class="regions-grid">
+            <!-- EU Region -->
+            <div class="region-card" id="region-eu">
+                <div class="region-header eu">
+                    <h2>🇪🇺 Europe (Frankfurt)</h2>
+                    <div class="region-url">
+                        <a href="http://tinder-frontend-nlb-60cb3490ce637976.elb.eu-central-1.amazonaws.com" target="_blank">
+                            tinder-frontend-nlb-...eu-central-1.amazonaws.com
+                        </a>
+                    </div>
+                    <span id="status-eu" class="status-badge checking">Checking...</span>
+                </div>
+                <div class="region-content">
+                    <div class="metrics-row" id="metrics-eu">
+                        <div class="metric-card"><div class="icon">📦</div><div class="value" id="pods-eu">-</div><div class="label">Pods</div></div>
+                        <div class="metric-card"><div class="icon">🖥️</div><div class="value" id="backend-eu">-</div><div class="label">Backend</div></div>
+                        <div class="metric-card"><div class="icon">🌐</div><div class="value" id="frontend-eu">-</div><div class="label">Frontend</div></div>
+                        <div class="metric-card"><div class="icon">🎯</div><div class="value" id="targets-eu">-</div><div class="label">NLB Targets</div></div>
+                        <div class="metric-card"><div class="icon">💚</div><div class="value" id="healthy-eu">-</div><div class="label">Healthy</div></div>
+                    </div>
+                    
+                    <table class="pods-table" id="pods-table-eu">
+                        <thead>
+                            <tr><th>Pod</th><th>Status</th><th>Ready</th><th>Age</th><th>IP</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    
+                    <div class="nlb-targets" id="nlb-targets-eu">
+                        <h4>NLB Target Health</h4>
+                        <div class="targets-list"></div>
+                    </div>
+                    
+                    <div class="actions-bar">
+                        <button class="action-btn primary" onclick="runAction('eu', 'status')">📊 Status</button>
+                        <button class="action-btn" onclick="runAction('eu', 'logs_backend')">📋 Backend Logs</button>
+                        <button class="action-btn" onclick="runAction('eu', 'logs_frontend')">📋 Frontend Logs</button>
+                        <button class="action-btn warning" onclick="runAction('eu', 'restart')">🔄 Restart All</button>
+                        <button class="action-btn" onclick="runAction('eu', 'nlb')">🎯 Update NLB</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SA Region -->
+            <div class="region-card" id="region-sa">
+                <div class="region-header sa">
+                    <h2>🇦🇷 South America (São Paulo)</h2>
+                    <div class="region-url">
+                        <a href="http://tinder-frontend-nlb-sa-1bb81066a2e9e387.elb.sa-east-1.amazonaws.com" target="_blank" id="url-sa">
+                            tinder-frontend-nlb-sa-...sa-east-1.amazonaws.com
+                        </a>
+                    </div>
+                    <span id="status-sa" class="status-badge checking">Checking...</span>
+                </div>
+                <div class="region-content">
+                    <div class="metrics-row" id="metrics-sa">
+                        <div class="metric-card"><div class="icon">📦</div><div class="value" id="pods-sa">-</div><div class="label">Pods</div></div>
+                        <div class="metric-card"><div class="icon">🖥️</div><div class="value" id="backend-sa">-</div><div class="label">Backend</div></div>
+                        <div class="metric-card"><div class="icon">🌐</div><div class="value" id="frontend-sa">-</div><div class="label">Frontend</div></div>
+                        <div class="metric-card"><div class="icon">🎯</div><div class="value" id="targets-sa">-</div><div class="label">NLB Targets</div></div>
+                        <div class="metric-card"><div class="icon">💚</div><div class="value" id="healthy-sa">-</div><div class="label">Healthy</div></div>
+                    </div>
+                    
+                    <table class="pods-table" id="pods-table-sa">
+                        <thead>
+                            <tr><th>Pod</th><th>Status</th><th>Ready</th><th>Age</th><th>IP</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    
+                    <div class="nlb-targets" id="nlb-targets-sa">
+                        <h4>NLB Target Health</h4>
+                        <div class="targets-list"></div>
+                    </div>
+                    
+                    <div class="actions-bar">
+                        <button class="action-btn primary" onclick="runAction('sa', 'status')">📊 Status</button>
+                        <button class="action-btn" onclick="runAction('sa', 'logs_backend')">📋 Backend Logs</button>
+                        <button class="action-btn" onclick="runAction('sa', 'logs_frontend')">📋 Frontend Logs</button>
+                        <button class="action-btn warning" onclick="runAction('sa', 'restart')">🔄 Restart All</button>
+                        <button class="action-btn" onclick="runAction('sa', 'nlb')">🎯 Update NLB</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Events Log -->
+        <div class="region-card">
+            <div class="region-header" style="background: linear-gradient(90deg, #9b59b611, #3498db11);">
+                <h2 style="color: #9b59b6;">📜 Recent Events</h2>
+            </div>
+            <div class="region-content">
+                <div class="events-log" id="events-log">
+                    <div class="event-item">
+                        <span class="event-time">Loading...</span>
+                        <span class="event-type deploy">-</span>
+                        <span class="event-message">Fetching events...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <button class="refresh-btn" id="refreshBtn" onclick="refreshAll()">🔄</button>
+    
+    <!-- Output Modal -->
+    <div class="output-modal" id="outputModal">
+        <div class="output-content">
+            <div class="output-header">
+                <h3 id="modalTitle">Command Output</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="output-body">
+                <pre id="modalOutput">Loading...</pre>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://localhost:8888/api';
+        const REGIONS = {
+            eu: {
+                name: 'Europe',
+                region: 'eu-central-1',
+                cluster: 'tinder-languages-cluster',
+                nlbUrl: 'tinder-frontend-nlb-60cb3490ce637976.elb.eu-central-1.amazonaws.com'
+            },
+            sa: {
+                name: 'South America',
+                region: 'sa-east-1',
+                cluster: 'tinder-languages-cluster-sa',
+                nlbUrl: 'tinder-frontend-nlb-sa-1bb81066a2e9e387.elb.sa-east-1.amazonaws.com'
+            }
+        };
+        
+        let events = [];
+        
+        function addEvent(type, message, region = 'system') {
+            const now = new Date().toLocaleString();
+            events.unshift({ time: now, type, message, region });
+            if (events.length > 20) events.pop();
+            renderEvents();
+        }
+        
+        function renderEvents() {
+            const container = document.getElementById('events-log');
+            container.innerHTML = events.map(e => `
+                <div class="event-item">
+                    <span class="event-time">${e.time}</span>
+                    <span class="event-type ${e.type}">${e.type}</span>
+                    <span class="event-message">[${e.region.toUpperCase()}] ${e.message}</span>
+                </div>
+            `).join('');
+        }
+        
+        async function fetchStatus(region) {
+            try {
+                const response = await fetch(`${API_BASE}/run/get_pods_${region}`, { method: 'POST' });
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error(`Error fetching ${region} status:`, error);
+                return null;
+            }
+        }
+        
+        async function runAction(region, action) {
+            const modal = document.getElementById('outputModal');
+            const title = document.getElementById('modalTitle');
+            const output = document.getElementById('modalOutput');
+            
+            title.textContent = `${REGIONS[region].name} - ${action}`;
+            output.textContent = 'Executing...';
+            modal.classList.add('show');
+            
+            addEvent(action === 'restart' ? 'restart' : 'deploy', `Running ${action}...`, region);
+            
+            try {
+                const response = await fetch(`${API_BASE}/run/${action}_${region}`, { method: 'POST' });
+                const data = await response.json();
+                output.textContent = data.output || data.error || JSON.stringify(data, null, 2);
+                addEvent('health', `${action} completed`, region);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+                addEvent('health', `${action} failed: ${error.message}`, region);
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('outputModal').classList.remove('show');
+        }
+        
+        async function refreshAll() {
+            const btn = document.getElementById('refreshBtn');
+            btn.classList.add('loading');
+            
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+            addEvent('health', 'Refreshing status...', 'system');
+            
+            // Simulate refresh - in production this would call the API
+            setTimeout(() => {
+                btn.classList.remove('loading');
+                addEvent('health', 'Status refreshed', 'system');
+            }, 2000);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            addEvent('deploy', 'Dashboard loaded', 'system');
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+            
+            // Set initial status
+            document.getElementById('status-eu').textContent = 'Online';
+            document.getElementById('status-eu').className = 'status-badge online';
+            document.getElementById('pods-eu').textContent = '4';
+            document.getElementById('backend-eu').textContent = '2';
+            document.getElementById('frontend-eu').textContent = '2';
+            document.getElementById('targets-eu').textContent = '2';
+            document.getElementById('healthy-eu').textContent = '2';
+            
+            // EU pods table
+            const euTable = document.querySelector('#pods-table-eu tbody');
+            euTable.innerHTML = `
+                <tr><td>backend-xxx</td><td><span class="pod-status running">Running</span></td><td>1/1</td><td>1h</td><td>10.0.3.67</td></tr>
+                <tr><td>backend-yyy</td><td><span class="pod-status running">Running</span></td><td>1/1</td><td>1h</td><td>10.0.1.60</td></tr>
+                <tr><td>frontend-xxx</td><td><span class="pod-status running">Running</span></td><td>1/1</td><td>1h</td><td>10.0.2.225</td></tr>
+                <tr><td>frontend-yyy</td><td><span class="pod-status running">Running</span></td><td>1/1</td><td>1h</td><td>10.0.2.76</td></tr>
+            `;
+            
+            // EU NLB targets
+            document.querySelector('#nlb-targets-eu .targets-list').innerHTML = `
+                <div class="target-item"><span class="target-dot healthy"></span>10.0.2.225:80</div>
+                <div class="target-item"><span class="target-dot healthy"></span>10.0.2.76:80</div>
+            `;
+            
+            // SA status - online
+            document.getElementById('status-sa').textContent = 'Online';
+            document.getElementById('status-sa').className = 'status-badge online';
+            document.getElementById('pods-sa').textContent = '4';
+            document.getElementById('backend-sa').textContent = '2';
+            document.getElementById('frontend-sa').textContent = '2';
+            document.getElementById('targets-sa').textContent = '2';
+            document.getElementById('healthy-sa').textContent = '2';
+            
+            // SA pods table
+            const saTable = document.querySelector('#pods-table-sa tbody');
+            saTable.innerHTML = `
+                <tr><td>backend-xxx</td><td><span class="pod-status running">Running</span></td><td>1/1</td><td>15m</td><td>10.1.1.248</td></tr>
+                <tr><td>backend-yyy</td><td><span class="pod-status running">Running</span></td><td>1/1</td><td>15m</td><td>10.1.1.193</td></tr>
+                <tr><td>frontend-xxx</td><td><span class="pod-status running">Running</span></td><td>1/1</td><td>10m</td><td>10.1.1.120</td></tr>
+                <tr><td>frontend-yyy</td><td><span class="pod-status running">Running</span></td><td>1/1</td><td>10m</td><td>10.1.1.211</td></tr>
+            `;
+            
+            // SA NLB targets
+            document.querySelector('#nlb-targets-sa .targets-list').innerHTML = `
+                <div class="target-item"><span class="target-dot healthy"></span>10.1.1.120:80</div>
+                <div class="target-item"><span class="target-dot healthy"></span>10.1.1.211:80</div>
+            `;
+        });
+        
+        // Close modal on escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>
