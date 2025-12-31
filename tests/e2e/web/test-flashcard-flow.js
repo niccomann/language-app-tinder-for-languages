@@ -89,19 +89,18 @@ const { chromium } = require('playwright');
     await startButton.click();
     await page.waitForTimeout(1500);
     
-    // Verify flashcard screen
-    const flashcardImage = page.locator('img').first();
-    if (await flashcardImage.isVisible()) {
-      testResults.startLearning = true;
-      testResults.flashcardDisplay = true;
-      console.log('   ✅ Learning session started, flashcard displayed\n');
-    }
+    // Verify flashcard screen - look for the card with word text
+    const flashcardContainer = page.locator('.rounded-3xl').first();
+    await flashcardContainer.waitFor({ state: 'visible', timeout: 10000 });
+    testResults.startLearning = true;
+    testResults.flashcardDisplay = true;
+    console.log('   ✅ Learning session started, flashcard displayed\n');
     
     // Step 5: Test swipe right (know)
     console.log('📍 Step 5: Testing swipe right (know)...');
     
-    // Find the flashcard container
-    const flashcard = page.locator('div').filter({ has: page.locator('img') }).first();
+    // Find the flashcard container by class
+    const flashcard = page.locator('.rounded-3xl').first();
     const cardBox = await flashcard.boundingBox();
     
     if (cardBox) {
@@ -122,7 +121,7 @@ const { chromium } = require('playwright');
     // Step 6: Test swipe left (don't know)
     console.log('📍 Step 6: Testing swipe left (don\'t know)...');
     
-    const newFlashcard = page.locator('div').filter({ has: page.locator('img') }).first();
+    const newFlashcard = page.locator('.rounded-3xl').first();
     const newCardBox = await newFlashcard.boundingBox();
     
     if (newCardBox) {

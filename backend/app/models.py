@@ -88,7 +88,8 @@ class Flashcard(BaseModel):
     id: int
     word: str
     translation: str
-    image_url: str
+    image_base64: Optional[str] = None
+    audio_base64: Optional[str] = None
     language: str
     difficulty: Optional[str] = None
     category: Optional[str] = None
@@ -110,6 +111,12 @@ class FlashcardEnriched(Flashcard):
     plural_form: Optional[str] = None
     is_compound: Optional[bool] = None
     word_formation: Optional[str] = None
+    image_coherence_score: Optional[int] = None
+    pronunciation_ipa: Optional[str] = None
+    example_sentence: Optional[str] = None
+    etymology_text: Optional[str] = None
+    visual_mnemonic: Optional[str] = None
+    memory_hook: Optional[str] = None
     extra_data: Optional[Dict[str, Any]] = None
 
 

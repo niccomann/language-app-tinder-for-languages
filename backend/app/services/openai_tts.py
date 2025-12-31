@@ -107,6 +107,46 @@ class TextToSpeechService:
         cached = session.exec(statement).first()
         
         return cached is not None
+    
+    def generate_audio_only(self, text: str, voice: str = "nova") -> str:
+        """
+        Generate audio with OpenAI TTS without caching.
+        Returns base64 encoded audio with data URI prefix.
+        """
+        log.info(f"Generating TTS audio for: '{text}'")
+        
+        response = self.client.audio.speech.create(
+            model=self.default_model,
+            voice=voice,
+            input=text,
+        )
+        
+        audio_bytes = response.content
+        audio_base64 = base64.b64encode(audio_bytes).decode()
+        return f"data:audio/mpeg;base64,{audio_base64}"
+    
+    def save_to_cache(
+        self,
+        session: Session,
+        text: str,
+        language: str,
+        voice: str,
+        audio_base64: str
+    ) -> None:
+        """Save audio to cache (fallback for non-flashcard texts like sentences)"""
+        text_hash = self._compute_hash(text, language, voice)
+        
+        new_cache = AudioCacheEntity(
+            text_hash=text_hash,
+            text=text,
+            language=language,
+            voice=voice,
+            audio_base64=audio_base64
+        )
+        
+        session.add(new_cache)
+        session.commit()
+        log.info(f"Audio saved to cache for: '{text[:30]}...'")
 
 
 tts_service = TextToSpeechService()

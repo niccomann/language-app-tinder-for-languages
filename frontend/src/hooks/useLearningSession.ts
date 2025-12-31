@@ -57,6 +57,11 @@ export const useLearningSession = () => {
       const updatedProgress = await api.recordProgress(currentCard.id, known);
       setProgress(updatedProgress);
       
+      // Update word statistics (confidence score)
+      api.updateWordStatistics(currentCard.word, known, currentCard.language).catch(err => {
+        console.error('Failed to update word statistics:', err);
+      });
+      
       // If user doesn't know the word (swipe left), show video source selector
       if (!known) {
         setCurrentWord({

@@ -41,7 +41,7 @@ interface SimNode extends d3.SimulationNodeDatum {
   id: string;
   label: string;
   type: string;
-  image_url?: string;
+  image_base64?: string;
   sourceId: string;
 }
 
@@ -130,7 +130,7 @@ export function FunSentenceBuilder() {
       id: `node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       label: sourceNode.label,
       type: sourceNode.type,
-      image_url: sourceNode.image_url,
+      image_base64: sourceNode.image_base64,
       sourceId: sourceNode.id,
       x: dimensions.width / 2 + (Math.random() - 0.5) * 200,
       y: dimensions.height / 2 + (Math.random() - 0.5) * 200,
@@ -285,14 +285,14 @@ export function FunSentenceBuilder() {
       .attr('fill', '#ec4899');
 
     nodes.forEach(node => {
-      if (node.image_url) {
+      if (node.image_base64) {
         defs.append('pattern')
           .attr('id', `img-fun-${node.id}`)
           .attr('patternUnits', 'objectBoundingBox')
           .attr('width', 1)
           .attr('height', 1)
           .append('image')
-          .attr('href', node.image_url)
+          .attr('href', `data:image/jpeg;base64,${node.image_base64}`)
           .attr('width', NODE_RADIUS * 2)
           .attr('height', NODE_RADIUS * 2)
           .attr('preserveAspectRatio', 'xMidYMid slice');
@@ -572,7 +572,7 @@ export function FunSentenceBuilder() {
     nodeElements
       .append('circle')
       .attr('r', NODE_RADIUS + 4)
-      .attr('fill', d => d.image_url ? `url(#img-fun-${d.id})` : getNodeColor(d.type))
+      .attr('fill', d => d.image_base64 ? `url(#img-fun-${d.id})` : getNodeColor(d.type))
       .attr('stroke', d => getNodeColor(d.type))
       .attr('stroke-width', 4)
       .attr('filter', 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2))');
@@ -1026,8 +1026,8 @@ export function FunSentenceBuilder() {
                 onClick={() => addNodeToCanvas(node)}
                 className={`px-2 py-1 rounded-full border border-blue-400 transition-all hover:scale-105 flex items-center gap-1 text-xs ${isDark ? 'bg-blue-900/30 hover:bg-blue-800/50' : 'bg-blue-50 hover:bg-blue-100'}`}
               >
-                {node.image_url && (
-                  <img src={node.image_url} alt="" className="w-4 h-4 rounded-full object-cover" />
+                {node.image_base64 && (
+                  <img src={`data:image/jpeg;base64,${node.image_base64}`} alt="" className="w-4 h-4 rounded-full object-cover" />
                 )}
                 <span className={`font-medium ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>{node.label}</span>
                 <Plus size={10} className={isDark ? 'text-blue-400' : 'text-blue-600'} />
@@ -1043,8 +1043,8 @@ export function FunSentenceBuilder() {
                 onClick={() => addNodeToCanvas(node)}
                 className={`px-2 py-1 rounded-full border border-red-400 transition-all hover:scale-105 flex items-center gap-1 text-xs ${isDark ? 'bg-red-900/30 hover:bg-red-800/50' : 'bg-red-50 hover:bg-red-100'}`}
               >
-                {node.image_url && (
-                  <img src={node.image_url} alt="" className="w-4 h-4 rounded-full object-cover" />
+                {node.image_base64 && (
+                  <img src={`data:image/jpeg;base64,${node.image_base64}`} alt="" className="w-4 h-4 rounded-full object-cover" />
                 )}
                 <span className={`font-medium ${isDark ? 'text-red-300' : 'text-red-800'}`}>{node.label}</span>
                 <Plus size={10} className={isDark ? 'text-red-400' : 'text-red-600'} />
@@ -1060,8 +1060,8 @@ export function FunSentenceBuilder() {
                 onClick={() => addNodeToCanvas(node)}
                 className={`px-2 py-1 rounded-full border border-green-400 transition-all hover:scale-105 flex items-center gap-1 text-xs ${isDark ? 'bg-green-900/30 hover:bg-green-800/50' : 'bg-green-50 hover:bg-green-100'}`}
               >
-                {node.image_url && (
-                  <img src={node.image_url} alt="" className="w-4 h-4 rounded-full object-cover" />
+                {node.image_base64 && (
+                  <img src={`data:image/jpeg;base64,${node.image_base64}`} alt="" className="w-4 h-4 rounded-full object-cover" />
                 )}
                 <span className={`font-medium ${isDark ? 'text-green-300' : 'text-green-800'}`}>{node.label}</span>
                 <Plus size={10} className={isDark ? 'text-green-400' : 'text-green-600'} />

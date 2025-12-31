@@ -1,70 +1,64 @@
+"""
+Database seed module.
+
+NOTE: This project does NOT seed data from mock files.
+All linguistic data is populated by the external 'language_info_extraction' project.
+This module only ensures database tables are created.
+"""
 import logging
 
 from sqlmodel import Session, select
 
 from app.database.connection import DatabaseConnection
 from app.database.models import FlashcardEntity
-from app.data.mock_cards import MOCK_FLASHCARDS
 
 log = logging.getLogger(__name__)
 
 
-def seed_flashcards(session: Session) -> int:
+def check_database_status(session: Session) -> dict:
     """
-    Seed the database with flashcards from mock data.
-    
-    Returns the number of flashcards inserted.
+    Check current database status and return statistics.
     """
-    log.info("Starting flashcard seeding...")
+    flashcard_count = len(session.exec(select(FlashcardEntity)).all())
     
-    # Check if flashcards already exist
-    existing_count = session.exec(select(FlashcardEntity)).all()
-    if len(existing_count) > 0:
-        log.info(f"Database already contains {len(existing_count)} flashcards. Skipping seed.")
-        return 0
-    
-    inserted_count = 0
-    
-    for card_data in MOCK_FLASHCARDS:
-        flashcard = FlashcardEntity(
-            word=card_data["word"],
-            translation=card_data["translation"],
-            image_url=card_data["image_url"],
-            language=card_data["language"],
-            difficulty=card_data.get("difficulty"),
-            category=card_data.get("category")
-        )
-        session.add(flashcard)
-        inserted_count += 1
-    
-    session.commit()
-    log.info(f"✓ Successfully seeded {inserted_count} flashcards")
-    
-    return inserted_count
+    return {
+        "flashcards": flashcard_count,
+    }
 
 
 def run_seed():
     """
-    Run the seed process.
+    Run database initialization.
+    
+    NOTE: This does NOT insert mock data.
+    Data is populated by the external 'language_info_extraction' project.
     """
     log.info("=" * 60)
-    log.info("STARTING DATABASE SEED")
+    log.info("DATABASE INITIALIZATION")
     log.info("=" * 60)
     
     try:
         db_connection = DatabaseConnection()
         
         with db_connection.session as session:
-            flashcard_count = seed_flashcards(session)
+            status = check_database_status(session)
             
         log.info("=" * 60)
-        log.info("SEED COMPLETED SUCCESSFULLY")
-        log.info(f"Total flashcards inserted: {flashcard_count}")
+        log.info("DATABASE STATUS")
+        log.info("=" * 60)
+        log.info(f"Flashcards in database: {status['flashcards']}")
+        
+        if status['flashcards'] == 0:
+            log.warning("⚠️  Database is empty!")
+            log.warning("   Data should be populated by 'language_info_extraction' project.")
+        else:
+            log.info(f"✓ Database contains {status['flashcards']} flashcards")
+        
         log.info("=" * 60)
         
     except Exception as e:
         log.error("=" * 60)
-        log.error("SEED FAILED")
+        log.error("DATABASE CHECK FAILED")
         log.error("=" * 60)
         log.error(f"Error: {e}")
         log.error(f"Error type: {type(e).__name__}")

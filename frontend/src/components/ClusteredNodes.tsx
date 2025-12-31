@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import * as d3 from 'd3';
 import { Image, ImageOff, Sparkles } from 'lucide-react';
 import type { WordCloudItem } from '../types';
@@ -9,8 +9,10 @@ import {
 } from '../utils/clusteringAlgorithms';
 import { getGroupColor } from '../utils/clusterColors';
 import { useTheme } from '../contexts/ThemeContext';
-import { useLinguisticFilters, LINGUISTIC_FILTER_CONFIGS, type LinguisticCriteria } from '../hooks/useLinguisticFilters';
-import { LinguisticFilterBar, GroupLegend } from './LinguisticFilterBar';
+import { useLinguisticFilters, type LinguisticCriteria } from '../hooks/useLinguisticFilters';
+import { useZoomControls } from '../hooks/useZoomControls';
+import { LinguisticFilterBar } from './LinguisticFilterBar';
+import { ZoomControlBar, ExpandedViewWrapper } from './ui';
 
 interface ClusteredNodesProps {
   words: WordCloudItem[];
@@ -29,6 +31,7 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const simulationRef = useRef<d3.Simulation<SimulationNode, undefined> | null>(null);
+  const nodesRef = useRef<SimulationNode[]>([]);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [hoveredNode, setHoveredNode] = useState<SimulationNode | null>(null);
   const [groups, setGroups] = useState<string[]>([]);
@@ -39,11 +42,47 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
     activeCriteria,
     setActiveCriteria,
     availableConfigs,
-    activeConfig,
     getGroupForWord,
-    groupWords,
-    getGroupColor: getHookGroupColor,
   } = useLinguisticFilters({ defaultCriteria: 'category' });
+
+  const {
+    isExpanded,
+    toggleExpanded,
+    currentZoom,
+    zoomRef,
+    handleZoomIn,
+    handleZoomOut,
+    handleZoomReset,
+    initializeZoom,
+  } = useZoomControls(svgRef, dimensions);
+
+  const handleFitToView = useCallback(() => {
+    if (svgRef.current && zoomRef.current && nodesRef.current.length > 0) {
+      const svg = d3.select(svgRef.current);
+      const { width, height } = dimensions;
+      const nodes = nodesRef.current;
+      const nodeRadius = 40;
+      
+      const minX = Math.min(...nodes.map(n => (n.x || 0) - nodeRadius));
+      const maxX = Math.max(...nodes.map(n => (n.x || 0) + nodeRadius));
+      const minY = Math.min(...nodes.map(n => (n.y || 0) - nodeRadius));
+      const maxY = Math.max(...nodes.map(n => (n.y || 0) + nodeRadius));
+      
+      const nodesWidth = maxX - minX + 100;
+      const nodesHeight = maxY - minY + 100;
+      
+      const scale = Math.min(width / nodesWidth, height / nodesHeight, 1.5);
+      const centerX = (minX + maxX) / 2;
+      const centerY = (minY + maxY) / 2;
+      
+      const transform = d3.zoomIdentity
+        .translate(width / 2, height / 2)
+        .scale(scale)
+        .translate(-centerX, -centerY);
+      
+      svg.transition().duration(500).call(zoomRef.current.transform, transform);
+    }
+  }, [dimensions, zoomRef]);
 
   const similarityClusters = useMemo(() => {
     return computeSimilarityClusters(words, 10);
@@ -131,20 +170,21 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
       .velocityDecay(forceConfig.velocityDecay);
 
     simulationRef.current = simulation;
+    nodesRef.current = nodes;
 
     svg.selectAll('*').remove();
 
     const defs = svg.append('defs');
     
     nodes.forEach(node => {
-      if (node.wordData.image_url) {
+      if (node.wordData.image_base64) {
         defs.append('pattern')
           .attr('id', `img-${node.id}`)
           .attr('patternUnits', 'objectBoundingBox')
           .attr('width', 1)
           .attr('height', 1)
           .append('image')
-          .attr('href', node.wordData.image_url)
+          .attr('href', `data:image/jpeg;base64,${node.wordData.image_base64}`)
           .attr('width', node.radius * 2)
           .attr('height', node.radius * 2)
           .attr('preserveAspectRatio', 'xMidYMid slice');
@@ -154,7 +194,10 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
     const mainGroup = svg
       .attr('width', width)
       .attr('height', height)
-      .append('g');
+      .append('g')
+      .attr('class', 'zoom-container');
+
+    initializeZoom(svgRef.current, mainGroup);
 
     const nodeElements = mainGroup
       .selectAll('g.node')
@@ -184,7 +227,7 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
       .append('circle')
       .attr('r', node => node.radius)
       .attr('fill', node => {
-        if (showImages && node.wordData.image_url) {
+        if (showImages && node.wordData.image_base64) {
           return `url(#img-${node.id})`;
         }
         return getGroupColor(node.group);
@@ -228,57 +271,101 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
       nodeElements.attr('transform', node => `translate(${node.x},${node.y})`);
     });
 
+    // Auto fit-to-view after simulation settles
+    simulation.on('end', () => {
+      setTimeout(() => {
+        if (svgRef.current && zoomRef.current && nodesRef.current.length > 0) {
+          const svgEl = d3.select(svgRef.current);
+          const nodeRadius = 40;
+          const padding = 60;
+          
+          const minX = Math.min(...nodesRef.current.map(n => (n.x || 0) - nodeRadius));
+          const maxX = Math.max(...nodesRef.current.map(n => (n.x || 0) + nodeRadius));
+          const minY = Math.min(...nodesRef.current.map(n => (n.y || 0) - nodeRadius));
+          const maxY = Math.max(...nodesRef.current.map(n => (n.y || 0) + nodeRadius));
+          
+          const nodesWidth = maxX - minX + padding * 2;
+          const nodesHeight = maxY - minY + padding * 2;
+          
+          const scale = Math.min(width / nodesWidth, height / nodesHeight, 1.2);
+          const centerX = (minX + maxX) / 2;
+          const centerY = (minY + maxY) / 2;
+          
+          const transform = d3.zoomIdentity
+            .translate(width / 2, height / 2)
+            .scale(scale)
+            .translate(-centerX, -centerY);
+          
+          svgEl.transition().duration(500).call(zoomRef.current.transform, transform);
+        }
+      }, 100);
+    });
+
     return () => {
       simulation.stop();
     };
-  }, [words, dimensions, activeCriteria, getGroupFunction, onWordClick, showImages, forceConfig]);
+  }, [words, dimensions, activeCriteria, getGroupFunction, onWordClick, showImages, forceConfig, initializeZoom, isExpanded]);
 
-  return (
+  const content = (
     <div ref={containerRef} className={`w-full h-full flex flex-col transition-colors duration-300 ${isDark ? 'bg-slate-900' : 'bg-white'}`}>
       {/* Cluster Buttons - Using reusable LinguisticFilterBar */}
-      <div className={`flex flex-wrap justify-center items-center gap-2 p-3 border-b transition-colors duration-300 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-gray-100 border-gray-200'}`}>
-        <LinguisticFilterBar
-          configs={availableConfigs}
-          activeCriteria={activeCriteria}
-          onCriteriaChange={(criteria) => setActiveCriteria(criteria)}
-          variant="horizontal"
-          showIcons={true}
-        />
-        
-        <div className={`w-px h-8 mx-2 ${isDark ? 'bg-slate-600' : 'bg-gray-300'}`} />
-        
-        <button
-          onClick={() => setShowImages(!showImages)}
-          className={`flex items-center gap-2 px-6 py-2.5 rounded-full font-medium transition-all duration-300 whitespace-nowrap min-w-fit ${
-            showImages
-              ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg'
-              : isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:text-gray-900'
-          }`}
-          title={showImages ? 'Nascondi immagini' : 'Mostra immagini'}
-        >
-          {showImages ? <Image size={18} /> : <ImageOff size={18} />}
-          <span className="text-sm">{showImages ? 'Immagini ON' : 'Immagini OFF'}</span>
-        </button>
-      </div>
+      {!isExpanded && (
+        <div className={`flex flex-wrap justify-center items-center gap-2 p-3 border-b transition-colors duration-300 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-gray-100 border-gray-200'}`}>
+          <LinguisticFilterBar
+            configs={availableConfigs}
+            activeCriteria={activeCriteria}
+            onCriteriaChange={(criteria) => setActiveCriteria(criteria)}
+            variant="horizontal"
+            showIcons={true}
+          />
+          
+          <div className={`w-px h-8 mx-2 ${isDark ? 'bg-slate-600' : 'bg-gray-300'}`} />
+          
+          <button
+            onClick={() => setShowImages(!showImages)}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-full font-medium transition-all duration-300 whitespace-nowrap min-w-fit ${
+              showImages
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg'
+                : isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:text-gray-900'
+            }`}
+            title={showImages ? 'Nascondi immagini' : 'Mostra immagini'}
+          >
+            {showImages ? <Image size={18} /> : <ImageOff size={18} />}
+            <span className="text-sm">{showImages ? 'Immagini ON' : 'Immagini OFF'}</span>
+          </button>
+        </div>
+      )}
 
       {/* SVG Canvas */}
       <div className="flex-1 relative">
-        <svg ref={svgRef} className="w-full h-full" />
+        <svg ref={svgRef} className="w-full h-full" style={{ cursor: 'grab' }} />
+        
+        {/* Zoom Controls */}
+        <ZoomControlBar
+          currentZoom={currentZoom}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          onZoomReset={handleZoomReset}
+          onFitToView={handleFitToView}
+          isExpanded={isExpanded}
+          onToggleExpand={toggleExpanded}
+          position={isExpanded ? 'top-left' : 'top-right'}
+        />
         
         {/* Legend */}
-        <div className={`absolute bottom-4 left-4 backdrop-blur-sm rounded-lg p-3 border shadow-lg transition-colors duration-300 ${isDark ? 'bg-slate-800/90 border-slate-700' : 'bg-white/90 border-gray-200'}`}>
-          <div className={`text-xs mb-2 flex items-center gap-1 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+        <div className={`absolute ${isExpanded ? 'bottom-4 right-4' : 'bottom-20 left-4'} rounded-lg p-3 border shadow-lg z-10 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
+          <div className={`text-xs font-medium mb-3 flex items-center gap-1 ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
             <Sparkles size={12} />
-            Gruppi attivi
+            Gruppi attivi ({groups.length})
           </div>
-          <div className="flex flex-wrap gap-2 max-w-xs">
+          <div className="space-y-1.5 max-h-32 overflow-y-auto">
             {groups.map((group) => (
-              <div key={group} className="flex items-center gap-1.5">
+              <div key={group} className={`flex items-center gap-2 px-2 py-1.5 rounded ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
                 <div 
                   className="w-3 h-3 rounded-full" 
                   style={{ backgroundColor: getGroupColor(group) }}
                 />
-                <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{group}</span>
+                <span className={`text-xs font-medium ${isDark ? 'text-white' : 'text-gray-800'}`}>{group}</span>
               </div>
             ))}
           </div>
@@ -286,7 +373,7 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
 
         {/* Hovered Node Info */}
         {hoveredNode && (
-          <div className={`absolute top-4 right-4 backdrop-blur-sm rounded-xl p-4 border shadow-xl min-w-[200px] transition-colors duration-300 ${isDark ? 'bg-slate-800/95 border-slate-700' : 'bg-white/95 border-gray-200'}`}>
+          <div className={`absolute ${isExpanded ? 'top-20' : 'top-4'} ${isExpanded ? 'left-4' : 'right-4'} backdrop-blur-sm rounded-xl p-4 border shadow-xl min-w-[200px] transition-colors duration-300 z-10 ${isDark ? 'bg-slate-800/95 border-slate-700' : 'bg-white/95 border-gray-200'}`}>
             <div className={`text-lg font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{hoveredNode.text}</div>
             {hoveredNode.wordData.translation && (
               <div className={`text-sm mb-2 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>{hoveredNode.wordData.translation}</div>
@@ -307,5 +394,11 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
         )}
       </div>
     </div>
+  );
+
+  return (
+    <ExpandedViewWrapper isExpanded={isExpanded}>
+      {content}
+    </ExpandedViewWrapper>
   );
 }

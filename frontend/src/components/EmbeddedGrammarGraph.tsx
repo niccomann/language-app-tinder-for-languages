@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import * as d3 from 'd3';
+import { ZoomIn, ZoomOut, Maximize2, Minimize2, RotateCcw } from 'lucide-react';
 import type { GrammarSentence, GrammarNode } from '../types';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
 import { useTheme } from '../contexts/ThemeContext';
+import { ExpandedViewWrapper } from './ui';
 
 interface EmbeddedGrammarGraphProps {
   sentence: GrammarSentence;
@@ -13,7 +15,7 @@ interface SimNode extends d3.SimulationNodeDatum {
   id: string;
   label: string;
   type: string;
-  image_url?: string;
+  image_base64?: string;
   meta?: GrammarNode['meta'];
 }
 
@@ -21,7 +23,30 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [currentZoom, setCurrentZoom] = useState(1);
+  const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const { isDark } = useTheme();
+
+  const toggleExpanded = useCallback(() => setIsExpanded(prev => !prev), []);
+
+  const handleZoomIn = useCallback(() => {
+    if (svgRef.current && zoomRef.current) {
+      d3.select(svgRef.current).transition().duration(300).call(zoomRef.current.scaleBy, 1.3);
+    }
+  }, []);
+
+  const handleZoomOut = useCallback(() => {
+    if (svgRef.current && zoomRef.current) {
+      d3.select(svgRef.current).transition().duration(300).call(zoomRef.current.scaleBy, 0.7);
+    }
+  }, []);
+
+  const handleZoomReset = useCallback(() => {
+    if (svgRef.current && zoomRef.current) {
+      d3.select(svgRef.current).transition().duration(300).call(zoomRef.current.transform, d3.zoomIdentity);
+    }
+  }, []);
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -63,7 +88,19 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
       .force('center', d3.forceCenter(width / 2, height / 2))
       .force('collision', d3.forceCollide().radius(nodeRadius + 20));
 
-    svg.append('defs').append('marker')
+    const container = svg.append('g').attr('class', 'zoom-container');
+
+    const zoom = d3.zoom<SVGSVGElement, unknown>()
+      .scaleExtent([0.3, 3])
+      .on('zoom', (event) => {
+        container.attr('transform', event.transform);
+        setCurrentZoom(event.transform.k);
+      });
+
+    svg.call(zoom);
+    zoomRef.current = zoom;
+
+    container.append('defs').append('marker')
       .attr('id', 'arrowhead-embedded')
       .attr('viewBox', '-0 -5 10 10')
       .attr('refX', nodeRadius + 10)
@@ -75,7 +112,7 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
       .attr('d', 'M 0,-5 L 10,0 L 0,5')
       .attr('fill', '#94A3B8');
 
-    const link = svg.append('g')
+    const link = container.append('g')
       .selectAll('line')
       .data(links)
       .join('line')
@@ -83,7 +120,7 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
       .attr('stroke-width', 2.5)
       .attr('marker-end', 'url(#arrowhead-embedded)');
 
-    const linkLabel = svg.append('g')
+    const linkLabel = container.append('g')
       .selectAll('text')
       .data(links)
       .join('text')
@@ -94,7 +131,7 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
       .attr('dy', -8)
       .text((d: any) => d.label);
 
-    const node = svg.append('g')
+    const node = container.append('g')
       .selectAll('g')
       .data(nodes)
       .join('g')
@@ -130,7 +167,7 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
       .attr('r', nodeRadius);
 
     node.append('image')
-      .attr('xlink:href', (d) => d.image_url || 'https://via.placeholder.com/100')
+      .attr('xlink:href', (d) => d.image_base64 ? `data:image/jpeg;base64,${d.image_base64}` : '')
       .attr('x', -nodeRadius)
       .attr('y', -nodeRadius)
       .attr('width', nodeRadius * 2)
@@ -184,12 +221,66 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
       node.attr('transform', (d) => `translate(${d.x},${d.y})`);
     });
 
+    // Auto fit-to-view after simulation settles
+    simulation.on('end', () => {
+      setTimeout(() => {
+        if (svgRef.current && zoomRef.current && nodes.length > 0) {
+          const padding = 80;
+          
+          const minX = Math.min(...nodes.map(n => (n.x || 0) - nodeRadius - 50));
+          const maxX = Math.max(...nodes.map(n => (n.x || 0) + nodeRadius + 50));
+          const minY = Math.min(...nodes.map(n => (n.y || 0) - nodeRadius - 50));
+          const maxY = Math.max(...nodes.map(n => (n.y || 0) + nodeRadius + 50));
+          
+          const nodesWidth = maxX - minX + padding * 2;
+          const nodesHeight = maxY - minY + padding * 2;
+          
+          const scale = Math.min(width / nodesWidth, height / nodesHeight, 1.0);
+          const centerX = (minX + maxX) / 2;
+          const centerY = (minY + maxY) / 2;
+          
+          const transform = d3.zoomIdentity
+            .translate(width / 2, height / 2)
+            .scale(scale)
+            .translate(-centerX, -centerY);
+          
+          svg.transition().duration(500).call(zoom.transform, transform);
+        }
+      }, 100);
+    });
+
     return () => simulation.stop();
-  }, [sentence, dimensions, onNodeSelect]);
+  }, [sentence, dimensions, onNodeSelect, isExpanded]);
+
+  const content = (
+    <div ref={containerRef} className="w-full h-full relative">
+      <svg ref={svgRef} width="100%" height="100%" style={{ cursor: 'grab' }} className={`transition-colors duration-300 ${isDark ? 'bg-gradient-to-br from-slate-800 to-slate-900' : 'bg-gradient-to-br from-gray-50 to-slate-100'}`} />
+      
+      {/* Zoom Controls */}
+      <div className={`absolute top-4 left-4 z-20 flex items-center gap-1 p-1.5 rounded-xl backdrop-blur-sm shadow-lg ${isDark ? 'bg-slate-800/90 border border-slate-700' : 'bg-white/90 border border-gray-200'}`}>
+        <button onClick={handleZoomIn} className={`p-2 rounded-lg transition-all hover:scale-110 ${isDark ? 'hover:bg-slate-700 text-slate-200' : 'hover:bg-gray-200 text-gray-700'}`} title="Zoom In">
+          <ZoomIn size={18} />
+        </button>
+        <button onClick={handleZoomOut} className={`p-2 rounded-lg transition-all hover:scale-110 ${isDark ? 'hover:bg-slate-700 text-slate-200' : 'hover:bg-gray-200 text-gray-700'}`} title="Zoom Out">
+          <ZoomOut size={18} />
+        </button>
+        <button onClick={handleZoomReset} className={`p-2 rounded-lg transition-all hover:scale-110 ${isDark ? 'hover:bg-slate-700 text-slate-200' : 'hover:bg-gray-200 text-gray-700'}`} title="Reset Zoom">
+          <RotateCcw size={16} />
+        </button>
+        <div className={`w-px h-6 mx-1 ${isDark ? 'bg-slate-600' : 'bg-gray-300'}`} />
+        <button onClick={toggleExpanded} className={`p-2 rounded-lg transition-all hover:scale-110 ${isExpanded ? 'text-purple-500' : ''} ${isDark ? 'hover:bg-slate-700 text-slate-200' : 'hover:bg-gray-200 text-gray-700'}`} title={isExpanded ? "Esci da fullscreen" : "Espandi a fullscreen"}>
+          {isExpanded ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+        </button>
+        <div className={`px-2 text-xs font-mono ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+          {Math.round(currentZoom * 100)}%
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <div ref={containerRef} className="w-full h-full">
-      <svg ref={svgRef} width="100%" height="100%" className={`transition-colors duration-300 ${isDark ? 'bg-gradient-to-br from-slate-800 to-slate-900' : 'bg-gradient-to-br from-gray-50 to-slate-100'}`} />
-    </div>
+    <ExpandedViewWrapper isExpanded={isExpanded}>
+      {content}
+    </ExpandedViewWrapper>
   );
 }

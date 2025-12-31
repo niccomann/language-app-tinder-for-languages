@@ -16,7 +16,7 @@ class FlashcardWithProgress(BaseModel):
     id: int
     word: str
     translation: str
-    image_url: str
+    image_base64: Optional[str] = None
     language: str
     difficulty: Optional[str] = None
     category: Optional[str] = None
@@ -191,7 +191,7 @@ async def get_words_library(
             id=card.id,
             word=card.word,
             translation=card.translation,
-            image_url=card.image_url,
+            image_base64=card.image_base64,
             language=card.language,
             difficulty=card.difficulty,
             category=card.category,

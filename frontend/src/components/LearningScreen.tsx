@@ -115,7 +115,13 @@ export function LearningScreen({
           <div className="absolute w-full opacity-20 scale-90 pointer-events-none blur-sm -z-10">
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
               <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
-                <img src={nextCard.image_url} alt={nextCard.word} className="w-full h-full object-cover" />
+                {nextCard.image_base64 ? (
+                  <img src={`data:image/jpeg;base64,${nextCard.image_base64}`} alt={nextCard.word} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100">
+                    <span className="text-4xl font-bold text-indigo-300">{nextCard.word.charAt(0)}</span>
+                  </div>
+                )}
               </div>
               <div className="p-6 text-center">
                 <h2 className="text-4xl font-bold text-gray-900">{nextCard.word}</h2>

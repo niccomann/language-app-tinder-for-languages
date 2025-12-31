@@ -1,6 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from typing import List, Optional
 from pydantic import BaseModel
+from sqlmodel import select
 
 from app.services.sentence_validator import (
     sentence_validator_service,
@@ -9,8 +10,16 @@ from app.services.sentence_validator import (
     ValidationResult,
     ValidationStatus
 )
+from app.database import SessionDependency
+from app.database.models import (
+    FlashcardEntity,
+    GrammarSentenceEntity,
+    GrammarSentenceNodeEntity,
+    GrammarSentenceEdgeEntity,
+)
 
 router = APIRouter(prefix="/api/grammar", tags=["grammar"])
+
 
 class GrammarNodeMeta(BaseModel):
     case: Optional[str] = None
@@ -18,13 +27,14 @@ class GrammarNodeMeta(BaseModel):
     number: Optional[str] = None
     tense: Optional[str] = None
 
+
 class GrammarNode(BaseModel):
     id: str
     label: str
-    type: str  # subject, predicate, object
-    image_url: Optional[str] = None  # Image for the node
+    type: str
+    image_base64: Optional[str] = None
     meta: Optional[GrammarNodeMeta] = None
-    x: Optional[float] = None  # For initial layout hint
+    x: Optional[float] = None
     y: Optional[float] = None
     cefr_level: Optional[str] = None
     frequency_band: Optional[str] = None
@@ -32,10 +42,12 @@ class GrammarNode(BaseModel):
     difficulty: Optional[str] = None
     category: Optional[str] = None
 
+
 class GrammarEdge(BaseModel):
     source: str
     target: str
     label: str
+
 
 class GrammarSentence(BaseModel):
     id: str
@@ -45,63 +57,101 @@ class GrammarSentence(BaseModel):
     edges: List[GrammarEdge]
     difficulty: str
 
-# Mock Data
-SENTENCES = [
-    GrammarSentence(
-        id="1",
-        german="Der Hund beißt den Mann",
-        english="The dog bites the man",
-        difficulty="beginner",
-        nodes=[
-            GrammarNode(id="n1", label="Der Hund", type="subject", image_url="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200", meta=GrammarNodeMeta(case="nominative", gender="masculine"), x=100, y=200),
-            GrammarNode(id="n2", label="beißt", type="predicate", image_url="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=200", meta=GrammarNodeMeta(tense="present"), x=300, y=200),
-            GrammarNode(id="n3", label="den Mann", type="object", image_url="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200", meta=GrammarNodeMeta(case="accusative", gender="masculine"), x=500, y=200)
-        ],
-        edges=[
-            GrammarEdge(source="n1", target="n2", label="wer?"),
-            GrammarEdge(source="n2", target="n3", label="wen?")
-        ]
-    ),
-    GrammarSentence(
-        id="2",
-        german="Die Frau liest das Buch",
-        english="The woman reads the book",
-        difficulty="beginner",
-        nodes=[
-            GrammarNode(id="n1", label="Die Frau", type="subject", image_url="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200", meta=GrammarNodeMeta(case="nominative", gender="feminine"), x=100, y=200),
-            GrammarNode(id="n2", label="liest", type="predicate", image_url="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=200", meta=GrammarNodeMeta(tense="present"), x=300, y=200),
-            GrammarNode(id="n3", label="das Buch", type="object", image_url="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200", meta=GrammarNodeMeta(case="accusative", gender="neuter"), x=500, y=200)
-        ],
-        edges=[
-            GrammarEdge(source="n1", target="n2", label="wer?"),
-            GrammarEdge(source="n2", target="n3", label="was?")
-        ]
-    ),
-    GrammarSentence(
-        id="3",
-        german="Das Kind gibt dem Vater den Ball",
-        english="The child gives the ball to the father",
-        difficulty="intermediate",
-        nodes=[
-            GrammarNode(id="n1", label="Das Kind", type="subject", image_url="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=200", meta=GrammarNodeMeta(case="nominative", gender="neuter"), x=100, y=200),
-            GrammarNode(id="n2", label="gibt", type="predicate", image_url="https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=200", meta=GrammarNodeMeta(tense="present"), x=300, y=200),
-            GrammarNode(id="n3", label="dem Vater", type="indirect_object", image_url="https://images.unsplash.com/photo-1552058544-f2b08422138a?w=200", meta=GrammarNodeMeta(case="dative", gender="masculine"), x=500, y=100),
-            GrammarNode(id="n4", label="den Ball", type="direct_object", image_url="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200", meta=GrammarNodeMeta(case="accusative", gender="masculine"), x=500, y=300)
-        ],
-        edges=[
-            GrammarEdge(source="n1", target="n2", label="wer?"),
-            GrammarEdge(source="n2", target="n3", label="wem?"),
-            GrammarEdge(source="n2", target="n4", label="was?")
-        ]
-    )
-]
+
+def get_article_for_gender(gender: Optional[str], case: str = "nominative") -> str:
+    """Get the German article based on gender and case."""
+    articles = {
+        "nominative": {"masculine": "Der", "feminine": "Die", "neuter": "Das"},
+        "accusative": {"masculine": "den", "feminine": "die", "neuter": "das"},
+        "dative": {"masculine": "dem", "feminine": "der", "neuter": "dem"},
+    }
+    if not gender or gender not in ["masculine", "feminine", "neuter"]:
+        return ""
+    return articles.get(case, articles["nominative"]).get(gender, "")
+
+
+def map_part_of_speech_to_node_type(part_of_speech: Optional[str], is_subject: bool = True) -> str:
+    """Map part_of_speech from flashcard to grammar node type."""
+    if not part_of_speech:
+        return "object"
+    
+    part_of_speech_lower = part_of_speech.lower()
+    
+    if part_of_speech_lower == "verb":
+        return "predicate"
+    elif part_of_speech_lower == "noun":
+        return "subject" if is_subject else "object"
+    elif part_of_speech_lower == "adjective":
+        return "object"
+    else:
+        return "object"
+
 
 @router.get("/sentences", response_model=List[GrammarSentence])
-async def get_grammar_sentences():
+async def get_grammar_sentences(
+    session: SessionDependency,
+    language: str = Query("de", description="Language code"),
+    difficulty: Optional[str] = Query(None, description="Filter by difficulty"),
+):
     """
-    Get a list of sentences with their grammar graph structure
+    Get grammar sentences from database with their nodes and edges.
     """
-    return SENTENCES
+    query = select(GrammarSentenceEntity).where(GrammarSentenceEntity.language == language)
+    
+    if difficulty:
+        query = query.where(GrammarSentenceEntity.difficulty == difficulty)
+    
+    sentences = session.exec(query).all()
+    
+    result = []
+    for sentence in sentences:
+        nodes_query = select(GrammarSentenceNodeEntity).where(
+            GrammarSentenceNodeEntity.sentence_id == sentence.id
+        )
+        nodes_data = session.exec(nodes_query).all()
+        
+        edges_query = select(GrammarSentenceEdgeEntity).where(
+            GrammarSentenceEdgeEntity.sentence_id == sentence.id
+        )
+        edges_data = session.exec(edges_query).all()
+        
+        nodes = [
+            GrammarNode(
+                id=node.node_id,
+                label=node.label,
+                type=node.node_type,
+                image_base64=node.image_base64,
+                meta=GrammarNodeMeta(
+                    case=node.meta_case,
+                    gender=node.meta_gender,
+                    number=node.meta_number,
+                    tense=node.meta_tense,
+                ) if any([node.meta_case, node.meta_gender, node.meta_number, node.meta_tense]) else None,
+                x=node.position_x,
+                y=node.position_y,
+            )
+            for node in nodes_data
+        ]
+        
+        edges = [
+            GrammarEdge(
+                source=edge.source_node_id,
+                target=edge.target_node_id,
+                label=edge.label,
+            )
+            for edge in edges_data
+        ]
+        
+        result.append(GrammarSentence(
+            id=str(sentence.id),
+            german=sentence.german,
+            english=sentence.english,
+            nodes=nodes,
+            edges=edges,
+            difficulty=sentence.difficulty,
+        ))
+    
+    return result
 
 
 class ValidateSentenceRequest(BaseModel):
@@ -142,39 +192,78 @@ async def validate_sentence(request: ValidateSentenceRequest):
 
 
 @router.get("/available-nodes", response_model=List[GrammarNode])
-async def get_available_nodes():
+async def get_available_nodes(
+    session: SessionDependency,
+    language: str = Query("de", description="Language code"),
+    limit: int = Query(50, description="Max nodes to return"),
+):
     """
-    Get all available nodes for sentence building.
-    Returns a pool of subjects, verbs, and objects.
+    Get available nodes for sentence building.
+    Dynamically generates nodes from flashcards.
+    - If part_of_speech is set: nouns → subjects/objects, verbs → predicates
+    - If part_of_speech is not set: all words become subjects and objects
     """
-    available_nodes = [
-        # Subjects - with linguistic data
-        GrammarNode(id="subj_1", label="Der Hund", type="subject", image_url="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200", meta=GrammarNodeMeta(case="nominative", gender="masculine"), cefr_level="A1", frequency_band="very_common", category="animals", difficulty="easy"),
-        GrammarNode(id="subj_2", label="Die Katze", type="subject", image_url="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=200", meta=GrammarNodeMeta(case="nominative", gender="feminine"), cefr_level="A1", frequency_band="very_common", category="animals", difficulty="easy"),
-        GrammarNode(id="subj_3", label="Das Kind", type="subject", image_url="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=200", meta=GrammarNodeMeta(case="nominative", gender="neuter"), cefr_level="A1", frequency_band="very_common", category="family", difficulty="easy"),
-        GrammarNode(id="subj_4", label="Die Frau", type="subject", image_url="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200", meta=GrammarNodeMeta(case="nominative", gender="feminine"), cefr_level="A1", frequency_band="very_common", category="family", difficulty="easy"),
-        GrammarNode(id="subj_5", label="Der Mann", type="subject", image_url="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200", meta=GrammarNodeMeta(case="nominative", gender="masculine"), cefr_level="A1", frequency_band="very_common", category="family", difficulty="easy"),
-        GrammarNode(id="subj_6", label="Der Arzt", type="subject", image_url="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200", meta=GrammarNodeMeta(case="nominative", gender="masculine"), cefr_level="A2", frequency_band="common", category="professions", difficulty="medium"),
-        GrammarNode(id="subj_7", label="Die Lehrerin", type="subject", image_url="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200", meta=GrammarNodeMeta(case="nominative", gender="feminine"), cefr_level="A2", frequency_band="common", category="professions", difficulty="medium"),
-        GrammarNode(id="subj_8", label="Der Wissenschaftler", type="subject", image_url="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200", meta=GrammarNodeMeta(case="nominative", gender="masculine"), cefr_level="B1", frequency_band="moderate", category="professions", difficulty="hard"),
+    query = select(FlashcardEntity).where(FlashcardEntity.language == language)
+    flashcards = session.exec(query.limit(limit * 3)).all()
+    
+    available_nodes = []
+    subject_count = 0
+    verb_count = 0
+    object_count = 0
+    max_per_type = limit // 3
+    
+    for card in flashcards:
+        part_of_speech = (card.part_of_speech or "").lower()
         
-        # Verbs - with linguistic data
-        GrammarNode(id="verb_1", label="frisst", type="predicate", image_url="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200", meta=GrammarNodeMeta(tense="present"), cefr_level="A1", frequency_band="common", category="actions", difficulty="easy"),
-        GrammarNode(id="verb_2", label="liest", type="predicate", image_url="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=200", meta=GrammarNodeMeta(tense="present"), cefr_level="A1", frequency_band="very_common", category="actions", difficulty="easy"),
-        GrammarNode(id="verb_3", label="trinkt", type="predicate", image_url="https://images.unsplash.com/photo-1544145945-f90425340c7e?w=200", meta=GrammarNodeMeta(tense="present"), cefr_level="A1", frequency_band="very_common", category="actions", difficulty="easy"),
-        GrammarNode(id="verb_4", label="sieht", type="predicate", image_url="https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?w=200", meta=GrammarNodeMeta(tense="present"), cefr_level="A1", frequency_band="very_common", category="actions", difficulty="easy"),
-        GrammarNode(id="verb_5", label="liebt", type="predicate", image_url="https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=200", meta=GrammarNodeMeta(tense="present"), cefr_level="A2", frequency_band="common", category="emotions", difficulty="easy"),
-        GrammarNode(id="verb_6", label="untersucht", type="predicate", image_url="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=200", meta=GrammarNodeMeta(tense="present"), cefr_level="B1", frequency_band="moderate", category="actions", difficulty="medium"),
-        GrammarNode(id="verb_7", label="analysiert", type="predicate", image_url="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200", meta=GrammarNodeMeta(tense="present"), cefr_level="B2", frequency_band="moderate", category="actions", difficulty="hard"),
-        
-        # Objects - with linguistic data
-        GrammarNode(id="obj_1", label="das Buch", type="object", image_url="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200", meta=GrammarNodeMeta(case="accusative", gender="neuter"), cefr_level="A1", frequency_band="very_common", category="objects", difficulty="easy"),
-        GrammarNode(id="obj_2", label="den Ball", type="object", image_url="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200", meta=GrammarNodeMeta(case="accusative", gender="masculine"), cefr_level="A1", frequency_band="common", category="sports", difficulty="easy"),
-        GrammarNode(id="obj_3", label="die Milch", type="object", image_url="https://images.unsplash.com/photo-1550583724-b2692b85b150?w=200", meta=GrammarNodeMeta(case="accusative", gender="feminine"), cefr_level="A1", frequency_band="very_common", category="food", difficulty="easy"),
-        GrammarNode(id="obj_4", label="das Futter", type="object", image_url="https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=200", meta=GrammarNodeMeta(case="accusative", gender="neuter"), cefr_level="A2", frequency_band="common", category="food", difficulty="easy"),
-        GrammarNode(id="obj_5", label="die Kartoffeln", type="object", image_url="https://images.unsplash.com/photo-1518977676601-b53f82ber?w=200", meta=GrammarNodeMeta(case="accusative", gender="feminine"), cefr_level="A2", frequency_band="common", category="food", difficulty="medium"),
-        GrammarNode(id="obj_6", label="den Kaffee", type="object", image_url="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=200", meta=GrammarNodeMeta(case="accusative", gender="masculine"), cefr_level="A1", frequency_band="very_common", category="food", difficulty="easy"),
-        GrammarNode(id="obj_7", label="den Patienten", type="object", image_url="https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=200", meta=GrammarNodeMeta(case="accusative", gender="masculine"), cefr_level="B1", frequency_band="moderate", category="health", difficulty="medium"),
-        GrammarNode(id="obj_8", label="die Daten", type="object", image_url="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200", meta=GrammarNodeMeta(case="accusative", gender="feminine"), cefr_level="B2", frequency_band="common", category="technology", difficulty="hard"),
-    ]
+        if part_of_speech == "verb":
+            if verb_count < max_per_type:
+                verb_count += 1
+                available_nodes.append(GrammarNode(
+                    id=f"verb_{card.id}",
+                    label=card.word,
+                    type="predicate",
+                    image_base64=card.image_base64,
+                    meta=GrammarNodeMeta(tense="present"),
+                    cefr_level=card.cefr_level,
+                    frequency_band=card.frequency_band,
+                    register=card.register,
+                    difficulty=card.difficulty,
+                    category=card.category,
+                ))
+        else:
+            article_nom = get_article_for_gender(card.gender, "nominative") if card.gender else ""
+            article_acc = get_article_for_gender(card.gender, "accusative") if card.gender else ""
+            
+            if subject_count < max_per_type:
+                subject_count += 1
+                label_subject = f"{article_nom} {card.word}".strip() if article_nom else card.word
+                available_nodes.append(GrammarNode(
+                    id=f"subj_{card.id}",
+                    label=label_subject,
+                    type="subject",
+                    image_base64=card.image_base64,
+                    meta=GrammarNodeMeta(case="nominative", gender=card.gender) if card.gender else None,
+                    cefr_level=card.cefr_level,
+                    frequency_band=card.frequency_band,
+                    register=card.register,
+                    difficulty=card.difficulty,
+                    category=card.category,
+                ))
+            
+            if object_count < max_per_type:
+                object_count += 1
+                label_object = f"{article_acc} {card.word}".strip() if article_acc else card.word
+                available_nodes.append(GrammarNode(
+                    id=f"obj_{card.id}",
+                    label=label_object,
+                    type="object",
+                    image_base64=card.image_base64,
+                    meta=GrammarNodeMeta(case="accusative", gender=card.gender) if card.gender else None,
+                    cefr_level=card.cefr_level,
+                    frequency_band=card.frequency_band,
+                    register=card.register,
+                    difficulty=card.difficulty,
+                    category=card.category,
+                ))
+    
     return available_nodes

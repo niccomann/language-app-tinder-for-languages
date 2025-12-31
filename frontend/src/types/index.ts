@@ -2,7 +2,8 @@ export interface Flashcard {
   id: number;
   word: string;
   translation: string;
-  image_url: string;
+  image_base64?: string;
+  audio_base64?: string;
   language: string;
   difficulty?: string;
   category?: string;
@@ -18,6 +19,12 @@ export interface FlashcardEnriched extends Flashcard {
   plural_form?: string;
   is_compound?: boolean;
   word_formation?: string;
+  image_coherence_score?: number;
+  pronunciation_ipa?: string;
+  example_sentence?: string;
+  etymology_text?: string;
+  visual_mnemonic?: string;
+  memory_hook?: string;
   extra_data?: Record<string, unknown>;
 }
 
@@ -172,7 +179,7 @@ export interface WordCloudItem {
   swipe_right_count?: number;
   swipe_left_count?: number;
   review_count?: number;
-  image_url?: string;
+  image_base64?: string;
   cefr_level?: string;
   frequency_band?: string;
   gender?: string;
@@ -194,7 +201,7 @@ export interface GrammarNode {
   id: string;
   label: string;
   type: 'subject' | 'predicate' | 'object' | 'indirect_object' | 'direct_object';
-  image_url?: string;
+  image_base64?: string;
   meta?: GrammarNodeMeta;
   x?: number;
   y?: number;
@@ -255,4 +262,18 @@ export interface ValidateSentenceResponse {
   semantic_correct: boolean;
   explanation: string;
   suggestion?: string;
+}
+
+export interface DialectVariantData {
+  region: string;
+  regionId: string;
+  dialect: string;
+  variant: string;
+  pronunciation?: string;
+}
+
+export interface DialectWord {
+  standardGerman: string;
+  translation: string;
+  variants: DialectVariantData[];
 }

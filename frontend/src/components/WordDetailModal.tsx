@@ -1,4 +1,6 @@
 import type { WordCloudItem } from '../types';
+import { AudioButton } from './AudioButton';
+import { ConfidenceBadge } from './ConfidenceBadge';
 
 const CATEGORY_COLORS: Record<string, string> = {
   animals: '#3B82F6',
@@ -29,10 +31,10 @@ export function WordDetailModal({ word, onClose }: WordDetailModalProps) {
         className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {word.image_url && (
+        {word.image_base64 && (
           <div className="h-48 overflow-hidden">
             <img 
-              src={word.image_url} 
+              src={`data:image/jpeg;base64,${word.image_base64}`}
               alt={word.text}
               className="w-full h-full object-cover"
             />
@@ -41,7 +43,10 @@ export function WordDetailModal({ word, onClose }: WordDetailModalProps) {
         
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-3xl font-bold text-gray-800">{word.text}</h2>
+            <div className="flex items-center gap-3">
+              <h2 className="text-3xl font-bold text-gray-800">{word.text}</h2>
+              <AudioButton text={word.text} size="md" />
+            </div>
             {word.category && (
               <span 
                 className="px-3 py-1 rounded-full text-xs font-semibold text-white capitalize"
@@ -52,7 +57,11 @@ export function WordDetailModal({ word, onClose }: WordDetailModalProps) {
             )}
           </div>
           
-          <p className="text-xl text-gray-600 mb-6">{word.translation}</p>
+          <p className="text-xl text-gray-600 mb-4">{word.translation}</p>
+          
+          <div className="mb-6">
+            <ConfidenceBadge word={word.text} size="md" />
+          </div>
           
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div className="bg-green-50 rounded-xl p-4 text-center">

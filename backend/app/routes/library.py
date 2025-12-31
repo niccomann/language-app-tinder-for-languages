@@ -51,7 +51,7 @@ def entity_to_enriched(card: FlashcardEntity) -> FlashcardEnriched:
         id=card.id,
         word=card.word,
         translation=card.translation,
-        image_url=card.image_url,
+        image_base64=card.image_base64,
         language=card.language,
         difficulty=card.difficulty,
         category=card.category,
@@ -233,7 +233,7 @@ async def get_library_words(
             id=card.id,
             word=card.word,
             translation=card.translation,
-            image_url=card.image_url,
+            image_base64=card.image_base64,
             language=card.language,
             difficulty=card.difficulty,
             category=card.category,
@@ -304,7 +304,7 @@ async def get_word_detail(
         id=card.id,
         word=card.word,
         translation=card.translation,
-        image_url=card.image_url,
+        image_base64=card.image_base64,
         language=card.language,
         difficulty=card.difficulty,
         category=card.category,
@@ -383,3 +383,43 @@ async def get_word_detail(
             ) for d in dialect_variants
         ],
     )
+
+
+@router.get("/dialects")
+async def get_dialect_words(
+    session: SessionDependency,
+    language: Optional[str] = Query("de", description="Filter by language"),
+):
+    """
+    Get all words that have dialect variants.
+    Returns words with their regional dialect variants for the DialectMap feature.
+    """
+    flashcards_with_dialects = session.exec(
+        select(FlashcardEntity)
+        .where(FlashcardEntity.language == language)
+        .join(DialectVariantEntity, DialectVariantEntity.flashcard_id == FlashcardEntity.id)
+        .distinct()
+    ).all()
+    
+    result = []
+    for card in flashcards_with_dialects:
+        dialect_variants = session.exec(
+            select(DialectVariantEntity).where(DialectVariantEntity.flashcard_id == card.id)
+        ).all()
+        
+        result.append({
+            "standardGerman": card.word,
+            "translation": card.translation,
+            "variants": [
+                {
+                    "region": d.region,
+                    "regionId": d.region.lower().replace(" ", "_").replace("/", "_"),
+                    "dialect": d.dialect_name or d.region,
+                    "variant": d.variant_word,
+                    "pronunciation": d.pronunciation,
+                }
+                for d in dialect_variants
+            ]
+        })
+    
+    return result

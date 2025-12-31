@@ -1,4 +1,4 @@
-import type { Flashcard, UserProgress, FlashcardWithProgress, GrammarSentence, GrammarNode, TTSResponse, TTSCheckResponse, ValidateSentenceRequest, ValidateSentenceResponse, LibraryFilters, LibraryStats, FlashcardDetail } from '../types';
+import type { Flashcard, UserProgress, FlashcardWithProgress, GrammarSentence, GrammarNode, TTSResponse, TTSCheckResponse, ValidateSentenceRequest, ValidateSentenceResponse, LibraryFilters, LibraryStats, FlashcardDetail, DialectWord } from '../types';
 import { API_BASE_URL, isFeatureEnabled } from '../config/appMode';
 
 export const api = {
@@ -60,6 +60,20 @@ export const api = {
     if (!response.ok) {
       throw new Error('Failed to reset progress');
     }
+  },
+
+  async speakText(text: string, language: string = 'de'): Promise<TTSResponse> {
+    const response = await fetch(`${API_BASE_URL}/api/tts/speak`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, language }),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to generate speech');
+    }
+    
+    return response.json();
   },
 
   async getWordsLibrary(params?: {
@@ -246,6 +260,71 @@ export const api = {
     
     if (!response.ok) {
       throw new Error('Failed to fetch word detail');
+    }
+    
+    return response.json();
+  },
+
+  async getDialectWords(language: string = 'de'): Promise<DialectWord[]> {
+    const response = await fetch(`${API_BASE_URL}/api/library/dialects?language=${language}`);
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch dialect words');
+    }
+    
+    return response.json();
+  },
+
+  async updateWordStatistics(word: string, correct: boolean, language: string = 'de'): Promise<{
+    word: string;
+    new_confidence_score: number;
+    times_seen: number;
+    times_correct: number;
+    times_incorrect: number;
+  }> {
+    const response = await fetch(`${API_BASE_URL}/api/statistics/update`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ word, language, correct }),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to update word statistics');
+    }
+    
+    return response.json();
+  },
+
+  async getWordStatistics(word: string, language: string = 'de'): Promise<{
+    word: string;
+    language: string;
+    confidence_score: number;
+    times_seen: number;
+    times_correct: number;
+    times_incorrect: number;
+    last_practiced: string | null;
+  }> {
+    const response = await fetch(`${API_BASE_URL}/api/statistics/word/${encodeURIComponent(word)}?language=${language}`);
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch word statistics');
+    }
+    
+    return response.json();
+  },
+
+  async getStatisticsSummary(language: string = 'de'): Promise<{
+    total_words_practiced: number;
+    average_confidence: number;
+    words_mastered: number;
+    words_learning: number;
+    words_struggling: number;
+    total_practice_sessions: number;
+  }> {
+    const response = await fetch(`${API_BASE_URL}/api/statistics/summary?language=${language}`);
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch statistics summary');
     }
     
     return response.json();

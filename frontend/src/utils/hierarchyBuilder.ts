@@ -7,7 +7,7 @@ import type { LinguisticCriteria } from '../hooks/useLinguisticFilters';
 export interface HierarchyNode {
     name: string;
     translation?: string;
-    image_url?: string;
+    image_base64?: string;
     children?: HierarchyNode[];
     value?: number;
     wordData?: WordCloudItem;
@@ -111,7 +111,7 @@ export function buildHierarchyFromWords(words: WordCloudItem[]): HierarchyNode {
         const wordNode: HierarchyNode = {
             name: word.text,
             translation: word.translation,
-            image_url: word.image_url,
+            image_base64: word.image_base64,
             value: Math.max(1, word.review_count || 1),
             wordData: word,
         };
@@ -271,7 +271,7 @@ export function buildHierarchyByCriteria(
         const wordNode: HierarchyNode = {
             name: word.text,
             translation: word.translation,
-            image_url: word.image_url,
+            image_base64: word.image_base64,
             value: Math.max(1, word.review_count || 1),
             wordData: word,
         };

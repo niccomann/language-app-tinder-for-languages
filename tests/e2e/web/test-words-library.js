@@ -63,7 +63,7 @@ const { chromium } = require('playwright');
     await page.waitForTimeout(1500);
     
     // Verify Library header is visible
-    const libraryHeader = page.locator('text=My Library');
+    const libraryHeader = page.locator('text=Word Library');
     await libraryHeader.waitFor({ state: 'visible', timeout: 5000 });
     testResults.navigationToLibrary = true;
     console.log('   ✅ Words Library opened successfully\n');

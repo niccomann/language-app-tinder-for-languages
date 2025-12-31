@@ -276,8 +276,8 @@ export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
                           : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
                       }`}
                     >
-                      {node.image_url && (
-                        <img src={node.image_url} alt="" className="w-8 h-8 rounded-full object-cover" />
+                      {node.image_base64 && (
+                        <img src={`data:image/jpeg;base64,${node.image_base64}`} alt="" className="w-8 h-8 rounded-full object-cover" />
                       )}
                       <span className="font-medium">{node.label}</span>
                     </button>
@@ -298,8 +298,8 @@ export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
                           : 'border-gray-200 hover:border-red-300 hover:bg-red-50'
                       }`}
                     >
-                      {node.image_url && (
-                        <img src={node.image_url} alt="" className="w-8 h-8 rounded-full object-cover" />
+                      {node.image_base64 && (
+                        <img src={`data:image/jpeg;base64,${node.image_base64}`} alt="" className="w-8 h-8 rounded-full object-cover" />
                       )}
                       <span className="font-medium">{node.label}</span>
                     </button>
@@ -320,8 +320,8 @@ export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
                           : 'border-gray-200 hover:border-green-300 hover:bg-green-50'
                       }`}
                     >
-                      {node.image_url && (
-                        <img src={node.image_url} alt="" className="w-8 h-8 rounded-full object-cover" />
+                      {node.image_base64 && (
+                        <img src={`data:image/jpeg;base64,${node.image_base64}`} alt="" className="w-8 h-8 rounded-full object-cover" />
                       )}
                       <span className="font-medium">{node.label}</span>
                     </button>
@@ -375,8 +375,8 @@ export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
                         }`}
                         style={{ borderColor: connectingFrom === node.id ? undefined : getNodeColor(node.type) }}
                       >
-                        {node.image_url && (
-                          <img src={node.image_url} alt="" className="w-12 h-12 rounded-full object-cover" />
+                        {node.image_base64 && (
+                          <img src={`data:image/jpeg;base64,${node.image_base64}`} alt="" className="w-12 h-12 rounded-full object-cover" />
                         )}
                         <span className="font-semibold text-gray-800">{node.label}</span>
                         <span 

@@ -340,11 +340,17 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
                 className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border-2 border-gray-100 dark:border-slate-700 cursor-pointer"
               >
                 <div className="relative h-40 bg-gray-100 dark:bg-slate-700 overflow-hidden">
-                  <img
-                    src={word.image_url}
-                    alt={word.word}
-                    className="w-full h-full object-cover"
-                  />
+                  {word.image_base64 ? (
+                    <img
+                      src={`data:image/jpeg;base64,${word.image_base64}`}
+                      alt={word.word}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900 dark:to-purple-900">
+                      <span className="text-4xl font-bold text-indigo-300">{word.word.charAt(0)}</span>
+                    </div>
+                  )}
                   
                   <div className="absolute top-2 left-2 flex gap-1.5">
                     {word.cefr_level && (

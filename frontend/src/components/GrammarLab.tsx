@@ -66,7 +66,7 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
         swipe_right_count: word.swipe_right_count,
         swipe_left_count: word.swipe_left_count,
         review_count: word.review_count,
-        image_url: word.image_url,
+        image_base64: word.image_base64,
         cefr_level: word.cefr_level,
         frequency_band: word.frequency_band,
         gender: word.gender,
@@ -287,7 +287,7 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
       )}
 
       {/* Content Area */}
-      <div className="flex-1 overflow-hidden relative">
+      <div className="flex-1 overflow-visible relative">
         {activeView === 'graph' && currentSentence && (
           <EmbeddedGrammarGraph
             sentence={currentSentence}
@@ -372,12 +372,12 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
 
       {/* Word Cloud Legend */}
       {activeView === 'wordcloud' && (
-        <div className="p-4 bg-white border-t border-gray-200">
-          <div className="flex flex-wrap justify-center gap-4">
+        <div className={`p-4 border-t transition-colors duration-300 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
+          <div className="flex flex-wrap justify-center gap-3">
             {Object.entries(CATEGORY_COLORS).slice(0, 5).map(([category, color]) => (
-              <div key={category} className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-                <span className="text-xs text-gray-500 capitalize">{category}</span>
+              <div key={category} className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
+                <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
+                <span className={`text-xs capitalize ${isDark ? 'text-white' : 'text-gray-800'}`}>{category}</span>
               </div>
             ))}
           </div>

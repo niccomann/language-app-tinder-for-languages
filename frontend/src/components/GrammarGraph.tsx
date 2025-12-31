@@ -15,7 +15,7 @@ interface SimulationNode extends d3.SimulationNodeDatum {
   id: string;
   label: string;
   type: string;
-  image_url?: string;
+  image_base64?: string;
   meta?: GrammarNode['meta'];
 }
 
@@ -211,7 +211,7 @@ export function GrammarGraph({ sentence, onNext, onBack }: GrammarGraphProps) {
 
     node
       .append('image')
-      .attr('xlink:href', (d) => d.image_url || 'https://via.placeholder.com/100')
+      .attr('xlink:href', (d) => d.image_base64 ? `data:image/jpeg;base64,${d.image_base64}` : '')
       .attr('x', -nodeRadius)
       .attr('y', -nodeRadius)
       .attr('width', nodeRadius * 2)

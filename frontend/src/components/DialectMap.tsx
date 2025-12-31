@@ -1,13 +1,10 @@
-import { useState, useMemo } from 'react';
-import { Map, Globe2, ChevronDown } from 'lucide-react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
+import { Map, Globe2, ChevronDown, Loader2, Maximize2, Minimize2 } from 'lucide-react';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
-import { 
-  GERMAN_REGIONS, 
-  getDialectForWord, 
-  getAvailableDialectWords,
-  getRegionColor,
-} from '../utils/dialectData';
+import { api } from '../services/api';
+import type { DialectWord } from '../types';
 import germanyGeoJson from '../assets/germany-states.json';
+import { ExpandedViewWrapper } from './ui';
 
 interface DialectMapProps {
   initialWord?: string;
@@ -32,13 +29,52 @@ const STATE_TO_DIALECT_REGION: Record<string, string> = {
   'Hessen': 'franken',
 };
 
+const REGION_COLORS: Record<string, string> = {
+  'bayern': '#3B82F6',
+  'sachsen': '#10B981',
+  'schwaben': '#F59E0B',
+  'berlin': '#EF4444',
+  'koeln': '#8B5CF6',
+  'hamburg': '#06B6D4',
+  'franken': '#EC4899',
+  'oesterreich': '#84CC16',
+};
+
+const getRegionColor = (regionId: string): string => {
+  return REGION_COLORS[regionId] || '#64748B';
+};
+
 export function DialectMap({ initialWord }: DialectMapProps) {
-  const availableWords = useMemo(() => getAvailableDialectWords(), []);
-  const [selectedWord, setSelectedWord] = useState<string>(initialWord || availableWords[0]);
+  const [dialectWords, setDialectWords] = useState<DialectWord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedWord, setSelectedWord] = useState<string>('');
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  const wordData = useMemo(() => getDialectForWord(selectedWord), [selectedWord]);
+  const toggleExpanded = useCallback(() => setIsExpanded(prev => !prev), []);
+
+  useEffect(() => {
+    loadDialectWords();
+  }, []);
+
+  const loadDialectWords = async () => {
+    setLoading(true);
+    try {
+      const data = await api.getDialectWords('de');
+      setDialectWords(data);
+      if (data.length > 0) {
+        setSelectedWord(initialWord || data[0].standardGerman);
+      }
+    } catch (error) {
+      console.error('Failed to load dialect words:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const availableWords = useMemo(() => dialectWords.map(d => d.standardGerman), [dialectWords]);
+  const wordData = useMemo(() => dialectWords.find(d => d.standardGerman === selectedWord), [dialectWords, selectedWord]);
 
   const getVariantForRegion = (regionId: string) => {
     if (!wordData) return null;
@@ -51,7 +87,30 @@ export function DialectMap({ initialWord }: DialectMapProps) {
 
   const hoveredVariant = hoveredRegion ? getVariantForRegion(hoveredRegion) : null;
 
-  return (
+  if (loading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
+          <span className="text-slate-400">Caricamento dialetti...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (dialectWords.length === 0) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <div className="flex flex-col items-center gap-3 text-center p-8">
+          <Globe2 className="w-12 h-12 text-slate-500" />
+          <h3 className="text-lg font-semibold text-white">Nessun dialetto disponibile</h3>
+          <p className="text-slate-400 text-sm">I dati sui dialetti regionali devono essere popolati nel database.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const content = (
     <div className="w-full h-full flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4 overflow-hidden">
       <div className="flex items-center justify-between mb-3 flex-shrink-0">
         <div className="flex items-center gap-3">
@@ -64,33 +123,43 @@ export function DialectMap({ initialWord }: DialectMapProps) {
           </div>
         </div>
 
-        <div className="relative">
+        <div className="flex items-center gap-2">
           <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white transition-colors"
+            onClick={toggleExpanded}
+            className={`p-2 rounded-lg transition-all hover:scale-110 hover:bg-slate-700 ${isExpanded ? 'text-purple-400' : 'text-slate-300'}`}
+            title={isExpanded ? "Esci da fullscreen" : "Espandi a fullscreen"}
           >
-            <span className="font-medium">{selectedWord}</span>
-            <ChevronDown className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            {isExpanded ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
           </button>
+
+          <div className="relative">
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white transition-colors"
+            >
+              <span className="font-medium">{selectedWord || 'Seleziona parola'}</span>
+              <ChevronDown className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
           
-          {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-slate-700 rounded-lg shadow-xl border border-slate-600 z-50 max-h-64 overflow-y-auto">
-              {availableWords.map((word) => (
-                <button
-                  key={word}
-                  onClick={() => {
-                    setSelectedWord(word);
-                    setIsDropdownOpen(false);
-                  }}
-                  className={`w-full px-4 py-2 text-left hover:bg-slate-600 transition-colors ${
-                    word === selectedWord ? 'bg-slate-600 text-emerald-400' : 'text-white'
-                  }`}
-                >
-                  {word}
-                </button>
-              ))}
-            </div>
-          )}
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-slate-700 rounded-lg shadow-xl border border-slate-600 z-50 max-h-64 overflow-y-auto">
+                {availableWords.map((word) => (
+                  <button
+                    key={word}
+                    onClick={() => {
+                      setSelectedWord(word);
+                      setIsDropdownOpen(false);
+                    }}
+                    className={`w-full px-4 py-2 text-left hover:bg-slate-600 transition-colors ${
+                      word === selectedWord ? 'bg-slate-600 text-emerald-400' : 'text-white'
+                    }`}
+                  >
+                    {word}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -218,26 +287,34 @@ export function DialectMap({ initialWord }: DialectMapProps) {
         </div>
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2 flex-shrink-0">
-        {GERMAN_REGIONS.map((region) => (
-          <div 
-            key={region.id}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border transition-all cursor-pointer ${
-              hoveredRegion === region.id 
-                ? 'bg-slate-700 border-slate-500' 
-                : 'bg-slate-800/50 border-slate-700 hover:bg-slate-700/50'
-            }`}
-            onMouseEnter={() => handleRegionHover(region.id)}
-            onMouseLeave={() => handleRegionHover(null)}
-          >
+      {wordData && wordData.variants.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-2 flex-shrink-0">
+          {wordData.variants.map((variant) => (
             <div 
-              className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: region.color }}
-            />
-            <span className="text-xs text-slate-400">{region.dialect}</span>
-          </div>
-        ))}
-      </div>
+              key={variant.regionId}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border transition-all cursor-pointer ${
+                hoveredRegion === variant.regionId 
+                  ? 'bg-slate-700 border-slate-500' 
+                  : 'bg-slate-800/50 border-slate-700 hover:bg-slate-700/50'
+              }`}
+              onMouseEnter={() => handleRegionHover(variant.regionId)}
+              onMouseLeave={() => handleRegionHover(null)}
+            >
+              <div 
+                className="w-2 h-2 rounded-full"
+                style={{ backgroundColor: getRegionColor(variant.regionId) }}
+              />
+              <span className="text-xs text-slate-400">{variant.dialect}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
+  );
+
+  return (
+    <ExpandedViewWrapper isExpanded={isExpanded}>
+      {content}
+    </ExpandedViewWrapper>
   );
 }

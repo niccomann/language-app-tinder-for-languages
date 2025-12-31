@@ -75,7 +75,7 @@ class EmbeddedBackend:
     def __init__(self, db_path: str = DATABASE_PATH):
         self.db_path = db_path
         self._init_database()
-        self._seed_data_if_empty()
+        self._check_database_status()
     
     def _init_database(self):
         """Initialize SQLite database with required tables"""
@@ -111,46 +111,19 @@ class EmbeddedBackend:
         conn.commit()
         conn.close()
     
-    def _seed_data_if_empty(self):
-        """Seed initial flashcard data if database is empty"""
+    def _check_database_status(self):
+        """Check if database has data. Data must be pre-populated externally."""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
         cursor.execute("SELECT COUNT(*) FROM flashcards")
         count = cursor.fetchone()[0]
+        conn.close()
         
         if count == 0:
-            seed_data = self._get_seed_flashcards()
-            for card in seed_data:
-                cursor.execute('''
-                    INSERT INTO flashcards (word, translation, image_url, language, difficulty, category, created_at, updated_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                ''', (card['word'], card['translation'], card['image_url'], card['language'], 
-                      card['difficulty'], card['category'], datetime.now().isoformat(), datetime.now().isoformat()))
-            conn.commit()
-        
-        conn.close()
-    
-    def _get_seed_flashcards(self) -> List[Dict]:
-        """Return seed flashcard data"""
-        return [
-            {"word": "Hund", "translation": "dog", "image_url": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800", "language": "de", "difficulty": "easy", "category": "animals"},
-            {"word": "Katze", "translation": "cat", "image_url": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800", "language": "de", "difficulty": "easy", "category": "animals"},
-            {"word": "Vogel", "translation": "bird", "image_url": "https://images.unsplash.com/photo-1444464666168-49d633b86797?w=800", "language": "de", "difficulty": "easy", "category": "animals"},
-            {"word": "Fisch", "translation": "fish", "image_url": "https://images.unsplash.com/photo-1524704654690-b56c05c78a00?w=800", "language": "de", "difficulty": "easy", "category": "animals"},
-            {"word": "Pferd", "translation": "horse", "image_url": "https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=800", "language": "de", "difficulty": "easy", "category": "animals"},
-            {"word": "Apfel", "translation": "apple", "image_url": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=800", "language": "de", "difficulty": "easy", "category": "food"},
-            {"word": "Brot", "translation": "bread", "image_url": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800", "language": "de", "difficulty": "easy", "category": "food"},
-            {"word": "Wasser", "translation": "water", "image_url": "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=800", "language": "de", "difficulty": "easy", "category": "food"},
-            {"word": "Milch", "translation": "milk", "image_url": "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=800", "language": "de", "difficulty": "easy", "category": "food"},
-            {"word": "Käse", "translation": "cheese", "image_url": "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=800", "language": "de", "difficulty": "easy", "category": "food"},
-            {"word": "Rot", "translation": "red", "image_url": "https://images.unsplash.com/photo-1562157873-818bc0726f68?w=800", "language": "de", "difficulty": "easy", "category": "colors"},
-            {"word": "Blau", "translation": "blue", "image_url": "https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=800", "language": "de", "difficulty": "easy", "category": "colors"},
-            {"word": "Grün", "translation": "green", "image_url": "https://images.unsplash.com/photo-1564419320461-6870880221ad?w=800", "language": "de", "difficulty": "easy", "category": "colors"},
-            {"word": "Laufen", "translation": "run", "image_url": "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=800", "language": "de", "difficulty": "easy", "category": "actions"},
-            {"word": "Essen", "translation": "eat", "image_url": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800", "language": "de", "difficulty": "easy", "category": "actions"},
-            {"word": "Trinken", "translation": "drink", "image_url": "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=800", "language": "de", "difficulty": "easy", "category": "actions"},
-        ]
+            print("WARNING: Database is empty. Flashcards must be pre-populated from language_info_extraction project.")
+        else:
+            print(f"Database contains {count} flashcards.")
     
     def get_flashcards(self, language: Optional[str] = None, category: Optional[str] = None, limit: Optional[int] = None) -> List[Dict]:
         """Get flashcards with optional filters"""

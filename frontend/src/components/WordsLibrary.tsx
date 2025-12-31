@@ -3,6 +3,9 @@ import { Search, BookOpen, CheckCircle, XCircle, Filter } from 'lucide-react';
 import { api } from '../services/api';
 import type { FlashcardWithProgress } from '../types';
 import { LoadingSpinner, ErrorState, PageHeader, StatCard } from './ui';
+import { AudioButton } from './AudioButton';
+import { ConfidenceBadge } from './ConfidenceBadge';
+import { StatsSummary } from './StatsSummary';
 
 interface WordsLibraryProps {
   onClose: () => void;
@@ -116,6 +119,9 @@ export function WordsLibrary({ onClose }: WordsLibraryProps) {
           onBack={onClose}
         />
 
+        {/* Confidence Stats Summary */}
+        <StatsSummary className="mb-6" />
+        
         {/* Statistics Cards */}
         <p className="text-sm text-gray-500 mb-3 text-center font-medium">
           👆 Click on a word to toggle its status (Known / To Review)
@@ -221,11 +227,17 @@ export function WordsLibrary({ onClose }: WordsLibraryProps) {
               >
                 {/* Image */}
                 <div className="relative h-48 bg-gray-100 overflow-hidden">
-                  <img
-                    src={word.image_url}
-                    alt={word.word}
-                    className="w-full h-full object-cover"
-                  />
+                  {word.image_base64 ? (
+                    <img
+                      src={`data:image/jpeg;base64,${word.image_base64}`}
+                      alt={word.word}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100">
+                      <span className="text-4xl font-bold text-indigo-300">{word.word.charAt(0)}</span>
+                    </div>
+                  )}
                   {/* Status Badge */}
                   <div className="absolute top-3 right-3">
                     {word.known === true && (
@@ -258,12 +270,15 @@ export function WordsLibrary({ onClose }: WordsLibraryProps) {
 
                 {/* Content */}
                 <div className="p-5">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-1">{word.word}</h3>
+                  <div className="flex items-center justify-between mb-1">
+                    <h3 className="text-2xl font-bold text-gray-900">{word.word}</h3>
+                    <AudioButton text={word.word} size="sm" />
+                  </div>
                   <p className="text-gray-600 text-lg mb-3">{word.translation}</p>
                   
-                  {/* Click hint */}
-                  <div className="mb-2 text-xs text-gray-400 italic">
-                    👆 Click to toggle status
+                  {/* Confidence Badge */}
+                  <div className="mb-3">
+                    <ConfidenceBadge word={word.word} size="sm" />
                   </div>
                   
                   {/* Stats */}

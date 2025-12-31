@@ -128,11 +128,17 @@ export function WordDetailModal({ wordId, onClose }: WordDetailModalProps) {
       <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         <div className="relative">
           <div className="h-48 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 relative overflow-hidden">
-            <img
-              src={word.image_url}
-              alt={word.word}
-              className="w-full h-full object-cover opacity-40"
-            />
+            {word.image_base64 ? (
+              <img
+                src={`data:image/jpeg;base64,${word.image_base64}`}
+                alt={word.word}
+                className="w-full h-full object-cover opacity-40"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <span className="text-6xl font-bold text-white/30">{word.word.charAt(0)}</span>
+              </div>
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             
             <button
