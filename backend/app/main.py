@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from app.routes import cards, videos, sora, grammar, tts, library, statistics
+from app.routes import cards, videos, sora, grammar, tts, library, statistics, infographics, tracking
 import os
 import logging
 from dotenv import load_dotenv
@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from app.core.config import config
 from app.database.connection import DatabaseConnection
 from app.database.seed import run_seed
+from app.database.tracking_connection import init_tracking_database
 
 load_dotenv()
 
@@ -31,6 +32,11 @@ async def lifespan(app: FastAPI):
         run_seed()
         
         log.info("✓ Database initialization completed successfully")
+        
+        # Initialize tracking database (separate from main DB)
+        log.info("Initializing tracking database...")
+        init_tracking_database()
+        log.info("✓ Tracking database initialized")
         
     except Exception as e:
         log.error(f"Failed to initialize database: {e}")
@@ -71,6 +77,8 @@ app.include_router(grammar.router)
 app.include_router(tts.router)
 app.include_router(library.router)
 app.include_router(statistics.router)
+app.include_router(infographics.router)
+app.include_router(tracking.router)
 
 
 @app.get("/")
