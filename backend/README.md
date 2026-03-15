@@ -1,5 +1,7 @@
 # Backend - Tinder for Languages
 
+> Last updated: 2026-03-15 17:30
+
 FastAPI backend for the language learning app.
 
 ## Quick Start
@@ -17,9 +19,11 @@ python -m app.main
 
 ## Database Architecture
 
+By default the backend uses **SQLite** (no setup needed). PostgreSQL is available as optional alternative via environment variables and `docker-compose`.
+
 The backend uses **two separate databases**:
 
-| Database | File | Purpose |
+| Database | File (SQLite default) | Purpose |
 |----------|------|---------|
 | **Main DB** | `app.db` | Flashcards, progress, grammar, audio cache |
 | **Tracking DB** | `tracking.db` | Session tracking for infographics |
@@ -82,9 +86,9 @@ GEMINI_API_KEY=your_gemini_key
 OPENAI_API_KEY=your_openai_key
 YOUTUBE_API_KEY=your_youtube_key
 
-# Database
-DB_HOST=localhost
-DB_PORT=5433
+# Database (optional - only needed for PostgreSQL instead of default SQLite)
+# DB_HOST=localhost
+# DB_PORT=5433
 ```
 
 ## Action Types for Tracking

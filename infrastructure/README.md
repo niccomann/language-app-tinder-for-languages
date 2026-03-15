@@ -1,5 +1,7 @@
 # Tinder for Languages - Infrastructure
 
+> Last updated: 2026-03-15 17:30
+
 > **Deployment AWS EKS Multi-Region** - Serverless Fargate, pay-per-use
 
 ---
@@ -104,7 +106,7 @@ kubectl get pods -n tinder-languages
 kubectl get svc -n tinder-languages
 
 # Stato NLB e targets
-./scripts/nlb-manage.sh status
+./scripts/nlb-manage.sh status   # ⚠️ Script non ancora implementato, vedi nota sotto
 
 # HTTP check
 curl -I http://tinder-frontend-nlb-60cb3490ce637976.elb.eu-central-1.amazonaws.com
@@ -134,10 +136,10 @@ kubectl scale deployment/frontend -n tinder-languages --replicas=2
 
 ```bash
 # Stato NLB
-./scripts/nlb-manage.sh status
+./scripts/nlb-manage.sh status   # ⚠️ Script non ancora implementato, vedi nota sotto
 
 # Aggiorna target IPs (dopo restart/scale)
-./scripts/nlb-manage.sh update
+./scripts/nlb-manage.sh update   # ⚠️ Script non ancora implementato, vedi nota sotto
 ```
 
 ---
@@ -252,7 +254,7 @@ kubectl rollout restart deployment/frontend -n tinder-languages
 ### 4. Aggiorna NLB targets (i pod hanno nuovi IP)
 
 ```bash
-./scripts/nlb-manage.sh update
+./scripts/nlb-manage.sh update   # ⚠️ Script non ancora implementato, vedi nota sotto
 ```
 
 ---
@@ -293,7 +295,7 @@ kubectl get events -n tinder-languages --sort-by='.lastTimestamp'
 kubectl get pods -n tinder-languages -o wide
 
 # Aggiorna i target
-./scripts/nlb-manage.sh update
+./scripts/nlb-manage.sh update   # ⚠️ Script non ancora implementato, vedi nota sotto
 
 # Verifica security groups
 aws ec2 describe-security-group-rules --filters "Name=group-id,Values=sg-0d70c608c2ebd59a1"
@@ -331,9 +333,9 @@ source scripts/setup-secrets.sh
 1. **Backend usa SQLite** (non PostgreSQL) per semplicità su Fargate
 2. **NLB creato manualmente** perché AWS LB Controller aveva problemi con IRSA
 3. **Cross-zone load balancing** è ESSENZIALE per Fargate in subnet private
-4. **Dopo ogni restart/scale** bisogna aggiornare i target NLB con `nlb-manage.sh update`
+4. **Dopo ogni restart/scale** bisogna aggiornare i target NLB con `nlb-manage.sh update` (⚠️ `scripts/nlb-manage.sh` non ancora implementato - i target vanno aggiornati manualmente via AWS CLI/console)
 5. **Dashboard locale** su http://localhost:8888 per gestire tutto da UI
 
 ---
 
-*Ultimo aggiornamento: 27 Dicembre 2025*
+*Ultimo aggiornamento: 15 Marzo 2026*
