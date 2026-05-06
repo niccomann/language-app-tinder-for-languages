@@ -51,7 +51,7 @@ export function LearningLevelBadge({
       </div>
       <div className="mt-1 flex items-end justify-between gap-3">
         <span className={`${compact ? 'text-lg' : 'text-2xl'} font-extrabold leading-none`}>
-          Level {level}
+          Mastery {level}
         </span>
         <span className="text-xs font-bold opacity-80">/10</span>
       </div>

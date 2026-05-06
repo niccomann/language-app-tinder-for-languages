@@ -5,6 +5,8 @@ test('home starts on the learning path and enters the swipe deck', async ({ page
 
   await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByText('Daily Learning Snapshot')).toBeVisible();
+  await expect(page.getByText('400-level path', { exact: true })).toBeVisible();
+  await expect(page.getByText('XP to next level', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Review German Level' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Review German Level' }).click();
@@ -48,7 +50,8 @@ test('home explains the adaptive learning system in a compact menu', async ({ pa
   await page.getByRole('button', { name: 'Learning System' }).click();
 
   await expect(page.getByText('One memory database tracks every word you know, miss, or are still learning.')).toBeVisible();
-  await expect(page.getByText('Each swipe updates a mastery score from 1 to 10.')).toBeVisible();
+  await expect(page.getByText('Your global path can grow through 400 levels.')).toBeVisible();
+  await expect(page.getByText('Each word still has a focused mastery score from 1 to 10.')).toBeVisible();
   await expect(page.getByText('Future sentences can mix strong words with weaker words, keeping context useful without overload.')).toBeVisible();
 });
 

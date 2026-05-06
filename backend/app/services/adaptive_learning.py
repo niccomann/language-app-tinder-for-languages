@@ -6,6 +6,12 @@ CONFIDENCE_MIN = 0
 CONFIDENCE_MAX = 100
 CORRECT_CONFIDENCE_DELTA = 12
 INCORRECT_CONFIDENCE_DELTA = -18
+PATH_MAX_LEVEL = 400
+PATH_XP_PER_LEVEL = 100
+PATH_XP_PER_CORRECT = 12
+PATH_XP_PER_INCORRECT = 4
+PATH_XP_PER_STARTED_WORD = 8
+PATH_XP_PER_MASTERED_WORD = 40
 
 
 def clamp_confidence_score(score: int) -> int:
@@ -79,6 +85,47 @@ def trend_from_delta(level_delta: Optional[float]) -> str:
     return "stable"
 
 
+def path_xp_from_stats(stats: list[Any], mastered_words: int) -> int:
+    correct_answers = sum(
+        int(_get_candidate_value(item, "times_correct", 0) or 0)
+        for item in stats
+    )
+    incorrect_answers = sum(
+        int(_get_candidate_value(item, "times_incorrect", 0) or 0)
+        for item in stats
+    )
+
+    return (
+        correct_answers * PATH_XP_PER_CORRECT
+        + incorrect_answers * PATH_XP_PER_INCORRECT
+        + len(stats) * PATH_XP_PER_STARTED_WORD
+        + mastered_words * PATH_XP_PER_MASTERED_WORD
+    )
+
+
+def path_metrics_from_xp(path_xp: int) -> dict[str, int | float]:
+    path_level = min(PATH_MAX_LEVEL, max(1, (path_xp // PATH_XP_PER_LEVEL) + 1))
+
+    if path_level >= PATH_MAX_LEVEL:
+        return {
+            "path_xp": path_xp,
+            "path_level": PATH_MAX_LEVEL,
+            "max_path_level": PATH_MAX_LEVEL,
+            "xp_to_next_level": 0,
+            "path_level_progress": 100.0,
+        }
+
+    xp_inside_level = path_xp % PATH_XP_PER_LEVEL
+
+    return {
+        "path_xp": path_xp,
+        "path_level": path_level,
+        "max_path_level": PATH_MAX_LEVEL,
+        "xp_to_next_level": PATH_XP_PER_LEVEL - xp_inside_level,
+        "path_level_progress": round((xp_inside_level / PATH_XP_PER_LEVEL) * 100, 1),
+    }
+
+
 def build_learning_summary(
     stats: list[Any],
     *,
@@ -96,6 +143,7 @@ def build_learning_summary(
             "words_struggling": 0,
             "words_learning": 0,
             "words_mastered": 0,
+            **path_metrics_from_xp(0),
             "trend": "new",
             "level_delta": 0.0,
             "last_practiced": None,
@@ -119,6 +167,9 @@ def build_learning_summary(
 
     average_confidence = round(sum(confidence_scores) / len(confidence_scores), 1)
     average_knowledge_level = round(sum(knowledge_levels) / len(knowledge_levels), 1)
+    words_struggling = len([score for score in confidence_scores if score < 30])
+    words_learning = len([score for score in confidence_scores if 30 <= score < 80])
+    words_mastered = len([score for score in confidence_scores if score >= 80])
     last_practiced = max(last_practiced_values) if last_practiced_values else None
     days_since_last_practice = (
         max(0, (checked_at.date() - last_practiced.date()).days)
@@ -139,9 +190,10 @@ def build_learning_summary(
             int(_get_candidate_value(item, "times_seen", 0) or 0)
             for item in stats
         ),
-        "words_struggling": len([score for score in confidence_scores if score < 30]),
-        "words_learning": len([score for score in confidence_scores if 30 <= score < 80]),
-        "words_mastered": len([score for score in confidence_scores if score >= 80]),
+        "words_struggling": words_struggling,
+        "words_learning": words_learning,
+        "words_mastered": words_mastered,
+        **path_metrics_from_xp(path_xp_from_stats(stats, words_mastered)),
         "trend": trend_from_delta(level_delta),
         "level_delta": level_delta or 0.0,
         "last_practiced": last_practiced,

@@ -86,9 +86,9 @@ def test_learning_summary_tracks_average_level_trend_and_inactivity():
 
     now = datetime(2026, 5, 6, 12, 0, tzinfo=UTC)
     stats = [
-        SimpleNamespace(confidence_score=0, times_seen=1, last_practiced=now - timedelta(days=5)),
-        SimpleNamespace(confidence_score=35, times_seen=3, last_practiced=now - timedelta(days=4)),
-        SimpleNamespace(confidence_score=85, times_seen=8, last_practiced=now - timedelta(days=5)),
+        SimpleNamespace(confidence_score=0, times_seen=1, times_correct=0, times_incorrect=1, last_practiced=now - timedelta(days=5)),
+        SimpleNamespace(confidence_score=35, times_seen=3, times_correct=2, times_incorrect=1, last_practiced=now - timedelta(days=4)),
+        SimpleNamespace(confidence_score=85, times_seen=8, times_correct=8, times_incorrect=0, last_practiced=now - timedelta(days=5)),
     ]
 
     summary = adaptive_learning.build_learning_summary(
@@ -108,6 +108,32 @@ def test_learning_summary_tracks_average_level_trend_and_inactivity():
     assert summary["level_delta"] == 1.5
     assert summary["days_since_last_practice"] == 4
     assert summary["should_reengage"] is True
+    assert summary["path_xp"] == 192
+    assert summary["path_level"] == 2
+    assert summary["max_path_level"] == 400
+    assert summary["xp_to_next_level"] == 8
+    assert summary["path_level_progress"] == 92.0
+
+
+def test_learning_summary_caps_global_path_level_at_four_hundred():
+    from app.services import adaptive_learning
+
+    stats = [
+        SimpleNamespace(
+            confidence_score=100,
+            times_seen=5000,
+            times_correct=5000,
+            times_incorrect=0,
+            last_practiced=datetime(2026, 5, 6, 12, 0, tzinfo=UTC),
+        )
+    ]
+
+    summary = adaptive_learning.build_learning_summary(stats, now=datetime(2026, 5, 6, 12, 0, tzinfo=UTC))
+
+    assert summary["path_level"] == 400
+    assert summary["max_path_level"] == 400
+    assert summary["xp_to_next_level"] == 0
+    assert summary["path_level_progress"] == 100.0
 
 
 def test_learning_summary_empty_state_is_stable_for_new_user():
@@ -118,6 +144,11 @@ def test_learning_summary_empty_state_is_stable_for_new_user():
     assert summary["average_confidence"] == 0.0
     assert summary["average_knowledge_level"] == 1.0
     assert summary["total_words_practiced"] == 0
+    assert summary["path_xp"] == 0
+    assert summary["path_level"] == 1
+    assert summary["max_path_level"] == 400
+    assert summary["xp_to_next_level"] == 100
+    assert summary["path_level_progress"] == 0.0
     assert summary["trend"] == "new"
     assert summary["days_since_last_practice"] is None
     assert summary["should_reengage"] is False
@@ -136,6 +167,11 @@ def test_learning_summary_endpoint_returns_adaptive_dashboard_contract():
         "words_struggling",
         "words_learning",
         "words_mastered",
+        "path_xp",
+        "path_level",
+        "max_path_level",
+        "xp_to_next_level",
+        "path_level_progress",
         "trend",
         "level_delta",
         "days_since_last_practice",
@@ -143,3 +179,5 @@ def test_learning_summary_endpoint_returns_adaptive_dashboard_contract():
     } <= set(data)
     assert data["trend"] == "new"
     assert data["average_knowledge_level"] == 1.0
+    assert data["path_level"] == 1
+    assert data["max_path_level"] == 400

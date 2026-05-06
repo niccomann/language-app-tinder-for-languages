@@ -70,6 +70,10 @@ def test_learning_session_fetches_adaptive_summary_for_level_dashboard():
     types_source = (FRONTEND_SRC / "types" / "index.ts").read_text()
 
     assert "AdaptiveLearningSummary" in types_source
+    assert "path_level" in types_source
+    assert "max_path_level" in types_source
+    assert "xp_to_next_level" in types_source
+    assert "path_level_progress" in types_source
     assert "getAdaptiveLearningSummary" in api_source
     assert "/api/statistics/adaptive-summary" in api_source
     assert "learningSummary" in hook_source
@@ -90,7 +94,7 @@ def test_swipe_surfaces_level_up_feedback_before_advancing():
     assert "learningFeedback" in hook_source
     assert "setLearningFeedback" in hook_source
     assert "updatedStatistics.knowledge_level > currentCard.knowledge_level" in hook_source
-    assert "Level " in hook_source
+    assert "Mastery " in hook_source
 
 
 def test_card_shows_adaptive_level_badge():
@@ -101,6 +105,7 @@ def test_card_shows_adaptive_level_badge():
     assert "LearningLevelBadge" in card
     assert "knowledge_level" in card
     assert "selection_reason" in level_badge.read_text()
+    assert "Mastery {level}" in level_badge.read_text()
 
 
 def test_learning_path_home_is_primary_entry_to_swipe_session():
@@ -114,6 +119,10 @@ def test_learning_path_home_is_primary_entry_to_swipe_session():
     assert "Daily Learning Snapshot" in path_home.read_text()
     assert "Review German Level" in path_home.read_text()
     assert "learningSummary" in card_stack
+    assert "path_level" in path_home.read_text()
+    assert "max_path_level" in path_home.read_text()
+    assert "xp_to_next_level" in path_home.read_text()
+    assert "400-level" in path_home.read_text()
 
 
 def test_learning_screen_renders_session_feedback_banner():
@@ -129,7 +138,8 @@ def test_learning_ui_explains_adaptive_mastery_system():
 
     assert "LearningSystemMenu" in learning_screen
     assert "One memory database tracks every word you know, miss, or are still learning." in learning_system_menu
-    assert "Each swipe updates a mastery score from 1 to 10." in learning_system_menu
+    assert "Your global path can grow through 400 levels." in learning_system_menu
+    assert "Each word still has a focused mastery score from 1 to 10." in learning_system_menu
     assert "Future sentences can mix strong words with weaker words" in learning_system_menu
 
 

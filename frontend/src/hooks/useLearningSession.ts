@@ -68,7 +68,7 @@ export const useLearningSession = () => {
         const updatedStatistics = await api.updateWordStatistics(currentCard.word, known, currentCard.language);
         if (updatedStatistics.knowledge_level > currentCard.knowledge_level) {
           setLearningFeedback({
-            title: `${currentCard.word} reached Level ${updatedStatistics.knowledge_level}`,
+            title: `${currentCard.word} reached Mastery ${updatedStatistics.knowledge_level}`,
             message: 'Your German path just moved forward.',
             tone: 'level_up',
           });

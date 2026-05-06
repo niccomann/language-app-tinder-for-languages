@@ -58,6 +58,11 @@ class AdaptiveLearningSummary(BaseModel):
     words_struggling: int
     words_learning: int
     words_mastered: int
+    path_xp: int
+    path_level: int
+    max_path_level: int
+    xp_to_next_level: int
+    path_level_progress: float
     trend: Literal["new", "improving", "stable", "declining"]
     level_delta: float
     last_practiced: Optional[datetime] = None

@@ -16,11 +16,12 @@ interface LearningPathHomeProps {
 
 const pathSteps = [
   { level: 1, title: 'Placement', detail: 'First signal from known and missed words.' },
-  { level: 2, title: 'Core Words', detail: 'Build a stable base for everyday German.' },
-  { level: 4, title: 'Phrase Ready', detail: 'Strong words can start mixing into sentences.' },
-  { level: 6, title: 'Context Builder', detail: 'Review weaker words inside easier contexts.' },
-  { level: 8, title: 'Advanced Recall', detail: 'Most known words move into deeper review.' },
-  { level: 10, title: 'Mastery Review', detail: 'Keep high-confidence words active over time.' },
+  { level: 25, title: 'Core Words', detail: 'Build a stable base for everyday German.' },
+  { level: 50, title: 'Phrase Ready', detail: 'Strong words can start mixing into sentences.' },
+  { level: 100, title: 'Context Builder', detail: 'Review weaker words inside easier contexts.' },
+  { level: 200, title: 'Advanced Recall', detail: 'Most known words move into deeper review.' },
+  { level: 300, title: 'Long Run', detail: 'The path keeps expanding without needing hundreds of visible nodes.' },
+  { level: 400, title: 'Mastery Review', detail: 'Keep high-confidence words active over time.' },
 ];
 
 function getTrendLabel(summary: AdaptiveLearningSummary | null) {
@@ -47,9 +48,13 @@ export function LearningPathHome({
   onOpenGrammarLab,
   onOpenFilters,
 }: LearningPathHomeProps) {
-  const averageLevel = learningSummary?.average_knowledge_level ?? 1;
-  const roundedLevel = Math.max(1, Math.round(averageLevel));
-  const activeStepIndex = getActiveStepIndex(roundedLevel);
+  const averageMastery = learningSummary?.average_knowledge_level ?? 1;
+  const path_level = learningSummary?.path_level ?? 1;
+  const max_path_level = learningSummary?.max_path_level ?? 400;
+  const xp_to_next_level = learningSummary?.xp_to_next_level ?? 100;
+  const pathLevelProgress = learningSummary?.path_level_progress ?? 0;
+  const roundedLevel = Math.max(1, path_level);
+  const activeStepIndex = getActiveStepIndex(path_level);
   const shouldReengage = Boolean(learningSummary?.should_reengage);
 
   return (
@@ -58,11 +63,11 @@ export function LearningPathHome({
         <section className="space-y-3">
           <ScreenHeader
             title="German Learning Path"
-            subtitle="A daily path from words you know, words you miss, and the level the system estimates from 1 to 10."
+            subtitle="A 400-level path from words you know, words you miss, and the mastery signals the system estimates for each word."
             density="compact"
             actions={(
               <div className={`${UI_RADIUS.pill} bg-white px-3 py-2 text-sm font-extrabold text-indigo-600 shadow-sm ring-1 ring-indigo-100 dark:bg-slate-800 dark:ring-slate-700`}>
-                Level {roundedLevel}/10
+                Level {path_level}/{max_path_level}
               </div>
             )}
           />
@@ -90,15 +95,37 @@ export function LearningPathHome({
                 {getTrendLabel(learningSummary)}
               </h2>
               <p className="mt-2 text-sm font-medium text-slate-500 dark:text-slate-300">
-                The path updates from every swipe, then uses the result to choose easier or harder contexts.
+                Your 400-level path updates from every swipe, then uses word mastery to choose easier or harder contexts.
               </p>
             </div>
 
+            <div className={`${UI_RADIUS.control} border border-indigo-100 bg-indigo-50 p-4 dark:border-indigo-800 dark:bg-indigo-950/40`}>
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <div>
+                  <p className="text-xs font-extrabold uppercase tracking-wide text-indigo-500">400-level path</p>
+                  <p className="mt-1 text-3xl font-extrabold text-indigo-700 dark:text-indigo-100">
+                    Level {path_level}
+                    <span className="text-base text-indigo-500 dark:text-indigo-300">/{max_path_level}</span>
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">XP to next level</p>
+                  <p className="mt-1 text-2xl font-extrabold text-slate-900 dark:text-white">{xp_to_next_level}</p>
+                </div>
+              </div>
+              <div className="mt-4 h-3 overflow-hidden rounded-full bg-white shadow-inner dark:bg-slate-800">
+                <div
+                  className="h-full rounded-full bg-indigo-600"
+                  style={{ width: `${Math.max(0, Math.min(100, pathLevelProgress))}%` }}
+                />
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 gap-3">
-              <StatCard label="Avg Level" value={Number(averageLevel.toFixed(1))} icon={<Gauge size={20} />} color="indigo" />
+              <StatCard label="Path Level" value={path_level} icon={<Gauge size={20} />} color="indigo" />
               <StatCard label="Words" value={learningSummary?.total_words_practiced ?? 0} icon={<BookOpen size={20} />} color="purple" />
               <StatCard label="Strong" value={learningSummary?.words_mastered ?? 0} icon={<Trophy size={20} />} color="green" />
-              <StatCard label="Review" value={learningSummary?.words_struggling ?? 0} icon={<Target size={20} />} color="red" />
+              <StatCard label="Avg Mastery" value={Number(averageMastery.toFixed(1))} icon={<Target size={20} />} color="blue" />
             </div>
 
             <button

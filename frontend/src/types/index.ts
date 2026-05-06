@@ -29,6 +29,11 @@ export interface AdaptiveLearningSummary {
   words_struggling: number;
   words_learning: number;
   words_mastered: number;
+  path_xp: number;
+  path_level: number;
+  max_path_level: number;
+  xp_to_next_level: number;
+  path_level_progress: number;
   trend: AdaptiveLearningTrend;
   level_delta: number;
   last_practiced?: string | null;

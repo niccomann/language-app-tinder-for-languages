@@ -9,8 +9,13 @@ const learningSystemItems = [
   },
   {
     icon: Gauge,
-    title: 'Mastery score',
-    text: 'Each swipe updates a mastery score from 1 to 10.',
+    title: '400-level path',
+    text: 'Your global path can grow through 400 levels.',
+  },
+  {
+    icon: Gauge,
+    title: 'Word mastery',
+    text: 'Each word still has a focused mastery score from 1 to 10.',
   },
   {
     icon: Layers,
