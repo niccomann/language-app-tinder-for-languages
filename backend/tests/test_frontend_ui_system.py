@@ -8,6 +8,7 @@ FRONTEND_SRC = REPO_ROOT / "frontend" / "src"
 def test_primary_views_share_common_ui_scaffolding():
     ui_index = (FRONTEND_SRC / "components" / "ui" / "index.ts").read_text()
     learning_screen = (FRONTEND_SRC / "components" / "LearningScreen.tsx").read_text()
+    learning_path_home = (FRONTEND_SRC / "components" / "LearningPathHome.tsx").read_text()
     grammar_lab = (FRONTEND_SRC / "components" / "GrammarLab.tsx").read_text()
     words_library = (FRONTEND_SRC / "components" / "WordsLibraryEnriched.tsx").read_text()
     completion_screen = (FRONTEND_SRC / "components" / "CompletionScreen.tsx").read_text()
@@ -17,12 +18,13 @@ def test_primary_views_share_common_ui_scaffolding():
     assert "PillTabs" in ui_index
     assert "SurfacePanel" in ui_index
 
-    for view in (learning_screen, grammar_lab, words_library):
+    for view in (learning_screen, learning_path_home, grammar_lab, words_library):
         assert "AppScreen" in view
         assert "ScreenHeader" in view
 
     assert "PillTabs" in grammar_lab
     assert "SurfacePanel" in learning_screen
+    assert "SurfacePanel" in learning_path_home
     assert "SurfacePanel" in words_library
     assert "AppScreen" in completion_screen
     assert "ScreenHeader" in completion_screen
@@ -118,6 +120,9 @@ def test_core_ui_geometry_uses_shared_shape_system():
         "components/LearningFiltersPanel.tsx",
         "components/LearningCategoryStrip.tsx",
         "components/LearningSystemMenu.tsx",
+        "components/LearningPathHome.tsx",
+        "components/LearningLevelBadge.tsx",
+        "components/LearningFeedbackBanner.tsx",
         "components/ProgressBar.tsx",
         "components/CompletionScreen.tsx",
         "components/WordsLibraryEnriched.tsx",

@@ -1,4 +1,4 @@
-import type { AdaptiveFlashcard, Flashcard, UserProgress, FlashcardWithProgress, GrammarSentence, GrammarNode, TTSResponse, TTSCheckResponse, ValidateSentenceRequest, ValidateSentenceResponse, LibraryFilters, LibraryStats, FlashcardDetail, DialectWord, WordDbRow } from '../types';
+import type { AdaptiveFlashcard, AdaptiveLearningSummary, Flashcard, UserProgress, FlashcardWithProgress, GrammarSentence, GrammarNode, TTSResponse, TTSCheckResponse, ValidateSentenceRequest, ValidateSentenceResponse, LibraryFilters, LibraryStats, FlashcardDetail, DialectWord, WordDbRow } from '../types';
 import { API_BASE_URL, isFeatureEnabled } from '../config/appMode';
 
 export const api = {
@@ -39,6 +39,16 @@ export const api = {
 
     if (!response.ok) {
       throw new Error('Failed to fetch adaptive flashcards');
+    }
+
+    return response.json();
+  },
+
+  async getAdaptiveLearningSummary(language: string = 'de'): Promise<AdaptiveLearningSummary> {
+    const response = await fetch(`${API_BASE_URL}/api/statistics/adaptive-summary?language=${language}`);
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch adaptive learning summary');
     }
 
     return response.json();

@@ -7,8 +7,9 @@ import { ProgressBar } from './ProgressBar';
 import { LearningFiltersPanel } from './LearningFiltersPanel';
 import { LearningCategoryStrip } from './LearningCategoryStrip';
 import { LearningSystemMenu } from './LearningSystemMenu';
+import { LearningFeedbackBanner } from './LearningFeedbackBanner';
 import { AppScreen, NavButton, ScreenHeader, SurfacePanel, UI_RADIUS } from './ui';
-import type { Flashcard } from '../types';
+import type { Flashcard, LearningFeedback } from '../types';
 
 interface LearningScreenProps {
   currentCard: Flashcard | null;
@@ -29,6 +30,8 @@ interface LearningScreenProps {
   onDeselectAllCategories: () => void;
   filtersOpen: boolean;
   onFiltersOpenChange: (open: boolean) => void;
+  learningFeedback: LearningFeedback | null;
+  onClearLearningFeedback: () => void;
 }
 
 export function LearningScreen({
@@ -46,6 +49,8 @@ export function LearningScreen({
   onDeselectAllCategories,
   filtersOpen,
   onFiltersOpenChange,
+  learningFeedback,
+  onClearLearningFeedback,
 }: LearningScreenProps) {
   const [lastSwipeDirection, setLastSwipeDirection] = useState<'left' | 'right'>('left');
   const [learningSystemOpen, setLearningSystemOpen] = useState(false);
@@ -107,6 +112,8 @@ export function LearningScreen({
         </header>
 
         <section className="flex min-h-0 flex-col gap-3">
+        <LearningFeedbackBanner feedback={learningFeedback} onDismiss={onClearLearningFeedback} />
+
         <div className="relative flex min-h-[520px] items-start justify-center">
           {nextCard && (
             <div className="absolute inset-x-0 top-0 w-full scale-90 opacity-20 pointer-events-none blur-sm -z-10">

@@ -1,5 +1,5 @@
 import logging
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from typing import Optional, Any
 
 from sqlalchemy import Column, String, Text
@@ -191,6 +191,25 @@ class UserWordStatisticsEntity(BaseEntity, table=True):
     times_correct: int = Field(default=0, nullable=False)
     times_incorrect: int = Field(default=0, nullable=False)
     last_practiced: Optional[datetime] = Field(default=None)
+
+
+class LearningSnapshotEntity(BaseEntity, table=True):
+    """
+    Daily aggregate of a user's language knowledge.
+    Used by dashboards and re-engagement UI to show learning direction over time.
+    """
+    __tablename__ = "learning_snapshots"
+
+    user_id: str = Field(default="default_user", nullable=False, index=True)
+    language: str = Field(default="de", nullable=False, index=True)
+    snapshot_date: date = Field(nullable=False, index=True)
+    average_confidence: float = Field(default=0.0, nullable=False)
+    average_knowledge_level: float = Field(default=1.0, nullable=False)
+    total_words_practiced: int = Field(default=0, nullable=False)
+    total_practice_sessions: int = Field(default=0, nullable=False)
+    words_struggling: int = Field(default=0, nullable=False)
+    words_learning: int = Field(default=0, nullable=False)
+    words_mastered: int = Field(default=0, nullable=False)
 
 
 class GrammarSentenceEntity(BaseEntity, table=True):

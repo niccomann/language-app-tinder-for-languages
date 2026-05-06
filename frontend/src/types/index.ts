@@ -19,6 +19,29 @@ export interface AdaptiveFlashcard extends Flashcard {
   selection_reason: 'struggling' | 'new' | 'learning' | 'review';
 }
 
+export type AdaptiveLearningTrend = 'new' | 'improving' | 'stable' | 'declining';
+
+export interface AdaptiveLearningSummary {
+  average_confidence: number;
+  average_knowledge_level: number;
+  total_words_practiced: number;
+  total_practice_sessions: number;
+  words_struggling: number;
+  words_learning: number;
+  words_mastered: number;
+  trend: AdaptiveLearningTrend;
+  level_delta: number;
+  last_practiced?: string | null;
+  days_since_last_practice?: number | null;
+  should_reengage: boolean;
+}
+
+export interface LearningFeedback {
+  title: string;
+  message: string;
+  tone: 'level_up' | 'progress' | 'review';
+}
+
 export interface FlashcardEnriched extends Flashcard {
   cefr_level?: string;
   frequency_band?: string;

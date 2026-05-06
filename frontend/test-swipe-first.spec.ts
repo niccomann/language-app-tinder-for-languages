@@ -1,7 +1,13 @@
 import { expect, test } from '@playwright/test';
 
-test('home starts on the swipe deck and opens embedded filters', async ({ page }) => {
+test('home starts on the learning path and enters the swipe deck', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/');
+
+  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText('Daily Learning Snapshot')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Review German Level' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Review German Level' }).click();
 
   await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByText('Just decide: know it or not.')).toBeVisible();
@@ -19,12 +25,10 @@ test('home starts on the swipe deck and opens embedded filters', async ({ page }
 test('home shows prominent gamified topic filters', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/');
 
-  await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
-  await expect(page.getByRole('button', { name: /Edit topic filters/i })).toBeVisible();
-  await expect(page.getByText('Topic Deck')).toBeVisible();
-  await expect(page.getByText('Animal Pack')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('button', { name: /Topics/i })).toBeVisible();
 
-  await page.getByRole('button', { name: /Edit topic filters/i }).click();
+  await page.getByRole('button', { name: /Topics/i }).click();
 
   const filtersDialog = page.getByRole('dialog', { name: 'Build your topic deck' });
   await expect(filtersDialog.getByRole('heading', { name: 'Build your topic deck' })).toBeVisible();
@@ -36,6 +40,8 @@ test('home shows prominent gamified topic filters', async ({ page }) => {
 test('home explains the adaptive learning system in a compact menu', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/');
 
+  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: 'Review German Level' }).click();
   await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('button', { name: 'Learning System' })).toBeVisible();
 
@@ -50,6 +56,8 @@ test('home keeps the swipe card and decision buttons usable in the first viewpor
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('http://127.0.0.1:5173/');
 
+  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: 'Review German Level' }).click();
   await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
   const knowButton = page.getByRole('button', { name: 'Know', exact: true });
   const dontKnowButton = page.getByRole('button', { name: "Don't know", exact: true });

@@ -36,6 +36,11 @@ test('primary app features render usable and consistent surfaces', async ({ page
   await page.setViewportSize({ width: 1440, height: 900 });
 
   await page.goto('http://127.0.0.1:5173/');
+  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText('Daily Learning Snapshot')).toBeVisible();
+  await expectInViewport(page, page.getByRole('button', { name: 'Review German Level' }));
+  await expectNoHorizontalOverflow(page);
+  await page.getByRole('button', { name: 'Review German Level' }).click();
   await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
   await expectInViewport(page, page.getByRole('button', { name: "Don't know", exact: true }));
   await expectInViewport(page, page.getByRole('button', { name: 'Know', exact: true }));

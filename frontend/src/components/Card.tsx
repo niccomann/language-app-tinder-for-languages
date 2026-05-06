@@ -1,20 +1,22 @@
 import { useState } from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { Volume2, Loader2 } from 'lucide-react';
-import type { Flashcard } from '../types';
+import type { AdaptiveFlashcard, Flashcard } from '../types';
 import { cardVariants } from '../utils/animations';
 import { getImageSrc } from '../utils/imageHelper';
 import { api } from '../services/api';
 import { UI_RADIUS } from './ui';
+import { LearningLevelBadge } from './LearningLevelBadge';
 
 interface CardProps {
-  flashcard: Flashcard;
+  flashcard: Flashcard | AdaptiveFlashcard;
   onSwipe: (direction: 'left' | 'right') => void;
   swipeDirection?: 'left' | 'right';
 }
 
 export const Card = ({ flashcard, onSwipe, swipeDirection = 'left' }: CardProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const adaptiveCard = 'knowledge_level' in flashcard ? flashcard : null;
   
   const handlePlayAudio = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -74,6 +76,16 @@ export const Card = ({ flashcard, onSwipe, swipeDirection = 'left' }: CardProps)
             </div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+          {adaptiveCard && (
+            <div className="absolute left-4 top-4 max-w-[52%]">
+              <LearningLevelBadge
+                level={adaptiveCard.knowledge_level}
+                confidenceScore={adaptiveCard.confidence_score}
+                selectionReason={adaptiveCard.selection_reason}
+                compact
+              />
+            </div>
+          )}
           <div className={`absolute top-5 right-5 px-5 py-2.5 bg-white/95 backdrop-blur-md ${UI_RADIUS.pill} text-sm font-bold text-gray-800 capitalize shadow-lg border border-white/50`}>
             {flashcard.category}
           </div>

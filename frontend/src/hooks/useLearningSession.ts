@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { api } from '../services/api';
-import type { AdaptiveFlashcard, UserProgress } from '../types';
+import type { AdaptiveFlashcard, AdaptiveLearningSummary, LearningFeedback, UserProgress } from '../types';
 
 /**
  * Hook to manage learning session state and actions
@@ -15,6 +15,14 @@ export const useLearningSession = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [learningSummary, setLearningSummary] = useState<AdaptiveLearningSummary | null>(null);
+  const [learningFeedback, setLearningFeedback] = useState<LearningFeedback | null>(null);
+
+  const loadLearningSummary = useCallback(async () => {
+    const summary = await api.getAdaptiveLearningSummary('de');
+    setLearningSummary(summary);
+    return summary;
+  }, []);
 
   const loadFlashcards = useCallback(async (selectedCategories: string[]) => {
     try {
@@ -23,23 +31,28 @@ export const useLearningSession = () => {
       if (selectedCategories.length === 0) {
         setFlashcards([]);
         setCurrentIndex(0);
+        await loadLearningSummary();
         return;
       }
 
-      const cards = await api.getAdaptiveFlashcards({
-        language: 'de',
-        selectedCategories,
-        limit: 200,
-      });
+      const [cards] = await Promise.all([
+        api.getAdaptiveFlashcards({
+          language: 'de',
+          selectedCategories,
+          limit: 200,
+        }),
+        loadLearningSummary(),
+      ]);
       setFlashcards(cards);
       setCurrentIndex(0);
+      setLearningFeedback(null);
     } catch (err) {
       setError('Failed to load flashcards. Make sure the backend is running.');
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [loadLearningSummary]);
 
   const handleSwipe = useCallback(async (direction: 'left' | 'right') => {
     const currentCard = flashcards[currentIndex];
@@ -52,7 +65,21 @@ export const useLearningSession = () => {
       setProgress(updatedProgress);
       
       try {
-        await api.updateWordStatistics(currentCard.word, known, currentCard.language);
+        const updatedStatistics = await api.updateWordStatistics(currentCard.word, known, currentCard.language);
+        if (updatedStatistics.knowledge_level > currentCard.knowledge_level) {
+          setLearningFeedback({
+            title: `${currentCard.word} reached Level ${updatedStatistics.knowledge_level}`,
+            message: 'Your German path just moved forward.',
+            tone: 'level_up',
+          });
+        } else if (updatedProgress.cards_reviewed > 0 && updatedProgress.cards_reviewed % 5 === 0) {
+          setLearningFeedback({
+            title: 'Learning signal updated',
+            message: 'The app is recalibrating your next cards from what you knew and missed.',
+            tone: 'progress',
+          });
+        }
+        await loadLearningSummary();
       } catch (err) {
         console.error('Failed to update word statistics:', err);
       }
@@ -61,16 +88,22 @@ export const useLearningSession = () => {
     } catch (err) {
       console.error('Failed to record progress:', err);
     }
-  }, [currentIndex, flashcards]);
+  }, [currentIndex, flashcards, loadLearningSummary]);
 
   const reset = useCallback(async () => {
     try {
       await api.resetProgress();
       setProgress({ cards_reviewed: 0, known_count: 0, unknown_count: 0 });
       setCurrentIndex(0);
+      setLearningFeedback(null);
+      await loadLearningSummary();
     } catch (err) {
       console.error('Failed to reset progress:', err);
     }
+  }, [loadLearningSummary]);
+
+  const clearLearningFeedback = useCallback(() => {
+    setLearningFeedback(null);
   }, []);
 
   const currentCard = flashcards[currentIndex];
@@ -82,11 +115,15 @@ export const useLearningSession = () => {
     currentCard,
     nextCard,
     progress,
+    learningSummary,
+    learningFeedback,
     loading,
     error,
     isComplete,
     loadFlashcards,
+    loadLearningSummary,
     handleSwipe,
     reset,
+    clearLearningFeedback,
   };
 };

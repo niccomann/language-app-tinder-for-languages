@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CompletionScreen } from './CompletionScreen';
+import { LearningPathHome } from './LearningPathHome';
 import { LearningScreen } from './LearningScreen';
 import { LoadingSpinner, ErrorState } from './ui';
 import { useCategories } from '../hooks/useCategories';
@@ -12,12 +13,15 @@ interface CardStackProps {
 
 export const CardStack = ({ onOpenLibrary, onOpenGrammarLab }: CardStackProps) => {
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [screenMode, setScreenMode] = useState<'path' | 'session'>('path');
   
   const categories = useCategories();
   const {
     currentCard,
     nextCard,
     progress,
+    learningSummary,
+    learningFeedback,
     flashcards,
     loading,
     error,
@@ -25,6 +29,7 @@ export const CardStack = ({ onOpenLibrary, onOpenGrammarLab }: CardStackProps) =
     loadFlashcards,
     handleSwipe,
     reset,
+    clearLearningFeedback,
   } = useLearningSession();
 
   useEffect(() => {
@@ -35,6 +40,12 @@ export const CardStack = ({ onOpenLibrary, onOpenGrammarLab }: CardStackProps) =
 
   const handleChangeFilters = () => {
     reset();
+    setScreenMode('session');
+    setFiltersOpen(true);
+  };
+
+  const handleOpenFilters = () => {
+    setScreenMode('session');
     setFiltersOpen(true);
   };
 
@@ -63,10 +74,29 @@ export const CardStack = ({ onOpenLibrary, onOpenGrammarLab }: CardStackProps) =
     return (
       <CompletionScreen
         progress={progress}
-        onRestart={reset}
+        onRestart={() => {
+          reset();
+          setScreenMode('session');
+        }}
         onChangeCategories={handleChangeFilters}
         onOpenLibrary={onOpenLibrary}
         onOpenGrammarLab={onOpenGrammarLab}
+      />
+    );
+  }
+
+  if (screenMode === 'path') {
+    return (
+      <LearningPathHome
+        learningSummary={learningSummary}
+        progress={progress}
+        totalCards={flashcards.length}
+        categoriesCount={categories.allCategories.length}
+        selectedCategoriesCount={categories.selectedCategories.length}
+        onStartSession={() => setScreenMode('session')}
+        onOpenLibrary={onOpenLibrary}
+        onOpenGrammarLab={onOpenGrammarLab}
+        onOpenFilters={handleOpenFilters}
       />
     );
   }
@@ -88,6 +118,8 @@ export const CardStack = ({ onOpenLibrary, onOpenGrammarLab }: CardStackProps) =
       onDeselectAllCategories={categories.deselectAll}
       filtersOpen={filtersOpen}
       onFiltersOpenChange={setFiltersOpen}
+      learningFeedback={learningFeedback}
+      onClearLearningFeedback={clearLearningFeedback}
     />
   );
 };

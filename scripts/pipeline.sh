@@ -83,6 +83,11 @@ curl -fsS "${API_BASE_URL}/api/cards/adaptive?language=de&limit=5" | jq -e '
   all(.[]; (.knowledge_level >= 1 and .knowledge_level <= 10) and
   (.selection_reason | test("^(struggling|new|learning|review)$")))
 ' >/dev/null
+curl -fsS "${API_BASE_URL}/api/statistics/adaptive-summary?language=de" | jq -e '
+  (.average_knowledge_level >= 1 and .average_knowledge_level <= 10) and
+  (.trend | test("^(new|improving|stable|declining)$")) and
+  (.should_reengage | type == "boolean")
+' >/dev/null
 curl -fsS "${API_BASE_URL}/api/library/words/103/db-row" | jq -e '.related.verb_conjugations | length >= 6' >/dev/null
 
 step "Run Playwright smoke tests"

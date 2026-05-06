@@ -3,14 +3,18 @@ Routes for user word statistics.
 Tracks how well each user knows each word with a confidence score (0-100).
 """
 from fastapi import APIRouter, Query
-from typing import Optional, List
+from typing import Literal, Optional, List
 from datetime import datetime, UTC
 from pydantic import BaseModel
-from sqlmodel import select
+from sqlmodel import Session, select
 
 from app.database import SessionDependency
-from app.database.models import UserWordStatisticsEntity
-from app.services.adaptive_learning import knowledge_level_from_confidence, next_confidence_score
+from app.database.models import LearningSnapshotEntity, UserWordStatisticsEntity
+from app.services.adaptive_learning import (
+    build_learning_summary,
+    knowledge_level_from_confidence,
+    next_confidence_score,
+)
 
 router = APIRouter(prefix="/api/statistics", tags=["statistics"])
 
@@ -45,6 +49,22 @@ class UpdateStatisticsResponse(BaseModel):
     times_incorrect: int
 
 
+class AdaptiveLearningSummary(BaseModel):
+    """Daily adaptive learning dashboard summary."""
+    average_confidence: float
+    average_knowledge_level: float
+    total_words_practiced: int
+    total_practice_sessions: int
+    words_struggling: int
+    words_learning: int
+    words_mastered: int
+    trend: Literal["new", "improving", "stable", "declining"]
+    level_delta: float
+    last_practiced: Optional[datetime] = None
+    days_since_last_practice: Optional[int] = None
+    should_reengage: bool
+
+
 def statistics_to_response(stats: UserWordStatisticsEntity) -> WordStatistics:
     return WordStatistics(
         word=stats.word,
@@ -56,6 +76,65 @@ def statistics_to_response(stats: UserWordStatisticsEntity) -> WordStatistics:
         times_incorrect=stats.times_incorrect,
         last_practiced=stats.last_practiced,
     )
+
+
+def _get_user_stats(session: Session, language: str, user_id: str) -> List[UserWordStatisticsEntity]:
+    query = select(UserWordStatisticsEntity).where(
+        UserWordStatisticsEntity.language == language,
+        UserWordStatisticsEntity.user_id == user_id,
+    )
+    return list(session.exec(query).all())
+
+
+def _get_previous_snapshot(
+    session: Session,
+    *,
+    language: str,
+    user_id: str,
+    now: datetime,
+) -> Optional[LearningSnapshotEntity]:
+    query = (
+        select(LearningSnapshotEntity)
+        .where(
+            LearningSnapshotEntity.language == language,
+            LearningSnapshotEntity.user_id == user_id,
+            LearningSnapshotEntity.snapshot_date < now.date(),
+        )
+        .order_by(LearningSnapshotEntity.snapshot_date.desc())
+    )
+    return session.exec(query).first()
+
+
+def _upsert_today_snapshot(
+    session: Session,
+    *,
+    user_id: str,
+    language: str,
+    summary: dict,
+    now: datetime,
+) -> None:
+    query = select(LearningSnapshotEntity).where(
+        LearningSnapshotEntity.user_id == user_id,
+        LearningSnapshotEntity.language == language,
+        LearningSnapshotEntity.snapshot_date == now.date(),
+    )
+    snapshot = session.exec(query).first()
+
+    if not snapshot:
+        snapshot = LearningSnapshotEntity(
+            user_id=user_id,
+            language=language,
+            snapshot_date=now.date(),
+        )
+        session.add(snapshot)
+
+    snapshot.average_confidence = summary["average_confidence"]
+    snapshot.average_knowledge_level = summary["average_knowledge_level"]
+    snapshot.total_words_practiced = summary["total_words_practiced"]
+    snapshot.total_practice_sessions = summary["total_practice_sessions"]
+    snapshot.words_struggling = summary["words_struggling"]
+    snapshot.words_learning = summary["words_learning"]
+    snapshot.words_mastered = summary["words_mastered"]
 
 
 @router.get("/word/{word}", response_model=WordStatistics)
@@ -140,8 +219,9 @@ async def update_word_statistics(
         )
         session.add(stats)
     
+    now = datetime.now(UTC)
     stats.times_seen += 1
-    stats.last_practiced = datetime.now(UTC)
+    stats.last_practiced = now
     
     if request.correct:
         stats.times_correct += 1
@@ -152,6 +232,31 @@ async def update_word_statistics(
     
     session.commit()
     session.refresh(stats)
+
+    all_stats = _get_user_stats(session, request.language, request.user_id)
+    previous_snapshot = _get_previous_snapshot(
+        session,
+        language=request.language,
+        user_id=request.user_id,
+        now=now,
+    )
+    summary = build_learning_summary(
+        all_stats,
+        now=now,
+        previous_average_knowledge_level=(
+            previous_snapshot.average_knowledge_level
+            if previous_snapshot
+            else None
+        ),
+    )
+    _upsert_today_snapshot(
+        session,
+        user_id=request.user_id,
+        language=request.language,
+        summary=summary,
+        now=now,
+    )
+    session.commit()
     
     return UpdateStatisticsResponse(
         word=request.word,
@@ -161,6 +266,34 @@ async def update_word_statistics(
         times_correct=stats.times_correct,
         times_incorrect=stats.times_incorrect,
     )
+
+
+@router.get("/adaptive-summary", response_model=AdaptiveLearningSummary)
+async def get_adaptive_learning_summary(
+    session: SessionDependency,
+    language: str = Query("de", description="Language code"),
+    user_id: str = Query("default_user", description="User ID"),
+) -> AdaptiveLearningSummary:
+    """Get adaptive dashboard metrics for the learning path home."""
+    now = datetime.now(UTC)
+    all_stats = _get_user_stats(session, language, user_id)
+    previous_snapshot = _get_previous_snapshot(
+        session,
+        language=language,
+        user_id=user_id,
+        now=now,
+    )
+    summary = build_learning_summary(
+        all_stats,
+        now=now,
+        previous_average_knowledge_level=(
+            previous_snapshot.average_knowledge_level
+            if previous_snapshot
+            else None
+        ),
+    )
+
+    return AdaptiveLearningSummary(**summary)
 
 
 @router.get("/summary")

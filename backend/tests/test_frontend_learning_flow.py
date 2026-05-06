@@ -64,12 +64,63 @@ def test_learning_session_uses_adaptive_flashcard_endpoint():
     assert "cards.filter(" not in hook_source
 
 
+def test_learning_session_fetches_adaptive_summary_for_level_dashboard():
+    api_source = (FRONTEND_SRC / "services" / "api.ts").read_text()
+    hook_source = (FRONTEND_SRC / "hooks" / "useLearningSession.ts").read_text()
+    types_source = (FRONTEND_SRC / "types" / "index.ts").read_text()
+
+    assert "AdaptiveLearningSummary" in types_source
+    assert "getAdaptiveLearningSummary" in api_source
+    assert "/api/statistics/adaptive-summary" in api_source
+    assert "learningSummary" in hook_source
+    assert "api.getAdaptiveLearningSummary" in hook_source
+
+
 def test_swipe_waits_for_adaptive_statistics_update_before_advancing():
     hook_source = (FRONTEND_SRC / "hooks" / "useLearningSession.ts").read_text()
 
     assert "await api.updateWordStatistics" in hook_source
     assert "api.updateWordStatistics(currentCard.word, known, currentCard.language).catch" not in hook_source
     assert hook_source.index("await api.updateWordStatistics") < hook_source.index("setCurrentIndex(prev => prev + 1)")
+
+
+def test_swipe_surfaces_level_up_feedback_before_advancing():
+    hook_source = (FRONTEND_SRC / "hooks" / "useLearningSession.ts").read_text()
+
+    assert "learningFeedback" in hook_source
+    assert "setLearningFeedback" in hook_source
+    assert "updatedStatistics.knowledge_level > currentCard.knowledge_level" in hook_source
+    assert "Level " in hook_source
+
+
+def test_card_shows_adaptive_level_badge():
+    card = (FRONTEND_SRC / "components" / "Card.tsx").read_text()
+    level_badge = FRONTEND_SRC / "components" / "LearningLevelBadge.tsx"
+
+    assert level_badge.exists()
+    assert "LearningLevelBadge" in card
+    assert "knowledge_level" in card
+    assert "selection_reason" in level_badge.read_text()
+
+
+def test_learning_path_home_is_primary_entry_to_swipe_session():
+    card_stack = (FRONTEND_SRC / "components" / "CardStack.tsx").read_text()
+    path_home = FRONTEND_SRC / "components" / "LearningPathHome.tsx"
+
+    assert path_home.exists()
+    assert "LearningPathHome" in card_stack
+    assert "screenMode" in card_stack
+    assert "setScreenMode('session')" in card_stack
+    assert "Daily Learning Snapshot" in path_home.read_text()
+    assert "Review German Level" in path_home.read_text()
+    assert "learningSummary" in card_stack
+
+
+def test_learning_screen_renders_session_feedback_banner():
+    learning_screen = (FRONTEND_SRC / "components" / "LearningScreen.tsx").read_text()
+
+    assert "LearningFeedbackBanner" in learning_screen
+    assert "learningFeedback" in learning_screen
 
 
 def test_learning_ui_explains_adaptive_mastery_system():
