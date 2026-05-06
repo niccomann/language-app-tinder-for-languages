@@ -1,6 +1,12 @@
 import { BookOpen, Clock3, Flame, FlaskConical, Gauge, Layers3, Play, Target, Trophy } from 'lucide-react';
 import type { AdaptiveLearningSummary, UserProgress } from '../types';
 import { AppScreen, NavButton, ScreenHeader, StatCard, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
+import {
+  LEARNING_PATH_MILESTONES,
+  getActiveMilestoneIndex,
+  getLearningTrendLabel,
+  getPathDisplayValues,
+} from './learningPathMeta';
 
 interface LearningPathHomeProps {
   learningSummary: AdaptiveLearningSummary | null;
@@ -14,29 +20,6 @@ interface LearningPathHomeProps {
   onOpenFilters: () => void;
 }
 
-const pathSteps = [
-  { level: 1, title: 'Placement', detail: 'First signal from known and missed words.' },
-  { level: 25, title: 'Core Words', detail: 'Build a stable base for everyday German.' },
-  { level: 50, title: 'Phrase Ready', detail: 'Strong words can start mixing into sentences.' },
-  { level: 100, title: 'Context Builder', detail: 'Review weaker words inside easier contexts.' },
-  { level: 200, title: 'Advanced Recall', detail: 'Most known words move into deeper review.' },
-  { level: 300, title: 'Long Run', detail: 'The path keeps expanding without needing hundreds of visible nodes.' },
-  { level: 400, title: 'Mastery Review', detail: 'Keep high-confidence words active over time.' },
-];
-
-function getTrendLabel(summary: AdaptiveLearningSummary | null) {
-  if (!summary || summary.trend === 'new') return 'New path';
-  if (summary.trend === 'improving') return `Improving +${summary.level_delta.toFixed(1)}`;
-  if (summary.trend === 'declining') return `Needs review ${summary.level_delta.toFixed(1)}`;
-  return 'Stable';
-}
-
-function getActiveStepIndex(level: number) {
-  const nextStepIndex = pathSteps.findIndex((step) => level < step.level);
-  if (nextStepIndex === -1) return pathSteps.length - 1;
-  return Math.max(0, nextStepIndex - 1);
-}
-
 export function LearningPathHome({
   learningSummary,
   progress,
@@ -48,13 +31,14 @@ export function LearningPathHome({
   onOpenGrammarLab,
   onOpenFilters,
 }: LearningPathHomeProps) {
-  const averageMastery = learningSummary?.average_knowledge_level ?? 1;
-  const path_level = learningSummary?.path_level ?? 1;
-  const max_path_level = learningSummary?.max_path_level ?? 400;
-  const xp_to_next_level = learningSummary?.xp_to_next_level ?? 100;
-  const pathLevelProgress = learningSummary?.path_level_progress ?? 0;
-  const roundedLevel = Math.max(1, path_level);
-  const activeStepIndex = getActiveStepIndex(path_level);
+  const {
+    averageMastery,
+    pathLevel,
+    maxPathLevel,
+    xpToNextLevel,
+    pathLevelProgress,
+  } = getPathDisplayValues(learningSummary);
+  const activeMilestoneIndex = getActiveMilestoneIndex(pathLevel);
   const shouldReengage = Boolean(learningSummary?.should_reengage);
 
   return (
@@ -67,7 +51,7 @@ export function LearningPathHome({
             density="compact"
             actions={(
               <div className={`${UI_RADIUS.pill} bg-white px-3 py-2 text-sm font-extrabold text-indigo-600 shadow-sm ring-1 ring-indigo-100 dark:bg-slate-800 dark:ring-slate-700`}>
-                Level {path_level}/{max_path_level}
+                Level {pathLevel}/{maxPathLevel}
               </div>
             )}
           />
@@ -92,7 +76,7 @@ export function LearningPathHome({
             <div>
               <p className="text-xs font-extrabold uppercase tracking-wide text-indigo-500">Daily Learning Snapshot</p>
               <h2 className="mt-2 text-3xl font-extrabold leading-tight text-slate-950 dark:text-white">
-                {getTrendLabel(learningSummary)}
+                {getLearningTrendLabel(learningSummary)}
               </h2>
               <p className="mt-2 text-sm font-medium text-slate-500 dark:text-slate-300">
                 Your 400-level path updates from every swipe, then uses word mastery to choose easier or harder contexts.
@@ -104,13 +88,13 @@ export function LearningPathHome({
                 <div>
                   <p className="text-xs font-extrabold uppercase tracking-wide text-indigo-500">400-level path</p>
                   <p className="mt-1 text-3xl font-extrabold text-indigo-700 dark:text-indigo-100">
-                    Level {path_level}
-                    <span className="text-base text-indigo-500 dark:text-indigo-300">/{max_path_level}</span>
+                    Level {pathLevel}
+                    <span className="text-base text-indigo-500 dark:text-indigo-300">/{maxPathLevel}</span>
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">XP to next level</p>
-                  <p className="mt-1 text-2xl font-extrabold text-slate-900 dark:text-white">{xp_to_next_level}</p>
+                  <p className="mt-1 text-2xl font-extrabold text-slate-900 dark:text-white">{xpToNextLevel}</p>
                 </div>
               </div>
               <div className="mt-4 h-3 overflow-hidden rounded-full bg-white shadow-inner dark:bg-slate-800">
@@ -122,7 +106,7 @@ export function LearningPathHome({
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <StatCard label="Path Level" value={path_level} icon={<Gauge size={20} />} color="indigo" />
+              <StatCard label="Path Level" value={pathLevel} icon={<Gauge size={20} />} color="indigo" />
               <StatCard label="Words" value={learningSummary?.total_words_practiced ?? 0} icon={<BookOpen size={20} />} color="purple" />
               <StatCard label="Strong" value={learningSummary?.words_mastered ?? 0} icon={<Trophy size={20} />} color="green" />
               <StatCard label="Avg Mastery" value={Number(averageMastery.toFixed(1))} icon={<Target size={20} />} color="blue" />
@@ -158,9 +142,9 @@ export function LearningPathHome({
 
           <div className="relative space-y-3">
             <div className="absolute bottom-8 left-6 top-8 w-0.5 bg-slate-200 dark:bg-slate-700" />
-            {pathSteps.map((step, index) => {
-              const isComplete = roundedLevel >= step.level;
-              const isActive = index === activeStepIndex;
+            {LEARNING_PATH_MILESTONES.map((step, index) => {
+              const isComplete = pathLevel >= step.level;
+              const isActive = index === activeMilestoneIndex;
               return (
                 <div key={step.title} className="relative flex gap-4">
                   <div className={`z-10 flex h-12 w-12 shrink-0 items-center justify-center ${UI_RADIUS.touchIcon} border-2 ${

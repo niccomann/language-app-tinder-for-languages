@@ -308,30 +308,13 @@ async def get_statistics_summary(
     user_id: str = Query("default_user", description="User ID"),
 ):
     """Get a summary of user's learning progress."""
-    query = select(UserWordStatisticsEntity).where(
-        UserWordStatisticsEntity.language == language,
-        UserWordStatisticsEntity.user_id == user_id,
-    )
-    all_stats = session.exec(query).all()
-    
-    if not all_stats:
-        return {
-            "total_words_practiced": 0,
-            "average_confidence": 0,
-            "words_mastered": 0,
-            "words_learning": 0,
-            "words_struggling": 0,
-            "total_practice_sessions": 0,
-        }
-    
-    total_confidence = sum(s.confidence_score for s in all_stats)
-    total_sessions = sum(s.times_seen for s in all_stats)
-    
+    summary = build_learning_summary(_get_user_stats(session, language, user_id))
+
     return {
-        "total_words_practiced": len(all_stats),
-        "average_confidence": round(total_confidence / len(all_stats), 1),
-        "words_mastered": len([s for s in all_stats if s.confidence_score >= 80]),
-        "words_learning": len([s for s in all_stats if 30 <= s.confidence_score < 80]),
-        "words_struggling": len([s for s in all_stats if s.confidence_score < 30]),
-        "total_practice_sessions": total_sessions,
+        "total_words_practiced": summary["total_words_practiced"],
+        "average_confidence": summary["average_confidence"],
+        "words_mastered": summary["words_mastered"],
+        "words_learning": summary["words_learning"],
+        "words_struggling": summary["words_struggling"],
+        "total_practice_sessions": summary["total_practice_sessions"],
     }

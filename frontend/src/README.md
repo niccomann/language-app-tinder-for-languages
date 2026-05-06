@@ -107,10 +107,13 @@ categories.selectAll();
 ## Progresso e Mastery
 
 `useLearningSession` registra ogni swipe tramite `api.recordProgress()` e aggiorna il confidence score con `api.updateWordStatistics()`.
+La home usa anche `api.getAdaptiveLearningSummary()` per mostrare il percorso globale:
+il path dell'utente va da livello 1 a 400, mentre la singola parola mantiene una mastery separata da 1 a 10.
 
 ```
 1. loadFlashcards(categories) → carica il deck filtrato
 2. handleSwipe('right' | 'left') → salva progresso known/unknown
-3. updateWordStatistics() → aggiorna il mastery score parola
-4. reset() → azzera progresso sessione e torna alla prima card
+3. updateWordStatistics() → aggiorna la mastery score parola
+4. getAdaptiveLearningSummary() → aggiorna path level, XP e trend
+5. reset() → azzera progresso sessione e torna alla prima card
 ```

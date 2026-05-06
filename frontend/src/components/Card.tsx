@@ -6,7 +6,7 @@ import { cardVariants } from '../utils/animations';
 import { getImageSrc } from '../utils/imageHelper';
 import { api } from '../services/api';
 import { UI_RADIUS } from './ui';
-import { LearningLevelBadge } from './LearningLevelBadge';
+import { WordMasteryBadge } from './WordMasteryBadge';
 
 interface CardProps {
   flashcard: Flashcard | AdaptiveFlashcard;
@@ -78,7 +78,7 @@ export const Card = ({ flashcard, onSwipe, swipeDirection = 'left' }: CardProps)
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
           {adaptiveCard && (
             <div className="absolute left-4 top-4 max-w-[52%]">
-              <LearningLevelBadge
+              <WordMasteryBadge
                 level={adaptiveCard.knowledge_level}
                 confidenceScore={adaptiveCard.confidence_score}
                 selectionReason={adaptiveCard.selection_reason}

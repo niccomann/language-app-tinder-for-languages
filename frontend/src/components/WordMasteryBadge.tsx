@@ -4,7 +4,7 @@ import { UI_RADIUS } from './ui';
 
 type SelectionReason = AdaptiveFlashcard['selection_reason'];
 
-interface LearningLevelBadgeProps {
+interface WordMasteryBadgeProps {
   level: number;
   confidenceScore: number;
   selectionReason: SelectionReason;
@@ -34,12 +34,12 @@ const reasonMeta: Record<SelectionReason, { label: string; Icon: typeof Target; 
   },
 };
 
-export function LearningLevelBadge({
+export function WordMasteryBadge({
   level,
   confidenceScore,
   selectionReason,
   compact = false,
-}: LearningLevelBadgeProps) {
+}: WordMasteryBadgeProps) {
   const meta = reasonMeta[selectionReason];
   const Icon = meta.Icon;
 

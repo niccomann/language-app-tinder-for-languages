@@ -97,15 +97,16 @@ def test_swipe_surfaces_level_up_feedback_before_advancing():
     assert "Mastery " in hook_source
 
 
-def test_card_shows_adaptive_level_badge():
+def test_card_shows_word_mastery_badge_for_per_word_mastery():
     card = (FRONTEND_SRC / "components" / "Card.tsx").read_text()
-    level_badge = FRONTEND_SRC / "components" / "LearningLevelBadge.tsx"
+    word_mastery_badge = FRONTEND_SRC / "components" / "WordMasteryBadge.tsx"
 
-    assert level_badge.exists()
-    assert "LearningLevelBadge" in card
+    assert word_mastery_badge.exists()
+    assert "WordMasteryBadge" in card
+    assert "LearningLevelBadge" not in card
     assert "knowledge_level" in card
-    assert "selection_reason" in level_badge.read_text()
-    assert "Mastery {level}" in level_badge.read_text()
+    assert "selection_reason" in word_mastery_badge.read_text()
+    assert "Mastery {level}" in word_mastery_badge.read_text()
 
 
 def test_learning_path_home_is_primary_entry_to_swipe_session():
@@ -119,10 +120,23 @@ def test_learning_path_home_is_primary_entry_to_swipe_session():
     assert "Daily Learning Snapshot" in path_home.read_text()
     assert "Review German Level" in path_home.read_text()
     assert "learningSummary" in card_stack
-    assert "path_level" in path_home.read_text()
-    assert "max_path_level" in path_home.read_text()
-    assert "xp_to_next_level" in path_home.read_text()
+    assert "getPathDisplayValues" in path_home.read_text()
+    assert "LEARNING_PATH_MILESTONES" in path_home.read_text()
+    assert "const pathSteps" not in path_home.read_text()
     assert "400-level" in path_home.read_text()
+
+
+def test_learning_path_milestones_are_centralized_outside_the_view():
+    path_meta = FRONTEND_SRC / "components" / "learningPathMeta.ts"
+    path_home = (FRONTEND_SRC / "components" / "LearningPathHome.tsx").read_text()
+
+    assert path_meta.exists()
+    meta_source = path_meta.read_text()
+    assert "LEARNING_PATH_MILESTONES" in meta_source
+    assert "getActiveMilestoneIndex" in meta_source
+    assert "getPathDisplayValues" in meta_source
+    assert "level: 400" in meta_source
+    assert "learningPathMeta" in path_home
 
 
 def test_learning_screen_renders_session_feedback_banner():

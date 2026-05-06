@@ -121,7 +121,7 @@ def test_core_ui_geometry_uses_shared_shape_system():
         "components/LearningCategoryStrip.tsx",
         "components/LearningSystemMenu.tsx",
         "components/LearningPathHome.tsx",
-        "components/LearningLevelBadge.tsx",
+        "components/WordMasteryBadge.tsx",
         "components/LearningFeedbackBanner.tsx",
         "components/ProgressBar.tsx",
         "components/CompletionScreen.tsx",
