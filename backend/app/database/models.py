@@ -2,7 +2,7 @@ import logging
 from datetime import UTC, datetime
 from typing import Optional, Any
 
-from sqlalchemy import Column, Text
+from sqlalchemy import Column, String, Text
 from sqlmodel import Field, SQLModel
 
 from app.core.config import config
@@ -51,7 +51,7 @@ class FlashcardEntity(BaseEntity, table=True):
     
     cefr_level: Optional[str] = Field(default=None, index=True)
     frequency_band: Optional[str] = Field(default=None, index=True)
-    register: Optional[str] = Field(default=None)
+    language_register: Optional[str] = Field(default=None, sa_column=Column("register", String, nullable=True))
     thematic_domain: Optional[str] = Field(default=None, index=True)
     
     part_of_speech: Optional[str] = Field(default=None, index=True)

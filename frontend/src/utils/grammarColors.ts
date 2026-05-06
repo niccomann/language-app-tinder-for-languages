@@ -1,11 +1,13 @@
-export type GrammarNodeType = 'subject' | 'predicate' | 'object' | 'indirect_object' | 'direct_object';
-
 const NODE_COLORS: Record<string, string> = {
   subject: '#3B82F6',
   predicate: '#EF4444',
   object: '#10B981',
   indirect_object: '#F59E0B',
   direct_object: '#10B981',
+  adjective: '#8B5CF6',
+  adverb: '#06B6D4',
+  preposition: '#64748B',
+  pronoun: '#EC4899',
 };
 
 const NODE_LABELS: Record<string, string> = {
@@ -14,6 +16,10 @@ const NODE_LABELS: Record<string, string> = {
   object: 'Object',
   indirect_object: 'Ind. Obj.',
   direct_object: 'Dir. Obj.',
+  adjective: 'Adjective',
+  adverb: 'Adverb',
+  preposition: 'Preposition',
+  pronoun: 'Pronoun',
 };
 
 export function getNodeColor(type: string): string {

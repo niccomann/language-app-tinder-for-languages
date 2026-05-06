@@ -2,14 +2,15 @@
 Routes for user word statistics.
 Tracks how well each user knows each word with a confidence score (0-100).
 """
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, Query
 from typing import Optional, List
 from datetime import datetime, UTC
 from pydantic import BaseModel
 from sqlmodel import select
 
 from app.database import SessionDependency
-from app.database.models import UserWordStatisticsEntity, FlashcardEntity
+from app.database.models import UserWordStatisticsEntity
+from app.services.adaptive_learning import knowledge_level_from_confidence, next_confidence_score
 
 router = APIRouter(prefix="/api/statistics", tags=["statistics"])
 
@@ -19,13 +20,11 @@ class WordStatistics(BaseModel):
     word: str
     language: str
     confidence_score: int
+    knowledge_level: int
     times_seen: int
     times_correct: int
     times_incorrect: int
     last_practiced: Optional[datetime] = None
-    
-    class Config:
-        from_attributes = True
 
 
 class UpdateStatisticsRequest(BaseModel):
@@ -40,9 +39,23 @@ class UpdateStatisticsResponse(BaseModel):
     """Response after updating statistics."""
     word: str
     new_confidence_score: int
+    knowledge_level: int
     times_seen: int
     times_correct: int
     times_incorrect: int
+
+
+def statistics_to_response(stats: UserWordStatisticsEntity) -> WordStatistics:
+    return WordStatistics(
+        word=stats.word,
+        language=stats.language,
+        confidence_score=stats.confidence_score,
+        knowledge_level=knowledge_level_from_confidence(stats.confidence_score),
+        times_seen=stats.times_seen,
+        times_correct=stats.times_correct,
+        times_incorrect=stats.times_incorrect,
+        last_practiced=stats.last_practiced,
+    )
 
 
 @router.get("/word/{word}", response_model=WordStatistics)
@@ -65,13 +78,14 @@ async def get_word_statistics(
             word=word,
             language=language,
             confidence_score=0,
+            knowledge_level=1,
             times_seen=0,
             times_correct=0,
             times_incorrect=0,
             last_practiced=None,
         )
     
-    return WordStatistics.model_validate(stats)
+    return statistics_to_response(stats)
 
 
 @router.get("/all", response_model=List[WordStatistics])
@@ -94,7 +108,7 @@ async def get_all_statistics(
         query = query.where(UserWordStatisticsEntity.confidence_score <= max_confidence)
     
     stats = session.exec(query).all()
-    return [WordStatistics.model_validate(s) for s in stats]
+    return [statistics_to_response(s) for s in stats]
 
 
 @router.post("/update", response_model=UpdateStatisticsResponse)
@@ -104,8 +118,8 @@ async def update_word_statistics(
 ) -> UpdateStatisticsResponse:
     """
     Update statistics for a word after user swipes.
-    - correct=true (swipe right/like): +1 to confidence
-    - correct=false (swipe left/dislike): -1 to confidence (min 0)
+    - correct=true (swipe right/like): adaptive confidence increase
+    - correct=false (swipe left/dislike): adaptive confidence decrease
     """
     query = select(UserWordStatisticsEntity).where(
         UserWordStatisticsEntity.word == request.word,
@@ -131,10 +145,10 @@ async def update_word_statistics(
     
     if request.correct:
         stats.times_correct += 1
-        stats.confidence_score += 1
     else:
         stats.times_incorrect += 1
-        stats.confidence_score = max(0, stats.confidence_score - 1)
+
+    stats.confidence_score = next_confidence_score(stats.confidence_score, request.correct)
     
     session.commit()
     session.refresh(stats)
@@ -142,6 +156,7 @@ async def update_word_statistics(
     return UpdateStatisticsResponse(
         word=request.word,
         new_confidence_score=stats.confidence_score,
+        knowledge_level=knowledge_level_from_confidence(stats.confidence_score),
         times_seen=stats.times_seen,
         times_correct=stats.times_correct,
         times_incorrect=stats.times_incorrect,

@@ -16,8 +16,6 @@ export interface FeatureFlags {
   wordsLibrary: boolean;
   grammarSentences: boolean;
   grammarValidation: boolean;
-  youtubeVideos: boolean;
-  aiVideos: boolean;
   textToSpeech: boolean;
 }
 
@@ -27,8 +25,6 @@ const ONLINE_FEATURES: FeatureFlags = {
   wordsLibrary: true,
   grammarSentences: true,
   grammarValidation: true,
-  youtubeVideos: true,
-  aiVideos: true,
   textToSpeech: true,
 };
 
@@ -38,8 +34,6 @@ const OFFLINE_FEATURES: FeatureFlags = {
   wordsLibrary: true,
   grammarSentences: true,
   grammarValidation: false,
-  youtubeVideos: false,
-  aiVideos: false,
   textToSpeech: false,
 };
 
@@ -52,8 +46,11 @@ const getApiBaseUrl = (): string => {
   if (APP_MODE === 'offline') {
     return 'http://localhost:8500';
   }
-  // Check if we're running on localhost (development)
-  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+  // Check if we're running on a local dev host.
+  if (
+    typeof window !== 'undefined'
+    && ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)
+  ) {
     return (import.meta.env.VITE_API_URL as string) || 'http://localhost:8500';
   }
   // Production: use relative URLs (nginx proxies /api to backend)

@@ -13,7 +13,6 @@ class ServerSettings(BaseSettings):
     log_level: str = Field(default="INFO", pattern="^(DEBUG|INFO|WARNING|ERROR)$")
     host: str = "0.0.0.0"
     port: str = "8500"
-    youtube_api_key: str = Field(default="")
 
     model_config = {
         "env_prefix": "",

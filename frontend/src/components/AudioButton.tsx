@@ -1,5 +1,6 @@
 import { Volume2, Loader2 } from 'lucide-react';
 import { useAudio } from '../hooks/useAudio';
+import { UI_INTERACTION, UI_RADIUS } from './ui';
 
 interface AudioButtonProps {
   text: string;
@@ -58,7 +59,7 @@ export function AudioButton({
     <button
       onClick={handleClick}
       disabled={isActive}
-      className={`rounded-full transition-all ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
+      className={`${UI_RADIUS.touchIcon} ${UI_INTERACTION.fastTransition} ${UI_INTERACTION.iconLift} ${UI_INTERACTION.press} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
       title={`Play "${text}"`}
     >
       {isLoadingText(text) ? (

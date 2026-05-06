@@ -4,11 +4,11 @@
  * Componente UI per filtrare i nodi grammaticali per CEFR, gender, frequency, etc.
  * Da usare in FunSentenceBuilder e SentenceBuilder.
  */
-import React from 'react';
 import { X } from 'lucide-react';
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from '../contexts/useTheme';
 import type { GrammarFilterCriteria, GrammarFilterConfig } from '../hooks/useGrammarNodeFilters';
 import { formatFilterLabel } from '../hooks/useGrammarNodeFilters';
+import { FilterSelect, UI_RADIUS } from './ui';
 
 export interface GrammarNodeFilterBarProps {
   configs: GrammarFilterConfig[];
@@ -42,37 +42,25 @@ export function GrammarNodeFilterBar({
   if (compact) {
     return (
       <div className="flex items-center gap-2 flex-wrap">
-        <select
+        <FilterSelect
+          ariaLabel="Grammar filter criteria"
           value={activeCriteria}
-          onChange={(e) => onCriteriaChange(e.target.value as GrammarFilterCriteria)}
-          className={`
-            px-2 py-1 rounded text-xs font-medium cursor-pointer
-            ${isDark 
-              ? 'bg-slate-700 text-white border-slate-600' 
-              : 'bg-white text-gray-800 border-gray-300'
-            }
-            border focus:outline-none focus:ring-1 focus:ring-purple-500
-          `}
+          onChange={(value) => onCriteriaChange(value as GrammarFilterCriteria)}
+          size="sm"
         >
           {configs.map((config) => (
             <option key={config.id} value={config.id}>
               {config.label}
             </option>
           ))}
-        </select>
+        </FilterSelect>
 
         {activeCriteria !== 'all' && availableOptions.length > 0 && (
-          <select
+          <FilterSelect
+            ariaLabel="Grammar filter value"
             value={activeFilterValue || ''}
-            onChange={(e) => onFilterValueChange(e.target.value || null)}
-            className={`
-              px-2 py-1 rounded text-xs font-medium cursor-pointer
-              ${isDark 
-                ? 'bg-slate-700 text-white border-slate-600' 
-                : 'bg-white text-gray-800 border-gray-300'
-              }
-              border focus:outline-none focus:ring-1 focus:ring-purple-500
-            `}
+            onChange={(value) => onFilterValueChange(value || null)}
+            size="sm"
           >
             <option value="">Seleziona...</option>
             {availableOptions.map((option) => (
@@ -80,14 +68,14 @@ export function GrammarNodeFilterBar({
                 {formatFilterLabel(activeCriteria, option)}
               </option>
             ))}
-          </select>
+          </FilterSelect>
         )}
 
         {hasActiveFilter && (
           <button
             onClick={onClearFilters}
             className={`
-              p-1 rounded transition-all
+              p-1 ${UI_RADIUS.control} transition-all
               ${isDark ? 'hover:bg-slate-600 text-slate-400' : 'hover:bg-gray-200 text-gray-500'}
             `}
             title="Rimuovi filtro"
@@ -104,7 +92,7 @@ export function GrammarNodeFilterBar({
   }
 
   return (
-    <div className={`flex flex-col gap-2 p-2 rounded-lg ${isDark ? 'bg-slate-800/50' : 'bg-gray-100/50'}`}>
+    <div className={`flex flex-col gap-2 p-2 ${UI_RADIUS.control} ${isDark ? 'bg-slate-800/50' : 'bg-gray-100/50'}`}>
       <div className="flex items-center gap-2 flex-wrap">
         <span className={`text-xs font-semibold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
           Filtra per:
@@ -120,7 +108,7 @@ export function GrammarNodeFilterBar({
               onClick={() => onCriteriaChange(config.id)}
               title={config.description}
               className={`
-                flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium
+                flex items-center gap-1.5 px-2.5 py-1 ${UI_RADIUS.pill} text-xs font-medium
                 transition-all duration-200
                 ${isActive
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md'
@@ -151,7 +139,7 @@ export function GrammarNodeFilterBar({
                 key={option}
                 onClick={() => onFilterValueChange(isSelected ? null : option)}
                 className={`
-                  px-2 py-0.5 rounded-full text-xs font-medium transition-all
+                  px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-medium transition-all
                   ${isSelected
                     ? 'bg-purple-500 text-white'
                     : isDark
@@ -175,7 +163,7 @@ export function GrammarNodeFilterBar({
           <button
             onClick={onClearFilters}
             className={`
-              flex items-center gap-1 px-2 py-0.5 rounded text-xs transition-all
+              flex items-center gap-1 px-2 py-0.5 ${UI_RADIUS.control} text-xs transition-all
               ${isDark ? 'text-slate-400 hover:text-white hover:bg-slate-600' : 'text-gray-500 hover:text-gray-800 hover:bg-gray-200'}
             `}
           >

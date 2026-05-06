@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import * as d3 from 'd3';
 import cloud from 'd3-cloud';
-import { ZoomIn, ZoomOut, Maximize2, Minimize2, RotateCcw } from 'lucide-react';
 import type { WordCloudItem } from '../types';
-import { ExpandedViewWrapper } from './ui';
+import { ExpandedViewWrapper, UI_RADIUS, ZoomControlBar } from './ui';
 
 const CATEGORY_COLORS: Record<string, string> = {
   animals: '#3B82F6',
@@ -136,28 +135,18 @@ export function EmbeddedWordCloud({ words, onWordClick }: EmbeddedWordCloudProps
     <div ref={containerRef} className="w-full h-full relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <svg ref={svgRef} className="w-full h-full" style={{ cursor: 'grab' }} />
       
-      {/* Zoom Controls */}
-      <div className="absolute top-4 left-4 z-20 flex items-center gap-1 p-1.5 rounded-xl backdrop-blur-sm bg-slate-800/90 border border-slate-700 shadow-lg">
-        <button onClick={handleZoomIn} className="p-2 rounded-lg transition-all hover:scale-110 hover:bg-slate-700 text-slate-200" title="Zoom In">
-          <ZoomIn size={18} />
-        </button>
-        <button onClick={handleZoomOut} className="p-2 rounded-lg transition-all hover:scale-110 hover:bg-slate-700 text-slate-200" title="Zoom Out">
-          <ZoomOut size={18} />
-        </button>
-        <button onClick={handleZoomReset} className="p-2 rounded-lg transition-all hover:scale-110 hover:bg-slate-700 text-slate-200" title="Reset Zoom">
-          <RotateCcw size={16} />
-        </button>
-        <div className="w-px h-6 mx-1 bg-slate-600" />
-        <button onClick={toggleExpanded} className={`p-2 rounded-lg transition-all hover:scale-110 hover:bg-slate-700 text-slate-200 ${isExpanded ? 'text-purple-400' : ''}`} title={isExpanded ? "Esci da fullscreen" : "Espandi a fullscreen"}>
-          {isExpanded ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
-        </button>
-        <div className="px-2 text-xs font-mono text-slate-400">
-          {Math.round(currentZoom * 100)}%
-        </div>
-      </div>
+      <ZoomControlBar
+        currentZoom={currentZoom}
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
+        onZoomReset={handleZoomReset}
+        isExpanded={isExpanded}
+        onToggleExpand={toggleExpanded}
+        showFitToView={false}
+      />
 
       {hoveredWord && (
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20">
+        <div className={`absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white/10 backdrop-blur-md px-6 py-3 ${UI_RADIUS.pill} border border-white/20`}>
           <span className="text-white font-bold text-lg">{hoveredWord}</span>
         </div>
       )}

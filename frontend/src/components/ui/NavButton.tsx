@@ -1,4 +1,5 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { UI_ELEVATION, UI_INTERACTION, UI_RADIUS } from './geometry';
 
 type ColorVariant = 'indigo' | 'purple' | 'blue' | 'green' | 'red' | 'gray';
 
@@ -35,7 +36,7 @@ export function NavButton({
   return (
     <button
       onClick={onClick}
-      className={`${sizeStyles[size]} font-bold ${colorStyles[color]} hover:text-white bg-white hover:bg-gradient-to-r border-2 hover:border-transparent rounded-full transition-all duration-300 shadow-md hover:shadow-xl hover:scale-105 active:scale-95 whitespace-nowrap min-w-fit`}
+      className={`${sizeStyles[size]} font-bold ${colorStyles[color]} hover:text-white bg-white hover:bg-gradient-to-r border-2 hover:border-transparent ${UI_RADIUS.pill} ${UI_INTERACTION.transition} ${UI_ELEVATION.raised} ${UI_INTERACTION.raisedHover} ${UI_INTERACTION.lift} ${UI_INTERACTION.press} whitespace-nowrap min-w-fit`}
     >
       <span className="flex items-center gap-2">
         {icon}

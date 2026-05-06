@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from app.routes import cards, videos, sora, grammar, tts, library, statistics, infographics, tracking
+from dotenv import load_dotenv
+
+load_dotenv()
+
+from app.routes import cards, grammar, tts, library, statistics, infographics, tracking
 import logging
 
 from shared_fastapi_bootstrap import create_app, run
@@ -57,8 +61,6 @@ app = create_app(
 )
 
 app.include_router(cards.router)
-app.include_router(videos.router)
-app.include_router(sora.router)
 app.include_router(grammar.router)
 app.include_router(tts.router)
 app.include_router(library.router)

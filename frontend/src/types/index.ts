@@ -9,6 +9,16 @@ export interface Flashcard {
   category?: string;
 }
 
+export interface AdaptiveFlashcard extends Flashcard {
+  confidence_score: number;
+  knowledge_level: number;
+  times_seen: number;
+  times_correct: number;
+  times_incorrect: number;
+  last_practiced?: string | null;
+  selection_reason: 'struggling' | 'new' | 'learning' | 'review';
+}
+
 export interface FlashcardEnriched extends Flashcard {
   cefr_level?: string;
   frequency_band?: string;
@@ -135,34 +145,6 @@ export interface VideoData {
   embed_url: string;
 }
 
-export interface SoraVideoGenerationRequest {
-  word: string;
-  translation: string;
-  language?: string;
-  category?: string;
-  model?: string;
-  duration?: number;
-  resolution?: string;
-}
-
-export interface SoraVideoGenerationResponse {
-  job_id: string;
-  status: string;
-  word: string;
-  translation: string;
-  model: string;
-  message: string;
-}
-
-export interface SoraJobStatus {
-  job_id: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed' | 'timeout';
-  video_url?: string;
-  duration?: number;
-  resolution?: string;
-  error?: string;
-}
-
 export interface FlashcardWithProgress extends FlashcardEnriched {
   known?: boolean;
   review_count?: number;
@@ -195,12 +177,29 @@ export interface GrammarNodeMeta {
   gender?: string;
   number?: string;
   tense?: string;
+  mood?: string;
+  person?: number;
+  pronoun?: string;
 }
 
 export interface GrammarNode {
   id: string;
   label: string;
-  type: 'subject' | 'predicate' | 'object' | 'indirect_object' | 'direct_object';
+  type:
+    | 'subject'
+    | 'predicate'
+    | 'object'
+    | 'indirect_object'
+    | 'direct_object'
+    | 'adjective'
+    | 'adverb'
+    | 'preposition'
+    | 'pronoun';
+  lemma?: string;
+  surface_form?: string;
+  part_of_speech?: string;
+  translation?: string;
+  source_word_id?: number;
   image_base64?: string;
   meta?: GrammarNodeMeta;
   x?: number;
@@ -261,7 +260,7 @@ export interface ValidateSentenceResponse {
   grammar_correct: boolean;
   semantic_correct: boolean;
   explanation: string;
-  suggestion?: string;
+  suggestion?: string | null;
 }
 
 export interface DialectVariantData {
@@ -276,4 +275,16 @@ export interface DialectWord {
   standardGerman: string;
   translation: string;
   variants: DialectVariantData[];
+}
+
+export interface WordDbRow {
+  flashcard: {
+    id: number;
+    word: string;
+    language: string;
+    translation: string;
+  };
+  word: Record<string, unknown>;
+  media: Record<string, boolean | number>;
+  related: Record<string, Record<string, unknown>[]>;
 }

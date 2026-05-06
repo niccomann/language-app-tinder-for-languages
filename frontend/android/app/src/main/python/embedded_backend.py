@@ -12,7 +12,7 @@ Features included (no external APIs):
 
 Features excluded (require external APIs):
 - YouTube video search
-- AI video generation (Sora)
+- AI video generation (deprecated in the main app)
 - Text-to-speech (OpenAI)
 - Grammar validation (LLM)
 """

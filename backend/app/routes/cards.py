@@ -3,10 +3,16 @@ from typing import Optional, List
 from sqlmodel import select, func
 from datetime import datetime, UTC
 from pydantic import BaseModel
+from types import SimpleNamespace
 
 from app.models import Flashcard, ProgressRequest, ProgressResponse
 from app.database import SessionDependency
-from app.database.models import FlashcardEntity, UserProgressEntity
+from app.database.models import FlashcardEntity, UserProgressEntity, UserWordStatisticsEntity
+from app.services.adaptive_learning import (
+    adaptive_sort_key,
+    knowledge_level_from_confidence,
+    selection_reason,
+)
 
 router = APIRouter(prefix="/api", tags=["cards"])
 
@@ -25,6 +31,17 @@ class FlashcardWithProgress(BaseModel):
     swipe_right_count: Optional[int] = None
     swipe_left_count: Optional[int] = None
     last_reviewed: Optional[datetime] = None
+
+
+class AdaptiveFlashcard(Flashcard):
+    """Flashcard enriched with adaptive learning metadata."""
+    confidence_score: int = 0
+    knowledge_level: int = 1
+    times_seen: int = 0
+    times_correct: int = 0
+    times_incorrect: int = 0
+    last_practiced: Optional[datetime] = None
+    selection_reason: str
 
 
 @router.get("/cards", response_model=List[Flashcard])
@@ -51,6 +68,70 @@ async def get_flashcards(
     flashcards = session.exec(query).all()
     
     return [Flashcard.model_validate(card) for card in flashcards]
+
+
+@router.get("/cards/adaptive", response_model=List[AdaptiveFlashcard])
+async def get_adaptive_flashcards(
+    session: SessionDependency,
+    language: str = Query("de", description="Language code"),
+    category: Optional[List[str]] = Query(None, description="Repeated category filters"),
+    limit: int = Query(50, ge=1, le=500, description="Maximum number of adaptive cards"),
+    user_id: str = Query("default_user", description="User ID"),
+):
+    """
+    Get flashcards ordered by adaptive learning usefulness.
+
+    Reuses user_word_statistics as the mastery source:
+    struggling seen words first, then new words, learning words, and mastered review cards.
+    """
+    query = select(FlashcardEntity).where(FlashcardEntity.language == language)
+
+    if category:
+        query = query.where(FlashcardEntity.category.in_(category))
+
+    cards = session.exec(query).all()
+    stats_rows = session.exec(
+        select(UserWordStatisticsEntity).where(
+            UserWordStatisticsEntity.language == language,
+            UserWordStatisticsEntity.user_id == user_id,
+        )
+    ).all()
+    stats_by_word = {(stats.word, stats.language): stats for stats in stats_rows}
+
+    candidates = []
+    for card in cards:
+        stats = stats_by_word.get((card.word, card.language))
+        confidence_score = stats.confidence_score if stats else 0
+        times_seen = stats.times_seen if stats else 0
+        last_practiced = stats.last_practiced if stats else None
+        candidate = SimpleNamespace(
+            id=card.id,
+            confidence_score=confidence_score,
+            times_seen=times_seen,
+            last_practiced=last_practiced,
+        )
+        candidates.append((candidate, card, stats))
+
+    selected = sorted(candidates, key=lambda item: adaptive_sort_key(item[0]))[:limit]
+
+    adaptive_cards: list[AdaptiveFlashcard] = []
+    for candidate, card, stats in selected:
+        card_data = Flashcard.model_validate(card).model_dump()
+        confidence_score = candidate.confidence_score
+        adaptive_cards.append(
+            AdaptiveFlashcard(
+                **card_data,
+                confidence_score=confidence_score,
+                knowledge_level=knowledge_level_from_confidence(confidence_score),
+                times_seen=candidate.times_seen,
+                times_correct=stats.times_correct if stats else 0,
+                times_incorrect=stats.times_incorrect if stats else 0,
+                last_practiced=candidate.last_practiced,
+                selection_reason=selection_reason(candidate),
+            )
+        )
+
+    return adaptive_cards
 
 
 @router.post("/progress", response_model=ProgressResponse)

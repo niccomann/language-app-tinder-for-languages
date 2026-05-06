@@ -1,3 +1,5 @@
+import { UI_RADIUS } from './geometry';
+
 interface LoadingSpinnerProps {
   message?: string;
   size?: 'small' | 'medium' | 'large';
@@ -17,7 +19,7 @@ export function LoadingSpinner({
 }: LoadingSpinnerProps) {
   const content = (
     <div className="text-center">
-      <div className={`${sizeClasses[size]} border-indigo-600/20 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4`} />
+      <div className={`${sizeClasses[size]} border-indigo-600/20 border-t-indigo-600 ${UI_RADIUS.pill} animate-spin mx-auto mb-4`} />
       {message && <p className="text-gray-600">{message}</p>}
     </div>
   );

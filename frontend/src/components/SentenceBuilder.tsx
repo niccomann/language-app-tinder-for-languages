@@ -1,6 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { 
-  ArrowLeft, 
   Check, 
   X, 
   AlertTriangle, 
@@ -12,27 +11,19 @@ import {
 } from 'lucide-react';
 import { api } from '../services/api';
 import type { GrammarNode, ValidationStatus, ValidateSentenceResponse, ConnectionInfo } from '../types';
-import { LoadingSpinner } from './ui';
+import { LoadingSpinner, SurfacePanel, UI_RADIUS } from './ui';
+import { GrammarBuilderFrame } from './GrammarBuilderFrame';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
-import { useTheme } from '../contexts/ThemeContext';
-
-interface SentenceBuilderProps {
-  onBack: () => void;
-}
-
-interface BuilderNode extends GrammarNode {
-  selected?: boolean;
-  order?: number;
-}
+import { useTheme } from '../contexts/useTheme';
 
 interface Connection {
   fromId: string;
   toId: string;
 }
 
-export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
+export function SentenceBuilder() {
   const [availableNodes, setAvailableNodes] = useState<GrammarNode[]>([]);
-  const [selectedNodes, setSelectedNodes] = useState<BuilderNode[]>([]);
+  const [selectedNodes, setSelectedNodes] = useState<GrammarNode[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
   const [connectingFrom, setConnectingFrom] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -69,7 +60,7 @@ export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
         setConnectingFrom(null);
       }
     } else {
-      setSelectedNodes([...selectedNodes, { ...node, order: selectedNodes.length }]);
+      setSelectedNodes([...selectedNodes, node]);
     }
     
     setValidationResult(null);
@@ -225,113 +216,19 @@ export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
     return orderedLabels.join(' ');
   };
 
-  const groupedNodes = {
-    subjects: availableNodes.filter(node => node.type === 'subject'),
-    verbs: availableNodes.filter(node => node.type === 'predicate'),
-    objects: availableNodes.filter(node => node.type === 'object' || node.type === 'direct_object')
-  };
-
   if (loading) {
-    return <LoadingSpinner message="Loading Sentence Builder..." fullScreen />;
+    return <LoadingSpinner message="Loading Sentence Builder..." />;
   }
 
   return (
-    <div className={`fixed inset-0 z-50 flex flex-col transition-colors duration-300 ${isDark ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900' : 'bg-gradient-to-br from-gray-50 to-white'}`}>
-      <div className={`border-b shadow-sm transition-colors duration-300 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <button
-            onClick={onBack}
-            className={`flex items-center gap-2 transition-colors ${isDark ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
-          >
-            <ArrowLeft size={20} />
-            <span>Back</span>
-          </button>
-          <h1 className="text-xl font-bold text-purple-600 flex items-center gap-2">
-            🧩 Sentence Builder
-          </h1>
-          <div className="w-20" />
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-auto p-4">
-        <div className="max-w-6xl mx-auto space-y-6">
-          
-          <div className={`rounded-xl shadow-md p-4 transition-colors duration-300 ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-            <h2 className={`text-lg font-semibold mb-3 flex items-center gap-2 ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>
-              📦 Available Nodes
-              <span className={`text-sm font-normal ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>(click to add)</span>
-            </h2>
-            
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-sm font-medium text-blue-600 mb-2">Subjects (Soggetti)</h3>
-                <div className="flex flex-wrap gap-2">
-                  {groupedNodes.subjects.map(node => (
-                    <button
-                      key={node.id}
-                      onClick={() => handleNodeClick(node)}
-                      className={`px-3 py-2 rounded-lg border-2 transition-all flex items-center gap-2 ${
-                        selectedNodes.some(selectedNode => selectedNode.id === node.id)
-                          ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
-                          : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
-                      }`}
-                    >
-                      {node.image_base64 && (
-                        <img src={`data:image/jpeg;base64,${node.image_base64}`} alt="" className="w-8 h-8 rounded-full object-cover" />
-                      )}
-                      <span className="font-medium">{node.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="text-sm font-medium text-red-600 mb-2">Verbs (Verbi)</h3>
-                <div className="flex flex-wrap gap-2">
-                  {groupedNodes.verbs.map(node => (
-                    <button
-                      key={node.id}
-                      onClick={() => handleNodeClick(node)}
-                      className={`px-3 py-2 rounded-lg border-2 transition-all flex items-center gap-2 ${
-                        selectedNodes.some(selectedNode => selectedNode.id === node.id)
-                          ? 'border-red-500 bg-red-50 ring-2 ring-red-200'
-                          : 'border-gray-200 hover:border-red-300 hover:bg-red-50'
-                      }`}
-                    >
-                      {node.image_base64 && (
-                        <img src={`data:image/jpeg;base64,${node.image_base64}`} alt="" className="w-8 h-8 rounded-full object-cover" />
-                      )}
-                      <span className="font-medium">{node.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="text-sm font-medium text-green-600 mb-2">Objects (Oggetti)</h3>
-                <div className="flex flex-wrap gap-2">
-                  {groupedNodes.objects.map(node => (
-                    <button
-                      key={node.id}
-                      onClick={() => handleNodeClick(node)}
-                      className={`px-3 py-2 rounded-lg border-2 transition-all flex items-center gap-2 ${
-                        selectedNodes.some(selectedNode => selectedNode.id === node.id)
-                          ? 'border-green-500 bg-green-50 ring-2 ring-green-200'
-                          : 'border-gray-200 hover:border-green-300 hover:bg-green-50'
-                      }`}
-                    >
-                      {node.image_base64 && (
-                        <img src={`data:image/jpeg;base64,${node.image_base64}`} alt="" className="w-8 h-8 rounded-full object-cover" />
-                      )}
-                      <span className="font-medium">{node.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className={`rounded-xl shadow-md p-4 border-2 transition-colors duration-300 ${isDark ? 'bg-slate-800' : 'bg-white'} ${
+    <GrammarBuilderFrame
+      nodes={availableNodes}
+      selectedNodeIds={selectedNodes.map(node => node.id)}
+      onWordClick={handleNodeClick}
+      actionLabel="Toggle word"
+      contentClassName="flex flex-col gap-3"
+    >
+          <SurfacePanel className={`min-h-[220px] border-2 transition-colors duration-300 ${
             validationResult 
               ? validationResult.status === 'green' 
                 ? 'border-green-400' 
@@ -339,9 +236,9 @@ export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
                   ? 'border-yellow-400' 
                   : 'border-red-400'
               : isDark ? 'border-slate-600' : 'border-gray-200'
-          }`}>
+          }`} padding="md">
             <h2 className={`text-lg font-semibold mb-3 flex items-center gap-2 ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>
-              🔨 Build Area
+              Build Area
               {connectingFrom && (
                 <span className="text-sm font-normal text-purple-600 animate-pulse flex items-center gap-1">
                   <Link size={14} />
@@ -351,7 +248,7 @@ export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
             </h2>
             
             {selectedNodes.length === 0 ? (
-              <div className={`text-center py-12 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+              <div className={`text-center py-8 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
                 <p className="text-lg">Select nodes from above to start building</p>
                 <p className="text-sm mt-2">Click nodes to add them, then connect them in order</p>
               </div>
@@ -362,9 +259,9 @@ export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
                     <div key={node.id} className="flex items-center gap-2">
                       <button
                         onClick={() => handleBuildAreaNodeClick(node.id)}
-                        className={`relative px-4 py-3 rounded-xl border-2 transition-all flex flex-col items-center gap-2 min-w-[100px] ${
+                        className={`relative px-4 py-3 ${UI_RADIUS.control} border-2 transition-all flex flex-col items-center gap-2 min-w-[100px] ${
                           connectingFrom === node.id
-                            ? 'border-purple-500 bg-purple-50 ring-2 ring-purple-300 scale-105'
+                            ? 'border-purple-500 bg-purple-50 ring-2 ring-purple-300 scale-[1.02]'
                             : validationResult
                               ? validationResult.status === 'green'
                                 ? 'border-green-400 bg-green-50'
@@ -376,11 +273,11 @@ export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
                         style={{ borderColor: connectingFrom === node.id ? undefined : getNodeColor(node.type) }}
                       >
                         {node.image_base64 && (
-                          <img src={`data:image/jpeg;base64,${node.image_base64}`} alt="" className="w-12 h-12 rounded-full object-cover" />
+                          <img src={`data:image/jpeg;base64,${node.image_base64}`} alt="" className={`w-12 h-12 ${UI_RADIUS.pill} object-cover`} />
                         )}
                         <span className="font-semibold text-gray-800">{node.label}</span>
                         <span 
-                          className="text-xs px-2 py-0.5 rounded-full text-white"
+                          className={`text-xs px-2 py-0.5 ${UI_RADIUS.pill} text-white`}
                           style={{ backgroundColor: getNodeColor(node.type) }}
                         >
                           {getNodeLabel(node.type)}
@@ -390,7 +287,7 @@ export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
                             e.stopPropagation();
                             handleNodeClick(node);
                           }}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                          className={`absolute -top-2 -right-2 bg-red-500 text-white ${UI_RADIUS.touchIcon} p-1 hover:bg-red-600`}
                         >
                           <X size={12} />
                         </button>
@@ -415,7 +312,7 @@ export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
                         return (
                           <div 
                             key={index}
-                            className="flex items-center gap-1 bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-sm"
+                            className={`flex items-center gap-1 bg-purple-100 text-purple-700 px-2 py-1 ${UI_RADIUS.pill} text-sm`}
                           >
                             <span>{fromNode?.label}</span>
                             <span>→</span>
@@ -440,24 +337,24 @@ export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
                 </div>
               </div>
             )}
-          </div>
+          </SurfacePanel>
 
           {validationResult && (
-            <div className={`rounded-xl shadow-md p-4 border-2 ${getStatusColor(validationResult.status)}`}>
+            <div className={`${UI_RADIUS.surface} shadow-md p-4 border-2 ${getStatusColor(validationResult.status)}`}>
               <div className="flex items-start gap-4">
-                <div className="p-2 rounded-full bg-white shadow">
+                <div className={`p-2 ${UI_RADIUS.touchIcon} bg-white shadow`}>
                   {getStatusIcon(validationResult.status)}
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-bold flex items-center gap-2">
                     {getStatusLabel(validationResult.status)}
                     {validationResult.grammar_correct && (
-                      <span className="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">
+                      <span className={`text-xs bg-green-200 text-green-800 px-2 py-0.5 ${UI_RADIUS.pill}`}>
                         ✓ Grammar
                       </span>
                     )}
                     {validationResult.semantic_correct && (
-                      <span className="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">
+                      <span className={`text-xs bg-green-200 text-green-800 px-2 py-0.5 ${UI_RADIUS.pill}`}>
                         ✓ Semantic
                       </span>
                     )}
@@ -465,14 +362,14 @@ export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
                   <p className="mt-2 text-gray-700">{validationResult.explanation}</p>
                   {validationResult.suggestion && (
                     <p className="mt-2 text-sm">
-                      <span className="font-medium">💡 Suggestion:</span> {validationResult.suggestion}
+                      <span className="font-medium">Suggestion:</span> {validationResult.suggestion}
                     </p>
                   )}
                 </div>
                 <button
                   onClick={handlePlayAudio}
                   disabled={playingAudio}
-                  className={`p-3 rounded-full transition-all ${
+                  className={`p-3 ${UI_RADIUS.touchIcon} transition-all ${
                     playingAudio 
                       ? 'bg-blue-500 text-white animate-pulse' 
                       : 'bg-white hover:bg-gray-100 text-gray-700'
@@ -491,7 +388,7 @@ export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
           <div className="flex justify-center gap-4">
             <button
               onClick={handleReset}
-              className="px-8 py-4 bg-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-300 transition-colors flex items-center gap-2 whitespace-nowrap min-w-fit"
+              className={`px-6 py-3 bg-gray-200 text-gray-700 ${UI_RADIUS.control} font-medium hover:bg-gray-300 transition-colors flex items-center gap-2 whitespace-nowrap min-w-fit`}
             >
               <RotateCcw size={18} />
               Reset
@@ -499,7 +396,7 @@ export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
             <button
               onClick={handleValidate}
               disabled={selectedNodes.length < 2 || validating}
-              className={`px-10 py-4 rounded-xl font-medium transition-all flex items-center gap-2 whitespace-nowrap min-w-fit ${
+              className={`px-8 py-3 ${UI_RADIUS.control} font-medium transition-all flex items-center gap-2 whitespace-nowrap min-w-fit ${
                 selectedNodes.length < 2
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : 'bg-purple-600 text-white hover:bg-purple-700 shadow-lg hover:shadow-xl'
@@ -518,8 +415,6 @@ export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
               )}
             </button>
           </div>
-        </div>
-      </div>
-    </div>
+    </GrammarBuilderFrame>
   );
 }

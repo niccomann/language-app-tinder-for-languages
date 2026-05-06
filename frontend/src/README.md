@@ -9,20 +9,21 @@
 | File | Descrizione |
 |------|-------------|
 | `main.tsx` | Bootstrap React app |
-| `App.tsx` | Root component, keyboard handlers |
-| `components/CardStack.tsx` | **UI Orchestrator** - gestisce tutti gli screen |
+| `App.tsx` | Root component, routing leggero, keyboard handlers |
+| `components/CardStack.tsx` | Sessione learning + completion |
 
 ## Cartelle
 
 ```
-components/     # 32 componenti React
+components/     # Componenti React attivi
 ├── CardStack.tsx         # ENTRY POINT UI - decide quale screen mostrare
 ├── Card.tsx              # Singola flashcard draggable
 ├── LearningScreen.tsx    # Schermata principale apprendimento
-├── CategorySelector.tsx  # Home - selezione categorie
+├── LearningCategoryStrip.tsx # Topic deck gamificato
+├── LearningFiltersPanel.tsx # Filtri categorie dentro il deck
+├── LearningSystemMenu.tsx # Slogan/concetti del sistema adattivo
 ├── GrammarLab.tsx        # Laboratorio grammatica (7 tab)
 ├── WordsLibraryEnriched.tsx  # Libreria parole
-├── VideoReel.tsx         # Feed video YouTube
 └── ui/                   # Componenti base riutilizzabili
 
 hooks/          # Custom React hooks
@@ -31,13 +32,10 @@ hooks/          # Custom React hooks
 ├── useAudio.ts           # Audio playback hook
 ├── useGrammarNodeFilters.ts # Grammar node filtering
 ├── useLinguisticFilters.ts  # Linguistic filtering
-├── useWordStats.ts       # Word statistics
 └── useZoomControls.ts    # Zoom controls
 
 services/       # Client API
-├── api.ts                # ⭐ Tutte le chiamate al backend
-├── video.ts              # YouTube search
-└── sora.ts               # AI video generation
+└── api.ts                # ⭐ Tutte le chiamate al backend
 
 contexts/       # React Context
 └── ThemeContext.tsx      # Dark/Light mode
@@ -58,14 +56,16 @@ utils/          # Utility functions
 
 ```
 App.tsx
-  └── CardStack.tsx (orchestrator)
-        ├── CategorySelector → seleziona categorie
-        ├── LearningScreen → swipe flashcards
-        │     ├── Card.tsx (draggable)
-        │     └── SwipeButtons.tsx
-        ├── GrammarLab → esercizi grammatica
-        ├── WordsLibraryEnriched → browse parole
-        └── CompletionScreen → sessione finita
+  ├── CardStack.tsx → learning session
+  │     ├── CompletionScreen → sessione finita
+  │     └── LearningScreen → swipe flashcards + filtri categorie
+  │           ├── Card.tsx (draggable)
+  │           ├── LearningCategoryStrip.tsx
+  │           ├── LearningFiltersPanel.tsx
+  │           ├── LearningSystemMenu.tsx
+  │           └── SwipeButtons.tsx
+  ├── GrammarLab → esercizi grammatica
+  └── WordsLibraryEnriched → browse parole
 ```
 
 ## Hooks Chiave
@@ -76,8 +76,14 @@ App.tsx
 const session = useLearningSession();
 session.loadFlashcards(categories);  // Carica cards
 session.handleSwipe('right');        // Swipe = conosco
-session.handleSwipe('left');         // Swipe = non conosco → video
+session.handleSwipe('left');         // Swipe = non conosco
 ```
+
+### Deprecated
+
+Il vecchio flusso YouTube è stato spostato in `deprecated/youtube/` e non viene importato dal flusso principale.
+Il vecchio flusso video AI è stato spostato in `deprecated/ai-video/` e non viene importato dal flusso principale.
+Il vecchio gate iniziale di selezione categorie è stato spostato in `deprecated/category-gate/`.
 
 ### `useCategories`
 ```typescript
@@ -98,93 +104,13 @@ categories.selectAll();
 
 ---
 
-## Sistema di Tracking
+## Progresso e Mastery
 
-### Overview
-
-Il sistema traccia le interazioni utente per generare statistiche e infografiche AI.
-
-### Logica Soglia Minima
-
-```typescript
-// useLearningSession.ts
-const MINIMUM_INTERACTIONS = 30;
-
-// Il tracking salva nel DB solo se:
-// 1. trackingActive = true (bottone premuto), OPPURE
-// 2. interactionCount >= 30 (auto-attivazione)
-const shouldTrack = trackingActive || interactionCount >= MINIMUM_INTERACTIONS;
-```
-
-### Hook `useLearningSession` - Tracking
-
-```typescript
-const session = useLearningSession();
-
-// Stato tracking
-session.trackingActive;      // boolean - tracking attivo?
-session.interactionCount;    // number - contatore interazioni
-session.MINIMUM_INTERACTIONS; // 30 - soglia auto-attivazione
-session.sessionUuid;         // string - UUID sessione
-
-// Funzioni tracking
-session.startTracking();     // Attiva tracking manualmente
-session.stopTracking();      // Ferma tracking, chiude sessione
-```
-
-### API Tracking (services/api.ts)
-
-```typescript
-export const trackingApi = {
-  // Inizia sessione (chiamato automaticamente da loadFlashcards)
-  async startSession(params?: {
-    user_id?: string;
-    device_type?: string;
-  }): Promise<{ session_uuid: string }>;
-
-  // Traccia singola azione
-  async trackAction(params: {
-    session_uuid: string;
-    action_type: 'swipe_right' | 'swipe_left' | 'sentence_validated';
-    word?: string;
-    word_id?: number;
-    translation?: string;
-  }): Promise<{ success: boolean }>;
-
-  // Termina sessione
-  async endSession(session_uuid: string): Promise<{ success: boolean }>;
-};
-```
-
-### UI Tracking (LearningScreen.tsx)
-
-```tsx
-// Props ricevute da CardStack
-trackingActive: boolean;
-interactionCount: number;
-minimumInteractions: number;
-onStartTracking: () => void;
-onStopTracking: () => void;
-
-// UI mostra:
-// - [🟢 Start Tracking] quando tracking OFF
-// - [🔴 Stop (N)] quando tracking ON (N = counter)
-// - "X more for auto-save" o "✓ Auto-saving"
-```
-
-### Componenti con Tracking
-
-| Componente | Azione Tracciata | File |
-|------------|------------------|------|
-| LearningScreen | `swipe_right`, `swipe_left` | via `useLearningSession` |
-| FunSentenceBuilder | `sentence_validated` | diretto in componente |
-
-### Flusso Completo
+`useLearningSession` registra ogni swipe tramite `api.recordProgress()` e aggiorna il confidence score con `api.updateWordStatistics()`.
 
 ```
-1. loadFlashcards() → trackingApi.startSession() → session_uuid
-2. handleSwipe() → interactionCount++ 
-   └─► se shouldTrack → trackingApi.trackAction()
-3. reset() / stopTracking() → trackingApi.endSession()
-4. [Backend] POST /api/infographics/from-session → Gemini genera immagine
+1. loadFlashcards(categories) → carica il deck filtrato
+2. handleSwipe('right' | 'left') → salva progresso known/unknown
+3. updateWordStatistics() → aggiorna il mastery score parola
+4. reset() → azzera progresso sessione e torna alla prima card
 ```

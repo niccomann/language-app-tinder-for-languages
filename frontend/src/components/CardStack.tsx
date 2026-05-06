@@ -1,98 +1,72 @@
-import { useState } from 'react';
-import { CategorySelector } from './CategorySelector';
-import { WordsLibraryEnriched } from './WordsLibraryEnriched';
-import { GrammarLab } from './GrammarLab';
+import { useEffect, useState } from 'react';
 import { CompletionScreen } from './CompletionScreen';
 import { LearningScreen } from './LearningScreen';
 import { LoadingSpinner, ErrorState } from './ui';
 import { useCategories } from '../hooks/useCategories';
 import { useLearningSession } from '../hooks/useLearningSession';
 
-export const CardStack = () => {
-  const [showCategorySelector, setShowCategorySelector] = useState(true);
-  const [showWordsLibrary, setShowWordsLibrary] = useState(false);
-  const [showGrammarLab, setShowGrammarLab] = useState(false);
+interface CardStackProps {
+  onOpenLibrary: () => void;
+  onOpenGrammarLab: () => void;
+}
+
+export const CardStack = ({ onOpenLibrary, onOpenGrammarLab }: CardStackProps) => {
+  const [filtersOpen, setFiltersOpen] = useState(false);
   
   const categories = useCategories();
-  const session = useLearningSession();
+  const {
+    currentCard,
+    nextCard,
+    progress,
+    flashcards,
+    loading,
+    error,
+    isComplete,
+    loadFlashcards,
+    handleSwipe,
+    reset,
+  } = useLearningSession();
 
-  const handleStartLearning = async () => {
-    setShowCategorySelector(false);
-    await session.loadFlashcards(categories.selectedCategories);
+  useEffect(() => {
+    if (!categories.loading) {
+      loadFlashcards(categories.selectedCategories);
+    }
+  }, [categories.loading, categories.selectedCategories, loadFlashcards]);
+
+  const handleChangeFilters = () => {
+    reset();
+    setFiltersOpen(true);
   };
-
-  const handleBackToCategories = () => {
-    setShowCategorySelector(true);
-    session.reset();
-  };
-
-  const handleOpenLibrary = () => {
-    setShowWordsLibrary(true);
-  };
-
-  const handleCloseLibrary = () => {
-    setShowWordsLibrary(false);
-  };
-
-  const handleOpenGrammarLab = () => {
-    setShowGrammarLab(true);
-  };
-
-  const handleCloseGrammarLab = () => {
-    setShowGrammarLab(false);
-  };
-
-  // Show Grammar Lab
-  if (showGrammarLab) {
-    return <GrammarLab onBack={handleCloseGrammarLab} />;
-  }
-
-  // Show Words Library
-  if (showWordsLibrary) {
-    return <WordsLibraryEnriched onClose={handleCloseLibrary} />;
-  }
 
   // Loading state
   if (categories.loading) {
     return <LoadingSpinner message="Loading..." />;
   }
 
-  // Category selection screen
-  if (showCategorySelector) {
-    return (
-      <CategorySelector
-        categories={categories.allCategories}
-        selectedCategories={categories.selectedCategories}
-        onToggleCategory={categories.toggleCategory}
-        onStart={handleStartLearning}
-        onSelectAll={categories.selectAll}
-        onDeselectAll={categories.deselectAll}
-        onOpenLibrary={handleOpenLibrary}
-        onOpenGrammarLab={handleOpenGrammarLab}
-      />
-    );
+  if (loading && flashcards.length === 0) {
+    return <LoadingSpinner message="Loading flashcards..." />;
   }
 
   // Error state
-  if (session.error || categories.error) {
+  if (error || categories.error) {
     return (
       <ErrorState
         title="Connection Error"
-        message={session.error || categories.error || 'Unknown error'}
-        onRetry={() => session.loadFlashcards(categories.selectedCategories)}
+        message={error || categories.error || 'Unknown error'}
+        onRetry={() => loadFlashcards(categories.selectedCategories)}
       />
     );
   }
 
   // Completion screen
-  if (session.isComplete) {
+  if (isComplete) {
     return (
       <CompletionScreen
-        progress={session.progress}
-        onRestart={session.reset}
-        onChangeCategories={handleBackToCategories}
-        onOpenLibrary={handleOpenLibrary}
-        onOpenGrammarLab={handleOpenGrammarLab}
+        progress={progress}
+        onRestart={reset}
+        onChangeCategories={handleChangeFilters}
+        onOpenLibrary={onOpenLibrary}
+        onOpenGrammarLab={onOpenGrammarLab}
       />
     );
   }
@@ -100,33 +74,20 @@ export const CardStack = () => {
   // Learning screen
   return (
     <LearningScreen
-      currentCard={session.currentCard}
-      nextCard={session.nextCard}
-      progress={session.progress}
-      totalCards={session.flashcards.length}
-      onSwipe={session.handleSwipe}
-      onBackToCategories={handleBackToCategories}
-      onOpenLibrary={handleOpenLibrary}
-      onOpenGrammarLab={handleOpenGrammarLab}
-      onGenerateVideo={session.generateSoraVideo}
-      youtubeVideo={session.youtubeVideo}
-      onCloseVideoModal={session.closeVideoModal}
-      showVideoSourceSelector={session.showVideoSourceSelector}
-      currentWord={session.currentWord}
-      onSelectYouTube={session.selectYouTubeVideos}
-      onSelectAI={session.selectAIVideos}
-      onCloseVideoSourceSelector={session.closeVideoSourceSelector}
-      showReelFeed={session.showReelFeed}
-      onCloseReelFeed={session.closeReelFeed}
-      onShowConfirmation={session.showLearnedWordConfirmation}
-      showAIReelFeed={session.showAIReelFeed}
-      onCloseAIReelFeed={session.closeAIReelFeed}
-      showLearnedConfirmation={session.showLearnedConfirmation}
-      onConfirmWordLearned={session.confirmWordLearned}
-      onSkipWordConfirmation={session.skipWordConfirmation}
-      showSoraModal={session.showSoraModal}
-      onCloseSoraModal={session.closeSoraModal}
-      videoJobId={session.videoJobId}
+      currentCard={currentCard}
+      nextCard={nextCard}
+      progress={progress}
+      totalCards={flashcards.length}
+      onSwipe={handleSwipe}
+      onOpenLibrary={onOpenLibrary}
+      onOpenGrammarLab={onOpenGrammarLab}
+      categories={categories.allCategories}
+      selectedCategories={categories.selectedCategories}
+      onToggleCategory={categories.toggleCategory}
+      onSelectAllCategories={categories.selectAll}
+      onDeselectAllCategories={categories.deselectAll}
+      filtersOpen={filtersOpen}
+      onFiltersOpenChange={setFiltersOpen}
     />
   );
 };

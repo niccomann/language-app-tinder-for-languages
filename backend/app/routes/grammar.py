@@ -1,14 +1,15 @@
+import re
+
 from fastapi import APIRouter, Query
-from typing import List, Optional
-from pydantic import BaseModel
+from typing import Any, List, Optional
+from pydantic import BaseModel, ConfigDict, Field
+from sqlalchemy import text
 from sqlmodel import select
 
 from app.services.sentence_validator import (
     sentence_validator_service,
     NodeInfo,
     ConnectionInfo,
-    ValidationResult,
-    ValidationStatus
 )
 from app.database import SessionDependency
 from app.database.models import (
@@ -26,19 +27,29 @@ class GrammarNodeMeta(BaseModel):
     gender: Optional[str] = None
     number: Optional[str] = None
     tense: Optional[str] = None
+    mood: Optional[str] = None
+    person: Optional[int] = None
+    pronoun: Optional[str] = None
 
 
 class GrammarNode(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     id: str
     label: str
     type: str
+    lemma: Optional[str] = None
+    surface_form: Optional[str] = None
+    part_of_speech: Optional[str] = None
+    translation: Optional[str] = None
+    source_word_id: Optional[int] = None
     image_base64: Optional[str] = None
     meta: Optional[GrammarNodeMeta] = None
     x: Optional[float] = None
     y: Optional[float] = None
     cefr_level: Optional[str] = None
     frequency_band: Optional[str] = None
-    register: Optional[str] = None
+    language_register: Optional[str] = Field(default=None, alias="register", serialization_alias="register")
     difficulty: Optional[str] = None
     category: Optional[str] = None
 
@@ -70,21 +81,187 @@ def get_article_for_gender(gender: Optional[str], case: str = "nominative") -> s
     return articles.get(case, articles["nominative"]).get(gender, "")
 
 
-def map_part_of_speech_to_node_type(part_of_speech: Optional[str], is_subject: bool = True) -> str:
-    """Map part_of_speech from flashcard to grammar node type."""
-    if not part_of_speech:
-        return "object"
-    
-    part_of_speech_lower = part_of_speech.lower()
-    
-    if part_of_speech_lower == "verb":
-        return "predicate"
-    elif part_of_speech_lower == "noun":
-        return "subject" if is_subject else "object"
-    elif part_of_speech_lower == "adjective":
-        return "object"
-    else:
-        return "object"
+def get_plural_article(case: str = "nominative") -> str:
+    """Get the German definite article for plural nouns."""
+    if case == "dative":
+        return "den"
+    return "die"
+
+
+def format_noun_phrase(article: str, noun: str, capitalize: bool = False) -> str:
+    phrase = f"{article} {noun}".strip() if article else noun
+    if capitalize and phrase:
+        return phrase[0].upper() + phrase[1:]
+    return phrase
+
+
+def format_plural_noun_for_case(noun: str, case: str) -> str:
+    if case == "dative" and not noun.endswith(("n", "s")):
+        return f"{noun}n"
+    return noun
+
+
+def node_id_part(value: str) -> str:
+    return re.sub(r"[^A-Za-z0-9]+", "_", value).strip("_").lower()
+
+
+def common_node_fields(card: FlashcardEntity, source_word_id: Optional[int] = None) -> dict[str, Any]:
+    return {
+        "lemma": card.word,
+        "part_of_speech": card.part_of_speech,
+        "translation": card.translation,
+        "source_word_id": source_word_id,
+        "image_base64": card.image_base64,
+        "cefr_level": card.cefr_level,
+        "frequency_band": card.frequency_band,
+        "register": card.language_register,
+        "difficulty": card.difficulty,
+        "category": card.category,
+    }
+
+
+def get_source_word_ids_by_flashcard(session: SessionDependency, language: str) -> dict[int, int]:
+    rows = session.execute(
+        text(
+            """
+            SELECT DISTINCT ON (f.id)
+                f.id AS flashcard_id,
+                w.id AS source_word_id
+            FROM flashcards f
+            JOIN words w ON w.word = f.word AND w.language = f.language
+            WHERE f.language = :language
+            ORDER BY f.id, CASE WHEN w.is_ground_truth THEN 0 ELSE 1 END, w.id
+            """
+        ),
+        {"language": language},
+    ).mappings().all()
+    return {int(row["flashcard_id"]): int(row["source_word_id"]) for row in rows}
+
+
+def get_present_conjugations_by_flashcard(session: SessionDependency, language: str) -> dict[int, list[dict[str, Any]]]:
+    rows = session.execute(
+        text(
+            """
+            SELECT DISTINCT ON (f.id, vc.pronoun)
+                f.id AS flashcard_id,
+                vc.mood,
+                vc.tense,
+                vc.person,
+                vc.number,
+                vc.pronoun,
+                vc.form
+            FROM flashcards f
+            JOIN words w ON w.word = f.word AND w.language = f.language
+            JOIN verb_conjugations vc ON vc.word_id = w.id
+            WHERE f.language = :language
+              AND vc.mood = 'indicative'
+              AND vc.tense = 'present'
+            ORDER BY f.id, vc.pronoun, vc.person, vc.number, vc.id
+            """
+        ),
+        {"language": language},
+    ).mappings().all()
+
+    conjugations: dict[int, list[dict[str, Any]]] = {}
+    for row in rows:
+        conjugations.setdefault(int(row["flashcard_id"]), []).append(dict(row))
+    return conjugations
+
+
+def add_noun_nodes(
+    available_nodes: list[GrammarNode],
+    card: FlashcardEntity,
+    source_word_id: Optional[int],
+) -> None:
+    common_fields = common_node_fields(card, source_word_id)
+    singular_forms = [
+        ("subject", "nominative", "singular", get_article_for_gender(card.gender, "nominative"), True),
+        ("object", "accusative", "singular", get_article_for_gender(card.gender, "accusative"), False),
+        ("indirect_object", "dative", "singular", get_article_for_gender(card.gender, "dative"), False),
+    ]
+
+    for node_type, case, number, article, capitalize in singular_forms:
+        label = format_noun_phrase(article, card.word, capitalize)
+        available_nodes.append(GrammarNode(
+            id=f"{node_type}_{card.id}_{case}_singular",
+            label=label,
+            type=node_type,
+            surface_form=label,
+            meta=GrammarNodeMeta(case=case, gender=card.gender, number=number),
+            **common_fields,
+        ))
+
+    if card.plural_form and card.plural_form != card.word:
+        plural_forms = [
+            ("subject", "nominative", get_plural_article("nominative"), True),
+            ("object", "accusative", get_plural_article("accusative"), False),
+            ("indirect_object", "dative", get_plural_article("dative"), False),
+        ]
+        for node_type, case, article, capitalize in plural_forms:
+            noun_form = format_plural_noun_for_case(card.plural_form, case)
+            label = format_noun_phrase(article, noun_form, capitalize)
+            available_nodes.append(GrammarNode(
+                id=f"{node_type}_{card.id}_{case}_plural",
+                label=label,
+                type=node_type,
+                surface_form=label,
+                meta=GrammarNodeMeta(case=case, gender=card.gender, number="plural"),
+                **common_fields,
+            ))
+
+
+def add_verb_nodes(
+    available_nodes: list[GrammarNode],
+    card: FlashcardEntity,
+    source_word_id: Optional[int],
+    conjugations: list[dict[str, Any]],
+) -> None:
+    common_fields = common_node_fields(card, source_word_id)
+    if not conjugations:
+        available_nodes.append(GrammarNode(
+            id=f"verb_{card.id}_infinitive",
+            label=card.word,
+            type="predicate",
+            surface_form=card.word,
+            meta=GrammarNodeMeta(tense="infinitive"),
+            **common_fields,
+        ))
+        return
+
+    for conjugation in conjugations:
+        form = conjugation["form"]
+        pronoun = conjugation["pronoun"]
+        available_nodes.append(GrammarNode(
+            id=f"verb_{card.id}_{node_id_part(pronoun)}",
+            label=form,
+            type="predicate",
+            surface_form=form,
+            meta=GrammarNodeMeta(
+                tense=conjugation["tense"],
+                mood=conjugation["mood"],
+                person=conjugation["person"],
+                number=conjugation["number"],
+                pronoun=pronoun,
+            ),
+            **common_fields,
+        ))
+
+
+def add_simple_word_node(
+    available_nodes: list[GrammarNode],
+    card: FlashcardEntity,
+    source_word_id: Optional[int],
+    node_type: str,
+) -> None:
+    label = card.word.capitalize() if node_type == "pronoun" and card.word == "ich" else card.word
+    available_nodes.append(GrammarNode(
+        id=f"{node_type}_{card.id}",
+        label=label,
+        type=node_type,
+        surface_form=label,
+        meta=GrammarNodeMeta(),
+        **common_node_fields(card, source_word_id),
+    ))
 
 
 @router.get("/sentences", response_model=List[GrammarSentence])
@@ -195,75 +372,83 @@ async def validate_sentence(request: ValidateSentenceRequest):
 async def get_available_nodes(
     session: SessionDependency,
     language: str = Query("de", description="Language code"),
-    limit: int = Query(50, description="Max nodes to return"),
+    limit: int = Query(240, description="Approximate grammar tokens to return"),
 ):
     """
     Get available nodes for sentence building.
-    Dynamically generates nodes from flashcards.
-    - If part_of_speech is set: nouns → subjects/objects, verbs → predicates
-    - If part_of_speech is not set: all words become subjects and objects
+    Dynamically generates student-ready grammar tokens from flashcards.
+    Uses the rich producer schema:
+    - nouns expose case and number variants;
+    - verbs expose present indicative conjugations;
+    - adjectives, adverbs, prepositions, and pronouns remain their own token types.
     """
-    query = select(FlashcardEntity).where(FlashcardEntity.language == language)
-    flashcards = session.exec(query.limit(limit * 3)).all()
-    
-    available_nodes = []
-    subject_count = 0
-    verb_count = 0
-    object_count = 0
-    max_per_type = limit // 3
-    
+    query = select(FlashcardEntity).where(FlashcardEntity.language == language).order_by(FlashcardEntity.id)
+    flashcards = session.exec(query).all()
+    source_word_ids = get_source_word_ids_by_flashcard(session, language)
+    conjugations_by_flashcard = get_present_conjugations_by_flashcard(session, language)
+
+    priority_words = {
+        "sein": 0,
+        "haben": 1,
+        "werden": 2,
+        "gehen": 3,
+        "kommen": 4,
+        "sehen": 5,
+        "sprechen": 6,
+        "lesen": 7,
+        "essen": 8,
+        "trinken": 9,
+        "fliegen": 10,
+        "Katze": 0,
+        "Hund": 1,
+        "Biene": 2,
+        "Garten": 3,
+    }
+    base_source_limits = {
+        "noun": 24,
+        "verb": 12,
+        "adjective": 18,
+        "adverb": 18,
+        "preposition": 12,
+        "pronoun": 12,
+    }
+    scale = max(0.5, min(2.0, limit / 240))
+    source_limits = {
+        part_of_speech: max(6, round(source_limit * scale))
+        for part_of_speech, source_limit in base_source_limits.items()
+    }
+
+    grouped_cards: dict[str, list[FlashcardEntity]] = {}
     for card in flashcards:
         part_of_speech = (card.part_of_speech or "").lower()
-        
-        if part_of_speech == "verb":
-            if verb_count < max_per_type:
-                verb_count += 1
-                available_nodes.append(GrammarNode(
-                    id=f"verb_{card.id}",
-                    label=card.word,
-                    type="predicate",
-                    image_base64=card.image_base64,
-                    meta=GrammarNodeMeta(tense="present"),
-                    cefr_level=card.cefr_level,
-                    frequency_band=card.frequency_band,
-                    register=card.register,
-                    difficulty=card.difficulty,
-                    category=card.category,
-                ))
-        else:
-            article_nom = get_article_for_gender(card.gender, "nominative") if card.gender else ""
-            article_acc = get_article_for_gender(card.gender, "accusative") if card.gender else ""
-            
-            if subject_count < max_per_type:
-                subject_count += 1
-                label_subject = f"{article_nom} {card.word}".strip() if article_nom else card.word
-                available_nodes.append(GrammarNode(
-                    id=f"subj_{card.id}",
-                    label=label_subject,
-                    type="subject",
-                    image_base64=card.image_base64,
-                    meta=GrammarNodeMeta(case="nominative", gender=card.gender) if card.gender else None,
-                    cefr_level=card.cefr_level,
-                    frequency_band=card.frequency_band,
-                    register=card.register,
-                    difficulty=card.difficulty,
-                    category=card.category,
-                ))
-            
-            if object_count < max_per_type:
-                object_count += 1
-                label_object = f"{article_acc} {card.word}".strip() if article_acc else card.word
-                available_nodes.append(GrammarNode(
-                    id=f"obj_{card.id}",
-                    label=label_object,
-                    type="object",
-                    image_base64=card.image_base64,
-                    meta=GrammarNodeMeta(case="accusative", gender=card.gender) if card.gender else None,
-                    cefr_level=card.cefr_level,
-                    frequency_band=card.frequency_band,
-                    register=card.register,
-                    difficulty=card.difficulty,
-                    category=card.category,
-                ))
+        if part_of_speech in source_limits:
+            grouped_cards.setdefault(part_of_speech, []).append(card)
+
+    for cards in grouped_cards.values():
+        cards.sort(key=lambda card: (priority_words.get(card.word, 10_000), card.id or 0))
+
+    available_nodes: list[GrammarNode] = []
+    for card in grouped_cards.get("noun", [])[:source_limits["noun"]]:
+        add_noun_nodes(available_nodes, card, source_word_ids.get(card.id or 0))
+
+    for card in grouped_cards.get("pronoun", [])[:source_limits["pronoun"]]:
+        add_simple_word_node(available_nodes, card, source_word_ids.get(card.id or 0), "pronoun")
+
+    for card in grouped_cards.get("verb", [])[:source_limits["verb"]]:
+        add_verb_nodes(
+            available_nodes,
+            card,
+            source_word_ids.get(card.id or 0),
+            conjugations_by_flashcard.get(card.id or 0, []),
+        )
+
+    for card in grouped_cards.get("adjective", [])[:source_limits["adjective"]]:
+        add_simple_word_node(available_nodes, card, source_word_ids.get(card.id or 0), "adjective")
+
+    for card in grouped_cards.get("adverb", [])[:source_limits["adverb"]]:
+        add_simple_word_node(available_nodes, card, source_word_ids.get(card.id or 0), "adverb")
+
+    for card in grouped_cards.get("preposition", [])[:source_limits["preposition"]]:
+        add_simple_word_node(available_nodes, card, source_word_ids.get(card.id or 0), "preposition")
     
     return available_nodes

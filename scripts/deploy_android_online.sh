@@ -72,8 +72,6 @@ log_info "  ✅ Flashcards"
 log_info "  ✅ Progress tracking"
 log_info "  ✅ Words Library"
 log_info "  ✅ Grammar sentences + validation"
-log_info "  ✅ YouTube videos"
-log_info "  ✅ AI videos (Sora)"
 log_info "  ✅ Text-to-speech"
 log_info ""
 

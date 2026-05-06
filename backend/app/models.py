@@ -1,9 +1,13 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, List, Any, Dict
 from datetime import datetime
 
 
-class Etymology(BaseModel):
+class OrmModel(BaseModel):
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+
+
+class Etymology(OrmModel):
     """Etymology information for a word."""
     id: Optional[int] = None
     origin_language: Optional[str] = None
@@ -12,12 +16,9 @@ class Etymology(BaseModel):
     language_family: Optional[str] = None
     time_period: Optional[str] = None
     extra_data: Optional[Dict[str, Any]] = None
-    
-    class Config:
-        from_attributes = True
 
 
-class ExampleSentence(BaseModel):
+class ExampleSentence(OrmModel):
     """Example sentence showing word usage."""
     id: Optional[int] = None
     sentence: str
@@ -25,12 +26,9 @@ class ExampleSentence(BaseModel):
     difficulty_level: Optional[str] = None
     context_type: Optional[str] = None
     extra_data: Optional[Dict[str, Any]] = None
-    
-    class Config:
-        from_attributes = True
 
 
-class FalseFriend(BaseModel):
+class FalseFriend(OrmModel):
     """False friend - word that looks similar but has different meaning."""
     id: Optional[int] = None
     target_language: str
@@ -38,12 +36,9 @@ class FalseFriend(BaseModel):
     similar_word_meaning: Optional[str] = None
     confusion_level: Optional[str] = None
     extra_data: Optional[Dict[str, Any]] = None
-    
-    class Config:
-        from_attributes = True
 
 
-class Proverb(BaseModel):
+class Proverb(OrmModel):
     """Proverb or idiom containing the word."""
     id: Optional[int] = None
     expression: str
@@ -51,12 +46,9 @@ class Proverb(BaseModel):
     figurative_meaning: Optional[str] = None
     expression_type: Optional[str] = None
     extra_data: Optional[Dict[str, Any]] = None
-    
-    class Config:
-        from_attributes = True
 
 
-class Collocation(BaseModel):
+class Collocation(OrmModel):
     """Common word combination."""
     id: Optional[int] = None
     collocate_word: str
@@ -64,12 +56,9 @@ class Collocation(BaseModel):
     example_phrase: Optional[str] = None
     frequency: Optional[str] = None
     extra_data: Optional[Dict[str, Any]] = None
-    
-    class Config:
-        from_attributes = True
 
 
-class DialectVariant(BaseModel):
+class DialectVariant(OrmModel):
     """Regional dialect variant."""
     id: Optional[int] = None
     region: str
@@ -78,12 +67,9 @@ class DialectVariant(BaseModel):
     pronunciation: Optional[str] = None
     usage_notes: Optional[str] = None
     extra_data: Optional[Dict[str, Any]] = None
-    
-    class Config:
-        from_attributes = True
 
 
-class Flashcard(BaseModel):
+class Flashcard(OrmModel):
     """Base flashcard with core fields."""
     id: int
     word: str
@@ -95,16 +81,13 @@ class Flashcard(BaseModel):
     category: Optional[str] = None
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
-    
-    class Config:
-        from_attributes = True
 
 
 class FlashcardEnriched(Flashcard):
     """Flashcard with rich linguistic data from language_info_extraction."""
     cefr_level: Optional[str] = None
     frequency_band: Optional[str] = None
-    register: Optional[str] = None
+    language_register: Optional[str] = Field(default=None, alias="register", serialization_alias="register")
     thematic_domain: Optional[str] = None
     part_of_speech: Optional[str] = None
     gender: Optional[str] = None

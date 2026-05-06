@@ -1,4 +1,4 @@
-import type { Flashcard, UserProgress, FlashcardWithProgress, GrammarSentence, GrammarNode, TTSResponse, TTSCheckResponse, ValidateSentenceRequest, ValidateSentenceResponse, LibraryFilters, LibraryStats, FlashcardDetail, DialectWord } from '../types';
+import type { AdaptiveFlashcard, Flashcard, UserProgress, FlashcardWithProgress, GrammarSentence, GrammarNode, TTSResponse, TTSCheckResponse, ValidateSentenceRequest, ValidateSentenceResponse, LibraryFilters, LibraryStats, FlashcardDetail, DialectWord, WordDbRow } from '../types';
 import { API_BASE_URL, isFeatureEnabled } from '../config/appMode';
 
 export const api = {
@@ -20,6 +20,27 @@ export const api = {
       throw new Error('Failed to fetch flashcards');
     }
     
+    return response.json();
+  },
+
+  async getAdaptiveFlashcards(params?: {
+    language?: string;
+    selectedCategories?: string[];
+    limit?: number;
+  }): Promise<AdaptiveFlashcard[]> {
+    const queryParams = new URLSearchParams();
+
+    if (params?.language) queryParams.append('language', params.language);
+    params?.selectedCategories?.forEach((category) => queryParams.append('category', category));
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+
+    const url = `${API_BASE_URL}/api/cards/adaptive${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch adaptive flashcards');
+    }
+
     return response.json();
   },
 
@@ -76,29 +97,6 @@ export const api = {
     return response.json();
   },
 
-  async getWordsLibrary(params?: {
-    status?: 'known' | 'unknown' | 'all';
-    language?: string;
-    category?: string;
-    search?: string;
-  }): Promise<FlashcardWithProgress[]> {
-    const queryParams = new URLSearchParams();
-    
-    if (params?.status) queryParams.append('status', params.status);
-    if (params?.language) queryParams.append('language', params.language);
-    if (params?.category) queryParams.append('category', params.category);
-    if (params?.search) queryParams.append('search', params.search);
-    
-    const url = `${API_BASE_URL}/api/words/library${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    const response = await fetch(url);
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch words library');
-    }
-    
-    return response.json();
-  },
-
   async getGrammarSentences(): Promise<GrammarSentence[]> {
     const response = await fetch(`${API_BASE_URL}/api/grammar/sentences`);
     
@@ -131,7 +129,7 @@ export const api = {
 
   async checkAudioExists(texts: string[], language: string = 'de', voice: string = 'nova'): Promise<TTSCheckResponse> {
     if (!isFeatureEnabled('textToSpeech')) {
-      return { results: texts.map(() => ({ exists: false })) };
+      return { results: Object.fromEntries(texts.map((text) => [text, false])) };
     }
     
     const response = await fetch(`${API_BASE_URL}/api/tts/check`, {
@@ -167,7 +165,7 @@ export const api = {
         grammar_correct: false,
         semantic_correct: false,
         explanation: 'Grammar validation is not available in offline mode',
-        suggestion: null,
+        suggestion: undefined,
       };
     }
     
@@ -265,6 +263,16 @@ export const api = {
     return response.json();
   },
 
+  async getWordDbRow(wordId: number): Promise<WordDbRow> {
+    const response = await fetch(`${API_BASE_URL}/api/library/words/${wordId}/db-row`);
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch word database row');
+    }
+    
+    return response.json();
+  },
+
   async getDialectWords(language: string = 'de'): Promise<DialectWord[]> {
     const response = await fetch(`${API_BASE_URL}/api/library/dialects?language=${language}`);
     
@@ -278,6 +286,7 @@ export const api = {
   async updateWordStatistics(word: string, correct: boolean, language: string = 'de'): Promise<{
     word: string;
     new_confidence_score: number;
+    knowledge_level: number;
     times_seen: number;
     times_correct: number;
     times_incorrect: number;
@@ -299,6 +308,7 @@ export const api = {
     word: string;
     language: string;
     confidence_score: number;
+    knowledge_level: number;
     times_seen: number;
     times_correct: number;
     times_incorrect: number;
@@ -313,20 +323,4 @@ export const api = {
     return response.json();
   },
 
-  async getStatisticsSummary(language: string = 'de'): Promise<{
-    total_words_practiced: number;
-    average_confidence: number;
-    words_mastered: number;
-    words_learning: number;
-    words_struggling: number;
-    total_practice_sessions: number;
-  }> {
-    const response = await fetch(`${API_BASE_URL}/api/statistics/summary?language=${language}`);
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch statistics summary');
-    }
-    
-    return response.json();
-  },
 };

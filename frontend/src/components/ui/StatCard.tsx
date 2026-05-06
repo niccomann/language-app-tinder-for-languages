@@ -1,4 +1,5 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { UI_ELEVATION, UI_INTERACTION, UI_RADIUS, UI_SIZE } from './geometry';
 
 interface StatCardProps {
   label: string;
@@ -54,8 +55,8 @@ export function StatCard({ label, value, icon, color, isActive, onClick }: StatC
   return (
     <div
       onClick={onClick}
-      className={`bg-white rounded-2xl shadow-lg p-6 border-2 transition-all duration-300 ${
-        onClick ? 'cursor-pointer hover:scale-105 hover:shadow-xl' : ''
+      className={`bg-white ${UI_RADIUS.surface} ${UI_ELEVATION.raised} p-6 border-2 ${UI_INTERACTION.transition} ${
+        onClick ? `cursor-pointer ${UI_INTERACTION.lift} ${UI_INTERACTION.raisedHover}` : ''
       } ${isActive ? colors.activeBorder : colors.border}`}
     >
       <div className="flex items-center justify-between">
@@ -65,7 +66,7 @@ export function StatCard({ label, value, icon, color, isActive, onClick }: StatC
             {value}
           </p>
         </div>
-        <div className={`w-12 h-12 bg-gradient-to-br ${colors.bg} rounded-full flex items-center justify-center`}>
+        <div className={`${UI_SIZE.iconButton} bg-gradient-to-br ${colors.bg} ${UI_RADIUS.touchIcon} flex items-center justify-center`}>
           {icon}
         </div>
       </div>

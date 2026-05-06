@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import * as d3 from 'd3';
-import { ZoomIn, ZoomOut, Sparkles, Layers, GraduationCap, Users, Activity, MessageSquare, BookOpen, Maximize2, Minimize2, RotateCcw } from 'lucide-react';
+import { Sparkles, Layers, GraduationCap, Users, Activity, MessageSquare, BookOpen } from 'lucide-react';
 import type { WordCloudItem } from '../types';
 import { 
     buildHierarchyFromWords, 
@@ -10,8 +10,8 @@ import {
     type HierarchyNode,
     type HierarchyCriteria 
 } from '../utils/hierarchyBuilder';
-import { useTheme } from '../contexts/ThemeContext';
-import { ExpandedViewWrapper } from './ui';
+import { useTheme } from '../contexts/useTheme';
+import { ExpandedViewWrapper, PillTabs, UI_RADIUS, ZoomControlBar } from './ui';
 
 interface HierarchySunburstProps {
     words: WordCloudItem[];
@@ -73,6 +73,16 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
         return getAvailableHierarchyCriteria(words);
     }, [words]);
 
+    const criteriaTabs = useMemo(() => availableCriteria.map((criteria) => {
+        const config = CRITERIA_CONFIG[criteria];
+        return {
+            value: criteria,
+            label: config.label,
+            icon: config.icon,
+            tone: 'pink' as const,
+        };
+    }), [availableCriteria]);
+
     const rootData = useMemo(() => {
         if (activeCriteria === 'category') {
             return buildHierarchyFromWords(words);
@@ -113,9 +123,9 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
             .sum(d => d.value || 0)
             .sort((a, b) => (b.value || 0) - (a.value || 0));
 
-        const root = d3.partition<HierarchyNode>()
-            .size([2 * Math.PI, hierarchy.height + 1])
-            (hierarchy) as D3HierarchyNode;
+        const partition = d3.partition<HierarchyNode>()
+            .size([2 * Math.PI, hierarchy.height + 1]);
+        const root = partition(hierarchy) as D3HierarchyNode;
 
         root.each(d => {
             d.current = d;
@@ -129,9 +139,6 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
             .padRadius(radius * 1.5)
             .innerRadius(d => d.y0 * radius)
             .outerRadius(d => Math.max(d.y0 * radius, d.y1 * radius - 1));
-
-        // Color scale
-        const color = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, root.children?.length || 1 + 1));
 
         // Setup zoom behavior
         const zoom = d3.zoom<SVGSVGElement, unknown>()
@@ -183,12 +190,15 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
             });
 
         // Add hover interaction
-        path.on('mouseenter', function (_event, d) {
-            d3.select(this).attr('fill-opacity', 1);
+        path.on('mouseenter', (event, d) => {
+            d3.select(event.currentTarget as SVGPathElement).attr('fill-opacity', 1);
             setHoveredNode(d.data);
         })
-            .on('mouseleave', function (_event, d) {
-                d3.select(this).attr('fill-opacity', d => arcVisible(d.current!) ? (d.children ? 0.8 : 0.6) : 0);
+            .on('mouseleave', (event) => {
+                const pathElement = event.currentTarget as SVGPathElement;
+                const node = d3.select<SVGPathElement, D3HierarchyNode>(pathElement).datum();
+                d3.select<SVGPathElement, D3HierarchyNode>(pathElement)
+                    .attr('fill-opacity', arcVisible(node.current!) ? (node.children ? 0.8 : 0.6) : 0);
                 setHoveredNode(null);
             });
 
@@ -217,17 +227,17 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
             .on('click', clicked);
 
         // Zoom function
-        function clicked(event: any, p: D3HierarchyNode) {
+        function clicked(_event: any, p: D3HierarchyNode) {
             parent.datum(p.parent || root);
 
             // Update current path for breadcrumbs
-            const path: string[] = [];
-            let current = p;
+            const breadcrumbs: string[] = [];
+            let current: D3HierarchyNode | null = p;
             while (current) {
-                path.unshift(current.data.name);
-                current = current.parent!;
+                breadcrumbs.unshift(current.data.name);
+                current = current.parent as D3HierarchyNode | null;
             }
-            setCurrentNodePath(path);
+            setCurrentNodePath(breadcrumbs);
 
             root.each(d => d.target = {
                 x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
@@ -237,25 +247,31 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
             } as any);
 
             const t = g.transition().duration(750);
+            const pathSelection = path as any;
+            const labelSelection = label as any;
 
-            path.transition(t)
-                .tween('data', d => {
-                    const i = d3.interpolate(d.current, d.target);
-                    return t => d.current = i(t);
+            pathSelection.transition(t)
+                .tween('data', (d: D3HierarchyNode) => {
+                    const i = d3.interpolate(d.current ?? d, d.target ?? d);
+                    return (progress: number) => {
+                        d.current = i(progress) as D3HierarchyNode;
+                    };
                 })
-                .filter(function (d) {
-                    return +this.getAttribute('fill-opacity')! || arcVisible(d.target!);
+                .filter((d: D3HierarchyNode, index: number, nodes: ArrayLike<SVGPathElement>) => {
+                    const element = nodes[index] as SVGPathElement;
+                    return Boolean(+element.getAttribute('fill-opacity')! || arcVisible(d.target!));
                 })
-                .attr('fill-opacity', d => arcVisible(d.target!) ? (d.children ? 0.8 : 0.6) : 0)
-                .attr('pointer-events', d => arcVisible(d.target!) ? 'auto' : 'none')
-                .attrTween('d', d => () => arc(d.current!) || '');
+                .attr('fill-opacity', (d: D3HierarchyNode) => arcVisible(d.target!) ? (d.children ? 0.8 : 0.6) : 0)
+                .attr('pointer-events', (d: D3HierarchyNode) => arcVisible(d.target!) ? 'auto' : 'none')
+                .attrTween('d', (d: D3HierarchyNode) => () => arc(d.current!) || '');
 
-            label.filter(function (d) {
-                return +this.getAttribute('fill-opacity')! || labelVisible(d.target!);
+            labelSelection.filter((d: D3HierarchyNode, index: number, nodes: ArrayLike<SVGTextElement>) => {
+                const element = nodes[index] as SVGTextElement;
+                return Boolean(+element.getAttribute('fill-opacity')! || labelVisible(d.target!));
             })
                 .transition(t)
-                .attr('fill-opacity', d => +labelVisible(d.target!))
-                .attrTween('transform', d => () => labelTransform(d.current!));
+                .attr('fill-opacity', (d: D3HierarchyNode) => +labelVisible(d.target!))
+                .attrTween('transform', (d: D3HierarchyNode) => () => labelTransform(d.current!));
         }
 
         function arcVisible(d: D3HierarchyNode) {
@@ -277,49 +293,24 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
     const content = (
         <div ref={containerRef} className={`w-full h-full flex flex-col items-center justify-center relative transition-colors duration-300 ${isDark ? 'bg-slate-900' : 'bg-white'}`}>
 
-            {/* Zoom Controls */}
-            <div className={`absolute top-4 left-4 z-20 flex items-center gap-1 p-1.5 rounded-xl backdrop-blur-sm shadow-lg ${isDark ? 'bg-slate-800/90 border border-slate-700' : 'bg-white/90 border border-gray-200'}`}>
-                <button onClick={handleZoomIn} className={`p-2 rounded-lg transition-all hover:scale-110 ${isDark ? 'hover:bg-slate-700 text-slate-200' : 'hover:bg-gray-200 text-gray-700'}`} title="Zoom In">
-                    <ZoomIn size={18} />
-                </button>
-                <button onClick={handleZoomOut} className={`p-2 rounded-lg transition-all hover:scale-110 ${isDark ? 'hover:bg-slate-700 text-slate-200' : 'hover:bg-gray-200 text-gray-700'}`} title="Zoom Out">
-                    <ZoomOut size={18} />
-                </button>
-                <button onClick={handleZoomReset} className={`p-2 rounded-lg transition-all hover:scale-110 ${isDark ? 'hover:bg-slate-700 text-slate-200' : 'hover:bg-gray-200 text-gray-700'}`} title="Reset Zoom">
-                    <RotateCcw size={16} />
-                </button>
-                <div className={`w-px h-6 mx-1 ${isDark ? 'bg-slate-600' : 'bg-gray-300'}`} />
-                <button onClick={toggleExpanded} className={`p-2 rounded-lg transition-all hover:scale-110 ${isExpanded ? 'text-purple-500' : ''} ${isDark ? 'hover:bg-slate-700 text-slate-200' : 'hover:bg-gray-200 text-gray-700'}`} title={isExpanded ? "Esci da fullscreen" : "Espandi a fullscreen"}>
-                    {isExpanded ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
-                </button>
-                <div className={`px-2 text-xs font-mono ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                    {Math.round(currentZoom * 100)}%
-                </div>
-            </div>
+            <ZoomControlBar
+                currentZoom={currentZoom}
+                onZoomIn={handleZoomIn}
+                onZoomOut={handleZoomOut}
+                onZoomReset={handleZoomReset}
+                isExpanded={isExpanded}
+                onToggleExpand={toggleExpanded}
+                showFitToView={false}
+            />
 
-            {/* Criteria Selector */}
-            <div className={`absolute ${isExpanded ? 'top-4 right-4' : 'top-4 left-1/2 -translate-x-1/2'} z-20 flex items-center gap-1 p-1 rounded-lg backdrop-blur-sm ${isDark ? 'bg-slate-800/90' : 'bg-white/90'} shadow-lg`}>
-                {availableCriteria.map((criteria) => {
-                    const config = CRITERIA_CONFIG[criteria];
-                    const isActive = activeCriteria === criteria;
-                    return (
-                        <button
-                            key={criteria}
-                            onClick={() => setActiveCriteria(criteria)}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                                isActive
-                                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md'
-                                    : isDark
-                                        ? 'text-slate-300 hover:bg-slate-700'
-                                        : 'text-gray-600 hover:bg-gray-100'
-                            }`}
-                            title={`Raggruppa per ${config.label}`}
-                        >
-                            {config.icon}
-                            <span>{config.label}</span>
-                        </button>
-                    );
-                })}
+            <div className={`absolute ${isExpanded ? 'top-4 right-4' : 'top-4 left-1/2 -translate-x-1/2'} z-20 max-w-[calc(100%-2rem)] p-1 ${UI_RADIUS.surface} backdrop-blur-sm shadow-lg ${isDark ? 'bg-slate-800/90' : 'bg-white/90'}`}>
+                <PillTabs
+                    items={criteriaTabs}
+                    value={activeCriteria}
+                    onChange={setActiveCriteria}
+                    ariaLabel="Hierarchy grouping criteria"
+                    className="justify-start"
+                />
             </div>
 
             {/* Breadcrumbs */}
@@ -343,30 +334,18 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
                 className="max-w-full max-h-full"
             />
 
-            {/* Center Info / Instructions */}
-            <div className="absolute bottom-4 left-4 text-xs text-gray-500 flex flex-col gap-1 pointer-events-none">
-                <div className="flex items-center gap-1">
-                    <ZoomIn size={14} />
-                    <span>Click sector to zoom in</span>
-                </div>
-                <div className="flex items-center gap-1">
-                    <ZoomOut size={14} />
-                    <span>Click center to zoom out</span>
-                </div>
-            </div>
-
             {/* Active Groups Legend */}
             {rootData.children && rootData.children.length > 0 && (
-                <div className={`absolute ${isExpanded ? 'bottom-4 right-4' : 'bottom-20 right-4'} rounded-lg p-3 border shadow-lg z-10 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
+                <div className={`absolute ${isExpanded ? 'bottom-4 right-4' : 'bottom-20 right-4'} ${UI_RADIUS.control} p-3 border shadow-lg z-10 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
                     <div className={`text-xs font-medium mb-3 flex items-center gap-1 ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
                         <Sparkles size={12} />
                         Gruppi attivi ({rootData.children.length})
                     </div>
                     <div className="space-y-1.5 max-h-32 overflow-y-auto">
                         {rootData.children.map((group) => (
-                            <div key={group.name} className={`flex items-center gap-2 px-2 py-1.5 rounded ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
+                            <div key={group.name} className={`flex items-center gap-2 px-2 py-1.5 ${UI_RADIUS.control} ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
                                 <div 
-                                    className="w-3 h-3 rounded-full" 
+                                    className={`w-3 h-3 ${UI_RADIUS.pill}`} 
                                     style={{ backgroundColor: getCategoryColor(group.name) }}
                                 />
                                 <span className={`text-xs font-medium ${isDark ? 'text-white' : 'text-gray-800'}`}>
@@ -385,7 +364,7 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
 
             {/* Hover Info Card */}
             {hoveredNode && (
-                <div className={`absolute ${isExpanded ? 'top-20 left-4' : 'top-4 right-4'} backdrop-blur-sm rounded-xl p-4 border shadow-xl min-w-[200px] transition-colors duration-300 pointer-events-none z-20 ${isDark ? 'bg-slate-800/95 border-slate-700' : 'bg-white/95 border-gray-200'}`}>
+                <div className={`absolute ${isExpanded ? 'top-20 left-4' : 'top-4 right-4'} backdrop-blur-sm ${UI_RADIUS.surface} p-4 border shadow-xl min-w-[200px] transition-colors duration-300 pointer-events-none z-20 ${isDark ? 'bg-slate-800/95 border-slate-700' : 'bg-white/95 border-gray-200'}`}>
                     <div className={`text-lg font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                         {hoveredNode.name}
                     </div>
@@ -398,7 +377,7 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
 
                     <div className="flex items-center gap-2 mt-2">
                         <div
-                            className="w-3 h-3 rounded-full"
+                            className={`w-3 h-3 ${UI_RADIUS.pill}`}
                             style={{ backgroundColor: getCategoryColor(hoveredNode.name) }}
                         />
                         <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>

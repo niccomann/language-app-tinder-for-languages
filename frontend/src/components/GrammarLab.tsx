@@ -1,18 +1,20 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { ArrowLeft, GitBranch, Cloud, Play, Info, Volume2, Loader2, Puzzle, Magnet, Globe2, Layers, Gamepad2 } from 'lucide-react';
+import { lazy, Suspense, useState, useEffect, useCallback, useRef } from 'react';
+import { GitBranch, Cloud, Play, Info, Volume2, Loader2, Puzzle, Magnet, Globe2, Layers, Gamepad2 } from 'lucide-react';
 import { api } from '../services/api';
 import type { GrammarSentence, GrammarNode, FlashcardWithProgress, WordCloudItem } from '../types';
-import { LoadingSpinner } from './ui';
+import { AppScreen, LoadingSpinner, PillTabs, ScreenHeader, SurfacePanel, UI_RADIUS } from './ui';
+import type { PillTabItem } from './ui';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
-import { EmbeddedGrammarGraph } from './EmbeddedGrammarGraph';
-import { EmbeddedWordCloud } from './EmbeddedWordCloud';
-import { WordDetailModal } from './WordDetailModal';
-import { SentenceBuilder } from './SentenceBuilder';
-import { FunSentenceBuilder } from './FunSentenceBuilder';
-import { ClusteredNodes } from './ClusteredNodes';
-import { DialectMap } from './DialectMap';
-import { HierarchySunburst } from './HierarchySunburst';
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from '../contexts/useTheme';
+
+const EmbeddedGrammarGraph = lazy(() => import('./EmbeddedGrammarGraph').then((module) => ({ default: module.EmbeddedGrammarGraph })));
+const EmbeddedWordCloud = lazy(() => import('./EmbeddedWordCloud').then((module) => ({ default: module.EmbeddedWordCloud })));
+const WordDetailModal = lazy(() => import('./WordDetailModal').then((module) => ({ default: module.WordDetailModal })));
+const SentenceBuilder = lazy(() => import('./SentenceBuilder').then((module) => ({ default: module.SentenceBuilder })));
+const FunSentenceBuilder = lazy(() => import('./FunSentenceBuilder').then((module) => ({ default: module.FunSentenceBuilder })));
+const ClusteredNodes = lazy(() => import('./ClusteredNodes').then((module) => ({ default: module.ClusteredNodes })));
+const DialectMap = lazy(() => import('./DialectMap').then((module) => ({ default: module.DialectMap })));
+const HierarchySunburst = lazy(() => import('./HierarchySunburst').then((module) => ({ default: module.HierarchySunburst })));
 
 type LabView = 'graph' | 'wordcloud' | 'builder' | 'funbuilder' | 'clusters' | 'dialects' | 'sunburst';
 
@@ -28,6 +30,16 @@ const CATEGORY_COLORS: Record<string, string> = {
   objects: '#8B5CF6',
   default: '#64748B',
 };
+
+const LAB_TABS: Array<PillTabItem<LabView>> = [
+  { value: 'graph', label: 'Sentence Graph', icon: <GitBranch size={18} />, tone: 'blue' },
+  { value: 'wordcloud', label: 'Word Cloud', icon: <Cloud size={18} />, tone: 'cyan' },
+  { value: 'builder', label: 'Build Sentence', icon: <Puzzle size={18} />, tone: 'orange' },
+  { value: 'funbuilder', label: 'Componi Frase', icon: <Gamepad2 size={18} />, tone: 'pink' },
+  { value: 'clusters', label: 'Clusters', icon: <Magnet size={18} />, tone: 'pink' },
+  { value: 'dialects', label: 'Dialetti', icon: <Globe2 size={18} />, tone: 'emerald' },
+  { value: 'sunburst', label: 'Hierarchy', icon: <Layers size={18} />, tone: 'amber' },
+];
 
 export function GrammarLab({ onBack }: GrammarLabProps) {
   const [activeView, setActiveView] = useState<LabView>('graph');
@@ -158,106 +170,32 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
   const currentSentence = sentences[currentIndex];
 
   return (
-    <div className={`fixed inset-0 z-50 flex flex-col transition-colors duration-300 ${isDark ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900' : 'bg-gradient-to-br from-gray-50 to-white'}`}>
-      {/* Header */}
-      <div className={`border-b shadow-sm transition-colors duration-300 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
-        <div className="flex items-center justify-between px-4 py-3">
-          <button
-            onClick={onBack}
-            className={`p-2 rounded-full transition-colors ${isDark ? 'hover:bg-slate-700 text-slate-300' : 'hover:bg-gray-100 text-gray-700'}`}
-          >
-            <ArrowLeft size={24} />
-          </button>
-
-          <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Grammar Lab 🧪
-          </h1>
-
-          {activeView === 'graph' && (
-            <button
-              onClick={handleNextSentence}
-              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg text-sm font-semibold transition-all hover:scale-105 flex items-center gap-2 shadow-md"
-            >
-              Next <Play size={16} />
-            </button>
-          )}
-          {(activeView === 'wordcloud' || activeView === 'builder' || activeView === 'funbuilder' || activeView === 'clusters' || activeView === 'sunburst') && <div className="w-20" />}
+    <AppScreen mode="overlay" width="full" scroll="none" contentClassName="flex h-full flex-col">
+      <SurfacePanel className="rounded-none border-x-0 border-t-0 shadow-sm" padding="none">
+        <div className="px-4 py-3">
+          <ScreenHeader
+            title="Grammar Lab"
+            onBack={onBack}
+            density="compact"
+            align="center"
+            actions={activeView === 'graph' && currentSentence ? (
+              <button
+                onClick={handleNextSentence}
+                className={`flex min-h-11 items-center gap-2 ${UI_RADIUS.pill} bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.02] active:scale-95`}
+              >
+                Next <Play size={16} />
+              </button>
+            ) : <div className="w-20" />}
+          />
         </div>
-
-        {/* Tab Buttons */}
-        <div className="flex justify-center gap-2 px-4 pb-3">
-          <button
-            onClick={() => setActiveView('graph')}
-            className={`flex items-center gap-2 px-8 py-3 rounded-full font-semibold transition-all duration-300 whitespace-nowrap min-w-fit ${activeView === 'graph'
-              ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-              : isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-          >
-            <GitBranch size={18} />
-            <span>Sentence Graph</span>
-          </button>
-          <button
-            onClick={() => setActiveView('wordcloud')}
-            className={`flex items-center gap-2 px-8 py-3 rounded-full font-semibold transition-all duration-300 whitespace-nowrap min-w-fit ${activeView === 'wordcloud'
-              ? 'bg-gradient-to-r from-cyan-500 to-purple-500 text-white shadow-lg'
-              : isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-          >
-            <Cloud size={18} />
-            <span>Word Cloud</span>
-          </button>
-          <button
-            onClick={() => setActiveView('builder')}
-            className={`flex items-center gap-2 px-8 py-3 rounded-full font-semibold transition-all duration-300 whitespace-nowrap min-w-fit ${activeView === 'builder'
-              ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-lg'
-              : isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-          >
-            <Puzzle size={18} />
-            <span>Build Sentence</span>
-          </button>
-          <button
-            onClick={() => setActiveView('funbuilder')}
-            className={`flex items-center gap-2 px-8 py-3 rounded-full font-semibold transition-all duration-300 whitespace-nowrap min-w-fit ${activeView === 'funbuilder'
-              ? 'bg-gradient-to-r from-pink-500 to-yellow-500 text-white shadow-lg'
-              : isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-          >
-            <Gamepad2 size={18} />
-            <span>Componi Frase 🎮</span>
-          </button>
-          <button
-            onClick={() => setActiveView('clusters')}
-            className={`flex items-center gap-2 px-8 py-3 rounded-full font-semibold transition-all duration-300 whitespace-nowrap min-w-fit ${activeView === 'clusters'
-              ? 'bg-gradient-to-r from-pink-500 to-red-500 text-white shadow-lg'
-              : isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-          >
-            <Magnet size={18} />
-            <span>Clusters</span>
-          </button>
-          <button
-            onClick={() => setActiveView('dialects')}
-            className={`flex items-center gap-2 px-8 py-3 rounded-full font-semibold transition-all duration-300 whitespace-nowrap min-w-fit ${activeView === 'dialects'
-              ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg'
-              : isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-          >
-            <Globe2 size={18} />
-            <span>Dialetti</span>
-          </button>
-          <button
-            onClick={() => setActiveView('sunburst')}
-            className={`flex items-center gap-2 px-8 py-3 rounded-full font-semibold transition-all duration-300 whitespace-nowrap min-w-fit ${activeView === 'sunburst'
-              ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg'
-              : isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-          >
-            <Layers size={18} />
-            <span>Hierarchy</span>
-          </button>
-        </div>
-      </div>
+        <PillTabs
+          items={LAB_TABS}
+          value={activeView}
+          onChange={setActiveView}
+          className="px-4 pb-3"
+          ariaLabel="Grammar Lab views"
+        />
+      </SurfacePanel>
 
       {/* Sentence Display (only for graph view) */}
       {activeView === 'graph' && currentSentence && (
@@ -267,7 +205,7 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
             <button
               onClick={() => playAudio(currentSentence.german)}
               disabled={loadingAudio === currentSentence.german}
-              className={`p-2 rounded-full transition-all ${playingAudio === currentSentence.german
+              className={`p-2 ${UI_RADIUS.touchIcon} transition-all ${playingAudio === currentSentence.german
                 ? 'bg-blue-500 text-white animate-pulse'
                 : audioCache[currentSentence.german]
                   ? 'bg-green-100 text-green-600 hover:bg-green-200'
@@ -288,30 +226,53 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
 
       {/* Content Area */}
       <div className="flex-1 overflow-visible relative">
-        {activeView === 'graph' && currentSentence && (
-          <EmbeddedGrammarGraph
-            sentence={currentSentence}
-            onNodeSelect={setSelectedNode}
-          />
-        )}
-        {activeView === 'wordcloud' && words.length > 0 && (
-          <EmbeddedWordCloud words={words} onWordClick={setSelectedWord} />
-        )}
-        {activeView === 'builder' && (
-          <SentenceBuilder onBack={() => setActiveView('graph')} />
-        )}
-        {activeView === 'funbuilder' && (
-          <FunSentenceBuilder />
-        )}
-        {activeView === 'clusters' && words.length > 0 && (
-          <ClusteredNodes words={words} onWordClick={setSelectedWord} />
-        )}
-        {activeView === 'dialects' && (
-          <DialectMap />
-        )}
-        {activeView === 'sunburst' && words.length > 0 && (
-          <HierarchySunburst words={words} onWordClick={setSelectedWord} />
-        )}
+        <Suspense fallback={<GrammarViewFallback />}>
+          {activeView === 'graph' && !currentSentence && (
+            <div className="flex h-full items-center justify-center p-6">
+              <SurfacePanel className="max-w-md text-center" padding="lg">
+                <Puzzle size={44} className="mx-auto mb-4 text-indigo-500" />
+                <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">
+                  No grammar sentences yet
+                </h2>
+                <p className="mt-2 text-sm font-semibold leading-6 text-slate-500 dark:text-slate-300">
+                  The lab can still use the builder, clusters, dialect map, hierarchy, and word cloud while sentence data is empty.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setActiveView('builder')}
+                  className={`mt-5 inline-flex min-h-11 items-center gap-2 ${UI_RADIUS.pill} bg-gradient-to-r from-indigo-600 to-purple-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg transition hover:scale-[1.02] active:scale-95`}
+                >
+                  <Puzzle size={17} />
+                  Build Sentence
+                </button>
+              </SurfacePanel>
+            </div>
+          )}
+          {activeView === 'graph' && currentSentence && (
+            <EmbeddedGrammarGraph
+              sentence={currentSentence}
+              onNodeSelect={setSelectedNode}
+            />
+          )}
+          {activeView === 'wordcloud' && words.length > 0 && (
+            <EmbeddedWordCloud words={words} onWordClick={setSelectedWord} />
+          )}
+          {activeView === 'builder' && (
+            <SentenceBuilder />
+          )}
+          {activeView === 'funbuilder' && (
+            <FunSentenceBuilder />
+          )}
+          {activeView === 'clusters' && words.length > 0 && (
+            <ClusteredNodes words={words} onWordClick={setSelectedWord} />
+          )}
+          {activeView === 'dialects' && (
+            <DialectMap />
+          )}
+          {activeView === 'sunburst' && words.length > 0 && (
+            <HierarchySunburst words={words} onWordClick={setSelectedWord} />
+          )}
+        </Suspense>
       </div>
 
       {/* Node Info Panel (for graph view) */}
@@ -319,7 +280,7 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
         <div className="bg-white border-t border-gray-200 p-4 shadow-lg">
           <div className="max-w-2xl mx-auto flex items-start gap-4">
             <div
-              className="p-3 rounded-xl border-2"
+              className={`p-3 ${UI_RADIUS.control} border-2`}
               style={{ borderColor: getNodeColor(selectedNode.type), backgroundColor: `${getNodeColor(selectedNode.type)}10` }}
             >
               <Info size={24} style={{ color: getNodeColor(selectedNode.type) }} />
@@ -333,7 +294,7 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
                     playAudio(selectedNode.label);
                   }}
                   disabled={loadingAudio === selectedNode.label}
-                  className={`p-1.5 rounded-full transition-all ${playingAudio === selectedNode.label
+                  className={`p-1.5 ${UI_RADIUS.touchIcon} transition-all ${playingAudio === selectedNode.label
                     ? 'bg-blue-500 text-white animate-pulse'
                     : audioCache[selectedNode.label]
                       ? 'bg-green-100 text-green-600 hover:bg-green-200'
@@ -348,7 +309,7 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
                   )}
                 </button>
                 <span
-                  className="text-xs px-2 py-0.5 rounded-full text-white"
+                  className={`text-xs px-2 py-0.5 ${UI_RADIUS.pill} text-white`}
                   style={{ backgroundColor: getNodeColor(selectedNode.type) }}
                 >
                   {getNodeLabel(selectedNode.type)}
@@ -375,8 +336,8 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
         <div className={`p-4 border-t transition-colors duration-300 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
           <div className="flex flex-wrap justify-center gap-3">
             {Object.entries(CATEGORY_COLORS).slice(0, 5).map(([category, color]) => (
-              <div key={category} className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
-                <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
+              <div key={category} className={`flex items-center gap-2 px-3 py-1.5 ${UI_RADIUS.pill} ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
+                <div className={`w-3 h-3 ${UI_RADIUS.pill} flex-shrink-0`} style={{ backgroundColor: color }} />
                 <span className={`text-xs capitalize ${isDark ? 'text-white' : 'text-gray-800'}`}>{category}</span>
               </div>
             ))}
@@ -386,8 +347,18 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
 
       {/* Word Detail Modal */}
       {selectedWord && (
-        <WordDetailModal word={selectedWord} onClose={() => setSelectedWord(null)} />
+        <Suspense fallback={null}>
+          <WordDetailModal word={selectedWord} onClose={() => setSelectedWord(null)} />
+        </Suspense>
       )}
+    </AppScreen>
+  );
+}
+
+function GrammarViewFallback() {
+  return (
+    <div className="w-full h-full flex items-center justify-center text-sm font-semibold text-slate-500 dark:text-slate-300">
+      Loading view...
     </div>
   );
 }

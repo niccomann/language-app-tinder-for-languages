@@ -1,14 +1,12 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { api } from '../services/api';
-import { soraService } from '../services/sora';
-import { videoApi } from '../services/video';
-import type { Flashcard, UserProgress, SoraVideoGenerationResponse, VideoData } from '../types';
+import type { AdaptiveFlashcard, UserProgress } from '../types';
 
 /**
  * Hook to manage learning session state and actions
  */
 export const useLearningSession = () => {
-  const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
+  const [flashcards, setFlashcards] = useState<AdaptiveFlashcard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState<UserProgress>({
     cards_reviewed: 0,
@@ -17,27 +15,23 @@ export const useLearningSession = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [videoJobId, setVideoJobId] = useState<string | null>(null);
-  const [showVideoModal, setShowVideoModal] = useState(false);
-  const [showSoraModal, setShowSoraModal] = useState(false);
-  const [showReelFeed, setShowReelFeed] = useState(false);
-  const [showAIReelFeed, setShowAIReelFeed] = useState(false);
-  const [showVideoSourceSelector, setShowVideoSourceSelector] = useState(false);
-  const [showLearnedConfirmation, setShowLearnedConfirmation] = useState(false);
-  const [currentWord, setCurrentWord] = useState<{ word: string; translation: string } | null>(null);
-  const [currentCardForConfirmation, setCurrentCardForConfirmation] = useState<Flashcard | null>(null);
-  const [youtubeVideo, setYoutubeVideo] = useState<VideoData | null>(null);
-  const [loadingVideo, setLoadingVideo] = useState(false);
 
-  const loadFlashcards = async (selectedCategories: string[]) => {
+  const loadFlashcards = useCallback(async (selectedCategories: string[]) => {
     try {
       setLoading(true);
       setError(null);
-      const cards = await api.getFlashcards({ language: 'de' });
-      const filteredCards = cards.filter(
-        card => card.category && selectedCategories.includes(card.category)
-      );
-      setFlashcards(filteredCards);
+      if (selectedCategories.length === 0) {
+        setFlashcards([]);
+        setCurrentIndex(0);
+        return;
+      }
+
+      const cards = await api.getAdaptiveFlashcards({
+        language: 'de',
+        selectedCategories,
+        limit: 200,
+      });
+      setFlashcards(cards);
       setCurrentIndex(0);
     } catch (err) {
       setError('Failed to load flashcards. Make sure the backend is running.');
@@ -45,9 +39,9 @@ export const useLearningSession = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const handleSwipe = async (direction: 'left' | 'right') => {
+  const handleSwipe = useCallback(async (direction: 'left' | 'right') => {
     const currentCard = flashcards[currentIndex];
     if (!currentCard) return;
 
@@ -57,120 +51,19 @@ export const useLearningSession = () => {
       const updatedProgress = await api.recordProgress(currentCard.id, known);
       setProgress(updatedProgress);
       
-      // Update word statistics (confidence score)
-      api.updateWordStatistics(currentCard.word, known, currentCard.language).catch(err => {
+      try {
+        await api.updateWordStatistics(currentCard.word, known, currentCard.language);
+      } catch (err) {
         console.error('Failed to update word statistics:', err);
-      });
-      
-      // If user doesn't know the word (swipe left), show video source selector
-      if (!known) {
-        setCurrentWord({
-          word: currentCard.word,
-          translation: currentCard.translation
-        });
-        setCurrentCardForConfirmation(currentCard);
-        
-        // Show selector to choose between YouTube and AI videos
-        setShowVideoSourceSelector(true);
-      } else {
-        // If user knows the word, just move to next card
-        setCurrentIndex(prev => prev + 1);
       }
+      
+      setCurrentIndex(prev => prev + 1);
     } catch (err) {
       console.error('Failed to record progress:', err);
     }
-  };
+  }, [currentIndex, flashcards]);
 
-  const closeVideoModal = () => {
-    setShowVideoModal(false);
-    setYoutubeVideo(null);
-    setCurrentWord(null);
-    setCurrentIndex(prev => prev + 1);
-  };
-
-  const closeReelFeed = () => {
-    setShowReelFeed(false);
-  };
-
-  const closeAIReelFeed = () => {
-    setShowAIReelFeed(false);
-  };
-
-  const showLearnedWordConfirmation = () => {
-    setShowLearnedConfirmation(true);
-  };
-
-  const confirmWordLearned = async () => {
-    if (!currentCardForConfirmation) return;
-
-    try {
-      const updatedProgress = await api.recordProgress(currentCardForConfirmation.id, true);
-      setProgress(updatedProgress);
-      console.log(`✅ Word "${currentCardForConfirmation.word}" marked as learned in database`);
-    } catch (err) {
-      console.error('Failed to mark word as learned:', err);
-    }
-
-    setShowLearnedConfirmation(false);
-    setCurrentWord(null);
-    setCurrentCardForConfirmation(null);
-    setCurrentIndex(prev => prev + 1);
-  };
-
-  const skipWordConfirmation = () => {
-    setShowLearnedConfirmation(false);
-    setCurrentWord(null);
-    setCurrentCardForConfirmation(null);
-    setCurrentIndex(prev => prev + 1);
-  };
-
-  const closeVideoSourceSelector = () => {
-    setShowVideoSourceSelector(false);
-    setCurrentWord(null);
-    setCurrentIndex(prev => prev + 1);
-  };
-
-  const selectYouTubeVideos = () => {
-    setShowVideoSourceSelector(false);
-    setShowReelFeed(true);
-  };
-
-  const selectAIVideos = () => {
-    setShowVideoSourceSelector(false);
-    setShowAIReelFeed(true);
-  };
-
-  const generateSoraVideo = async () => {
-    if (!currentCard) return;
-    
-    setCurrentWord({
-      word: currentCard.word,
-      translation: currentCard.translation
-    });
-    
-    try {
-      const videoResponse: SoraVideoGenerationResponse = await soraService.generateVideo({
-        word: currentCard.word,
-        translation: currentCard.translation,
-        language: currentCard.language,
-        category: currentCard.category,
-        duration: 5,
-        model: 'sora-2'
-      });
-      
-      setVideoJobId(videoResponse.job_id);
-      setShowSoraModal(true);
-    } catch (videoErr) {
-      console.error('Failed to generate Sora video:', videoErr);
-    }
-  };
-
-  const closeSoraModal = () => {
-    setShowSoraModal(false);
-    setVideoJobId(null);
-  };
-
-  const reset = async () => {
+  const reset = useCallback(async () => {
     try {
       await api.resetProgress();
       setProgress({ cards_reviewed: 0, known_count: 0, unknown_count: 0 });
@@ -178,11 +71,11 @@ export const useLearningSession = () => {
     } catch (err) {
       console.error('Failed to reset progress:', err);
     }
-  };
+  }, []);
 
   const currentCard = flashcards[currentIndex];
   const nextCard = flashcards[currentIndex + 1];
-  const isComplete = currentIndex >= flashcards.length;
+  const isComplete = flashcards.length > 0 && currentIndex >= flashcards.length;
 
   return {
     flashcards,
@@ -195,26 +88,5 @@ export const useLearningSession = () => {
     loadFlashcards,
     handleSwipe,
     reset,
-    videoJobId,
-    showVideoModal,
-    showSoraModal,
-    showReelFeed,
-    showAIReelFeed,
-    showVideoSourceSelector,
-    showLearnedConfirmation,
-    currentWord,
-    closeVideoModal,
-    closeSoraModal,
-    closeReelFeed,
-    closeAIReelFeed,
-    closeVideoSourceSelector,
-    selectYouTubeVideos,
-    selectAIVideos,
-    showLearnedWordConfirmation,
-    confirmWordLearned,
-    skipWordConfirmation,
-    youtubeVideo,
-    loadingVideo,
-    generateSoraVideo,
   };
 };

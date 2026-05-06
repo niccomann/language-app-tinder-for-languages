@@ -7,7 +7,7 @@
  * - Validate the constructed sentence via API
  * - Zoom/pan the canvas and expand to fullscreen
  */
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import * as d3 from 'd3';
 import { 
   Check, 
@@ -15,22 +15,15 @@ import {
   Loader2, 
   RotateCcw, 
   Volume2,
-  Plus,
   X,
-  ZoomIn,
-  ZoomOut,
-  Maximize2,
   Minimize2,
-  Focus,
-  Filter
 } from 'lucide-react';
 import { api } from '../services/api';
 import type { GrammarNode, ValidateSentenceResponse, ConnectionInfo } from '../types';
-import { LoadingSpinner } from './ui';
+import { LoadingSpinner, UI_RADIUS, ZoomControlBar } from './ui';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
-import { useTheme } from '../contexts/ThemeContext';
-import { useGrammarNodeFilters } from '../hooks/useGrammarNodeFilters';
-import { GrammarNodeFilterBar } from './GrammarNodeFilterBar';
+import { useTheme } from '../contexts/useTheme';
+import { GrammarBuilderFrame } from './GrammarBuilderFrame';
 
 // ============================================================================
 // Types
@@ -64,7 +57,6 @@ export function FunSentenceBuilder() {
   const containerRef = useRef<HTMLDivElement>(null);
   const simulationRef = useRef<d3.Simulation<SimNode, undefined> | null>(null);
   const connectionsRef = useRef<SimLink[]>([]);  // Synced copy of connections for D3 callbacks
-  const nodesRef = useRef<SimNode[]>([]);         // Synced copy of nodes for D3 callbacks
   
   const [availableNodes, setAvailableNodes] = useState<GrammarNode[]>([]);
   const [canvasNodes, setCanvasNodes] = useState<SimNode[]>([]);
@@ -79,7 +71,6 @@ export function FunSentenceBuilder() {
   const [potentialTarget, setPotentialTarget] = useState<SimNode | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [currentZoom, setCurrentZoom] = useState(1);
-  const [headerCollapsed, setHeaderCollapsed] = useState(false);
   const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   
   const { isDark } = useTheme();
@@ -143,12 +134,6 @@ export function FunSentenceBuilder() {
   const removeNodeFromCanvas = useCallback((nodeId: string) => {
     setCanvasNodes(prev => prev.filter(n => n.id !== nodeId));
     setConnections(prev => prev.filter(c => c.source !== nodeId && c.target !== nodeId));
-    setValidationResult(null);
-  }, []);
-
-  /** Remove a connection between two nodes */
-  const removeConnection = useCallback((source: string, target: string) => {
-    setConnections(prev => prev.filter(c => !(c.source === source && c.target === target)));
     setValidationResult(null);
   }, []);
 
@@ -218,7 +203,6 @@ export function FunSentenceBuilder() {
     const { width, height } = dimensions;
 
     const nodes: SimNode[] = canvasNodes.map(n => ({ ...n }));
-    nodesRef.current = nodes;
     
     const links: { source: SimNode; target: SimNode }[] = connections
       .map(c => {
@@ -337,7 +321,7 @@ export function FunSentenceBuilder() {
       .on('click', function(event, d) {
         event.stopPropagation();
         // Remove from DOM
-        d3.select(this.parentNode).remove();
+        d3.select(this.parentNode as SVGGElement).remove();
         // Remove from refs and state
         connectionsRef.current = connectionsRef.current.filter(
           c => !(c.source === d.source.id && c.target === d.target.id)
@@ -358,7 +342,7 @@ export function FunSentenceBuilder() {
       .on('click', function(event, d) {
         event.stopPropagation();
         // Remove from DOM
-        d3.select(this.parentNode).remove();
+        d3.select(this.parentNode as SVGGElement).remove();
         // Remove from refs and state
         connectionsRef.current = connectionsRef.current.filter(
           c => !(c.source === d.source.id && c.target === d.target.id)
@@ -389,7 +373,7 @@ export function FunSentenceBuilder() {
           d.fy = event.y;
           
           // Find closest node for preview (using larger threshold)
-          let closestNode: SimNode | null = null;
+          let closestNode: SimNode | undefined;
           let closestDistance = Infinity;
           
           nodes.forEach(n => {
@@ -404,14 +388,14 @@ export function FunSentenceBuilder() {
           });
           
           // Only set as connection target if within connection threshold
-          const nearNode = closestDistance < CONNECTION_THRESHOLD ? closestNode : null;
+          const nearNode = closestDistance < CONNECTION_THRESHOLD ? closestNode ?? null : null;
           currentTarget = nearNode || null;
           setPotentialTarget(currentTarget);
           
           previewGroup.selectAll('*').remove();
           
           // Show preview for any node within preview threshold
-          if (closestNode) {
+          if (closestNode !== undefined) {
             const sourceX = event.x;
             const sourceY = event.y;
             const targetX = closestNode.x || 0;
@@ -645,7 +629,7 @@ export function FunSentenceBuilder() {
       .on('mouseover', function(_, d) {
         setHoveredNode(d);
         d3.select(this).select('.delete-btn').attr('opacity', 1);
-        d3.select(this).select('circle').first()
+        d3.select(this).select('circle')
           .transition()
           .duration(150)
           .attr('r', NODE_RADIUS + 8);
@@ -653,7 +637,7 @@ export function FunSentenceBuilder() {
       .on('mouseout', function() {
         setHoveredNode(null);
         d3.select(this).select('.delete-btn').attr('opacity', 0);
-        d3.select(this).select('circle').first()
+        d3.select(this).select('circle')
           .transition()
           .duration(150)
           .attr('r', NODE_RADIUS + 4);
@@ -741,6 +725,7 @@ export function FunSentenceBuilder() {
   const handleReset = () => {
     setCanvasNodes([]);
     setConnections([]);
+    connectionsRef.current = [];
     setValidationResult(null);
   };
 
@@ -829,26 +814,122 @@ export function FunSentenceBuilder() {
     }
   };
 
-  const {
-    activeCriteria: filterCriteria,
-    setActiveCriteria: setFilterCriteria,
-    activeFilterValue,
-    setActiveFilterValue,
-    availableConfigs: filterConfigs,
-    availableOptions: filterOptions,
-    filteredNodes: filteredAvailableNodes,
-    hasActiveFilter,
-    clearFilters,
-  } = useGrammarNodeFilters({ nodes: availableNodes });
+  const renderSentenceActions = ({
+    compact = false,
+    showClose = false,
+  }: {
+    compact?: boolean;
+    showClose?: boolean;
+  }) => {
+    const resetSize = compact ? 'px-4 py-2' : 'px-6 py-3';
+    const validateSize = compact ? 'px-4 py-2' : 'px-8 py-3';
+    const iconSize = compact ? 16 : 18;
 
-  const groupedNodes = useMemo(() => ({
-    subjects: filteredAvailableNodes.filter(node => node.type === 'subject'),
-    verbs: filteredAvailableNodes.filter(node => node.type === 'predicate'),
-    objects: filteredAvailableNodes.filter(node => node.type === 'object' || node.type === 'direct_object')
-  }), [filteredAvailableNodes]);
+    return (
+      <div className={`flex justify-center ${compact ? 'gap-3' : 'gap-4'}`}>
+        <button
+          onClick={handleReset}
+          className={`${resetSize} ${UI_RADIUS.control} font-medium transition-all flex items-center gap-2 ${isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+        >
+          <RotateCcw size={iconSize} />
+          Reset
+        </button>
+        <button
+          onClick={handleValidate}
+          disabled={canvasNodes.length < 2 || validating}
+          className={`${validateSize} ${UI_RADIUS.control} font-semibold transition-all flex items-center gap-2 ${
+            canvasNodes.length < 2
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : `bg-gradient-to-r from-pink-500 to-orange-500 text-white hover:shadow-lg ${compact ? '' : 'hover:scale-[1.02]'}`
+          }`}
+        >
+          {validating ? (
+            <>
+              <Loader2 size={iconSize} className="animate-spin" />
+              {compact ? 'Verifica' : 'Validazione...'}
+            </>
+          ) : (
+            <>
+              <Check size={iconSize} />
+              {compact ? 'Verifica' : 'Verifica Frase'}
+            </>
+          )}
+        </button>
+        {showClose && (
+          <button
+            onClick={() => setIsExpanded(false)}
+            className={`${resetSize} ${UI_RADIUS.control} font-medium transition-all flex items-center gap-2 ${isDark ? 'bg-slate-600 text-white hover:bg-slate-500' : 'bg-gray-600 text-white hover:bg-gray-500'}`}
+          >
+            <Minimize2 size={iconSize} />
+            Chiudi
+          </button>
+        )}
+      </div>
+    );
+  };
+
+  const renderValidationPanel = (variant: 'floating' | 'inline') => {
+    if (!validationResult) return null;
+
+    const isFloating = variant === 'floating';
+
+    return (
+      <div
+        className={
+          isFloating
+            ? `absolute top-4 right-4 max-w-md ${UI_RADIUS.surface} p-4 border-2 ${getStatusColor(validationResult.status)} shadow-xl`
+            : `${UI_RADIUS.surface} p-4 border-2 mb-4 ${getStatusColor(validationResult.status)}`
+        }
+      >
+        <div className={`flex items-start ${isFloating ? 'gap-3' : 'gap-4'}`}>
+          <div className={`p-2 ${UI_RADIUS.touchIcon} bg-white shadow`}>
+            {getStatusIcon(validationResult.status)}
+          </div>
+          <div className="flex-1">
+            <h3 className={isFloating ? 'font-bold' : 'text-lg font-bold flex items-center gap-2'}>
+              {getStatusLabel(validationResult.status)}
+              {!isFloating && validationResult.grammar_correct && (
+                <span className={`text-xs bg-green-200 text-green-800 px-2 py-0.5 ${UI_RADIUS.pill}`}>
+                  ✓ Grammatica
+                </span>
+              )}
+              {!isFloating && validationResult.semantic_correct && (
+                <span className={`text-xs bg-green-200 text-green-800 px-2 py-0.5 ${UI_RADIUS.pill}`}>
+                  ✓ Semantica
+                </span>
+              )}
+            </h3>
+            <p className={isFloating ? 'text-sm mt-1' : 'mt-2 text-gray-700'}>{validationResult.explanation}</p>
+            {!isFloating && validationResult.suggestion && (
+              <p className="mt-2 text-sm">
+                <span className="font-medium">Suggerimento:</span> {validationResult.suggestion}
+              </p>
+            )}
+          </div>
+          {!isFloating && (
+            <button
+              onClick={handlePlayAudio}
+              disabled={playingAudio}
+              className={`p-3 ${UI_RADIUS.touchIcon} transition-all ${
+                playingAudio
+                  ? 'bg-blue-500 text-white animate-pulse'
+                  : 'bg-white hover:bg-gray-100 text-gray-700'
+              }`}
+            >
+              {playingAudio ? (
+                <Loader2 size={20} className="animate-spin" />
+              ) : (
+                <Volume2 size={20} />
+              )}
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   if (loading) {
-    return <LoadingSpinner message="Loading..." fullScreen />;
+    return <LoadingSpinner message="Loading..." />;
   }
 
   if (isExpanded) {
@@ -859,217 +940,38 @@ export function FunSentenceBuilder() {
       >
         <svg ref={svgRef} width="100%" height="100%" style={{ cursor: 'grab' }} />
 
-        <div className={`absolute top-4 left-4 flex flex-col gap-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
-          <div className={`flex items-center gap-1 p-1 rounded-lg backdrop-blur-sm ${isDark ? 'bg-slate-800/80' : 'bg-white/80'} shadow-lg`}>
-            <button onClick={handleZoomIn} className={`p-2 rounded-lg transition-all hover:scale-110 ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}`} title="Zoom In">
-              <ZoomIn size={20} />
-            </button>
-            <button onClick={handleZoomOut} className={`p-2 rounded-lg transition-all hover:scale-110 ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}`} title="Zoom Out">
-              <ZoomOut size={20} />
-            </button>
-            <button onClick={handleFitToView} className={`p-2 rounded-lg transition-all hover:scale-110 ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}`} title="Fit to View">
-              <Focus size={20} />
-            </button>
-            <button onClick={handleZoomReset} className={`p-2 rounded-lg transition-all hover:scale-110 ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}`} title="Reset Zoom">
-              <RotateCcw size={18} />
-            </button>
-            <div className={`px-2 text-xs font-mono ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-              {Math.round(currentZoom * 100)}%
-            </div>
-          </div>
-        </div>
+        <ZoomControlBar
+          currentZoom={currentZoom}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          onZoomReset={handleZoomReset}
+          onFitToView={handleFitToView}
+          isExpanded
+          onToggleExpand={() => setIsExpanded(false)}
+          position="top-left"
+          size="lg"
+        />
 
-        <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 p-4 rounded-xl backdrop-blur-sm ${isDark ? 'bg-slate-800/90' : 'bg-white/90'} shadow-xl`}>
+        <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 p-4 ${UI_RADIUS.surface} backdrop-blur-sm ${isDark ? 'bg-slate-800/90' : 'bg-white/90'} shadow-xl`}>
           <p className={`text-center font-medium mb-3 ${isDark ? 'text-white' : 'text-gray-800'}`}>
             Frase: <span className="text-purple-500">"{getBuiltSentence()}"</span>
           </p>
-          <div className="flex justify-center gap-3">
-            <button
-              onClick={handleReset}
-              className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-            >
-              <RotateCcw size={16} />
-              Reset
-            </button>
-            <button
-              onClick={handleValidate}
-              disabled={canvasNodes.length < 2 || validating}
-              className={`px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 ${
-                canvasNodes.length < 2
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-pink-500 to-orange-500 text-white hover:shadow-lg'
-              }`}
-            >
-              {validating ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
-              Verifica
-            </button>
-            <button
-              onClick={() => setIsExpanded(false)}
-              className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${isDark ? 'bg-slate-600 text-white hover:bg-slate-500' : 'bg-gray-600 text-white hover:bg-gray-500'}`}
-            >
-              <Minimize2 size={16} />
-              Chiudi
-            </button>
-          </div>
+          {renderSentenceActions({ compact: true, showClose: true })}
         </div>
 
-        {validationResult && (
-          <div className={`absolute top-4 right-4 max-w-md rounded-xl p-4 border-2 ${getStatusColor(validationResult.status)} shadow-xl`}>
-            <div className="flex items-start gap-3">
-              <div className="p-2 rounded-full bg-white shadow">
-                {getStatusIcon(validationResult.status)}
-              </div>
-              <div className="flex-1">
-                <h3 className="font-bold">{getStatusLabel(validationResult.status)}</h3>
-                <p className="text-sm mt-1">{validationResult.explanation}</p>
-              </div>
-            </div>
-          </div>
-        )}
+        {renderValidationPanel('floating')}
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Linguistic Filter Bar - Always Visible */}
-      <div className={`flex flex-wrap items-center gap-2 p-2 border-b ${isDark ? 'bg-slate-800/80 border-slate-700' : 'bg-gray-50 border-gray-200'}`}>
-        <span className={`text-xs font-semibold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-          🎯 Filtra parole:
-        </span>
-        {filterConfigs.map((config) => {
-          const Icon = config.icon;
-          const isActive = filterCriteria === config.id;
-          return (
-            <button
-              key={config.id}
-              onClick={() => setFilterCriteria(config.id)}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
-                isActive
-                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md'
-                  : isDark
-                    ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-              }`}
-              title={config.description}
-            >
-              <Icon size={12} />
-              <span>{config.label}</span>
-            </button>
-          );
-        })}
-        
-        {filterCriteria !== 'all' && filterOptions.length > 0 && (
-          <>
-            <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>→</span>
-            {filterOptions.map((option) => (
-              <button
-                key={option}
-                onClick={() => setActiveFilterValue(activeFilterValue === option ? null : option)}
-                className={`px-2 py-0.5 rounded-full text-xs font-medium transition-all ${
-                  activeFilterValue === option
-                    ? 'bg-purple-500 text-white'
-                    : isDark
-                      ? 'bg-slate-600 text-slate-300 hover:bg-slate-500'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                {option}
-              </button>
-            ))}
-          </>
-        )}
-        
-        {hasActiveFilter && (
-          <button
-            onClick={clearFilters}
-            className={`flex items-center gap-1 px-2 py-0.5 rounded text-xs ${isDark ? 'text-red-400 hover:bg-slate-700' : 'text-red-500 hover:bg-red-50'}`}
-          >
-            <X size={12} />
-            Reset
-          </button>
-        )}
-        
-        <span className={`ml-auto text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-          {filteredAvailableNodes.length}/{availableNodes.length} parole
-        </span>
-      </div>
-
-      <div className={`border-b transition-all duration-300 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
-        <div 
-          className={`flex items-center justify-between cursor-pointer ${headerCollapsed ? 'p-2' : 'px-3 py-2'}`}
-          onClick={() => setHeaderCollapsed(!headerCollapsed)}
-        >
-          <div className="flex items-center gap-2">
-            <h2 className={`font-bold bg-gradient-to-r from-pink-500 to-orange-500 bg-clip-text text-transparent ${headerCollapsed ? 'text-base' : 'text-lg'}`}>
-              🎮 Parole disponibili
-            </h2>
-            {headerCollapsed && (
-              <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                (clicca per espandere)
-              </span>
-            )}
-          </div>
-          <button
-            className={`p-1 rounded transition-all ${isDark ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-gray-100 text-gray-500'}`}
-          >
-            {headerCollapsed ? <Maximize2 size={14} /> : <Minimize2 size={14} />}
-          </button>
-        </div>
-        
-        <div className={`overflow-hidden transition-all duration-300 ${headerCollapsed ? 'max-h-0 py-0' : 'max-h-48 pb-2 px-3'}`}>
-          <div className="flex flex-wrap gap-1.5 items-center">
-            <span className="text-xs font-semibold text-blue-600 mr-1">Soggetti:</span>
-            {groupedNodes.subjects.map(node => (
-              <button
-                key={node.id}
-                onClick={() => addNodeToCanvas(node)}
-                className={`px-2 py-1 rounded-full border border-blue-400 transition-all hover:scale-105 flex items-center gap-1 text-xs ${isDark ? 'bg-blue-900/30 hover:bg-blue-800/50' : 'bg-blue-50 hover:bg-blue-100'}`}
-              >
-                {node.image_base64 && (
-                  <img src={`data:image/jpeg;base64,${node.image_base64}`} alt="" className="w-4 h-4 rounded-full object-cover" />
-                )}
-                <span className={`font-medium ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>{node.label}</span>
-                <Plus size={10} className={isDark ? 'text-blue-400' : 'text-blue-600'} />
-              </button>
-            ))}
-          </div>
-          
-          <div className="flex flex-wrap gap-1.5 items-center mt-1.5">
-            <span className="text-xs font-semibold text-red-600 mr-1">Verbi:</span>
-            {groupedNodes.verbs.map(node => (
-              <button
-                key={node.id}
-                onClick={() => addNodeToCanvas(node)}
-                className={`px-2 py-1 rounded-full border border-red-400 transition-all hover:scale-105 flex items-center gap-1 text-xs ${isDark ? 'bg-red-900/30 hover:bg-red-800/50' : 'bg-red-50 hover:bg-red-100'}`}
-              >
-                {node.image_base64 && (
-                  <img src={`data:image/jpeg;base64,${node.image_base64}`} alt="" className="w-4 h-4 rounded-full object-cover" />
-                )}
-                <span className={`font-medium ${isDark ? 'text-red-300' : 'text-red-800'}`}>{node.label}</span>
-                <Plus size={10} className={isDark ? 'text-red-400' : 'text-red-600'} />
-              </button>
-            ))}
-          </div>
-          
-          <div className="flex flex-wrap gap-1.5 items-center mt-1.5">
-            <span className="text-xs font-semibold text-green-600 mr-1">Oggetti:</span>
-            {groupedNodes.objects.map(node => (
-              <button
-                key={node.id}
-                onClick={() => addNodeToCanvas(node)}
-                className={`px-2 py-1 rounded-full border border-green-400 transition-all hover:scale-105 flex items-center gap-1 text-xs ${isDark ? 'bg-green-900/30 hover:bg-green-800/50' : 'bg-green-50 hover:bg-green-100'}`}
-              >
-                {node.image_base64 && (
-                  <img src={`data:image/jpeg;base64,${node.image_base64}`} alt="" className="w-4 h-4 rounded-full object-cover" />
-                )}
-                <span className={`font-medium ${isDark ? 'text-green-300' : 'text-green-800'}`}>{node.label}</span>
-                <Plus size={10} className={isDark ? 'text-green-400' : 'text-green-600'} />
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
+    <GrammarBuilderFrame
+        nodes={availableNodes}
+        selectedNodeIds={canvasNodes.map(node => node.sourceId)}
+        onWordClick={addNodeToCanvas}
+        actionLabel="Add word to graph"
+        contentClassName="flex min-h-[560px] flex-col"
+      >
 
       <div 
         ref={containerRef}
@@ -1078,53 +980,21 @@ export function FunSentenceBuilder() {
       >
         <svg ref={svgRef} width="100%" height="100%" style={{ cursor: 'grab' }} />
 
-        <div className={`absolute top-4 left-4 flex flex-col gap-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
-          <div className={`flex items-center gap-1 p-1 rounded-lg backdrop-blur-sm ${isDark ? 'bg-slate-800/80' : 'bg-white/80'} shadow-lg`}>
-            <button
-              onClick={handleZoomIn}
-              className={`p-2 rounded-lg transition-all hover:scale-110 ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}`}
-              title="Zoom In"
-            >
-              <ZoomIn size={20} />
-            </button>
-            <button
-              onClick={handleZoomOut}
-              className={`p-2 rounded-lg transition-all hover:scale-110 ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}`}
-              title="Zoom Out"
-            >
-              <ZoomOut size={20} />
-            </button>
-            <button
-              onClick={handleFitToView}
-              className={`p-2 rounded-lg transition-all hover:scale-110 ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}`}
-              title="Fit to View"
-            >
-              <Focus size={20} />
-            </button>
-            <button
-              onClick={handleZoomReset}
-              className={`p-2 rounded-lg transition-all hover:scale-110 ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}`}
-              title="Reset Zoom"
-            >
-              <RotateCcw size={18} />
-            </button>
-            <div className={`px-2 text-xs font-mono ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-              {Math.round(currentZoom * 100)}%
-            </div>
-          </div>
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className={`p-2 rounded-lg backdrop-blur-sm transition-all hover:scale-110 ${isDark ? 'bg-slate-800/80 hover:bg-slate-700' : 'bg-white/80 hover:bg-gray-100'} shadow-lg`}
-            title={isExpanded ? 'Riduci' : 'Espandi'}
-          >
-            {isExpanded ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
-          </button>
-        </div>
+        <ZoomControlBar
+          currentZoom={currentZoom}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          onZoomReset={handleZoomReset}
+          onFitToView={handleFitToView}
+          isExpanded={false}
+          onToggleExpand={() => setIsExpanded(true)}
+          position="top-left"
+          size="lg"
+        />
 
         {canvasNodes.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className={`text-center p-8 rounded-2xl ${isDark ? 'bg-slate-800/50' : 'bg-white/50'} backdrop-blur-sm`}>
-              <div className="text-6xl mb-4">🎯</div>
+            <div className={`text-center p-8 ${UI_RADIUS.surface} ${isDark ? 'bg-slate-800/50' : 'bg-white/50'} backdrop-blur-sm`}>
               <p className={`text-lg font-medium ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
                 Clicca sui pulsanti + per aggiungere nodi!
               </p>
@@ -1132,18 +1002,18 @@ export function FunSentenceBuilder() {
                 Poi trascinali uno sopra l'altro per collegarli
               </p>
               <p className={`text-xs mt-4 ${isDark ? 'text-slate-600' : 'text-gray-400'}`}>
-                🖱️ Scroll per zoom • Trascina per spostare
+                Scroll per zoom · trascina per spostare
               </p>
             </div>
           </div>
         )}
 
         {hoveredNode && (
-          <div className={`absolute top-4 right-4 backdrop-blur-sm rounded-xl p-4 border shadow-xl min-w-[180px] ${isDark ? 'bg-slate-800/95 border-slate-700' : 'bg-white/95 border-gray-200'}`}>
+          <div className={`absolute top-4 right-4 backdrop-blur-sm ${UI_RADIUS.surface} p-4 border shadow-xl min-w-[180px] ${isDark ? 'bg-slate-800/95 border-slate-700' : 'bg-white/95 border-gray-200'}`}>
             <div className={`text-lg font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{hoveredNode.label}</div>
             <div className="flex items-center gap-2">
               <div 
-                className="w-3 h-3 rounded-full" 
+                className={`w-3 h-3 ${UI_RADIUS.pill}`} 
                 style={{ backgroundColor: getNodeColor(hoveredNode.type) }}
               />
               <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{getNodeLabel(hoveredNode.type)}</span>
@@ -1152,7 +1022,7 @@ export function FunSentenceBuilder() {
         )}
 
         {draggedNode && potentialTarget && (
-          <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full ${isDark ? 'bg-pink-600' : 'bg-pink-500'} text-white font-medium animate-pulse`}>
+          <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 ${UI_RADIUS.pill} ${isDark ? 'bg-pink-600' : 'bg-pink-500'} text-white font-medium animate-pulse`}>
             Rilascia per collegare a "{potentialTarget.label}"
           </div>
         )}
@@ -1166,84 +1036,9 @@ export function FunSentenceBuilder() {
             </p>
           </div>
         )}
-        
-        {validationResult && (
-          <div className={`rounded-xl p-4 border-2 mb-4 ${getStatusColor(validationResult.status)}`}>
-            <div className="flex items-start gap-4">
-              <div className="p-2 rounded-full bg-white shadow">
-                {getStatusIcon(validationResult.status)}
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-bold flex items-center gap-2">
-                  {getStatusLabel(validationResult.status)}
-                  {validationResult.grammar_correct && (
-                    <span className="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">
-                      ✓ Grammatica
-                    </span>
-                  )}
-                  {validationResult.semantic_correct && (
-                    <span className="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">
-                      ✓ Semantica
-                    </span>
-                  )}
-                </h3>
-                <p className="mt-2 text-gray-700">{validationResult.explanation}</p>
-                {validationResult.suggestion && (
-                  <p className="mt-2 text-sm">
-                    <span className="font-medium">💡 Suggerimento:</span> {validationResult.suggestion}
-                  </p>
-                )}
-              </div>
-              <button
-                onClick={handlePlayAudio}
-                disabled={playingAudio}
-                className={`p-3 rounded-full transition-all ${
-                  playingAudio 
-                    ? 'bg-blue-500 text-white animate-pulse' 
-                    : 'bg-white hover:bg-gray-100 text-gray-700'
-                }`}
-              >
-                {playingAudio ? (
-                  <Loader2 size={20} className="animate-spin" />
-                ) : (
-                  <Volume2 size={20} />
-                )}
-              </button>
-            </div>
-          </div>
-        )}
-        
-        <div className="flex justify-center gap-4">
-          <button
-            onClick={handleReset}
-            className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-          >
-            <RotateCcw size={18} />
-            Reset
-          </button>
-          <button
-            onClick={handleValidate}
-            disabled={canvasNodes.length < 2 || validating}
-            className={`px-8 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
-              canvasNodes.length < 2
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-gradient-to-r from-pink-500 to-orange-500 text-white hover:shadow-lg hover:scale-105'
-            }`}
-          >
-            {validating ? (
-              <>
-                <Loader2 size={18} className="animate-spin" />
-                Validazione...
-              </>
-            ) : (
-              <>
-                <Check size={18} />
-                Verifica Frase
-              </>
-            )}
-          </button>
-        </div>
+        {renderValidationPanel('inline')}
+        {renderSentenceActions({ compact: false })}
       </div>
-    </div>
+    </GrammarBuilderFrame>
   );
 }

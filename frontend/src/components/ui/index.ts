@@ -1,5 +1,12 @@
 export { LoadingSpinner } from './LoadingSpinner';
 export { ErrorState } from './ErrorState';
+export { AppScreen } from './AppScreen';
+export { ScreenHeader } from './ScreenHeader';
+export { SurfacePanel } from './SurfacePanel';
+export { FilterSelect } from './FilterSelect';
+export { PillTabs } from './PillTabs';
+export type { PillTabItem, PillTabTone } from './PillTabs';
+export { UI_ELEVATION, UI_INTERACTION, UI_RADIUS, UI_SIZE } from './geometry';
 export { PageHeader } from './PageHeader';
 export { StatCard } from './StatCard';
 export { NavButton } from './NavButton';

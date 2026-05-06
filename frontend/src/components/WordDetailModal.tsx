@@ -1,6 +1,7 @@
 import type { WordCloudItem } from '../types';
 import { AudioButton } from './AudioButton';
 import { ConfidenceBadge } from './ConfidenceBadge';
+import { UI_RADIUS } from './ui';
 
 const CATEGORY_COLORS: Record<string, string> = {
   animals: '#3B82F6',
@@ -28,7 +29,7 @@ export function WordDetailModal({ word, onClose }: WordDetailModalProps) {
       onClick={onClose}
     >
       <div 
-        className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden"
+        className={`bg-white ${UI_RADIUS.surface} shadow-2xl max-w-md w-full mx-4 overflow-hidden`}
         onClick={(e) => e.stopPropagation()}
       >
         {word.image_base64 && (
@@ -49,7 +50,7 @@ export function WordDetailModal({ word, onClose }: WordDetailModalProps) {
             </div>
             {word.category && (
               <span 
-                className="px-3 py-1 rounded-full text-xs font-semibold text-white capitalize"
+                className={`px-3 py-1 ${UI_RADIUS.pill} text-xs font-semibold text-white capitalize`}
                 style={{ backgroundColor: CATEGORY_COLORS[word.category] || CATEGORY_COLORS.default }}
               >
                 {word.category}
@@ -64,19 +65,19 @@ export function WordDetailModal({ word, onClose }: WordDetailModalProps) {
           </div>
           
           <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="bg-green-50 rounded-xl p-4 text-center">
+            <div className={`bg-green-50 ${UI_RADIUS.control} p-4 text-center`}>
               <div className="text-2xl font-bold text-green-600">
                 {word.swipe_right_count || 0}
               </div>
               <div className="text-xs text-green-700">Times known</div>
             </div>
-            <div className="bg-red-50 rounded-xl p-4 text-center">
+            <div className={`bg-red-50 ${UI_RADIUS.control} p-4 text-center`}>
               <div className="text-2xl font-bold text-red-600">
                 {word.swipe_left_count || 0}
               </div>
               <div className="text-xs text-red-700">Times not known</div>
             </div>
-            <div className="bg-blue-50 rounded-xl p-4 text-center">
+            <div className={`bg-blue-50 ${UI_RADIUS.control} p-4 text-center`}>
               <div className="text-2xl font-bold text-blue-600">
                 {word.review_count || 0}
               </div>
@@ -90,9 +91,9 @@ export function WordDetailModal({ word, onClose }: WordDetailModalProps) {
                 <span className="text-gray-600">Mastery level</span>
                 <span className="font-semibold text-gray-800">{masteryPercentage}%</span>
               </div>
-              <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+              <div className={`h-3 bg-gray-200 ${UI_RADIUS.pill} overflow-hidden`}>
                 <div 
-                  className="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full transition-all duration-500"
+                  className={`h-full bg-gradient-to-r from-green-400 to-green-600 ${UI_RADIUS.pill} transition-all duration-500`}
                   style={{ width: `${masteryPercentage}%` }}
                 />
               </div>
@@ -101,7 +102,7 @@ export function WordDetailModal({ word, onClose }: WordDetailModalProps) {
           
           <button
             onClick={onClose}
-            className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:scale-[1.02] transition-transform"
+            className={`w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white ${UI_RADIUS.control} font-semibold hover:scale-[1.02] transition-transform`}
           >
             Close
           </button>

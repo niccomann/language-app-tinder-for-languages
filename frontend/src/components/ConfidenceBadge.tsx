@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { TrendingUp, Star, Zap, Sparkles } from 'lucide-react';
 import { api } from '../services/api';
+import { UI_RADIUS } from './ui';
 
 interface ConfidenceBadgeProps {
   word: string;
@@ -52,7 +53,7 @@ export function ConfidenceBadge({
 
   if (loading) {
     return (
-      <span className={`inline-flex items-center gap-1 rounded-full border bg-gray-100 text-gray-400 border-gray-200 ${sizeClasses[size]} ${className} animate-pulse`}>
+      <span className={`inline-flex items-center gap-1 ${UI_RADIUS.pill} border bg-gray-100 text-gray-400 border-gray-200 ${sizeClasses[size]} ${className} animate-pulse`}>
         <Sparkles size={iconSizes[size]} />
         <span className="font-semibold">-</span>
       </span>
@@ -86,7 +87,7 @@ export function ConfidenceBadge({
   const Icon = config.icon;
 
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full border ${config.color} ${sizeClasses[size]} ${className}`}>
+    <span className={`inline-flex items-center gap-1 ${UI_RADIUS.pill} border ${config.color} ${sizeClasses[size]} ${className}`}>
       <Icon size={iconSizes[size]} />
       <span className="font-semibold">{score}</span>
       {showLabel && <span className="opacity-75">· {config.label}</span>}

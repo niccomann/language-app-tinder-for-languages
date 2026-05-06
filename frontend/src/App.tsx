@@ -1,21 +1,50 @@
-import { useEffect } from 'react';
-import { CardStack } from './components/CardStack';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ThemeToggle } from './components/ui/ThemeToggle';
 
+const CardStack = lazy(() => import('./components/CardStack').then((module) => ({ default: module.CardStack })));
+const GrammarLab = lazy(() => import('./components/GrammarLab').then((module) => ({ default: module.GrammarLab })));
+const WordsLibraryEnriched = lazy(() => import('./components/WordsLibraryEnriched').then((module) => ({ default: module.WordsLibraryEnriched })));
+
+type RouteState =
+  | { screen: 'home' }
+  | { screen: 'grammar' }
+  | { screen: 'library'; wordId?: number; detailTab?: 'overview' | 'db_row' };
+
+function parseRoute(pathname: string): RouteState {
+  const parts = pathname.split('/').filter(Boolean);
+
+  if (parts[0] === 'grammar') {
+    return { screen: 'grammar' };
+  }
+
+  if (parts[0] === 'library') {
+    const wordId = parts[1] === 'words' ? Number(parts[2]) : undefined;
+    const validWordId = Number.isFinite(wordId) ? wordId : undefined;
+    return {
+      screen: 'library',
+      wordId: validWordId,
+      detailTab: parts[3] === 'db-row' ? 'db_row' : validWordId ? 'overview' : undefined,
+    };
+  }
+
+  return { screen: 'home' };
+}
+
 function App() {
-  useEffect(() => {
-    if (!window.YT && !document.querySelector('script[src*="youtube.com/iframe_api"]')) {
-      console.log('🌐 Preloading YouTube IFrame API globally...');
-      const tag = document.createElement('script');
-      tag.src = 'https://www.youtube.com/iframe_api';
-      const firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
-      
-      window.onYouTubeIframeAPIReady = () => {
-        console.log('✅ YouTube API preloaded and ready');
-      };
+  const [route, setRoute] = useState<RouteState>(() => parseRoute(window.location.pathname));
+
+  const navigateTo = (path: string) => {
+    if (window.location.pathname !== path) {
+      window.history.pushState({}, '', path);
     }
+    setRoute(parseRoute(path));
+  };
+
+  useEffect(() => {
+    const handlePopState = () => setRoute(parseRoute(window.location.pathname));
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   useEffect(() => {
@@ -36,20 +65,38 @@ function App() {
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-colors duration-300">
-        <div className="fixed bottom-4 right-4 z-[9999]">
+        <div className="fixed bottom-4 right-4 z-40">
           <ThemeToggle />
         </div>
-        <CardStack />
+        <Suspense fallback={<RouteFallback />}>
+          {route.screen === 'library' ? (
+            <WordsLibraryEnriched
+              onClose={() => navigateTo('/')}
+              initialWordId={route.wordId}
+              initialDetailTab={route.detailTab}
+              onWordOpen={(wordId) => navigateTo(`/library/words/${wordId}`)}
+              onWordClose={() => navigateTo('/library')}
+            />
+          ) : route.screen === 'grammar' ? (
+            <GrammarLab onBack={() => navigateTo('/')} />
+          ) : (
+            <CardStack
+              onOpenLibrary={() => navigateTo('/library')}
+              onOpenGrammarLab={() => navigateTo('/grammar')}
+            />
+          )}
+        </Suspense>
       </div>
     </ThemeProvider>
   );
 }
 
-export default App;
-
-declare global {
-  interface Window {
-    YT: any;
-    onYouTubeIframeAPIReady: () => void;
-  }
+function RouteFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center text-sm font-semibold text-slate-500 dark:text-slate-300">
+      Loading...
+    </div>
+  );
 }
+
+export default App;

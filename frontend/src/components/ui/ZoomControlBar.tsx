@@ -3,7 +3,8 @@
  */
 import React from 'react';
 import { ZoomIn, ZoomOut, Maximize2, Minimize2, Focus, RotateCcw } from 'lucide-react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme } from '../../contexts/useTheme';
+import { UI_ELEVATION, UI_INTERACTION, UI_RADIUS } from './geometry';
 
 export interface ZoomControlBarProps {
   currentZoom: number;
@@ -55,13 +56,13 @@ export function ZoomControlBar({
     ? 'flex items-center gap-1' 
     : 'flex flex-col gap-1';
 
-  const buttonBase = `rounded-lg transition-all hover:scale-110 ${sizeClasses[size].button} ${
+  const buttonBase = `${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} ${UI_INTERACTION.iconLift} ${UI_INTERACTION.press} ${sizeClasses[size].button} ${
     isDark ? 'hover:bg-slate-700 text-slate-200' : 'hover:bg-gray-200 text-gray-700'
   }`;
 
   return (
     <div 
-      className={`absolute ${positionClasses[position]} ${containerClass} p-1.5 rounded-xl backdrop-blur-sm shadow-lg z-20 ${
+      className={`absolute ${positionClasses[position]} ${containerClass} p-1.5 ${UI_RADIUS.surface} backdrop-blur-sm ${UI_ELEVATION.floating} z-20 ${
         isDark ? 'bg-slate-800/90 border border-slate-700' : 'bg-white/90 border border-gray-200'
       } ${className}`}
     >

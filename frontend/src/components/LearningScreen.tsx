@@ -1,15 +1,13 @@
+import { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, FlaskConical, SlidersHorizontal } from 'lucide-react';
 import { Card } from './Card';
 import { SwipeButtons } from './SwipeButtons';
 import { ProgressBar } from './ProgressBar';
-import { SoraVideoModal } from './SoraVideoModal';
-import { VideoModal } from './VideoModal';
-import { VideoReel } from './VideoReel';
-import { VideoSourceSelector } from './VideoSourceSelector';
-import { AIVideoReel } from './AIVideoReel';
-import { LearnedWordConfirmation } from './LearnedWordConfirmation';
-import { NavButton } from './ui';
+import { LearningFiltersPanel } from './LearningFiltersPanel';
+import { LearningCategoryStrip } from './LearningCategoryStrip';
+import { LearningSystemMenu } from './LearningSystemMenu';
+import { AppScreen, NavButton, ScreenHeader, SurfacePanel, UI_RADIUS } from './ui';
 import type { Flashcard } from '../types';
 
 interface LearningScreenProps {
@@ -22,28 +20,15 @@ interface LearningScreenProps {
   };
   totalCards: number;
   onSwipe: (direction: 'left' | 'right') => void;
-  onBackToCategories: () => void;
   onOpenLibrary: () => void;
   onOpenGrammarLab: () => void;
-  onGenerateVideo: () => void;
-  youtubeVideo: any;
-  onCloseVideoModal: () => void;
-  showVideoSourceSelector: boolean;
-  currentWord: { word: string; translation: string } | null;
-  onSelectYouTube: () => void;
-  onSelectAI: () => void;
-  onCloseVideoSourceSelector: () => void;
-  showReelFeed: boolean;
-  onCloseReelFeed: () => void;
-  onShowConfirmation: () => void;
-  showAIReelFeed: boolean;
-  onCloseAIReelFeed: () => void;
-  showLearnedConfirmation: boolean;
-  onConfirmWordLearned: () => void;
-  onSkipWordConfirmation: () => void;
-  showSoraModal: boolean;
-  onCloseSoraModal: () => void;
-  videoJobId: string | null;
+  categories: string[];
+  selectedCategories: string[];
+  onToggleCategory: (category: string) => void;
+  onSelectAllCategories: () => void;
+  onDeselectAllCategories: () => void;
+  filtersOpen: boolean;
+  onFiltersOpenChange: (open: boolean) => void;
 }
 
 export function LearningScreen({
@@ -52,164 +37,142 @@ export function LearningScreen({
   progress,
   totalCards,
   onSwipe,
-  onBackToCategories,
   onOpenLibrary,
   onOpenGrammarLab,
-  onGenerateVideo,
-  youtubeVideo,
-  onCloseVideoModal,
-  showVideoSourceSelector,
-  currentWord,
-  onSelectYouTube,
-  onSelectAI,
-  onCloseVideoSourceSelector,
-  showReelFeed,
-  onCloseReelFeed,
-  onShowConfirmation,
-  showAIReelFeed,
-  onCloseAIReelFeed,
-  showLearnedConfirmation,
-  onConfirmWordLearned,
-  onSkipWordConfirmation,
-  showSoraModal,
-  onCloseSoraModal,
-  videoJobId,
+  categories,
+  selectedCategories,
+  onToggleCategory,
+  onSelectAllCategories,
+  onDeselectAllCategories,
+  filtersOpen,
+  onFiltersOpenChange,
 }: LearningScreenProps) {
+  const [lastSwipeDirection, setLastSwipeDirection] = useState<'left' | 'right'>('left');
+  const [learningSystemOpen, setLearningSystemOpen] = useState(false);
+
+  const handleDirectionalSwipe = (direction: 'left' | 'right') => {
+    setLastSwipeDirection(direction);
+    onSwipe(direction);
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-6 gap-8 bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      <div className="w-full max-w-sm">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            Learn German
-          </h1>
-          <div className="flex gap-3">
+    <AppScreen width="wide" contentClassName="min-h-dvh px-4 py-4">
+      <main className="mx-auto grid w-full max-w-6xl gap-4 lg:min-h-[calc(100dvh-2rem)] lg:grid-cols-[minmax(320px,380px)_minmax(360px,440px)] lg:items-start lg:justify-center">
+        <header className="w-full space-y-3">
+          <ScreenHeader
+            title="Learn German"
+            subtitle="Just decide: know it or not. The algorithm adapts the learning path from there."
+            density="compact"
+            actions={(
+              <div className={`${UI_RADIUS.pill} bg-white px-3 py-2 text-sm font-extrabold text-indigo-600 shadow-sm ring-1 ring-indigo-100 dark:bg-slate-800 dark:ring-slate-700`}>
+                {selectedCategories.length}/{categories.length || 0}
+              </div>
+            )}
+          />
+
+          <div className="grid grid-cols-3 gap-2">
             <NavButton
-              onClick={onBackToCategories}
-              icon={<span>📋</span>}
-              label="Categories"
+              onClick={() => onFiltersOpenChange(true)}
+              icon={<SlidersHorizontal size={17} />}
+              label="Filters"
               color="indigo"
+              size="small"
             />
             <NavButton
               onClick={onOpenLibrary}
               icon={<BookOpen size={18} />}
               label="Library"
               color="purple"
+              size="small"
             />
             <NavButton
               onClick={onOpenGrammarLab}
-              icon={<span>🧪</span>}
+              icon={<FlaskConical size={17} />}
               label="Grammar"
               color="blue"
+              size="small"
             />
           </div>
-        </div>
-        <p className="text-center text-gray-700 mb-6 text-base font-medium bg-white/60 backdrop-blur-sm py-4 px-8 rounded-full border border-gray-200">
-          👈 Swipe left: Don't know · Swipe right: Know 👉
-        </p>
 
-        <ProgressBar progress={progress} totalCards={totalCards} />
-      </div>
+          <LearningCategoryStrip
+            categories={categories}
+            selectedCategories={selectedCategories}
+            onOpenFilters={() => onFiltersOpenChange(true)}
+          />
 
-      <div className="relative w-full max-w-sm h-[500px] flex items-center justify-center">
-        {nextCard && (
-          <div className="absolute w-full opacity-20 scale-90 pointer-events-none blur-sm -z-10">
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
-              <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
-                {nextCard.image_base64 ? (
-                  <img src={`data:image/jpeg;base64,${nextCard.image_base64}`} alt={nextCard.word} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100">
-                    <span className="text-4xl font-bold text-indigo-300">{nextCard.word.charAt(0)}</span>
-                  </div>
-                )}
-              </div>
-              <div className="p-6 text-center">
-                <h2 className="text-4xl font-bold text-gray-900">{nextCard.word}</h2>
+          <LearningSystemMenu
+            isOpen={learningSystemOpen}
+            onToggle={() => setLearningSystemOpen((open) => !open)}
+          />
+        </header>
+
+        <section className="flex min-h-0 flex-col gap-3">
+        <div className="relative flex min-h-[520px] items-start justify-center">
+          {nextCard && (
+            <div className="absolute inset-x-0 top-0 w-full scale-90 opacity-20 pointer-events-none blur-sm -z-10">
+              <div className={`bg-white ${UI_RADIUS.surface} shadow-xl overflow-hidden border border-gray-200`}>
+                <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
+                  {nextCard.image_base64 ? (
+                    <img src={`data:image/jpeg;base64,${nextCard.image_base64}`} alt={nextCard.word} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100">
+                      <span className="text-4xl font-bold text-indigo-300">{nextCard.word.charAt(0)}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="p-6 text-center">
+                  <h2 className="text-4xl font-bold text-gray-900">{nextCard.word}</h2>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-
-        <AnimatePresence mode="wait">
-          {currentCard && (
-            <Card
-              key={currentCard.id}
-              flashcard={currentCard}
-              onSwipe={onSwipe}
-              isTop={true}
-            />
           )}
-        </AnimatePresence>
-      </div>
 
-      <SwipeButtons onSwipe={onSwipe} disabled={!currentCard} />
+          <AnimatePresence mode="wait" custom={lastSwipeDirection === 'right' ? 1 : -1}>
+            {currentCard && (
+              <Card
+                key={currentCard.id}
+                flashcard={currentCard}
+                onSwipe={handleDirectionalSwipe}
+                swipeDirection={lastSwipeDirection}
+              />
+            )}
+          </AnimatePresence>
 
-      <div className="text-sm text-gray-500">
-        Use arrow keys: ← Don't know | Know →
-      </div>
+          {!currentCard && (
+            <SurfacePanel className="w-full border-dashed border-slate-300 bg-white/80 text-center" padding="lg">
+              <h2 className="text-2xl font-extrabold text-slate-900">No cards in this deck</h2>
+              <p className="mt-2 text-sm font-medium text-slate-500">
+                Open filters and select at least one category.
+              </p>
+              <button
+                onClick={() => onFiltersOpenChange(true)}
+                className={`mt-5 ${UI_RADIUS.control} bg-indigo-600 px-5 py-3 text-sm font-extrabold text-white`}
+              >
+                Open Filters
+              </button>
+            </SurfacePanel>
+          )}
+        </div>
 
-      {currentCard && (
-        <button
-          onClick={onGenerateVideo}
-          className="mt-4 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2 whitespace-nowrap min-w-fit"
-        >
-          <span>🎬</span>
-          <span>Generate AI Video</span>
-        </button>
-      )}
+        <SwipeButtons onSwipe={handleDirectionalSwipe} disabled={!currentCard} />
 
-      {youtubeVideo && (
-        <VideoModal video={youtubeVideo} onClose={onCloseVideoModal} />
-      )}
+        <ProgressBar progress={progress} totalCards={totalCards} />
 
-      {showVideoSourceSelector && currentWord && (
-        <VideoSourceSelector
-          isOpen={showVideoSourceSelector}
-          word={currentWord.word}
-          translation={currentWord.translation}
-          onSelectYouTube={onSelectYouTube}
-          onSelectAI={onSelectAI}
-          onClose={onCloseVideoSourceSelector}
-        />
-      )}
+        <div className="pb-2 text-center text-sm font-medium text-slate-500">
+          Swipe left: Don't know · Swipe right: Know
+        </div>
+        </section>
+      </main>
 
-      {showReelFeed && currentWord && (
-        <VideoReel
-          word={currentWord.word}
-          translation={currentWord.translation}
-          language="de"
-          onClose={onCloseReelFeed}
-          onShowConfirmation={onShowConfirmation}
-        />
-      )}
-
-      {showAIReelFeed && currentWord && (
-        <AIVideoReel
-          word={currentWord.word}
-          translation={currentWord.translation}
-          language="de"
-          onClose={onCloseAIReelFeed}
-          onShowConfirmation={onShowConfirmation}
-          videoCount={3}
-        />
-      )}
-
-      {showLearnedConfirmation && currentWord && (
-        <LearnedWordConfirmation
-          word={currentWord.word}
-          translation={currentWord.translation}
-          onConfirm={onConfirmWordLearned}
-          onSkip={onSkipWordConfirmation}
-        />
-      )}
-
-      <SoraVideoModal
-        isOpen={showSoraModal}
-        onClose={onCloseSoraModal}
-        jobId={videoJobId}
-        word={currentWord?.word || ''}
-        translation={currentWord?.translation || ''}
+      <LearningFiltersPanel
+        isOpen={filtersOpen}
+        categories={categories}
+        selectedCategories={selectedCategories}
+        onToggleCategory={onToggleCategory}
+        onSelectAll={onSelectAllCategories}
+        onDeselectAll={onDeselectAllCategories}
+        onClose={() => onFiltersOpenChange(false)}
       />
-    </div>
+    </AppScreen>
   );
 }

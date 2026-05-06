@@ -7,7 +7,7 @@
  * - Fullscreen mode
  * - Tracking del livello di zoom corrente
  */
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import * as d3 from 'd3';
 
 export interface ZoomControlsOptions {
@@ -31,7 +31,7 @@ export interface ZoomControlsReturn {
 }
 
 export function useZoomControls(
-  svgRef: React.RefObject<SVGSVGElement>,
+  svgRef: React.RefObject<SVGSVGElement | null>,
   dimensions: { width: number; height: number },
   options: ZoomControlsOptions = {}
 ): ZoomControlsReturn {

@@ -4,9 +4,9 @@
  * Questo componente può essere inserito in qualsiasi gioco/visualizzazione D3
  * per fornire una UI consistente per il filtering/grouping linguistico.
  */
-import React from 'react';
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from '../contexts/useTheme';
 import type { LinguisticCriteria, LinguisticFilterConfig } from '../hooks/useLinguisticFilters';
+import { FilterSelect, UI_RADIUS } from './ui';
 
 export type FilterBarVariant = 'horizontal' | 'vertical' | 'compact' | 'dropdown';
 
@@ -34,24 +34,17 @@ export function LinguisticFilterBar({
   if (variant === 'dropdown') {
     return (
       <div className={`relative ${className}`}>
-        <select
+        <FilterSelect
+          ariaLabel="Linguistic grouping"
           value={activeCriteria}
-          onChange={(e) => onCriteriaChange(e.target.value as LinguisticCriteria)}
-          className={`
-            px-4 py-2 rounded-lg font-medium cursor-pointer
-            ${isDark 
-              ? 'bg-slate-700 text-white border-slate-600' 
-              : 'bg-white text-gray-800 border-gray-300'
-            }
-            border focus:outline-none focus:ring-2 focus:ring-purple-500
-          `}
+          onChange={(value) => onCriteriaChange(value as LinguisticCriteria)}
         >
           {configs.map((config) => (
             <option key={config.id} value={config.id}>
               {config.label}
             </option>
           ))}
-        </select>
+        </FilterSelect>
       </div>
     );
   }
@@ -69,9 +62,9 @@ export function LinguisticFilterBar({
               onClick={() => onCriteriaChange(config.id)}
               title={config.description}
               className={`
-                p-2 rounded-lg transition-all duration-200
+                p-2 ${UI_RADIUS.control} transition-all duration-200
                 ${isActive
-                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-[1.02]'
                   : isDark
                     ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -98,7 +91,7 @@ export function LinguisticFilterBar({
               key={config.id}
               onClick={() => onCriteriaChange(config.id)}
               className={`
-                flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-left
+                flex items-center gap-3 px-4 py-3 ${UI_RADIUS.control} transition-all duration-200 text-left
                 ${isActive
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
                   : isDark
@@ -135,13 +128,13 @@ export function LinguisticFilterBar({
             onClick={() => onCriteriaChange(config.id)}
             title={config.description}
             className={`
-              flex items-center gap-2 px-4 py-2 rounded-full font-semibold 
+              flex items-center gap-2 px-4 py-2 ${UI_RADIUS.pill} font-semibold 
               transition-all duration-200 whitespace-nowrap
               ${isActive
-                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105'
+                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-[1.02]'
                 : isDark
-                  ? 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:scale-102'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:scale-102'
+                  ? 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:scale-[1.02]'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:scale-[1.02]'
               }
             `}
           >
@@ -183,18 +176,18 @@ export function GroupLegend({
             key={groupName}
             onClick={() => onGroupClick?.(groupName)}
             className={`
-              flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium
+              flex items-center gap-2 px-3 py-1.5 ${UI_RADIUS.pill} text-sm font-medium
               transition-all duration-200
               ${isSelected
-                ? 'ring-2 ring-offset-2 ring-purple-500 scale-105'
-                : 'hover:scale-105'
+                ? 'ring-2 ring-offset-2 ring-purple-500 scale-[1.02]'
+                : 'hover:scale-[1.02]'
               }
               ${isDark ? 'bg-slate-700/80' : 'bg-white/80'}
               backdrop-blur-sm shadow-sm
             `}
           >
             <div 
-              className="w-3 h-3 rounded-full" 
+              className={`w-3 h-3 ${UI_RADIUS.pill}`} 
               style={{ backgroundColor: color }}
             />
             <span className={isDark ? 'text-slate-200' : 'text-gray-700'}>

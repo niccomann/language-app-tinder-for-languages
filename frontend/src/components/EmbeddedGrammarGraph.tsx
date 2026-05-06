@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import * as d3 from 'd3';
-import { ZoomIn, ZoomOut, Maximize2, Minimize2, RotateCcw } from 'lucide-react';
 import type { GrammarSentence, GrammarNode } from '../types';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
-import { useTheme } from '../contexts/ThemeContext';
-import { ExpandedViewWrapper } from './ui';
+import { useTheme } from '../contexts/useTheme';
+import { ExpandedViewWrapper, ZoomControlBar } from './ui';
 
 interface EmbeddedGrammarGraphProps {
   sentence: GrammarSentence;
@@ -151,7 +150,7 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
             if (!event.active) simulation.alphaTarget(0);
             d.fx = null;
             d.fy = null;
-          })
+          }) as any
       );
 
     node.append('circle')
@@ -249,32 +248,24 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
       }, 100);
     });
 
-    return () => simulation.stop();
+    return () => {
+      simulation.stop();
+    };
   }, [sentence, dimensions, onNodeSelect, isExpanded]);
 
   const content = (
     <div ref={containerRef} className="w-full h-full relative">
       <svg ref={svgRef} width="100%" height="100%" style={{ cursor: 'grab' }} className={`transition-colors duration-300 ${isDark ? 'bg-gradient-to-br from-slate-800 to-slate-900' : 'bg-gradient-to-br from-gray-50 to-slate-100'}`} />
       
-      {/* Zoom Controls */}
-      <div className={`absolute top-4 left-4 z-20 flex items-center gap-1 p-1.5 rounded-xl backdrop-blur-sm shadow-lg ${isDark ? 'bg-slate-800/90 border border-slate-700' : 'bg-white/90 border border-gray-200'}`}>
-        <button onClick={handleZoomIn} className={`p-2 rounded-lg transition-all hover:scale-110 ${isDark ? 'hover:bg-slate-700 text-slate-200' : 'hover:bg-gray-200 text-gray-700'}`} title="Zoom In">
-          <ZoomIn size={18} />
-        </button>
-        <button onClick={handleZoomOut} className={`p-2 rounded-lg transition-all hover:scale-110 ${isDark ? 'hover:bg-slate-700 text-slate-200' : 'hover:bg-gray-200 text-gray-700'}`} title="Zoom Out">
-          <ZoomOut size={18} />
-        </button>
-        <button onClick={handleZoomReset} className={`p-2 rounded-lg transition-all hover:scale-110 ${isDark ? 'hover:bg-slate-700 text-slate-200' : 'hover:bg-gray-200 text-gray-700'}`} title="Reset Zoom">
-          <RotateCcw size={16} />
-        </button>
-        <div className={`w-px h-6 mx-1 ${isDark ? 'bg-slate-600' : 'bg-gray-300'}`} />
-        <button onClick={toggleExpanded} className={`p-2 rounded-lg transition-all hover:scale-110 ${isExpanded ? 'text-purple-500' : ''} ${isDark ? 'hover:bg-slate-700 text-slate-200' : 'hover:bg-gray-200 text-gray-700'}`} title={isExpanded ? "Esci da fullscreen" : "Espandi a fullscreen"}>
-          {isExpanded ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
-        </button>
-        <div className={`px-2 text-xs font-mono ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-          {Math.round(currentZoom * 100)}%
-        </div>
-      </div>
+      <ZoomControlBar
+        currentZoom={currentZoom}
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
+        onZoomReset={handleZoomReset}
+        isExpanded={isExpanded}
+        onToggleExpand={toggleExpanded}
+        showFitToView={false}
+      />
     </div>
   );
 

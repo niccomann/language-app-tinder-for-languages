@@ -45,8 +45,13 @@ The backend uses **two separate databases**:
 - Generate audio pronunciations
 - Cache in main database
 
-### `youtube.py` - Video Search
-- Search educational YouTube videos
+### Deprecated YouTube Video Search
+- Old YouTube route and service code lives under `app/routes/deprecated/` and `app/services/deprecated/`
+- It is not mounted by the active FastAPI app
+
+### Deprecated AI Video Generation
+- Old generated-video route and service code lives under `app/routes/deprecated/` and `app/services/deprecated/`
+- It is not mounted by the active FastAPI app
 
 ## API Routes
 
@@ -84,7 +89,6 @@ GEMINI_API_KEY=your_gemini_key
 
 # Optional (for full features)
 OPENAI_API_KEY=your_openai_key
-YOUTUBE_API_KEY=your_youtube_key
 
 # Database (optional - only needed for PostgreSQL instead of default SQLite)
 # DB_HOST=localhost
@@ -103,7 +107,7 @@ sentence_build_start, sentence_build_complete, sentence_validated
 # Library
 word_view, word_search, filter_apply
 
-# Video
+# Video tracking
 video_play, video_complete
 
 # Session

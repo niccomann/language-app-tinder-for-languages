@@ -1,5 +1,4 @@
 import type { WordCloudItem } from '../types';
-import type { LinguisticCriteria } from '../hooks/useLinguisticFilters';
 
 /**
  * Hierarchical node structure for D3 sunburst

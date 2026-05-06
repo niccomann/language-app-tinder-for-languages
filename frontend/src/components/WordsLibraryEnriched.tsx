@@ -2,11 +2,15 @@ import { useState, useEffect, useCallback } from 'react';
 import { Search, BookOpen, CheckCircle, XCircle, Filter, ChevronDown, X, Sparkles } from 'lucide-react';
 import { api } from '../services/api';
 import type { FlashcardWithProgress, LibraryFilters } from '../types';
-import { LoadingSpinner, ErrorState, PageHeader, StatCard } from './ui';
+import { AppScreen, FilterSelect, LoadingSpinner, ErrorState, ScreenHeader, StatCard, SurfacePanel, UI_RADIUS } from './ui';
 import { WordDetailModal } from './WordDetailModalEnriched';
 
 interface WordsLibraryEnrichedProps {
   onClose: () => void;
+  initialWordId?: number;
+  initialDetailTab?: 'overview' | 'db_row';
+  onWordOpen?: (wordId: number) => void;
+  onWordClose?: () => void;
 }
 
 const GENDER_LABELS: Record<string, { article: string; color: string }> = {
@@ -32,13 +36,21 @@ const FREQUENCY_ICONS: Record<string, string> = {
   archaic: '⭐',
 };
 
-export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
+const LIBRARY_PAGE_SIZE = 200;
+
+export function WordsLibraryEnriched({
+  onClose,
+  initialWordId,
+  initialDetailTab,
+  onWordOpen,
+  onWordClose,
+}: WordsLibraryEnrichedProps) {
   const [words, setWords] = useState<FlashcardWithProgress[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<LibraryFilters | null>(null);
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedWord, setSelectedWord] = useState<FlashcardWithProgress | null>(null);
+  const [selectedWordId, setSelectedWordId] = useState<number | null>(initialWordId ?? null);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('');
@@ -46,6 +58,7 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
   const [cefrFilter, setCefrFilter] = useState<string>('');
   const [genderFilter, setGenderFilter] = useState<string>('');
   const [frequencyFilter, setFrequencyFilter] = useState<string>('');
+  const [registerFilter, setRegisterFilter] = useState<string>('');
   const [posFilter, setPosFilter] = useState<string>('');
   const [compoundFilter, setCompoundFilter] = useState<string>('');
 
@@ -65,23 +78,52 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
       const data = await api.getLibraryWords({
         language: 'de',
         search: searchQuery || undefined,
-        status: statusFilter || undefined,
         category: categoryFilter || undefined,
         cefr_level: cefrFilter || undefined,
         gender: genderFilter || undefined,
         frequency_band: frequencyFilter || undefined,
+        register: registerFilter || undefined,
         part_of_speech: posFilter || undefined,
         is_compound: compoundFilter === 'true' ? true : compoundFilter === 'false' ? false : undefined,
-        limit: 200,
+        limit: LIBRARY_PAGE_SIZE,
+        offset: 0,
       });
-      setWords(data);
+      const allWords = [...data];
+      let currentPage = data;
+      let offset = LIBRARY_PAGE_SIZE;
+
+      while (currentPage.length === LIBRARY_PAGE_SIZE) {
+        const page = await api.getLibraryWords({
+          language: 'de',
+          search: searchQuery || undefined,
+          category: categoryFilter || undefined,
+          cefr_level: cefrFilter || undefined,
+          gender: genderFilter || undefined,
+          frequency_band: frequencyFilter || undefined,
+          register: registerFilter || undefined,
+          part_of_speech: posFilter || undefined,
+          is_compound: compoundFilter === 'true' ? true : compoundFilter === 'false' ? false : undefined,
+          limit: LIBRARY_PAGE_SIZE,
+          offset,
+        });
+
+        if (page.length === 0) {
+          break;
+        }
+
+        allWords.push(...page);
+        currentPage = page;
+        offset += LIBRARY_PAGE_SIZE;
+      }
+
+      setWords(allWords);
     } catch (err) {
       setError('Error loading words');
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, [searchQuery, statusFilter, categoryFilter, cefrFilter, genderFilter, frequencyFilter, posFilter, compoundFilter]);
+  }, [searchQuery, categoryFilter, cefrFilter, genderFilter, frequencyFilter, registerFilter, posFilter, compoundFilter]);
 
   useEffect(() => {
     loadFilters();
@@ -94,8 +136,24 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
     return () => clearTimeout(debounce);
   }, [loadWords]);
 
+  useEffect(() => {
+    setSelectedWordId(initialWordId ?? null);
+  }, [initialWordId]);
+
   const handleWordClick = (word: FlashcardWithProgress) => {
-    setSelectedWord(word);
+    if (onWordOpen) {
+      onWordOpen(word.id);
+      return;
+    }
+    setSelectedWordId(word.id);
+  };
+
+  const handleCloseWord = () => {
+    if (onWordClose) {
+      onWordClose();
+      return;
+    }
+    setSelectedWordId(null);
   };
 
   const handleToggleStatus = async (word: FlashcardWithProgress, event: React.MouseEvent) => {
@@ -122,15 +180,21 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
     setCefrFilter('');
     setGenderFilter('');
     setFrequencyFilter('');
+    setRegisterFilter('');
     setPosFilter('');
     setCompoundFilter('');
   };
 
-  const activeFilterCount = [statusFilter, categoryFilter, cefrFilter, genderFilter, frequencyFilter, posFilter, compoundFilter].filter(Boolean).length;
+  const activeFilterCount = [statusFilter, categoryFilter, cefrFilter, genderFilter, frequencyFilter, registerFilter, posFilter, compoundFilter].filter(Boolean).length;
 
   const knownWords = words.filter(word => word.known === true);
   const unknownWords = words.filter(word => word.known === false);
   const notReviewedWords = words.filter(word => word.known === null || word.known === undefined);
+  const visibleWords = statusFilter === 'known'
+    ? knownWords
+    : statusFilter === 'unknown'
+      ? unknownWords
+      : words;
 
   if (loading && words.length === 0) {
     return <LoadingSpinner message="Loading words..." size="large" fullScreen />;
@@ -149,13 +213,13 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 overflow-y-auto">
-      <div className="max-w-7xl mx-auto p-6">
-        <PageHeader
+    <AppScreen mode="overlay" width="wide" contentClassName="p-6">
+        <ScreenHeader
           title="Word Library"
           subtitle="Explore your vocabulary with rich linguistic data"
-          icon={<BookOpen size={36} />}
+          icon={<BookOpen size={32} />}
           onBack={onClose}
+          className="mb-6"
         />
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -191,7 +255,7 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
           />
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-4 mb-6">
+        <SurfacePanel className="mb-6" padding="md">
           <div className="flex flex-wrap gap-3 items-center">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
@@ -200,13 +264,13 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
                 placeholder="Search word or translation..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-indigo-500 focus:outline-none transition-colors bg-white dark:bg-slate-700 dark:text-white"
+                className={`w-full pl-10 pr-4 py-2.5 border-2 border-gray-200 dark:border-slate-600 ${UI_RADIUS.control} focus:border-indigo-500 focus:outline-none transition-colors bg-white dark:bg-slate-700 dark:text-white`}
               />
             </div>
 
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold transition-all ${
+              className={`flex items-center gap-2 px-4 py-2.5 ${UI_RADIUS.control} font-semibold transition-all ${
                 showFilters || activeFilterCount > 0
                   ? 'bg-indigo-600 text-white'
                   : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
@@ -215,7 +279,7 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
               <Filter size={18} />
               Filters
               {activeFilterCount > 0 && (
-                <span className="bg-white text-indigo-600 text-xs font-bold px-2 py-0.5 rounded-full">
+                <span className={`bg-white text-indigo-600 text-xs font-bold px-2 py-0.5 ${UI_RADIUS.pill}`}>
                   {activeFilterCount}
                 </span>
               )}
@@ -225,7 +289,7 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
             {activeFilterCount > 0 && (
               <button
                 onClick={clearFilters}
-                className="flex items-center gap-1 px-3 py-2.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
+                className={`flex items-center gap-1 px-3 py-2.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 ${UI_RADIUS.control} transition-colors`}
               >
                 <X size={16} />
                 Clear
@@ -235,21 +299,21 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
 
           {showFilters && filters && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4 pt-4 border-t border-gray-200 dark:border-slate-600">
-              <select
+              <FilterSelect
+                ariaLabel="Filter by CEFR level"
                 value={cefrFilter}
-                onChange={(e) => setCefrFilter(e.target.value)}
-                className="px-3 py-2 border-2 border-gray-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 dark:text-white focus:border-indigo-500 focus:outline-none"
+                onChange={setCefrFilter}
               >
                 <option value="">All CEFR Levels</option>
                 {filters.cefr_levels.map(level => (
                   <option key={level} value={level}>{level}</option>
                 ))}
-              </select>
+              </FilterSelect>
 
-              <select
+              <FilterSelect
+                ariaLabel="Filter by gender"
                 value={genderFilter}
-                onChange={(e) => setGenderFilter(e.target.value)}
-                className="px-3 py-2 border-2 border-gray-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 dark:text-white focus:border-indigo-500 focus:outline-none"
+                onChange={setGenderFilter}
               >
                 <option value="">All Genders</option>
                 {filters.genders.map(gender => (
@@ -257,87 +321,87 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
                     {GENDER_LABELS[gender]?.article || gender} ({gender})
                   </option>
                 ))}
-              </select>
+              </FilterSelect>
 
-              <select
+              <FilterSelect
+                ariaLabel="Filter by frequency"
                 value={frequencyFilter}
-                onChange={(e) => setFrequencyFilter(e.target.value)}
-                className="px-3 py-2 border-2 border-gray-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 dark:text-white focus:border-indigo-500 focus:outline-none"
+                onChange={setFrequencyFilter}
               >
                 <option value="">All Frequencies</option>
                 {filters.frequency_bands.map(freq => (
                   <option key={freq} value={freq}>{freq.replace('_', ' ')}</option>
                 ))}
-              </select>
+              </FilterSelect>
 
-              <select
+              <FilterSelect
+                ariaLabel="Filter by category"
                 value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                className="px-3 py-2 border-2 border-gray-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 dark:text-white focus:border-indigo-500 focus:outline-none"
+                onChange={setCategoryFilter}
               >
                 <option value="">All Categories</option>
                 {filters.categories.map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
-              </select>
+              </FilterSelect>
 
-              <select
+              <FilterSelect
+                ariaLabel="Filter by part of speech"
                 value={posFilter}
-                onChange={(e) => setPosFilter(e.target.value)}
-                className="px-3 py-2 border-2 border-gray-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 dark:text-white focus:border-indigo-500 focus:outline-none"
+                onChange={setPosFilter}
               >
                 <option value="">All Parts of Speech</option>
                 {filters.parts_of_speech.map(pos => (
                   <option key={pos} value={pos}>{pos}</option>
                 ))}
-              </select>
+              </FilterSelect>
 
-              <select
+              <FilterSelect
+                ariaLabel="Filter by compound status"
                 value={compoundFilter}
-                onChange={(e) => setCompoundFilter(e.target.value)}
-                className="px-3 py-2 border-2 border-gray-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 dark:text-white focus:border-indigo-500 focus:outline-none"
+                onChange={setCompoundFilter}
               >
                 <option value="">Simple & Compound</option>
                 <option value="false">Simple words only</option>
                 <option value="true">Compound words only</option>
-              </select>
+              </FilterSelect>
 
               {filters.registers.length > 0 && (
-                <select
-                  value=""
-                  onChange={(e) => console.log(e.target.value)}
-                  className="px-3 py-2 border-2 border-gray-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 dark:text-white focus:border-indigo-500 focus:outline-none"
+                <FilterSelect
+                  ariaLabel="Filter by register"
+                  value={registerFilter}
+                  onChange={setRegisterFilter}
                 >
                   <option value="">All Registers</option>
                   {filters.registers.map(reg => (
                     <option key={reg} value={reg}>{reg}</option>
                   ))}
-                </select>
+                </FilterSelect>
               )}
             </div>
           )}
-        </div>
+        </SurfacePanel>
 
         <div className="mb-4">
           <p className="text-gray-600 dark:text-gray-400 font-medium">
-            Showing <span className="font-bold text-indigo-600">{words.length}</span> words
+            Showing <span className="font-bold text-indigo-600">{visibleWords.length}</span> words
             {loading && <span className="ml-2 text-sm text-gray-400">(loading...)</span>}
           </p>
         </div>
 
-        {words.length === 0 ? (
+        {visibleWords.length === 0 ? (
           <div className="text-center py-16">
-            <div className="text-6xl mb-4">📚</div>
+            <BookOpen size={56} className="mx-auto mb-4 text-slate-300" />
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No words found</h3>
             <p className="text-gray-600 dark:text-gray-400">Try modifying your search filters</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {words.map((word) => (
+            {visibleWords.map((word) => (
               <div
                 key={word.id}
                 onClick={() => handleWordClick(word)}
-                className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border-2 border-gray-100 dark:border-slate-700 cursor-pointer"
+                className={`bg-white dark:bg-slate-800 ${UI_RADIUS.surface} shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border-2 border-gray-100 dark:border-slate-700 cursor-pointer`}
               >
                 <div className="relative h-40 bg-gray-100 dark:bg-slate-700 overflow-hidden">
                   {word.image_base64 ? (
@@ -354,12 +418,12 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
                   
                   <div className="absolute top-2 left-2 flex gap-1.5">
                     {word.cefr_level && (
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${CEFR_COLORS[word.cefr_level] || 'bg-gray-100 text-gray-800'}`}>
+                      <span className={`px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-bold ${CEFR_COLORS[word.cefr_level] || 'bg-gray-100 text-gray-800'}`}>
                         {word.cefr_level}
                       </span>
                     )}
                     {word.gender && GENDER_LABELS[word.gender] && (
-                      <span className={`${GENDER_LABELS[word.gender].color} text-white px-2 py-0.5 rounded-full text-xs font-bold`}>
+                      <span className={`${GENDER_LABELS[word.gender].color} text-white px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-bold`}>
                         {GENDER_LABELS[word.gender].article}
                       </span>
                     )}
@@ -368,7 +432,7 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
                   <div className="absolute top-2 right-2">
                     <button
                       onClick={(e) => handleToggleStatus(word, e)}
-                      className={`px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg transition-colors ${
+                      className={`px-2.5 py-1 ${UI_RADIUS.pill} text-xs font-bold flex items-center gap-1 shadow-lg transition-colors ${
                         word.known === true
                           ? 'bg-green-500 text-white hover:bg-green-600'
                           : word.known === false
@@ -383,7 +447,7 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
 
                   {word.is_compound && (
                     <div className="absolute bottom-2 left-2">
-                      <span className="bg-purple-500 text-white px-2 py-0.5 rounded-full text-xs font-semibold">
+                      <span className={`bg-purple-500 text-white px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-semibold`}>
                         Compound
                       </span>
                     </div>
@@ -391,7 +455,7 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
 
                   {word.category && (
                     <div className="absolute bottom-2 right-2">
-                      <span className="bg-black/60 backdrop-blur-sm text-white px-2 py-0.5 rounded-full text-xs font-semibold">
+                      <span className={`bg-black/60 backdrop-blur-sm text-white px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-semibold`}>
                         {word.category}
                       </span>
                     </div>
@@ -416,12 +480,12 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
 
                   <div className="flex flex-wrap gap-1.5 mb-2">
                     {word.part_of_speech && (
-                      <span className="bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded text-xs">
+                      <span className={`bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 px-2 py-0.5 ${UI_RADIUS.pill} text-xs`}>
                         {word.part_of_speech}
                       </span>
                     )}
                     {word.register && word.register !== 'neutral' && (
-                      <span className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded text-xs">
+                      <span className={`bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2 py-0.5 ${UI_RADIUS.pill} text-xs`}>
                         {word.register}
                       </span>
                     )}
@@ -438,14 +502,14 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
             ))}
           </div>
         )}
-      </div>
 
-      {selectedWord && (
+      {selectedWordId && (
         <WordDetailModal
-          wordId={selectedWord.id}
-          onClose={() => setSelectedWord(null)}
+          wordId={selectedWordId}
+          initialTab={initialDetailTab}
+          onClose={handleCloseWord}
         />
       )}
-    </div>
+    </AppScreen>
   );
 }

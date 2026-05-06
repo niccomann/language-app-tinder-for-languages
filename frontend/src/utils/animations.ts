@@ -1,7 +1,7 @@
 import type { Variants } from 'framer-motion';
 
 export const cardVariants: Variants = {
-  enter: (direction: number) => ({
+  enter: () => ({
     scale: 0.8,
     opacity: 0,
     y: 50,
@@ -24,17 +24,4 @@ export const cardVariants: Variants = {
       duration: 0.3,
     },
   }),
-};
-
-export const stackCardVariants: Variants = {
-  hidden: {
-    scale: 0.9,
-    opacity: 0.5,
-    y: 10,
-  },
-  visible: {
-    scale: 0.95,
-    opacity: 0.7,
-    y: 5,
-  },
 };
