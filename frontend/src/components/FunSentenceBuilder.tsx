@@ -22,6 +22,7 @@ import { api } from '../services/api';
 import type { GrammarNode, ValidateSentenceResponse, ConnectionInfo } from '../types';
 import { LoadingSpinner, UI_RADIUS, ZoomControlBar } from './ui';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
+import { buildOrderedSentence } from '../utils/sentenceBuilderOrder';
 import { useTheme } from '../contexts/useTheme';
 import { GrammarBuilderFrame } from './GrammarBuilderFrame';
 
@@ -745,48 +746,6 @@ export function FunSentenceBuilder() {
     }
   };
 
-  const getBuiltSentence = (): string => {
-    if (connections.length === 0) {
-      return canvasNodes.map(node => node.label).join(' ');
-    }
-    
-    const nodeMap = new Map(canvasNodes.map(node => [node.id, node]));
-    const fromIds = new Set(connections.map(c => c.source));
-    const toIds = new Set(connections.map(c => c.target));
-    const startIds = [...fromIds].filter(id => !toIds.has(id));
-    
-    if (startIds.length === 0 && connections.length > 0) {
-      startIds.push(connections[0].source);
-    }
-    
-    const orderedLabels: string[] = [];
-    const visited = new Set<string>();
-    
-    const traverse = (nodeId: string) => {
-      if (visited.has(nodeId) || !nodeMap.has(nodeId)) return;
-      visited.add(nodeId);
-      orderedLabels.push(nodeMap.get(nodeId)!.label);
-      
-      for (const connection of connections) {
-        if (connection.source === nodeId) {
-          traverse(connection.target);
-        }
-      }
-    };
-    
-    for (const startId of startIds) {
-      traverse(startId);
-    }
-    
-    for (const node of canvasNodes) {
-      if (!visited.has(node.id)) {
-        orderedLabels.push(node.label);
-      }
-    }
-    
-    return orderedLabels.join(' ');
-  };
-
   const getStatusColor = (status: string): string => {
     switch (status) {
       case 'green': return 'bg-green-100 border-green-500 text-green-800';
@@ -813,6 +772,11 @@ export function FunSentenceBuilder() {
       default: return '';
     }
   };
+  const orderedConnections = connections.map(connection => ({
+    fromId: connection.source,
+    toId: connection.target,
+  }));
+  const builtSentence = buildOrderedSentence(canvasNodes, orderedConnections);
 
   const renderSentenceActions = ({
     compact = false,
@@ -954,7 +918,7 @@ export function FunSentenceBuilder() {
 
         <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 p-4 ${UI_RADIUS.surface} backdrop-blur-sm ${isDark ? 'bg-slate-800/90' : 'bg-white/90'} shadow-xl`}>
           <p className={`text-center font-medium mb-3 ${isDark ? 'text-white' : 'text-gray-800'}`}>
-            Frase: <span className="text-purple-500">"{getBuiltSentence()}"</span>
+            Frase: <span className="text-purple-500">"{builtSentence}"</span>
           </p>
           {renderSentenceActions({ compact: true, showClose: true })}
         </div>
@@ -1032,7 +996,7 @@ export function FunSentenceBuilder() {
         {canvasNodes.length > 0 && (
           <div className="text-center mb-4">
             <p className={`text-lg ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-              Frase: <span className="font-bold text-purple-600">"{getBuiltSentence()}"</span>
+              Frase: <span className="font-bold text-purple-600">"{builtSentence}"</span>
             </p>
           </div>
         )}

@@ -14,6 +14,7 @@ import type { GrammarNode, ValidationStatus, ValidateSentenceResponse, Connectio
 import { LoadingSpinner, SurfacePanel, UI_RADIUS } from './ui';
 import { GrammarBuilderFrame } from './GrammarBuilderFrame';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
+import { buildOrderedSentence } from '../utils/sentenceBuilderOrder';
 import { useTheme } from '../contexts/useTheme';
 
 interface Connection {
@@ -174,48 +175,6 @@ export function SentenceBuilder() {
     }
   };
 
-  const getBuiltSentence = (): string => {
-    if (connections.length === 0) {
-      return selectedNodes.map(node => node.label).join(' ');
-    }
-    
-    const nodeMap = new Map(selectedNodes.map(node => [node.id, node]));
-    const fromIds = new Set(connections.map(connection => connection.fromId));
-    const toIds = new Set(connections.map(connection => connection.toId));
-    const startIds = [...fromIds].filter(id => !toIds.has(id));
-    
-    if (startIds.length === 0 && connections.length > 0) {
-      startIds.push(connections[0].fromId);
-    }
-    
-    const orderedLabels: string[] = [];
-    const visited = new Set<string>();
-    
-    const traverse = (nodeId: string) => {
-      if (visited.has(nodeId) || !nodeMap.has(nodeId)) return;
-      visited.add(nodeId);
-      orderedLabels.push(nodeMap.get(nodeId)!.label);
-      
-      for (const connection of connections) {
-        if (connection.fromId === nodeId) {
-          traverse(connection.toId);
-        }
-      }
-    };
-    
-    for (const startId of startIds) {
-      traverse(startId);
-    }
-    
-    for (const node of selectedNodes) {
-      if (!visited.has(node.id)) {
-        orderedLabels.push(node.label);
-      }
-    }
-    
-    return orderedLabels.join(' ');
-  };
-
   if (loading) {
     return <LoadingSpinner message="Loading Sentence Builder..." />;
   }
@@ -332,7 +291,7 @@ export function SentenceBuilder() {
                 
                 <div className="text-center pt-2 border-t">
                   <p className="text-lg font-medium text-gray-700">
-                    Sentence: <span className="text-purple-600">"{getBuiltSentence()}"</span>
+                    Sentence: <span className="text-purple-600">"{buildOrderedSentence(selectedNodes, connections)}"</span>
                   </p>
                 </div>
               </div>

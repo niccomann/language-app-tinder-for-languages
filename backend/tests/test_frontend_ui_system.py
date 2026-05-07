@@ -153,6 +153,25 @@ def test_fun_sentence_builder_reuses_sentence_footer_helpers():
     assert fun_builder.count("getStatusIcon(validationResult.status)") == 1
 
 
+def test_sentence_builders_share_sentence_ordering_utility():
+    ordering = FRONTEND_SRC / "utils" / "sentenceBuilderOrder.ts"
+    sentence_builder = (FRONTEND_SRC / "components" / "SentenceBuilder.tsx").read_text()
+    fun_builder = (FRONTEND_SRC / "components" / "FunSentenceBuilder.tsx").read_text()
+
+    assert ordering.exists()
+    ordering_source = ordering.read_text()
+    assert "export function buildOrderedSentence" in ordering_source
+    assert "fromIds" in ordering_source
+    assert "orderedLabels" in ordering_source
+
+    assert "buildOrderedSentence" in sentence_builder
+    assert "buildOrderedSentence" in fun_builder
+    assert "const getBuiltSentence" not in sentence_builder
+    assert "const getBuiltSentence" not in fun_builder
+    assert "const orderedLabels: string[]" not in sentence_builder
+    assert "const orderedLabels: string[]" not in fun_builder
+
+
 def test_app_mode_treats_loopback_hosts_as_development():
     app_mode = (FRONTEND_SRC / "config" / "appMode.ts").read_text()
 
