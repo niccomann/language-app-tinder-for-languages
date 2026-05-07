@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 from typing import Optional
 from enum import Enum
 
@@ -70,11 +71,12 @@ Esempi di valutazione:
 - "Der Hund frisst das Futter" → grammar: true, semantic: true (il cane mangia il cibo - normale)
 - "Der Hund frisst die Kartoffeln" → grammar: true, semantic: false (grammatica ok, ma i cani non mangiano patate normalmente)
 - "Der Hund Kartoffeln frisst" → grammar: false, semantic: false (ordine parole sbagliato in tedesco)
-- "Die Katze liest das Buch" → grammar: true, semantic: false (i gatti non leggono)"""
+    - "Die Katze liest das Buch" → grammar: true, semantic: false (i gatti non leggono)"""
 
     def __init__(self):
-        self.client = OpenAI()
         self.model = "gpt-4o-mini"
+        api_key = os.getenv("OPENAI_API_KEY")
+        self.client = OpenAI(api_key=api_key) if api_key else None
     
     def _build_sentence_from_nodes(self, nodes: list[NodeInfo], connections: list[ConnectionInfo]) -> str:
         """
@@ -136,6 +138,16 @@ Esempi di valutazione:
         nodes_info = self._get_nodes_info_string(nodes)
         
         log.info(f"Validating sentence: '{sentence}'")
+
+        if self.client is None:
+            return ValidationResult(
+                status=ValidationStatus.YELLOW,
+                sentence=sentence,
+                grammar_correct=False,
+                semantic_correct=False,
+                explanation="Validazione AI disabilitata: nessuna OPENAI_API_KEY configurata.",
+                suggestion=None,
+            )
         
         prompt = self.VALIDATION_PROMPT.format(
             sentence=sentence,

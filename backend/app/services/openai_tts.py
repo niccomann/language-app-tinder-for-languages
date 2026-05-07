@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import logging
+import os
 from typing import Optional
 
 from openai import OpenAI
@@ -18,7 +19,8 @@ class TextToSpeechService:
     """
     
     def __init__(self):
-        self.client = OpenAI()
+        api_key = os.getenv("OPENAI_API_KEY")
+        self.client = OpenAI(api_key=api_key) if api_key else None
         self.default_model = "tts-1"
         self.default_voice = "nova"
     
@@ -65,6 +67,8 @@ class TextToSpeechService:
             return cached
         
         log.info(f"Generating TTS audio for: '{text}'")
+        if self.client is None:
+            raise RuntimeError("OpenAI TTS disabled: no OPENAI_API_KEY configured")
         
         response = self.client.audio.speech.create(
             model=self.default_model,
@@ -114,6 +118,8 @@ class TextToSpeechService:
         Returns base64 encoded audio with data URI prefix.
         """
         log.info(f"Generating TTS audio for: '{text}'")
+        if self.client is None:
+            raise RuntimeError("OpenAI TTS disabled: no OPENAI_API_KEY configured")
         
         response = self.client.audio.speech.create(
             model=self.default_model,
