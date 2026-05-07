@@ -1,4 +1,5 @@
-import { Brain, ChevronDown, Database, Gauge, Layers, Sparkles } from 'lucide-react';
+import { Brain, ChevronDown, Database, Gauge, Layers } from 'lucide-react';
+import { LatestFeaturesPanel } from './LatestFeaturesPanel';
 import { UI_RADIUS, UI_SIZE } from './ui';
 
 const learningSystemItems = [
@@ -22,13 +23,6 @@ const learningSystemItems = [
     title: 'Context difficulty',
     text: 'Future sentences can mix strong words with weaker words, keeping context useful without overload.',
   },
-];
-
-const latestFeatureItems = [
-  'The home screen now starts from the 400-level German path.',
-  'Cards show a 1-to-10 word mastery badge, separate from the global path level.',
-  'After each swipe, the session can show level-up feedback before the next card.',
-  'The visible topic filters stay inside the swipe experience, so the deck can change without leaving the game.',
 ];
 
 interface LearningSystemMenuProps {
@@ -63,24 +57,8 @@ export function LearningSystemMenu({ isOpen, onToggle }: LearningSystemMenuProps
         />
       </button>
 
-      <div id="latest-learning-features" className={`mt-3 ${UI_RADIUS.control} border border-indigo-200 bg-indigo-50 p-3 shadow-inner`}>
-        <div className="flex items-center gap-2">
-          <span className={`flex ${UI_SIZE.smallIcon} shrink-0 items-center justify-center ${UI_RADIUS.control} bg-white text-indigo-600 ring-1 ring-indigo-100`}>
-            <Sparkles size={16} />
-          </span>
-          <div>
-            <h3 className="text-sm font-extrabold text-slate-900">New Features / Nuove feature</h3>
-            <p className="mt-0.5 text-xs font-bold uppercase tracking-wide text-indigo-600">Latest session updates</p>
-          </div>
-        </div>
-        <ul className="mt-2 grid gap-1.5 text-sm font-semibold leading-6 text-slate-600">
-          {latestFeatureItems.map((item) => (
-            <li key={item} className="flex gap-2">
-              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500" />
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
+      <div className="mt-3">
+        <LatestFeaturesPanel />
       </div>
 
       {isOpen && (

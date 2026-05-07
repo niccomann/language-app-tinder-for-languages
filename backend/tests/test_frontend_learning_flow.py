@@ -158,16 +158,21 @@ def test_learning_ui_explains_adaptive_mastery_system():
 
 
 def test_learning_ui_explains_latest_frontend_features():
+    latest_features_panel = FRONTEND_SRC / "components" / "LatestFeaturesPanel.tsx"
     learning_system_menu = (FRONTEND_SRC / "components" / "LearningSystemMenu.tsx").read_text()
+    learning_path_home = (FRONTEND_SRC / "components" / "LearningPathHome.tsx").read_text()
 
-    assert "id=\"latest-learning-features\"" in learning_system_menu
-    assert "New Features / Nuove feature" in learning_system_menu
-    assert "Latest session updates" in learning_system_menu
-    assert "The home screen now starts from the 400-level German path." in learning_system_menu
-    assert "Cards show a 1-to-10 word mastery badge, separate from the global path level." in learning_system_menu
-    assert "After each swipe, the session can show level-up feedback before the next card." in learning_system_menu
-    assert "The visible topic filters stay inside the swipe experience" in learning_system_menu
-    assert learning_system_menu.index("id=\"latest-learning-features\"") < learning_system_menu.index("{isOpen &&")
+    assert latest_features_panel.exists()
+    panel_source = latest_features_panel.read_text()
+    assert "id=\"latest-learning-features\"" in panel_source
+    assert "New Features / Nuove feature" in panel_source
+    assert "Latest session updates" in panel_source
+    assert "The home screen now starts from the 400-level German path." in panel_source
+    assert "Cards show a 1-to-10 word mastery badge, separate from the global path level." in panel_source
+    assert "After each swipe, the session can show level-up feedback before the next card." in panel_source
+    assert "The visible topic filters stay inside the swipe experience" in panel_source
+    assert "LatestFeaturesPanel" in learning_system_menu
+    assert "LatestFeaturesPanel" in learning_path_home
 
 
 def test_learning_filters_use_gamified_category_components():

@@ -1,6 +1,7 @@
 import { BookOpen, Clock3, Flame, FlaskConical, Gauge, Layers3, Play, Target, Trophy } from 'lucide-react';
 import type { AdaptiveLearningSummary, UserProgress } from '../types';
 import { AppScreen, NavButton, ScreenHeader, StatCard, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
+import { LatestFeaturesPanel } from './LatestFeaturesPanel';
 import {
   LEARNING_PATH_MILESTONES,
   getActiveMilestoneIndex,
@@ -55,6 +56,8 @@ export function LearningPathHome({
               </div>
             )}
           />
+
+          <LatestFeaturesPanel />
 
           {shouldReengage && (
             <SurfacePanel className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40" padding="md">
