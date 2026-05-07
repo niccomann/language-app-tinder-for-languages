@@ -160,10 +160,14 @@ def test_learning_ui_explains_adaptive_mastery_system():
 def test_learning_ui_explains_latest_frontend_features():
     learning_system_menu = (FRONTEND_SRC / "components" / "LearningSystemMenu.tsx").read_text()
 
+    assert "id=\"latest-learning-features\"" in learning_system_menu
+    assert "New Features / Nuove feature" in learning_system_menu
     assert "Latest session updates" in learning_system_menu
     assert "The home screen now starts from the 400-level German path." in learning_system_menu
-    assert "Cards show a 1-to-10 word mastery badge." in learning_system_menu
+    assert "Cards show a 1-to-10 word mastery badge, separate from the global path level." in learning_system_menu
     assert "After each swipe, the session can show level-up feedback before the next card." in learning_system_menu
+    assert "The visible topic filters stay inside the swipe experience" in learning_system_menu
+    assert learning_system_menu.index("id=\"latest-learning-features\"") < learning_system_menu.index("{isOpen &&")
 
 
 def test_learning_filters_use_gamified_category_components():
