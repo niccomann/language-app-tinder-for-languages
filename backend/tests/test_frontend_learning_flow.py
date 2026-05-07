@@ -157,6 +157,15 @@ def test_learning_ui_explains_adaptive_mastery_system():
     assert "Future sentences can mix strong words with weaker words" in learning_system_menu
 
 
+def test_learning_ui_explains_latest_frontend_features():
+    learning_system_menu = (FRONTEND_SRC / "components" / "LearningSystemMenu.tsx").read_text()
+
+    assert "Latest session updates" in learning_system_menu
+    assert "The home screen now starts from the 400-level German path." in learning_system_menu
+    assert "Cards show a 1-to-10 word mastery badge." in learning_system_menu
+    assert "After each swipe, the session can show level-up feedback before the next card." in learning_system_menu
+
+
 def test_learning_filters_use_gamified_category_components():
     learning_screen = (FRONTEND_SRC / "components" / "LearningScreen.tsx").read_text()
     filters_panel = (FRONTEND_SRC / "components" / "LearningFiltersPanel.tsx").read_text()
