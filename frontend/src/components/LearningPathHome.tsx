@@ -57,8 +57,6 @@ export function LearningPathHome({
             )}
           />
 
-          <LatestFeaturesPanel />
-
           {shouldReengage && (
             <SurfacePanel className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40" padding="md">
               <div className="flex items-start gap-3">
@@ -132,49 +130,53 @@ export function LearningPathHome({
           </SurfacePanel>
         </section>
 
-        <SurfacePanel padding="lg" className="relative overflow-hidden">
-          <div className="mb-5 flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">Learning Diary</p>
-              <h2 className="mt-2 text-2xl font-extrabold text-slate-950 dark:text-white">Path progress</h2>
-            </div>
-            <div className={`${UI_RADIUS.pill} bg-slate-100 px-3 py-2 text-xs font-extrabold text-slate-600 dark:bg-slate-700 dark:text-slate-200`}>
-              {progress.cards_reviewed}/{totalCards || 0} today
-            </div>
-          </div>
+        <section className="space-y-3">
+          <LatestFeaturesPanel />
 
-          <div className="relative space-y-3">
-            <div className="absolute bottom-8 left-6 top-8 w-0.5 bg-slate-200 dark:bg-slate-700" />
-            {LEARNING_PATH_MILESTONES.map((step, index) => {
-              const isComplete = pathLevel >= step.level;
-              const isActive = index === activeMilestoneIndex;
-              return (
-                <div key={step.title} className="relative flex gap-4">
-                  <div className={`z-10 flex h-12 w-12 shrink-0 items-center justify-center ${UI_RADIUS.touchIcon} border-2 ${
-                    isComplete
-                      ? 'border-emerald-300 bg-emerald-100 text-emerald-700 dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-200'
-                      : isActive
-                        ? 'border-indigo-300 bg-indigo-100 text-indigo-700 dark:border-indigo-700 dark:bg-indigo-950 dark:text-indigo-200'
-                        : 'border-slate-200 bg-white text-slate-400 dark:border-slate-700 dark:bg-slate-800'
-                  }`}>
-                    {isComplete ? <Trophy size={20} /> : isActive ? <Flame size={20} /> : <Target size={18} />}
-                  </div>
-                  <div className={`${UI_RADIUS.control} flex-1 border px-4 py-3 ${
-                    isActive
-                      ? 'border-indigo-200 bg-indigo-50 dark:border-indigo-800 dark:bg-indigo-950/40'
-                      : 'border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/70'
-                  }`}>
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <h3 className="text-sm font-extrabold text-slate-950 dark:text-white">{step.title}</h3>
-                      <span className="text-xs font-extrabold text-slate-500 dark:text-slate-300">Level {step.level}</span>
+          <SurfacePanel padding="lg" className="relative overflow-hidden">
+            <div className="mb-5 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">Learning Diary</p>
+                <h2 className="mt-2 text-2xl font-extrabold text-slate-950 dark:text-white">Path progress</h2>
+              </div>
+              <div className={`${UI_RADIUS.pill} bg-slate-100 px-3 py-2 text-xs font-extrabold text-slate-600 dark:bg-slate-700 dark:text-slate-200`}>
+                {progress.cards_reviewed}/{totalCards || 0} today
+              </div>
+            </div>
+
+            <div className="relative space-y-3">
+              <div className="absolute bottom-8 left-6 top-8 w-0.5 bg-slate-200 dark:bg-slate-700" />
+              {LEARNING_PATH_MILESTONES.map((step, index) => {
+                const isComplete = pathLevel >= step.level;
+                const isActive = index === activeMilestoneIndex;
+                return (
+                  <div key={step.title} className="relative flex gap-4">
+                    <div className={`z-10 flex h-12 w-12 shrink-0 items-center justify-center ${UI_RADIUS.touchIcon} border-2 ${
+                      isComplete
+                        ? 'border-emerald-300 bg-emerald-100 text-emerald-700 dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-200'
+                        : isActive
+                          ? 'border-indigo-300 bg-indigo-100 text-indigo-700 dark:border-indigo-700 dark:bg-indigo-950 dark:text-indigo-200'
+                          : 'border-slate-200 bg-white text-slate-400 dark:border-slate-700 dark:bg-slate-800'
+                    }`}>
+                      {isComplete ? <Trophy size={20} /> : isActive ? <Flame size={20} /> : <Target size={18} />}
                     </div>
-                    <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-300">{step.detail}</p>
+                    <div className={`${UI_RADIUS.control} flex-1 border px-4 py-3 ${
+                      isActive
+                        ? 'border-indigo-200 bg-indigo-50 dark:border-indigo-800 dark:bg-indigo-950/40'
+                        : 'border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/70'
+                    }`}>
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <h3 className="text-sm font-extrabold text-slate-950 dark:text-white">{step.title}</h3>
+                        <span className="text-xs font-extrabold text-slate-500 dark:text-slate-300">Level {step.level}</span>
+                      </div>
+                      <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-300">{step.detail}</p>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        </SurfacePanel>
+                );
+              })}
+            </div>
+          </SurfacePanel>
+        </section>
       </main>
     </AppScreen>
   );

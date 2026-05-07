@@ -11,11 +11,49 @@ BACKEND_APP = REPO_ROOT / "backend" / "app"
 
 def test_library_routes_centralize_flashcard_enriched_mapping():
     source = (BACKEND_APP / "routes" / "library.py").read_text()
+    serializers = BACKEND_APP / "services" / "library_serializers.py"
 
-    assert "def entity_to_enriched_data(" in source
+    assert serializers.exists()
+    serializer_source = serializers.read_text()
+    assert "def entity_to_enriched_data(" in serializer_source
+    assert "def build_flashcard_detail(" in serializer_source
+    assert "def build_word_db_row(" in serializer_source
     assert "def entity_to_enriched(" not in source
     assert "FlashcardEnriched," not in source
-    assert source.count("**entity_to_enriched_data(card)") >= 2
+    assert "def entity_to_enriched_data(" not in source
+    assert "**entity_to_enriched_data(card)" not in source
+
+
+def test_library_route_is_thin_and_delegates_to_services():
+    route_source = (BACKEND_APP / "routes" / "library.py").read_text()
+    service = BACKEND_APP / "services" / "library_service.py"
+    queries = BACKEND_APP / "services" / "library_queries.py"
+
+    assert service.exists()
+    assert queries.exists()
+
+    assert "from app.services.library_service import" in route_source
+    assert "from sqlalchemy" not in route_source
+    assert "from sqlmodel" not in route_source
+    assert "from app.database.models import" not in route_source
+
+    for helper_name in (
+        "fetch_all_mappings",
+        "fetch_one_mapping",
+        "fetch_producer_word_for_card",
+        "count_words_with_related_rows",
+        "fetch_detail_related_rows",
+        "fetch_full_related_rows",
+        "media_summary",
+        "remove_media_columns",
+    ):
+        assert f"def {helper_name}(" not in route_source
+
+    query_source = queries.read_text()
+    assert "def fetch_producer_word_for_card(" in query_source
+    assert "def count_words_with_related_rows(" in query_source
+    assert "def fetch_detail_related_rows(" in query_source
+    assert "def fetch_full_related_rows(" in query_source
 
 
 def test_word_detail_reads_rich_rows_from_producer_schema():
