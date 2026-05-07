@@ -208,6 +208,15 @@ def test_common_controls_use_shared_interaction_tokens():
         assert "UI_INTERACTION" in source
 
 
+def test_completion_screen_reuses_shared_navigation_buttons():
+    completion_screen = (FRONTEND_SRC / "components" / "CompletionScreen.tsx").read_text()
+
+    assert "NavButton" in completion_screen
+    assert "secondaryActionBase" not in completion_screen
+    assert "border-purple-300" not in completion_screen
+    assert "border-blue-300" not in completion_screen
+
+
 def test_hierarchy_sunburst_uses_shared_tabs_and_no_duplicate_zoom_hints():
     hierarchy = (FRONTEND_SRC / "components" / "HierarchySunburst.tsx").read_text()
 

@@ -9,7 +9,6 @@ from sqlalchemy import text
 from sqlmodel import select, func
 
 from app.models import (
-    FlashcardEnriched,
     FlashcardDetail,
     FlashcardWithProgress,
     LibraryFilters,
@@ -47,29 +46,35 @@ def parse_extra_data(extra_data_str: Optional[str]) -> Optional[dict]:
         return None
 
 
-def entity_to_enriched(card: FlashcardEntity) -> FlashcardEnriched:
-    """Convert FlashcardEntity to FlashcardEnriched model."""
-    return FlashcardEnriched(
-        id=card.id,
-        word=card.word,
-        translation=card.translation,
-        image_base64=card.image_base64,
-        language=card.language,
-        difficulty=card.difficulty,
-        category=card.category,
-        created_at=card.created_at,
-        updated_at=card.updated_at,
-        cefr_level=card.cefr_level,
-        frequency_band=card.frequency_band,
-        register=card.language_register,
-        thematic_domain=card.thematic_domain,
-        part_of_speech=card.part_of_speech,
-        gender=card.gender,
-        plural_form=card.plural_form,
-        is_compound=card.is_compound,
-        word_formation=card.word_formation,
-        extra_data=parse_extra_data(card.extra_data),
-    )
+def entity_to_enriched_data(card: FlashcardEntity) -> dict[str, Any]:
+    """Build the shared API payload for enriched flashcard responses."""
+    return {
+        "id": card.id,
+        "word": card.word,
+        "translation": card.translation,
+        "image_base64": card.image_base64,
+        "language": card.language,
+        "difficulty": card.difficulty,
+        "category": card.category,
+        "created_at": card.created_at,
+        "updated_at": card.updated_at,
+        "cefr_level": card.cefr_level,
+        "frequency_band": card.frequency_band,
+        "register": card.language_register,
+        "thematic_domain": card.thematic_domain,
+        "part_of_speech": card.part_of_speech,
+        "gender": card.gender,
+        "plural_form": card.plural_form,
+        "is_compound": card.is_compound,
+        "word_formation": card.word_formation,
+        "image_coherence_score": card.image_coherence_score,
+        "pronunciation_ipa": card.pronunciation_ipa,
+        "example_sentence": card.example_sentence,
+        "etymology_text": card.etymology_text,
+        "visual_mnemonic": card.visual_mnemonic,
+        "memory_hook": card.memory_hook,
+        "extra_data": parse_extra_data(card.extra_data),
+    }
 
 
 def row_to_dict(row: Any) -> dict:
@@ -469,25 +474,7 @@ async def get_library_words(
             continue
         
         result.append(FlashcardWithProgress(
-            id=card.id,
-            word=card.word,
-            translation=card.translation,
-            image_base64=card.image_base64,
-            language=card.language,
-            difficulty=card.difficulty,
-            category=card.category,
-            created_at=card.created_at,
-            updated_at=card.updated_at,
-            cefr_level=card.cefr_level,
-            frequency_band=card.frequency_band,
-            register=card.language_register,
-            thematic_domain=card.thematic_domain,
-            part_of_speech=card.part_of_speech,
-            gender=card.gender,
-            plural_form=card.plural_form,
-            is_compound=card.is_compound,
-            word_formation=card.word_formation,
-            extra_data=parse_extra_data(card.extra_data),
+            **entity_to_enriched_data(card),
             known=progress.known if progress else None,
             review_count=progress.review_count if progress else None,
             swipe_right_count=progress.swipe_right_count if progress else None,
@@ -519,31 +506,7 @@ async def get_word_detail(
     related = fetch_detail_related_rows(session, producer_word_id)
     
     return FlashcardDetail(
-        id=card.id,
-        word=card.word,
-        translation=card.translation,
-        image_base64=card.image_base64,
-        language=card.language,
-        difficulty=card.difficulty,
-        category=card.category,
-        created_at=card.created_at,
-        updated_at=card.updated_at,
-        cefr_level=card.cefr_level,
-        frequency_band=card.frequency_band,
-        register=card.language_register,
-        thematic_domain=card.thematic_domain,
-        part_of_speech=card.part_of_speech,
-        gender=card.gender,
-        plural_form=card.plural_form,
-        is_compound=card.is_compound,
-        word_formation=card.word_formation,
-        image_coherence_score=card.image_coherence_score,
-        pronunciation_ipa=card.pronunciation_ipa,
-        example_sentence=card.example_sentence,
-        etymology_text=card.etymology_text,
-        visual_mnemonic=card.visual_mnemonic,
-        memory_hook=card.memory_hook,
-        extra_data=parse_extra_data(card.extra_data),
+        **entity_to_enriched_data(card),
         etymologies=[
             Etymology(
                 id=e.get("id"),

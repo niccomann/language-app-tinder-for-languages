@@ -1,9 +1,21 @@
 from fastapi.testclient import TestClient
+from pathlib import Path
 
 from app.main import app
 
 
 client = TestClient(app)
+REPO_ROOT = Path(__file__).resolve().parents[2]
+BACKEND_APP = REPO_ROOT / "backend" / "app"
+
+
+def test_library_routes_centralize_flashcard_enriched_mapping():
+    source = (BACKEND_APP / "routes" / "library.py").read_text()
+
+    assert "def entity_to_enriched_data(" in source
+    assert "def entity_to_enriched(" not in source
+    assert "FlashcardEnriched," not in source
+    assert source.count("**entity_to_enriched_data(card)") >= 2
 
 
 def test_word_detail_reads_rich_rows_from_producer_schema():

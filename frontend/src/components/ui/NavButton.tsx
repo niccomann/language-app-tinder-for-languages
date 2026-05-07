@@ -9,6 +9,7 @@ interface NavButtonProps {
   label: string;
   color?: ColorVariant;
   size?: 'small' | 'medium' | 'large';
+  className?: string;
 }
 
 const colorStyles: Record<ColorVariant, string> = {
@@ -31,12 +32,13 @@ export function NavButton({
   icon, 
   label, 
   color = 'indigo',
-  size = 'medium' 
+  size = 'medium',
+  className = '',
 }: NavButtonProps) {
   return (
     <button
       onClick={onClick}
-      className={`${sizeStyles[size]} font-bold ${colorStyles[color]} hover:text-white bg-white hover:bg-gradient-to-r border-2 hover:border-transparent ${UI_RADIUS.pill} ${UI_INTERACTION.transition} ${UI_ELEVATION.raised} ${UI_INTERACTION.raisedHover} ${UI_INTERACTION.lift} ${UI_INTERACTION.press} whitespace-nowrap min-w-fit`}
+      className={`${sizeStyles[size]} font-bold ${colorStyles[color]} hover:text-white bg-white hover:bg-gradient-to-r border-2 hover:border-transparent ${UI_RADIUS.pill} ${UI_INTERACTION.transition} ${UI_ELEVATION.raised} ${UI_INTERACTION.raisedHover} ${UI_INTERACTION.lift} ${UI_INTERACTION.press} whitespace-nowrap min-w-fit ${className}`}
     >
       <span className="flex items-center gap-2">
         {icon}

@@ -1,5 +1,5 @@
 import { BookOpen, CheckCircle, FlaskConical, RotateCcw, SlidersHorizontal, Target, Trophy, XCircle } from 'lucide-react';
-import { AppScreen, ScreenHeader, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
+import { AppScreen, NavButton, ScreenHeader, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
 
 interface CompletionScreenProps {
   progress: {
@@ -21,7 +21,6 @@ export function CompletionScreen({
   onOpenGrammarLab,
 }: CompletionScreenProps) {
   const actionBase = `flex min-h-14 items-center justify-center gap-3 ${UI_RADIUS.control} px-5 py-4 text-base font-extrabold ${UI_INTERACTION.transition} ${UI_INTERACTION.lift} ${UI_INTERACTION.press}`;
-  const secondaryActionBase = `${actionBase} border-2 bg-white shadow-lg ${UI_INTERACTION.floatingHover}`;
 
   return (
     <AppScreen width="compact" contentClassName="flex min-h-dvh items-center px-4 py-6">
@@ -68,27 +67,30 @@ export function CompletionScreen({
             <RotateCcw size={24} strokeWidth={2.5} />
             <span>Start Over</span>
           </button>
-          <button
+          <NavButton
             onClick={onChangeCategories}
-            className={`${secondaryActionBase} border-gray-300 text-gray-700 hover:border-indigo-400 hover:text-indigo-600`}
-          >
-            <SlidersHorizontal size={24} strokeWidth={2.5} />
-            <span>Adjust Filters</span>
-          </button>
-          <button
+            icon={<SlidersHorizontal size={24} strokeWidth={2.5} />}
+            label="Adjust Filters"
+            color="gray"
+            size="large"
+            className="w-full"
+          />
+          <NavButton
             onClick={onOpenLibrary}
-            className={`${secondaryActionBase} border-purple-300 text-purple-700 hover:border-purple-400 hover:text-purple-600`}
-          >
-            <BookOpen size={24} strokeWidth={2.5} />
-            <span>View Library</span>
-          </button>
-          <button
+            icon={<BookOpen size={24} strokeWidth={2.5} />}
+            label="View Library"
+            color="purple"
+            size="large"
+            className="w-full"
+          />
+          <NavButton
             onClick={onOpenGrammarLab}
-            className={`${secondaryActionBase} border-blue-300 text-blue-700 hover:border-blue-400 hover:text-blue-600`}
-          >
-            <FlaskConical size={24} strokeWidth={2.5} />
-            <span>Grammar Lab</span>
-          </button>
+            icon={<FlaskConical size={24} strokeWidth={2.5} />}
+            label="Grammar Lab"
+            color="blue"
+            size="large"
+            className="w-full"
+          />
         </div>
       </main>
     </AppScreen>
