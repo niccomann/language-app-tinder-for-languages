@@ -20,9 +20,9 @@ interface CardStackProps {
   onStartLearning: () => void;
   onOpenLearningFilters: () => void;
   onOpenLearningSystem: () => void;
-  onStartGrammarPlacement: () => void;
   onOpenLibrary: () => void;
   onOpenGrammarLab: () => void;
+  onNavigateToFeature: (path: string) => void;
 }
 
 export const CardStack = ({
@@ -31,9 +31,9 @@ export const CardStack = ({
   onStartLearning,
   onOpenLearningFilters,
   onOpenLearningSystem,
-  onStartGrammarPlacement,
   onOpenLibrary,
   onOpenGrammarLab,
+  onNavigateToFeature,
 }: CardStackProps) => {
   const categories = useCategories();
   const [firstVocabularyOnboardingDone, setFirstVocabularyOnboardingDone] = useState(readFirstVocabularyOnboardingDone);
@@ -61,10 +61,6 @@ export const CardStack = ({
 
   const handleChangeFilters = () => {
     reset();
-    onOpenLearningFilters();
-  };
-
-  const handleOpenFilters = () => {
     onOpenLearningFilters();
   };
 
@@ -136,11 +132,7 @@ export const CardStack = ({
         totalCards={flashcards.length}
         categoriesCount={categories.allCategories.length}
         selectedCategoriesCount={categories.selectedCategories.length}
-        onStartSession={onStartLearning}
-        onOpenLibrary={onOpenLibrary}
-        onOpenGrammarLab={onOpenGrammarLab}
-        onOpenFilters={handleOpenFilters}
-        onStartGrammarPlacement={onStartGrammarPlacement}
+        onNavigateToFeature={onNavigateToFeature}
       />
     );
   }

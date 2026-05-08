@@ -49,10 +49,10 @@ test('home starts on the learning path and enters the swipe deck', async ({ page
   await expect(page.getByText('Daily Learning Snapshot')).toBeVisible();
   await expect(page.getByText('400-level path', { exact: true })).toBeVisible();
   await expect(page.getByText('XP to next level', { exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Review German Level' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Sentence Placement' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Continue path' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Open Sentence Placement mission/i })).toBeVisible();
 
-  await page.getByRole('button', { name: 'Review German Level' }).click();
+  await page.getByRole('button', { name: 'Continue path' }).click();
 
   await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByText('Just decide: know it or not.')).toBeVisible();
@@ -120,7 +120,7 @@ test('home explains the adaptive learning system in a compact menu', async ({ pa
   await page.goto(APP_URL);
 
   await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
-  await page.getByRole('button', { name: 'Review German Level' }).click();
+  await page.getByRole('button', { name: 'Continue path' }).click();
   await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('button', { name: 'Learning System' })).toBeVisible();
 
@@ -140,7 +140,7 @@ test('home keeps the swipe card and decision buttons usable in the first viewpor
   await page.goto(APP_URL);
 
   await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
-  await page.getByRole('button', { name: 'Review German Level' }).click();
+  await page.getByRole('button', { name: 'Continue path' }).click();
   await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
   const knowButton = page.getByRole('button', { name: 'Know', exact: true });
   const dontKnowButton = page.getByRole('button', { name: "Don't know", exact: true });
@@ -150,4 +150,31 @@ test('home keeps the swipe card and decision buttons usable in the first viewpor
 
   await expectInViewport(page, knowButton);
   await expectInViewport(page, dontKnowButton);
+});
+
+test('home presents a constrained guided mission flow without hiding existing features', async ({ page }) => {
+  await mockLearningApi(page);
+  await markFirstVocabularyOnboardingDone(page);
+  await markFeatureGuidesSeen(page);
+  await page.goto(APP_URL);
+
+  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
+  const missionFlow = page.getByTestId('guided-mission-flow');
+  await expect(missionFlow).toBeVisible();
+  await expect(missionFlow.getByRole('button', { name: /Continue path/i })).toBeVisible();
+  await expect(missionFlow.getByRole('button', { name: /Continue path/i })).toHaveCount(1);
+  await expect(missionFlow.getByText('Mission 1')).toBeVisible();
+  await expect(missionFlow.getByText('Vocabulary Review')).toBeVisible();
+  await expect(missionFlow.getByText('Mission 2')).toBeVisible();
+  await expect(missionFlow.getByText('Sentence Placement')).toBeVisible();
+  await expect(missionFlow.getByText('Mission 3')).toBeVisible();
+  await expect(missionFlow.getByText('Grammar Lab')).toBeVisible();
+  await expect(missionFlow.getByText('Collection', { exact: true })).toBeVisible();
+  await expect(missionFlow.getByText('Word Library')).toBeVisible();
+  await expect(missionFlow.getByText('Advanced exploration')).toBeVisible();
+
+  await missionFlow.getByRole('button', { name: /Open Sentence Placement mission/i }).click();
+
+  await expect(page).toHaveURL(`${APP_URL}/placement/sentence`);
+  await expect(page.getByRole('heading', { name: 'Grammar Placement' })).toBeVisible({ timeout: 15000 });
 });

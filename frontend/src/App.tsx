@@ -79,9 +79,9 @@ function App() {
               onStartLearning={() => navigateTo('/learn')}
               onOpenLearningFilters={() => navigateTo('/learn/filters')}
               onOpenLearningSystem={() => navigateTo('/learn/system')}
-              onStartGrammarPlacement={() => navigateTo('/placement/sentence')}
               onOpenLibrary={() => navigateTo('/library')}
               onOpenGrammarLab={() => navigateTo(grammarPath())}
+              onNavigateToFeature={navigateTo}
             />
           )}
         </Suspense>
