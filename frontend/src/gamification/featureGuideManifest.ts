@@ -24,6 +24,7 @@ import guideVocabularyScanA from '../assets/gamification/guide_vocabulary_scan_a
 import guideVocabularyScanB from '../assets/gamification/guide_vocabulary_scan_b.png';
 import guideWordCloudA from '../assets/gamification/guide_word_cloud_a.png';
 import guideWordCloudB from '../assets/gamification/guide_word_cloud_b.png';
+import { copy } from '../i18n/staticCopy';
 import type { RouteState } from '../routes/appRoutes';
 import type { FeatureGuideId } from './featureGuideIds';
 
@@ -48,9 +49,9 @@ export interface FeatureGuide {
 export const featureGuides = {
   vocabularyScan: {
     id: 'vocabularyScan',
-    title: 'First we learn what you know',
-    body: 'Swipe through words: the ones you recognize and the ones to review become your initial profile.',
-    actionLabel: 'Show me the scan',
+    title: copy.featureGuides.vocabularyScan.title,
+    body: copy.featureGuides.vocabularyScan.body,
+    actionLabel: copy.featureGuides.vocabularyScan.actionLabel,
     tone: 'practice',
     frames: [
       { key: 'guide_vocabulary_scan_a', src: guideVocabularyScanA },
@@ -59,9 +60,9 @@ export const featureGuides = {
   },
   learningPath: {
     id: 'learningPath',
-    title: 'The path adapts',
-    body: 'Every step comes from what you just showed: strong vocabulary, weak vocabulary, and the next challenge.',
-    actionLabel: 'Show me the path',
+    title: copy.featureGuides.learningPath.title,
+    body: copy.featureGuides.learningPath.body,
+    actionLabel: copy.featureGuides.learningPath.actionLabel,
     tone: 'map',
     frames: [
       { key: 'guide_learning_path_a', src: guideLearningPathA },
@@ -70,9 +71,9 @@ export const featureGuides = {
   },
   learningFilters: {
     id: 'learningFilters',
-    title: 'Choose the training ground',
-    body: 'Filters help you train one precise area: nouns, verbs, concepts, or categories you want to reinforce.',
-    actionLabel: 'Show me the filters',
+    title: copy.featureGuides.learningFilters.title,
+    body: copy.featureGuides.learningFilters.body,
+    actionLabel: copy.featureGuides.learningFilters.actionLabel,
     tone: 'practice',
     frames: [
       { key: 'guide_learning_filters_a', src: guideLearningFiltersA },
@@ -81,9 +82,9 @@ export const featureGuides = {
   },
   learningSystem: {
     id: 'learningSystem',
-    title: 'The science keeps score',
-    body: 'You answer naturally. The system updates how well you know each word and when it is worth reviewing.',
-    actionLabel: 'Show me the method',
+    title: copy.featureGuides.learningSystem.title,
+    body: copy.featureGuides.learningSystem.body,
+    actionLabel: copy.featureGuides.learningSystem.actionLabel,
     tone: 'science',
     frames: [
       { key: 'guide_learning_system_a', src: guideLearningSystemA },
@@ -92,9 +93,9 @@ export const featureGuides = {
   },
   sentencePlacement: {
     id: 'sentencePlacement',
-    title: 'Now we build sentences',
-    body: 'Knowing isolated words is not enough: here you choose the right order and train grammar, logic, and memory.',
-    actionLabel: 'Show me the sentence',
+    title: copy.featureGuides.sentencePlacement.title,
+    body: copy.featureGuides.sentencePlacement.body,
+    actionLabel: copy.featureGuides.sentencePlacement.actionLabel,
     tone: 'grammar',
     frames: [
       { key: 'guide_sentence_placement_a', src: guideSentencePlacementA },
@@ -103,9 +104,9 @@ export const featureGuides = {
   },
   library: {
     id: 'library',
-    title: 'The library is your memory',
-    body: 'Here you can find every word with translations, examples, links, and useful details for better study.',
-    actionLabel: 'Show me the library',
+    title: copy.featureGuides.library.title,
+    body: copy.featureGuides.library.body,
+    actionLabel: copy.featureGuides.library.actionLabel,
     tone: 'library',
     frames: [
       { key: 'guide_library_a', src: guideLibraryA },
@@ -114,9 +115,9 @@ export const featureGuides = {
   },
   grammarGraph: {
     id: 'grammarGraph',
-    title: 'Look at the connections',
-    body: 'The graph shows how words, roles, and relationships fit together instead of staying as separate lists.',
-    actionLabel: 'Show me the graph',
+    title: copy.featureGuides.grammarGraph.title,
+    body: copy.featureGuides.grammarGraph.body,
+    actionLabel: copy.featureGuides.grammarGraph.actionLabel,
     tone: 'grammar',
     frames: [
       { key: 'guide_grammar_graph_a', src: guideGrammarGraphA },
@@ -125,9 +126,9 @@ export const featureGuides = {
   },
   wordCloud: {
     id: 'wordCloud',
-    title: 'See what carries more weight',
-    body: 'The cloud highlights the most present or relevant words, so you know where to look first.',
-    actionLabel: 'Show me the cloud',
+    title: copy.featureGuides.wordCloud.title,
+    body: copy.featureGuides.wordCloud.body,
+    actionLabel: copy.featureGuides.wordCloud.actionLabel,
     tone: 'grammar',
     frames: [
       { key: 'guide_word_cloud_a', src: guideWordCloudA },
@@ -136,9 +137,9 @@ export const featureGuides = {
   },
   sentenceGraphBuilder: {
     id: 'sentenceGraphBuilder',
-    title: 'Compose with nodes',
-    body: 'This view lets you build sentences while also seeing the structure: who does what, and with which links.',
-    actionLabel: 'Show me the nodes',
+    title: copy.featureGuides.sentenceGraphBuilder.title,
+    body: copy.featureGuides.sentenceGraphBuilder.body,
+    actionLabel: copy.featureGuides.sentenceGraphBuilder.actionLabel,
     tone: 'grammar',
     frames: [
       { key: 'guide_sentence_graph_builder_a', src: guideSentenceGraphBuilderA },
@@ -147,9 +148,9 @@ export const featureGuides = {
   },
   sentenceComposer: {
     id: 'sentenceComposer',
-    title: 'Compose the simple way',
-    body: 'Here you put words in order and immediately test whether the sentence sounds correct and understandable.',
-    actionLabel: 'Show me the composer',
+    title: copy.featureGuides.sentenceComposer.title,
+    body: copy.featureGuides.sentenceComposer.body,
+    actionLabel: copy.featureGuides.sentenceComposer.actionLabel,
     tone: 'grammar',
     frames: [
       { key: 'guide_sentence_composer_a', src: guideSentenceComposerA },
@@ -158,9 +159,9 @@ export const featureGuides = {
   },
   clusters: {
     id: 'clusters',
-    title: 'Group the concepts',
-    body: 'Clusters reveal word families: they help you study by blocks, not word by word.',
-    actionLabel: 'Show me the groups',
+    title: copy.featureGuides.clusters.title,
+    body: copy.featureGuides.clusters.body,
+    actionLabel: copy.featureGuides.clusters.actionLabel,
     tone: 'grammar',
     frames: [
       { key: 'guide_clusters_a', src: guideClustersA },
@@ -169,9 +170,9 @@ export const featureGuides = {
   },
   dialects: {
     id: 'dialects',
-    title: 'Discover variants',
-    body: 'Language changes by area and context. This view shows where a word can take on different nuances.',
-    actionLabel: 'Show me the variants',
+    title: copy.featureGuides.dialects.title,
+    body: copy.featureGuides.dialects.body,
+    actionLabel: copy.featureGuides.dialects.actionLabel,
     tone: 'grammar',
     frames: [
       { key: 'guide_dialects_a', src: guideDialectsA },
@@ -180,9 +181,9 @@ export const featureGuides = {
   },
   hierarchy: {
     id: 'hierarchy',
-    title: 'Give the system structure',
-    body: 'The hierarchy shows levels and families: from the large concept down to more specific words.',
-    actionLabel: 'Show me the hierarchy',
+    title: copy.featureGuides.hierarchy.title,
+    body: copy.featureGuides.hierarchy.body,
+    actionLabel: copy.featureGuides.hierarchy.actionLabel,
     tone: 'grammar',
     frames: [
       { key: 'guide_hierarchy_a', src: guideHierarchyA },

@@ -6,6 +6,7 @@ import { MascotReaction } from './MascotReaction';
 import { ProgressBar } from './ProgressBar';
 import { SwipeButtons } from './SwipeButtons';
 import { AppScreen, GameSignalBadge, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
+import { copy, formatCopy } from '../i18n/staticCopy';
 import {
   MAX_VOCABULARY_SCAN_SWIPES,
   MIN_VOCABULARY_SCAN_SWIPES,
@@ -41,6 +42,7 @@ export function FirstVocabularyOnboarding({
   const insights = useMemo(() => buildVocabularyInsights(signals), [signals]);
   const remainingToMinimum = Math.max(0, MIN_VOCABULARY_SCAN_SWIPES - signals.length);
   const canPersonalize = signals.length >= MIN_VOCABULARY_SCAN_SWIPES;
+  const onboardingCopy = copy.onboarding;
 
   const advanceWithMascot = (nextPhase: OnboardingPhase) => {
     setPhase(nextPhase);
@@ -75,24 +77,24 @@ export function FirstVocabularyOnboarding({
         mascotState="levelUp"
         mascotPersona="coach"
         eventKey={1}
-        eyebrow="First calibration"
-        title="This app starts from the vocabulary you actually know."
-        body="Unlike apps that make you repeat everything the same way, we do not want to show you words you already know too often. We give those words lower weight in exercises and focus on the ones you still need to consolidate."
-        primaryActionLabel="Start the scan"
+        eyebrow={onboardingCopy.intro.eyebrow}
+        title={onboardingCopy.intro.title}
+        body={onboardingCopy.intro.body}
+        primaryActionLabel={onboardingCopy.intro.primaryAction}
         onPrimaryAction={() => advanceWithMascot('scan')}
       >
         <div className={`${UI_RADIUS.control} border border-indigo-100 bg-indigo-50 p-4 dark:border-indigo-800 dark:bg-indigo-950/40`}>
           <p className="text-base font-extrabold leading-7 text-slate-950 dark:text-white">
-            That is why we analyze your vocabulary: we want to understand how many words you know, which ones you already know, and which ones you only know a little.
+            {onboardingCopy.intro.detailPrimary}
           </p>
           <p className="mt-3 text-sm font-semibold leading-6 text-slate-600 dark:text-slate-300">
-            Every word can have a different level: you may know it very well, barely recognize it, or not know it yet.
+            {onboardingCopy.intro.detailSecondary}
           </p>
         </div>
         <div className="grid gap-3 sm:grid-cols-3">
-          <GameSignalBadge icon={<Target size={14} />} label="I know this word" tone="emerald" />
-          <GameSignalBadge icon={<Brain size={14} />} label="I do not know it yet" tone="amber" />
-          <GameSignalBadge icon={<Sparkles size={14} />} label="Word level" tone="indigo" />
+          <GameSignalBadge icon={<Target size={14} />} label={onboardingCopy.intro.knownSignal} tone="emerald" />
+          <GameSignalBadge icon={<Brain size={14} />} label={onboardingCopy.intro.unknownSignal} tone="amber" />
+          <GameSignalBadge icon={<Sparkles size={14} />} label={onboardingCopy.intro.wordLevelSignal} tone="indigo" />
         </div>
       </AnimatedExplanationFrame>
     );
@@ -104,25 +106,25 @@ export function FirstVocabularyOnboarding({
         mascotState="levelUp"
         mascotPersona="explorer"
         eventKey={reactionEventId}
-        eyebrow="Analysis complete"
-        title={`You know about ${insights.knownEstimate} words`}
-        body="We personalize your learning from the signals you just created."
-        primaryActionLabel="Continue"
+        eyebrow={onboardingCopy.analysis.eyebrow}
+        title={formatCopy(onboardingCopy.analysis.title, { knownEstimate: insights.knownEstimate })}
+        body={onboardingCopy.analysis.body}
+        primaryActionLabel={onboardingCopy.analysis.primaryAction}
         onPrimaryAction={() => advanceWithMascot('science')}
       >
         <div className="grid gap-3 sm:grid-cols-3">
-          <SignalSummaryTile icon={<Target size={18} />} label="Words seen" value={signals.length} tone="indigo" />
-          <SignalSummaryTile icon={<Sparkles size={18} />} label="Strong signals" value={insights.knownEstimate} tone="emerald" />
-          <SignalSummaryTile icon={<Brain size={18} />} label="To review" value={insights.reviewEstimate} tone="amber" />
+          <SignalSummaryTile icon={<Target size={18} />} label={onboardingCopy.analysis.wordsSeen} value={signals.length} tone="indigo" />
+          <SignalSummaryTile icon={<Sparkles size={18} />} label={onboardingCopy.analysis.strongSignals} value={insights.knownEstimate} tone="emerald" />
+          <SignalSummaryTile icon={<Brain size={18} />} label={onboardingCopy.analysis.toReview} value={insights.reviewEstimate} tone="amber" />
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <SurfacePanel padding="md" className="border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/40">
-            <p className="text-xs font-extrabold uppercase tracking-wide text-emerald-600 dark:text-emerald-200">Strongest on</p>
+            <p className="text-xs font-extrabold uppercase tracking-wide text-emerald-600 dark:text-emerald-200">{onboardingCopy.analysis.strongestOn}</p>
             <p className="mt-2 text-xl font-extrabold text-emerald-900 dark:text-emerald-100">{insights.strongCategory}</p>
           </SurfacePanel>
           <SurfacePanel padding="md" className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40">
-            <p className="text-xs font-extrabold uppercase tracking-wide text-amber-600 dark:text-amber-200">Needs reinforcement</p>
+            <p className="text-xs font-extrabold uppercase tracking-wide text-amber-600 dark:text-amber-200">{onboardingCopy.analysis.needsReinforcement}</p>
             <p className="mt-2 text-xl font-extrabold text-amber-900 dark:text-amber-100">{insights.weakCategory}</p>
           </SurfacePanel>
         </div>
@@ -136,16 +138,16 @@ export function FirstVocabularyOnboarding({
         mascotState="correct"
         mascotPersona="robot"
         eventKey={reactionEventId}
-        eyebrow="Adaptive system"
-        title="The science works underneath"
-        body="Every swipe becomes a signal. You just play: the system measures improvements, difficulties, words to repeat, and the contexts that fit you best."
-        primaryActionLabel="Enter the path"
+        eyebrow={onboardingCopy.science.eyebrow}
+        title={onboardingCopy.science.title}
+        body={onboardingCopy.science.body}
+        primaryActionLabel={onboardingCopy.science.primaryAction}
         onPrimaryAction={onComplete}
       >
         <div className="grid gap-3 sm:grid-cols-3">
-          <GameSignalBadge icon={<Brain size={14} />} label="Memory signals" tone="indigo" />
-          <GameSignalBadge icon={<ChartNoAxesColumnIncreasing size={14} />} label="Progress science" tone="sky" />
-          <GameSignalBadge icon={<Sparkles size={14} />} label="Adaptive path" tone="emerald" />
+          <GameSignalBadge icon={<Brain size={14} />} label={onboardingCopy.science.memorySignals} tone="indigo" />
+          <GameSignalBadge icon={<ChartNoAxesColumnIncreasing size={14} />} label={onboardingCopy.science.progressScience} tone="sky" />
+          <GameSignalBadge icon={<Sparkles size={14} />} label={onboardingCopy.science.adaptivePath} tone="emerald" />
         </div>
       </AnimatedExplanationFrame>
     );
@@ -164,30 +166,30 @@ export function FirstVocabularyOnboarding({
                 className="shrink-0"
               />
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-extrabold uppercase tracking-wide text-indigo-500">First run</p>
+                <p className="text-xs font-extrabold uppercase tracking-wide text-indigo-500">{onboardingCopy.scan.eyebrow}</p>
                 <h1 className="mt-2 text-3xl font-extrabold leading-tight text-slate-950 dark:text-white">
-                  Vocabulary Scan
+                  {onboardingCopy.scan.title}
                 </h1>
                 <p className="mt-2 text-sm font-semibold leading-6 text-slate-500 dark:text-slate-300">
-                  First we learn which words you know. Swipe right if you know it, left if you do not.
+                  {onboardingCopy.scan.instructions}
                 </p>
               </div>
             </div>
 
             <div className="mt-5 grid grid-cols-3 gap-2">
-              <SignalSummaryTile icon={<Target size={17} />} label="Scan" value={signals.length} tone="indigo" compact />
-              <SignalSummaryTile icon={<Sparkles size={17} />} label="Known" value={insights.knownEstimate} tone="emerald" compact />
-              <SignalSummaryTile icon={<Brain size={17} />} label="Review" value={insights.reviewEstimate} tone="amber" compact />
+              <SignalSummaryTile icon={<Target size={17} />} label={onboardingCopy.scan.scanLabel} value={signals.length} tone="indigo" compact />
+              <SignalSummaryTile icon={<Sparkles size={17} />} label={onboardingCopy.scan.knownLabel} value={insights.knownEstimate} tone="emerald" compact />
+              <SignalSummaryTile icon={<Brain size={17} />} label={onboardingCopy.scan.reviewLabel} value={insights.reviewEstimate} tone="amber" compact />
             </div>
 
             <div className={`${UI_RADIUS.control} mt-5 border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/70`}>
               <p className="text-sm font-extrabold text-slate-900 dark:text-white">
                 {canPersonalize
-                  ? 'You have enough signals to create the first profile.'
-                  : `${remainingToMinimum} more swipes to estimate the first vocabulary profile.`}
+                  ? onboardingCopy.scan.readyMessage
+                  : formatCopy(onboardingCopy.scan.remainingMessage, { remaining: remainingToMinimum })}
               </p>
               <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-300">
-                At {MAX_VOCABULARY_SCAN_SWIPES} swipes, we automatically move to personalization.
+                {formatCopy(onboardingCopy.scan.autoAdvanceMessage, { maxSwipes: MAX_VOCABULARY_SCAN_SWIPES })}
               </p>
             </div>
 
@@ -197,7 +199,7 @@ export function FirstVocabularyOnboarding({
                 onClick={() => advanceWithMascot('analysis')}
                 className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} mt-5 flex min-h-12 w-full items-center justify-center gap-2 bg-indigo-600 px-5 py-3 text-sm font-extrabold text-white shadow-lg hover:bg-indigo-700`}
               >
-                Personalize my path
+                {onboardingCopy.scan.personalizeAction}
                 <ArrowRight size={17} />
               </button>
             )}
@@ -223,16 +225,16 @@ export function FirstVocabularyOnboarding({
               />
             ) : (
               <SurfacePanel className="w-full border-dashed border-slate-300 bg-white/80 text-center" padding="lg">
-                <h2 className="text-2xl font-extrabold text-slate-900">No words available</h2>
+                <h2 className="text-2xl font-extrabold text-slate-900">{onboardingCopy.scan.emptyTitle}</h2>
                 <p className="mt-2 text-sm font-medium text-slate-500">
-                  Enter the path and reload the deck when the data is ready.
+                  {onboardingCopy.scan.emptyBody}
                 </p>
                 <button
                   type="button"
                   onClick={onComplete}
                   className={`${UI_RADIUS.control} mt-5 bg-indigo-600 px-5 py-3 text-sm font-extrabold text-white`}
                 >
-                  Enter the path
+                  {onboardingCopy.scan.emptyAction}
                 </button>
               </SurfacePanel>
             )}

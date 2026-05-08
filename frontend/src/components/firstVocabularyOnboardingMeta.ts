@@ -1,4 +1,5 @@
 import type { AdaptiveLearningSummary, UserProgress } from '../types';
+import { copy } from '../i18n/staticCopy';
 import { readStorageValue, writeStorageValue } from '../utils/browserStorage';
 
 export const FIRST_VOCABULARY_ONBOARDING_STORAGE_KEY = 'languageApp:firstVocabularyOnboardingDone:v1';
@@ -43,9 +44,9 @@ export function buildVocabularyInsights(signals: VocabularySignal[]): Vocabulary
   }));
 
   const strongCategory = [...ranked]
-    .sort((left, right) => right.knownRate - left.knownRate || right.known - left.known || right.total - left.total)[0]?.category ?? 'concrete nouns and words';
+    .sort((left, right) => right.knownRate - left.knownRate || right.known - left.known || right.total - left.total)[0]?.category ?? copy.onboarding.categories.fallbackStrong;
   const weakCategory = [...ranked]
-    .sort((left, right) => right.reviewRate - left.reviewRate || right.review - left.review || right.total - left.total)[0]?.category ?? 'verbs and adjectives';
+    .sort((left, right) => right.reviewRate - left.reviewRate || right.review - left.review || right.total - left.total)[0]?.category ?? copy.onboarding.categories.fallbackWeak;
 
   return {
     knownEstimate,
@@ -56,7 +57,7 @@ export function buildVocabularyInsights(signals: VocabularySignal[]): Vocabulary
 }
 
 export function formatVocabularyCategory(category?: string) {
-  if (!category) return 'mixed words';
+  if (!category) return copy.onboarding.categories.fallbackMixed;
   return category
     .replace(/[_-]+/g, ' ')
     .replace(/\b\w/g, (letter) => letter.toUpperCase());

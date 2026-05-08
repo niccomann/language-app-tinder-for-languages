@@ -1,0 +1,197 @@
+{
+  "localeName": "English",
+  "onboarding": {
+    "intro": {
+      "eyebrow": "First calibration",
+      "title": "This app starts from the vocabulary you actually know.",
+      "body": "Unlike apps that make you repeat everything the same way, we do not want to show you words you already know too often. We give those words lower weight in exercises and focus on the ones you still need to consolidate.",
+      "detailPrimary": "That is why we analyze your vocabulary: we want to understand how many words you know, which ones you already know, and which ones you only know a little.",
+      "detailSecondary": "Every word can have a different level: you may know it very well, barely recognize it, or not know it yet.",
+      "knownSignal": "I know this word",
+      "unknownSignal": "I do not know it yet",
+      "wordLevelSignal": "Word level",
+      "primaryAction": "Start the scan"
+    },
+    "analysis": {
+      "eyebrow": "Analysis complete",
+      "title": "You know about {{knownEstimate}} words",
+      "body": "We personalize your learning from the signals you just created.",
+      "primaryAction": "Continue",
+      "wordsSeen": "Words seen",
+      "strongSignals": "Strong signals",
+      "toReview": "To review",
+      "strongestOn": "Strongest on",
+      "needsReinforcement": "Needs reinforcement"
+    },
+    "science": {
+      "eyebrow": "Adaptive system",
+      "title": "The science works underneath",
+      "body": "Every swipe becomes a signal. You just play: the system measures improvements, difficulties, words to repeat, and the contexts that fit you best.",
+      "primaryAction": "Enter the path",
+      "memorySignals": "Memory signals",
+      "progressScience": "Progress science",
+      "adaptivePath": "Adaptive path"
+    },
+    "scan": {
+      "eyebrow": "First run",
+      "title": "Vocabulary Scan",
+      "instructions": "First we learn which words you know. Swipe right if you know it, left if you do not.",
+      "scanLabel": "Scan",
+      "knownLabel": "Known",
+      "reviewLabel": "Review",
+      "readyMessage": "You have enough signals to create the first profile.",
+      "remainingMessage": "{{remaining}} more swipes to estimate the first vocabulary profile.",
+      "autoAdvanceMessage": "At {{maxSwipes}} swipes, we automatically move to personalization.",
+      "personalizeAction": "Personalize my path",
+      "emptyTitle": "No words available",
+      "emptyBody": "Enter the path and reload the deck when the data is ready.",
+      "emptyAction": "Enter the path"
+    },
+    "categories": {
+      "fallbackStrong": "concrete nouns and words",
+      "fallbackWeak": "verbs and adjectives",
+      "fallbackMixed": "mixed words"
+    }
+  },
+  "featureGuides": {
+    "vocabularyScan": {
+      "title": "First we learn what you know",
+      "body": "Swipe through words: the ones you recognize and the ones to review become your initial profile.",
+      "actionLabel": "Show me the scan"
+    },
+    "learningPath": {
+      "title": "The path adapts",
+      "body": "Every step comes from what you just showed: strong vocabulary, weak vocabulary, and the next challenge.",
+      "actionLabel": "Show me the path"
+    },
+    "learningFilters": {
+      "title": "Choose the training ground",
+      "body": "Filters help you train one precise area: nouns, verbs, concepts, or categories you want to reinforce.",
+      "actionLabel": "Show me the filters"
+    },
+    "learningSystem": {
+      "title": "The science keeps score",
+      "body": "You answer naturally. The system updates how well you know each word and when it is worth reviewing.",
+      "actionLabel": "Show me the method"
+    },
+    "sentencePlacement": {
+      "title": "Now we build sentences",
+      "body": "Knowing isolated words is not enough: here you choose the right order and train grammar, logic, and memory.",
+      "actionLabel": "Show me the sentence"
+    },
+    "library": {
+      "title": "The library is your memory",
+      "body": "Here you can find every word with translations, examples, links, and useful details for better study.",
+      "actionLabel": "Show me the library"
+    },
+    "grammarGraph": {
+      "title": "Look at the connections",
+      "body": "The graph shows how words, roles, and relationships fit together instead of staying as separate lists.",
+      "actionLabel": "Show me the graph"
+    },
+    "wordCloud": {
+      "title": "See what carries more weight",
+      "body": "The cloud highlights the most present or relevant words, so you know where to look first.",
+      "actionLabel": "Show me the cloud"
+    },
+    "sentenceGraphBuilder": {
+      "title": "Compose with nodes",
+      "body": "This view lets you build sentences while also seeing the structure: who does what, and with which links.",
+      "actionLabel": "Show me the nodes"
+    },
+    "sentenceComposer": {
+      "title": "Compose the simple way",
+      "body": "Here you put words in order and immediately test whether the sentence sounds correct and understandable.",
+      "actionLabel": "Show me the composer"
+    },
+    "clusters": {
+      "title": "Group the concepts",
+      "body": "Clusters reveal word families: they help you study by blocks, not word by word.",
+      "actionLabel": "Show me the groups"
+    },
+    "dialects": {
+      "title": "Discover variants",
+      "body": "Language changes by area and context. This view shows where a word can take on different nuances.",
+      "actionLabel": "Show me the variants"
+    },
+    "hierarchy": {
+      "title": "Give the system structure",
+      "body": "The hierarchy shows levels and families: from the large concept down to more specific words.",
+      "actionLabel": "Show me the hierarchy"
+    }
+  },
+  "featureFlow": {
+    "vocabularyReview": {
+      "title": "Vocabulary Review",
+      "missionLabel": "Mission 1",
+      "description": "Swipe words you know or miss so the system can keep tuning your German level.",
+      "ctaLabel": "Continue path"
+    },
+    "sentencePlacement": {
+      "title": "Sentence Placement",
+      "missionLabel": "Mission 2",
+      "description": "Build short sentences from a controlled word bank to test grammar beyond single words.",
+      "ctaLabel": "Open Sentence Placement mission"
+    },
+    "grammarLab": {
+      "title": "Grammar Lab",
+      "missionLabel": "Mission 3",
+      "description": "Inspect sentence logic, grammar relationships, and builder tools when you are ready.",
+      "ctaLabel": "Open Grammar Lab mission"
+    },
+    "topicDeck": {
+      "title": "Topic Deck",
+      "missionLabel": "Setup",
+      "description": "Tune the packs used in the swipe deck without turning the app into a settings screen.",
+      "ctaLabel": "Open Topics mission"
+    },
+    "wordLibrary": {
+      "title": "Word Library",
+      "missionLabel": "Collection",
+      "description": "Review every saved word, image, translation, example, etymology, and database row.",
+      "ctaLabel": "Open Word Library mission"
+    },
+    "learningSystem": {
+      "title": "Learning System",
+      "missionLabel": "Science",
+      "description": "See how every swipe updates mastery, level, and the next recommended contexts.",
+      "ctaLabel": "Open Learning System mission"
+    },
+    "wordCloud": {
+      "title": "Word Cloud",
+      "missionLabel": "Explore",
+      "description": "Explore the vocabulary space visually after the core practice loop.",
+      "ctaLabel": "Open Word Cloud mission"
+    },
+    "buildSentence": {
+      "title": "Build Sentence",
+      "missionLabel": "Explore",
+      "description": "Compose sentence structures with the full grammar word bank.",
+      "ctaLabel": "Open Build Sentence mission"
+    },
+    "composeSentence": {
+      "title": "Compose Sentence",
+      "missionLabel": "Explore",
+      "description": "Use the alternate composer view while keeping the same sentence-building language.",
+      "ctaLabel": "Open Compose Sentence mission"
+    },
+    "clusters": {
+      "title": "Clusters",
+      "missionLabel": "Explore",
+      "description": "Inspect semantic groups and word-image neighborhoods.",
+      "ctaLabel": "Open Clusters mission"
+    },
+    "dialects": {
+      "title": "Dialects",
+      "missionLabel": "Explore",
+      "description": "Browse regional language variation once the core path is familiar.",
+      "ctaLabel": "Open Dialects mission"
+    },
+    "hierarchy": {
+      "title": "Hierarchy",
+      "missionLabel": "Explore",
+      "description": "See the vocabulary hierarchy and concept structure.",
+      "ctaLabel": "Open Hierarchy mission"
+    }
+  }
+}

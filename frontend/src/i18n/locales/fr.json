@@ -1,0 +1,85 @@
+{
+  "localeName": "Français",
+  "onboarding": {
+    "intro": {
+      "eyebrow": "Première calibration",
+      "title": "Cette app part du vocabulaire que vous connaissez vraiment.",
+      "body": "Contrairement aux apps qui vous font tout répéter de la même façon, nous ne voulons pas vous montrer trop souvent les mots que vous connaissez déjà. Nous leur donnons un poids plus faible dans les exercices et nous nous concentrons sur ceux à consolider.",
+      "detailPrimary": "C'est pourquoi nous analysons votre vocabulaire : nous voulons comprendre combien de mots vous connaissez, lesquels vous connaissez déjà et lesquels vous connaissez seulement un peu.",
+      "detailSecondary": "Chaque mot peut avoir un niveau différent : vous pouvez très bien le connaître, à peine le reconnaître ou ne pas encore le connaître.",
+      "knownSignal": "Je connais ce mot",
+      "unknownSignal": "Je ne le connais pas encore",
+      "wordLevelSignal": "Niveau du mot",
+      "primaryAction": "Démarrer le scan"
+    },
+    "analysis": {
+      "eyebrow": "Analyse terminée",
+      "title": "Vous connaissez environ {{knownEstimate}} mots",
+      "body": "Nous personnalisons votre apprentissage à partir des signaux que vous venez de créer.",
+      "primaryAction": "Continuer",
+      "wordsSeen": "Mots vus",
+      "strongSignals": "Signaux forts",
+      "toReview": "À revoir",
+      "strongestOn": "Plus fort sur",
+      "needsReinforcement": "À renforcer"
+    },
+    "science": {
+      "eyebrow": "Système adaptatif",
+      "title": "La science travaille en arrière-plan",
+      "body": "Chaque swipe devient un signal. Vous jouez simplement : le système mesure les progrès, les difficultés, les mots à répéter et les contextes les plus adaptés.",
+      "primaryAction": "Entrer dans le parcours",
+      "memorySignals": "Signaux mémoire",
+      "progressScience": "Science du progrès",
+      "adaptivePath": "Parcours adaptatif"
+    },
+    "scan": {
+      "eyebrow": "Premier lancement",
+      "title": "Scan du vocabulaire",
+      "instructions": "Nous apprenons d'abord quels mots vous connaissez. Glissez à droite si vous le connaissez, à gauche sinon.",
+      "scanLabel": "Scan",
+      "knownLabel": "Connu",
+      "reviewLabel": "À revoir",
+      "readyMessage": "Vous avez assez de signaux pour créer le premier profil.",
+      "remainingMessage": "Encore {{remaining}} swipes pour estimer le premier profil de vocabulaire.",
+      "autoAdvanceMessage": "À {{maxSwipes}} swipes, nous passons automatiquement à la personnalisation.",
+      "personalizeAction": "Personnaliser mon parcours",
+      "emptyTitle": "Aucun mot disponible",
+      "emptyBody": "Entrez dans le parcours et rechargez le deck quand les données sont prêtes.",
+      "emptyAction": "Entrer dans le parcours"
+    },
+    "categories": {
+      "fallbackStrong": "noms et mots concrets",
+      "fallbackWeak": "verbes et adjectifs",
+      "fallbackMixed": "mots mixtes"
+    }
+  },
+  "featureGuides": {
+    "vocabularyScan": { "title": "D'abord, voyons ce que vous savez", "body": "Faites défiler les mots : ceux que vous reconnaissez et ceux à revoir deviennent votre profil initial.", "actionLabel": "Me montrer le scan" },
+    "learningPath": { "title": "Le parcours s'adapte", "body": "Chaque étape vient de ce que vous venez de montrer : vocabulaire fort, vocabulaire faible et prochain défi.", "actionLabel": "Me montrer le parcours" },
+    "learningFilters": { "title": "Choisissez le terrain", "body": "Les filtres vous aident à entraîner une zone précise : noms, verbes, concepts ou catégories à renforcer.", "actionLabel": "Me montrer les filtres" },
+    "learningSystem": { "title": "La science garde le score", "body": "Vous répondez naturellement. Le système met à jour votre connaissance de chaque mot et le bon moment pour le revoir.", "actionLabel": "Me montrer la méthode" },
+    "sentencePlacement": { "title": "Maintenant, construisons des phrases", "body": "Connaître des mots isolés ne suffit pas : ici vous choisissez le bon ordre et entraînez grammaire, logique et mémoire.", "actionLabel": "Me montrer la phrase" },
+    "library": { "title": "La bibliothèque est votre mémoire", "body": "Vous y retrouvez chaque mot avec traductions, exemples, liens et détails utiles pour mieux étudier.", "actionLabel": "Me montrer la bibliothèque" },
+    "grammarGraph": { "title": "Regardez les connexions", "body": "Le graphe montre comment les mots, les rôles et les relations s'assemblent au lieu de rester des listes séparées.", "actionLabel": "Me montrer le graphe" },
+    "wordCloud": { "title": "Voyez ce qui pèse le plus", "body": "Le nuage met en évidence les mots les plus présents ou pertinents, pour savoir où regarder d'abord.", "actionLabel": "Me montrer le nuage" },
+    "sentenceGraphBuilder": { "title": "Composez avec des nœuds", "body": "Cette vue permet de construire des phrases tout en voyant la structure : qui fait quoi, avec quels liens.", "actionLabel": "Me montrer les nœuds" },
+    "sentenceComposer": { "title": "Composez simplement", "body": "Ici vous mettez les mots en ordre et testez tout de suite si la phrase semble correcte et compréhensible.", "actionLabel": "Me montrer le composeur" },
+    "clusters": { "title": "Groupez les concepts", "body": "Les clusters révèlent des familles de mots : ils aident à étudier par blocs, pas mot par mot.", "actionLabel": "Me montrer les groupes" },
+    "dialects": { "title": "Découvrez les variantes", "body": "La langue change selon la région et le contexte. Cette vue montre où un mot peut prendre des nuances différentes.", "actionLabel": "Me montrer les variantes" },
+    "hierarchy": { "title": "Structurez le système", "body": "La hiérarchie montre les niveaux et les familles : du grand concept aux mots plus spécifiques.", "actionLabel": "Me montrer la hiérarchie" }
+  },
+  "featureFlow": {
+    "vocabularyReview": { "title": "Révision du vocabulaire", "missionLabel": "Mission 1", "description": "Swipez les mots que vous connaissez ou manquez pour que le système continue à calibrer votre niveau d'allemand.", "ctaLabel": "Continuer le parcours" },
+    "sentencePlacement": { "title": "Placement de phrases", "missionLabel": "Mission 2", "description": "Construisez de courtes phrases depuis une banque de mots contrôlée pour tester la grammaire au-delà des mots isolés.", "ctaLabel": "Ouvrir la mission phrases" },
+    "grammarLab": { "title": "Laboratoire de grammaire", "missionLabel": "Mission 3", "description": "Inspectez la logique de phrase, les relations grammaticales et les outils de construction quand vous êtes prêt.", "ctaLabel": "Ouvrir la mission grammaire" },
+    "topicDeck": { "title": "Deck de thèmes", "missionLabel": "Setup", "description": "Réglez les packs utilisés dans le deck de swipe sans transformer l'app en écran de paramètres.", "ctaLabel": "Ouvrir les thèmes" },
+    "wordLibrary": { "title": "Bibliothèque de mots", "missionLabel": "Collection", "description": "Revoyez chaque mot sauvegardé, image, traduction, exemple, étymologie et ligne de base de données.", "ctaLabel": "Ouvrir la bibliothèque" },
+    "learningSystem": { "title": "Système d'apprentissage", "missionLabel": "Science", "description": "Voyez comment chaque swipe met à jour la maîtrise, le niveau et les prochains contextes recommandés.", "ctaLabel": "Ouvrir le système" },
+    "wordCloud": { "title": "Nuage de mots", "missionLabel": "Explorer", "description": "Explorez visuellement l'espace du vocabulaire après la boucle principale.", "ctaLabel": "Ouvrir le nuage" },
+    "buildSentence": { "title": "Construire une phrase", "missionLabel": "Explorer", "description": "Composez des structures de phrase avec toute la banque grammaticale.", "ctaLabel": "Ouvrir le builder" },
+    "composeSentence": { "title": "Composer une phrase", "missionLabel": "Explorer", "description": "Utilisez la vue composeur alternative en gardant le même langage de construction de phrases.", "ctaLabel": "Ouvrir le composeur" },
+    "clusters": { "title": "Clusters", "missionLabel": "Explorer", "description": "Inspectez les groupes sémantiques et les voisinages mot-image.", "ctaLabel": "Ouvrir les clusters" },
+    "dialects": { "title": "Dialectes", "missionLabel": "Explorer", "description": "Parcourez les variations régionales une fois la boucle principale familière.", "ctaLabel": "Ouvrir les dialectes" },
+    "hierarchy": { "title": "Hiérarchie", "missionLabel": "Explorer", "description": "Voyez la hiérarchie du vocabulaire et la structure des concepts.", "ctaLabel": "Ouvrir la hiérarchie" }
+  }
+}
