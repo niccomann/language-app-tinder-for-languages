@@ -2,6 +2,7 @@ import type { AdaptiveLearningSummary, UserProgress } from '../types';
 import { readStorageValue, writeStorageValue } from '../utils/browserStorage';
 
 export const FIRST_VOCABULARY_ONBOARDING_STORAGE_KEY = 'languageApp:firstVocabularyOnboardingDone:v1';
+export const FIRST_VOCABULARY_ONBOARDING_TEST_BYPASS_STORAGE_KEY = 'languageApp:firstVocabularyOnboardingTestBypass:v1';
 export const MIN_VOCABULARY_SCAN_SWIPES = 20;
 export const MAX_VOCABULARY_SCAN_SWIPES = 30;
 
@@ -62,7 +63,8 @@ export function formatVocabularyCategory(category?: string) {
 }
 
 export function readFirstVocabularyOnboardingDone() {
-  return readStorageValue(FIRST_VOCABULARY_ONBOARDING_STORAGE_KEY) === 'true';
+  // Demo mode: ignore the old persistent "done" flag so every real app start can replay the full first-run flow.
+  return readStorageValue(FIRST_VOCABULARY_ONBOARDING_TEST_BYPASS_STORAGE_KEY) === 'true';
 }
 
 export function markFirstVocabularyOnboardingDone() {
@@ -85,6 +87,5 @@ export function shouldShowFirstVocabularyOnboarding(params: {
   return (
     params.mode === 'path'
     && !params.firstVocabularyOnboardingDone
-    && !hasVocabularyHistory(params.learningSummary, params.progress)
   );
 }

@@ -5,6 +5,7 @@ import { FEATURE_GUIDE_STORAGE_PREFIX } from '../src/gamification/featureGuideSt
 export const APP_URL = process.env.PLAYWRIGHT_APP_URL ?? 'http://127.0.0.1:5173';
 export const API_URL = process.env.PLAYWRIGHT_API_URL ?? 'http://127.0.0.1:8501';
 export const FIRST_VOCABULARY_ONBOARDING_STORAGE_KEY = 'languageApp:firstVocabularyOnboardingDone:v1';
+export const FIRST_VOCABULARY_ONBOARDING_TEST_BYPASS_STORAGE_KEY = 'languageApp:firstVocabularyOnboardingTestBypass:v1';
 export { FEATURE_GUIDE_STORAGE_PREFIX };
 
 export const DEFAULT_LEARNING_SUMMARY = {
@@ -86,9 +87,13 @@ const MOCK_CARDS = [
 ];
 
 export async function markFirstVocabularyOnboardingDone(page: Page) {
-  await page.addInitScript((key) => {
-    window.localStorage.setItem(key, 'true');
-  }, FIRST_VOCABULARY_ONBOARDING_STORAGE_KEY);
+  await page.addInitScript(({ doneKey, bypassKey }) => {
+    window.localStorage.setItem(doneKey, 'true');
+    window.localStorage.setItem(bypassKey, 'true');
+  }, {
+    doneKey: FIRST_VOCABULARY_ONBOARDING_STORAGE_KEY,
+    bypassKey: FIRST_VOCABULARY_ONBOARDING_TEST_BYPASS_STORAGE_KEY,
+  });
 }
 
 export async function markFeatureGuidesSeen(page: Page) {
@@ -100,9 +105,13 @@ export async function markFeatureGuidesSeen(page: Page) {
 }
 
 export async function clearFirstVocabularyOnboardingDone(page: Page) {
-  await page.addInitScript((key) => {
-    window.localStorage.removeItem(key);
-  }, FIRST_VOCABULARY_ONBOARDING_STORAGE_KEY);
+  await page.addInitScript(({ doneKey, bypassKey }) => {
+    window.localStorage.removeItem(doneKey);
+    window.localStorage.removeItem(bypassKey);
+  }, {
+    doneKey: FIRST_VOCABULARY_ONBOARDING_STORAGE_KEY,
+    bypassKey: FIRST_VOCABULARY_ONBOARDING_TEST_BYPASS_STORAGE_KEY,
+  });
 }
 
 export async function mockLearningApi(

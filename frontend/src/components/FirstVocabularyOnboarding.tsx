@@ -14,7 +14,7 @@ import {
   type VocabularySignal,
 } from './firstVocabularyOnboardingMeta';
 
-type OnboardingPhase = 'scan' | 'analysis' | 'science';
+type OnboardingPhase = 'intro' | 'scan' | 'analysis' | 'science';
 
 interface FirstVocabularyOnboardingProps {
   currentCard: AdaptiveFlashcard | null;
@@ -33,7 +33,7 @@ export function FirstVocabularyOnboarding({
   onSwipe,
   onComplete,
 }: FirstVocabularyOnboardingProps) {
-  const [phase, setPhase] = useState<OnboardingPhase>('scan');
+  const [phase, setPhase] = useState<OnboardingPhase>('intro');
   const [signals, setSignals] = useState<VocabularySignal[]>([]);
   const [lastSwipeDirection, setLastSwipeDirection] = useState<'left' | 'right'>('right');
   const [reactionEventId, setReactionEventId] = useState(0);
@@ -67,6 +67,36 @@ export function FirstVocabularyOnboarding({
       advanceWithMascot('analysis');
     }
   };
+
+  if (phase === 'intro') {
+    return (
+      <AnimatedExplanationFrame
+        dataTestId="vocabulary-intro"
+        mascotState="levelUp"
+        mascotPersona="coach"
+        eventKey={1}
+        eyebrow="Prima calibrazione"
+        title="Questa app parte dal vocabolario che conosci davvero."
+        body="A differenza delle app che ti fanno ripetere tutto allo stesso modo, noi non vogliamo ripetere spesso le parole che già sai: diamo loro un valore minore negli esercizi e ci concentriamo su quelle che devi consolidare."
+        primaryActionLabel="Inizia la scansione"
+        onPrimaryAction={() => advanceWithMascot('scan')}
+      >
+        <div className={`${UI_RADIUS.control} border border-indigo-100 bg-indigo-50 p-4 dark:border-indigo-800 dark:bg-indigo-950/40`}>
+          <p className="text-base font-extrabold leading-7 text-slate-950 dark:text-white">
+            Per questo analizziamo il tuo vocabolario: vogliamo capire quante parole sai, quali sai già e quali conosci solo un po.
+          </p>
+          <p className="mt-3 text-sm font-semibold leading-6 text-slate-600 dark:text-slate-300">
+            Ogni parola puo avere un livello diverso: puoi saperla benissimo, riconoscerla appena, oppure non conoscerla ancora.
+          </p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <GameSignalBadge icon={<Target size={14} />} label="So questa parola" tone="emerald" />
+          <GameSignalBadge icon={<Brain size={14} />} label="Non la so ancora" tone="amber" />
+          <GameSignalBadge icon={<Sparkles size={14} />} label="Livello parola" tone="indigo" />
+        </div>
+      </AnimatedExplanationFrame>
+    );
+  }
 
   if (phase === 'analysis') {
     return (
@@ -217,8 +247,9 @@ export function FirstVocabularyOnboarding({
 }
 
 interface AnimatedExplanationFrameProps {
+  dataTestId?: string;
   mascotState: 'correct' | 'levelUp';
-  mascotPersona: 'explorer' | 'robot';
+  mascotPersona: 'coach' | 'explorer' | 'robot';
   eventKey: number;
   eyebrow: string;
   title: string;
@@ -229,6 +260,7 @@ interface AnimatedExplanationFrameProps {
 }
 
 function AnimatedExplanationFrame({
+  dataTestId,
   mascotState,
   mascotPersona,
   eventKey,
@@ -240,8 +272,8 @@ function AnimatedExplanationFrame({
   children,
 }: AnimatedExplanationFrameProps) {
   return (
-    <AppScreen width="wide" contentClassName="flex min-h-dvh items-center px-4 py-6">
-      <main className="mx-auto grid w-full max-w-5xl gap-5 lg:grid-cols-[minmax(220px,300px)_minmax(420px,1fr)] lg:items-center">
+    <AppScreen width="full" className="bg-white dark:bg-slate-950" contentClassName="flex min-h-dvh items-center px-4 py-6">
+      <main data-testid={dataTestId} className="mx-auto grid w-full max-w-5xl gap-5 lg:grid-cols-[minmax(220px,300px)_minmax(420px,1fr)] lg:items-center">
         <div className="flex justify-center">
           <MascotReaction
             state={mascotState}

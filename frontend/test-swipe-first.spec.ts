@@ -9,7 +9,7 @@ import {
   stallLibraryFiltersApi,
 } from './test-utils/appTestHelpers';
 
-test('first visit starts with the swipe-only vocabulary scan', async ({ page }) => {
+test('first visit starts with a full-screen vocabulary intro before the swipe scan', async ({ page }) => {
   await mockLearningApi(page, {
     average_confidence: 0,
     average_knowledge_level: 1,
@@ -29,6 +29,16 @@ test('first visit starts with the swipe-only vocabulary scan', async ({ page }) 
   });
   await clearFirstVocabularyOnboardingDone(page);
   await page.goto(APP_URL);
+
+  const intro = page.getByTestId('vocabulary-intro');
+  await expect(intro).toBeVisible({ timeout: 15000 });
+  await expect(intro.getByTestId('mascot-reaction')).toBeVisible();
+  await expect(intro.getByText('Questa app parte dal vocabolario che conosci davvero.')).toBeVisible();
+  await expect(intro.getByText('non vogliamo ripetere spesso le parole che già sai')).toBeVisible();
+  await expect(intro.getByText('capire quante parole sai, quali sai già e quali conosci solo un po')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Vocabulary Scan' })).toHaveCount(0);
+
+  await intro.getByRole('button', { name: 'Inizia la scansione' }).click();
 
   await expect(page.getByRole('heading', { name: 'Vocabulary Scan' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByText('Prima capiamo quali parole sai.')).toBeVisible();
@@ -65,6 +75,20 @@ test('home starts on the learning path and enters the swipe deck', async ({ page
   await expect(page.getByRole('heading', { name: 'Build your topic deck' })).toBeVisible();
   await expect(page.getByText('Apply categories without leaving the deck.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Apply Filters' })).toBeVisible();
+});
+
+test('demo flow ignores the old persisted onboarding flag on app start', async ({ page }) => {
+  await mockLearningApi(page);
+  await markFeatureGuidesSeen(page);
+  await page.addInitScript(() => {
+    window.localStorage.setItem('languageApp:firstVocabularyOnboardingDone:v1', 'true');
+    window.localStorage.removeItem('languageApp:firstVocabularyOnboardingTestBypass:v1');
+  });
+
+  await page.goto(APP_URL);
+
+  await expect(page.getByTestId('vocabulary-intro')).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText('Questa app parte dal vocabolario che conosci davvero.')).toBeVisible();
 });
 
 test('home leaves loading state when the category API stalls', async ({ page }) => {
