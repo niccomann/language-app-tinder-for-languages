@@ -43,9 +43,9 @@ export function buildVocabularyInsights(signals: VocabularySignal[]): Vocabulary
   }));
 
   const strongCategory = [...ranked]
-    .sort((left, right) => right.knownRate - left.knownRate || right.known - left.known || right.total - left.total)[0]?.category ?? 'nomi e parole concrete';
+    .sort((left, right) => right.knownRate - left.knownRate || right.known - left.known || right.total - left.total)[0]?.category ?? 'concrete nouns and words';
   const weakCategory = [...ranked]
-    .sort((left, right) => right.reviewRate - left.reviewRate || right.review - left.review || right.total - left.total)[0]?.category ?? 'verbi e aggettivi';
+    .sort((left, right) => right.reviewRate - left.reviewRate || right.review - left.review || right.total - left.total)[0]?.category ?? 'verbs and adjectives';
 
   return {
     knownEstimate,
@@ -56,7 +56,7 @@ export function buildVocabularyInsights(signals: VocabularySignal[]): Vocabulary
 }
 
 export function formatVocabularyCategory(category?: string) {
-  if (!category) return 'parole miste';
+  if (!category) return 'mixed words';
   return category
     .replace(/[_-]+/g, ' ')
     .replace(/\b\w/g, (letter) => letter.toUpperCase());

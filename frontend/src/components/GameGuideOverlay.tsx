@@ -142,7 +142,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
           type="button"
           onClick={enterFeature}
           className="absolute right-5 top-5 z-10 inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
-          aria-label="Chiudi introduzione"
+          aria-label="Close introduction"
         >
           <X size={20} aria-hidden="true" />
         </button>
@@ -197,7 +197,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-5 py-3 text-base font-bold text-slate-800 shadow-sm transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
               >
                 <RotateCcw size={18} aria-hidden="true" />
-                Rivedi animazione
+                Replay animation
               </button>
             </div>
           </div>

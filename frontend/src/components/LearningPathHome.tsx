@@ -75,7 +75,7 @@ export function LearningPathHome({
                   <Clock3 size={20} />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-extrabold text-amber-900 dark:text-amber-100">Bentornato</p>
+                  <p className="text-sm font-extrabold text-amber-900 dark:text-amber-100">Welcome back</p>
                   <p className="mt-1 text-sm font-semibold text-amber-800/80 dark:text-amber-100/80">
                     {learningSummary?.days_since_last_practice} days since the last German session. Review German Level to recalibrate the path.
                   </p>

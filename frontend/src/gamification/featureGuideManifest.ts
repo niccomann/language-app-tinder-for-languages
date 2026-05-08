@@ -48,9 +48,9 @@ export interface FeatureGuide {
 export const featureGuides = {
   vocabularyScan: {
     id: 'vocabularyScan',
-    title: 'Prima capiamo cosa sai',
-    body: 'Scorri le parole: quelle che riconosci e quelle da rivedere diventano il tuo profilo iniziale.',
-    actionLabel: 'Mostrami lo scan',
+    title: 'First we learn what you know',
+    body: 'Swipe through words: the ones you recognize and the ones to review become your initial profile.',
+    actionLabel: 'Show me the scan',
     tone: 'practice',
     frames: [
       { key: 'guide_vocabulary_scan_a', src: guideVocabularyScanA },
@@ -59,9 +59,9 @@ export const featureGuides = {
   },
   learningPath: {
     id: 'learningPath',
-    title: 'Il percorso si adatta',
-    body: 'Ogni passo nasce da quello che hai appena mostrato: vocaboli forti, vocaboli deboli e prossima sfida.',
-    actionLabel: 'Mostrami il percorso',
+    title: 'The path adapts',
+    body: 'Every step comes from what you just showed: strong vocabulary, weak vocabulary, and the next challenge.',
+    actionLabel: 'Show me the path',
     tone: 'map',
     frames: [
       { key: 'guide_learning_path_a', src: guideLearningPathA },
@@ -70,9 +70,9 @@ export const featureGuides = {
   },
   learningFilters: {
     id: 'learningFilters',
-    title: 'Scegli il terreno',
-    body: 'I filtri ti aiutano ad allenare una zona precisa: nomi, verbi, concetti o categorie che vuoi rinforzare.',
-    actionLabel: 'Mostrami i filtri',
+    title: 'Choose the training ground',
+    body: 'Filters help you train one precise area: nouns, verbs, concepts, or categories you want to reinforce.',
+    actionLabel: 'Show me the filters',
     tone: 'practice',
     frames: [
       { key: 'guide_learning_filters_a', src: guideLearningFiltersA },
@@ -81,9 +81,9 @@ export const featureGuides = {
   },
   learningSystem: {
     id: 'learningSystem',
-    title: 'La scienza tiene il conto',
-    body: 'Tu rispondi in modo naturale. Il sistema aggiorna quanto conosci una parola e quando conviene rivederla.',
-    actionLabel: 'Mostrami il metodo',
+    title: 'The science keeps score',
+    body: 'You answer naturally. The system updates how well you know each word and when it is worth reviewing.',
+    actionLabel: 'Show me the method',
     tone: 'science',
     frames: [
       { key: 'guide_learning_system_a', src: guideLearningSystemA },
@@ -92,9 +92,9 @@ export const featureGuides = {
   },
   sentencePlacement: {
     id: 'sentencePlacement',
-    title: 'Ora costruiamo frasi',
-    body: 'Non basta sapere parole isolate: qui scegli l ordine giusto e alleni grammatica, logica e memoria.',
-    actionLabel: 'Mostrami la frase',
+    title: 'Now we build sentences',
+    body: 'Knowing isolated words is not enough: here you choose the right order and train grammar, logic, and memory.',
+    actionLabel: 'Show me the sentence',
     tone: 'grammar',
     frames: [
       { key: 'guide_sentence_placement_a', src: guideSentencePlacementA },
@@ -103,9 +103,9 @@ export const featureGuides = {
   },
   library: {
     id: 'library',
-    title: 'La libreria e la tua memoria',
-    body: 'Qui ritrovi ogni parola con traduzioni, esempi, collegamenti e dettagli utili per studiare meglio.',
-    actionLabel: 'Mostrami la libreria',
+    title: 'The library is your memory',
+    body: 'Here you can find every word with translations, examples, links, and useful details for better study.',
+    actionLabel: 'Show me the library',
     tone: 'library',
     frames: [
       { key: 'guide_library_a', src: guideLibraryA },
@@ -114,9 +114,9 @@ export const featureGuides = {
   },
   grammarGraph: {
     id: 'grammarGraph',
-    title: 'Guarda i collegamenti',
-    body: 'Il grafo mostra come parole, ruoli e relazioni si tengono insieme invece di restare liste separate.',
-    actionLabel: 'Mostrami il grafo',
+    title: 'Look at the connections',
+    body: 'The graph shows how words, roles, and relationships fit together instead of staying as separate lists.',
+    actionLabel: 'Show me the graph',
     tone: 'grammar',
     frames: [
       { key: 'guide_grammar_graph_a', src: guideGrammarGraphA },
@@ -125,9 +125,9 @@ export const featureGuides = {
   },
   wordCloud: {
     id: 'wordCloud',
-    title: 'Vedi cosa pesa di piu',
-    body: 'La nuvola mette in evidenza le parole piu presenti o rilevanti, cosi capisci dove guardare prima.',
-    actionLabel: 'Mostrami la nuvola',
+    title: 'See what carries more weight',
+    body: 'The cloud highlights the most present or relevant words, so you know where to look first.',
+    actionLabel: 'Show me the cloud',
     tone: 'grammar',
     frames: [
       { key: 'guide_word_cloud_a', src: guideWordCloudA },
@@ -136,9 +136,9 @@ export const featureGuides = {
   },
   sentenceGraphBuilder: {
     id: 'sentenceGraphBuilder',
-    title: 'Componi con i nodi',
-    body: 'Questa vista ti fa costruire frasi vedendo anche la struttura: chi fa cosa, con quali legami.',
-    actionLabel: 'Mostrami i nodi',
+    title: 'Compose with nodes',
+    body: 'This view lets you build sentences while also seeing the structure: who does what, and with which links.',
+    actionLabel: 'Show me the nodes',
     tone: 'grammar',
     frames: [
       { key: 'guide_sentence_graph_builder_a', src: guideSentenceGraphBuilderA },
@@ -147,9 +147,9 @@ export const featureGuides = {
   },
   sentenceComposer: {
     id: 'sentenceComposer',
-    title: 'Componi in modo semplice',
-    body: 'Qui metti le parole in ordine e provi subito se la frase suona corretta e comprensibile.',
-    actionLabel: 'Mostrami la composizione',
+    title: 'Compose the simple way',
+    body: 'Here you put words in order and immediately test whether the sentence sounds correct and understandable.',
+    actionLabel: 'Show me the composer',
     tone: 'grammar',
     frames: [
       { key: 'guide_sentence_composer_a', src: guideSentenceComposerA },
@@ -158,9 +158,9 @@ export const featureGuides = {
   },
   clusters: {
     id: 'clusters',
-    title: 'Raggruppa i concetti',
-    body: 'I cluster fanno emergere famiglie di parole: ti aiutano a studiare per blocchi, non parola per parola.',
-    actionLabel: 'Mostrami i gruppi',
+    title: 'Group the concepts',
+    body: 'Clusters reveal word families: they help you study by blocks, not word by word.',
+    actionLabel: 'Show me the groups',
     tone: 'grammar',
     frames: [
       { key: 'guide_clusters_a', src: guideClustersA },
@@ -169,9 +169,9 @@ export const featureGuides = {
   },
   dialects: {
     id: 'dialects',
-    title: 'Scopri le varianti',
-    body: 'La lingua cambia per area e contesto. Questa vista ti mostra dove una parola puo assumere sfumature diverse.',
-    actionLabel: 'Mostrami le varianti',
+    title: 'Discover variants',
+    body: 'Language changes by area and context. This view shows where a word can take on different nuances.',
+    actionLabel: 'Show me the variants',
     tone: 'grammar',
     frames: [
       { key: 'guide_dialects_a', src: guideDialectsA },
@@ -180,9 +180,9 @@ export const featureGuides = {
   },
   hierarchy: {
     id: 'hierarchy',
-    title: 'Dai ordine al sistema',
-    body: 'La gerarchia ti fa vedere livelli e famiglie: dal concetto grande fino alle parole piu specifiche.',
-    actionLabel: 'Mostrami la gerarchia',
+    title: 'Give the system structure',
+    body: 'The hierarchy shows levels and families: from the large concept down to more specific words.',
+    actionLabel: 'Show me the hierarchy',
     tone: 'grammar',
     frames: [
       { key: 'guide_hierarchy_a', src: guideHierarchyA },

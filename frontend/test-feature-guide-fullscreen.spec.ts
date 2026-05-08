@@ -20,7 +20,7 @@ test('feature guide opens as a full-screen introduction before entering a featur
   await expect(guide).toHaveAttribute('data-guide-id', 'sentenceGraphBuilder');
   await expect(guide).toHaveAttribute('aria-modal', 'true');
   await expect(guide).toHaveCSS('background-color', 'rgb(255, 255, 255)');
-  await expect(guide.getByRole('heading', { name: 'Componi con i nodi' })).toBeVisible();
+  await expect(guide.getByRole('heading', { name: 'Compose with nodes' })).toBeVisible();
 
   const guideBox = await guide.boundingBox();
   const viewport = page.viewportSize();
@@ -36,7 +36,7 @@ test('feature guide opens as a full-screen introduction before entering a featur
   expect(imageBox!.width).toBeGreaterThanOrEqual(260);
   expect(imageBox!.height).toBeGreaterThanOrEqual(260);
 
-  await guide.getByRole('button', { name: 'Mostrami i nodi' }).click();
+  await guide.getByRole('button', { name: 'Show me the nodes' }).click();
 
   await expect(guide).toHaveCount(0);
   await expect(page.getByRole('heading', { name: /Word Bank/i })).toBeVisible({ timeout: 15000 });

@@ -112,14 +112,14 @@ export const featureFlowItems: FeatureFlowItem[] = [
   },
   {
     id: 'compose-sentence',
-    title: 'Componi Frase',
+    title: 'Compose Sentence',
     missionLabel: 'Explore',
     description: 'Use the alternate composer view while keeping the same sentence-building language.',
     route: '/grammar/compose-sentence',
     phase: 'advanced',
     tone: 'indigo',
     order: 90,
-    ctaLabel: 'Open Componi Frase mission',
+    ctaLabel: 'Open Compose Sentence mission',
   },
   {
     id: 'clusters',
@@ -134,14 +134,14 @@ export const featureFlowItems: FeatureFlowItem[] = [
   },
   {
     id: 'dialects',
-    title: 'Dialetti',
+    title: 'Dialects',
     missionLabel: 'Explore',
     description: 'Browse regional language variation once the core path is familiar.',
     route: '/grammar/dialects',
     phase: 'advanced',
     tone: 'amber',
     order: 110,
-    ctaLabel: 'Open Dialetti mission',
+    ctaLabel: 'Open Dialects mission',
   },
   {
     id: 'hierarchy',

@@ -13,5 +13,5 @@ test('clustered D3 nodes render word images inside circular nodes', async ({ pag
 
   const nodeImages = page.locator('g.node image[href^="data:image"], g.node image[href^="https://"]');
   await expect(nodeImages.first()).toBeVisible({ timeout: 15000 });
-  await expect(page.getByRole('button', { name: /Immagini ON/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Images ON/i })).toBeVisible();
 });

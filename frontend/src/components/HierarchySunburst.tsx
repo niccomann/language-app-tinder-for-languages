@@ -24,12 +24,12 @@ interface D3HierarchyNode extends d3.HierarchyRectangularNode<HierarchyNode> {
 }
 
 const CRITERIA_CONFIG: Record<HierarchyCriteria, { label: string; icon: React.ReactNode }> = {
-    category: { label: 'Categoria', icon: <Layers size={16} /> },
+    category: { label: 'Category', icon: <Layers size={16} /> },
     cefr: { label: 'CEFR', icon: <GraduationCap size={16} /> },
-    gender: { label: 'Genere', icon: <Users size={16} /> },
-    frequency: { label: 'Frequenza', icon: <Activity size={16} /> },
-    register: { label: 'Registro', icon: <MessageSquare size={16} /> },
-    part_of_speech: { label: 'Tipo', icon: <BookOpen size={16} /> },
+    gender: { label: 'Gender', icon: <Users size={16} /> },
+    frequency: { label: 'Frequency', icon: <Activity size={16} /> },
+    register: { label: 'Register', icon: <MessageSquare size={16} /> },
+    part_of_speech: { label: 'Type', icon: <BookOpen size={16} /> },
 };
 
 export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps) {

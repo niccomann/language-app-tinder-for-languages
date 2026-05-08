@@ -27,12 +27,12 @@ test('grammar lab keeps the shared game menu visible inside builder views', asyn
   await expect(page.getByRole('heading', { name: /Grammar Lab/i })).toBeVisible();
   await expect(labViews.getByRole('button', { name: /Sentence Graph/i })).toBeVisible();
   await expect(labViews.getByRole('button', { name: /Word Cloud/i })).toBeVisible();
-  await expect(labViews.getByRole('button', { name: /Componi Frase/i })).toBeVisible();
+  await expect(labViews.getByRole('button', { name: /Compose Sentence/i })).toBeVisible();
   await expect(labViews.getByRole('button', { name: /Clusters/i })).toBeVisible();
-  await expect(labViews.getByRole('button', { name: /Dialetti/i })).toBeVisible();
+  await expect(labViews.getByRole('button', { name: /Dialects/i })).toBeVisible();
   await expect(labViews.getByRole('button', { name: /Hierarchy/i })).toBeVisible();
 
-  await labViews.getByRole('button', { name: /Componi Frase/i }).click();
+  await labViews.getByRole('button', { name: /Compose Sentence/i }).click();
   await expect(page.getByRole('heading', { name: /Word Bank/i })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('heading', { name: /Grammar Lab/i })).toBeVisible();
   await expect(labViews.getByRole('button', { name: /Sentence Graph/i })).toBeVisible();
@@ -62,7 +62,7 @@ test('sentence builder variants use the same page frame width', async ({ page })
   await labViews.getByRole('button', { name: /Build Sentence/i }).click();
   const buildSentenceBox = await getWordBankBox(page);
 
-  await labViews.getByRole('button', { name: /Componi Frase/i }).click();
+  await labViews.getByRole('button', { name: /Compose Sentence/i }).click();
   const composeSentenceBox = await getWordBankBox(page);
 
   expect(Math.abs(buildSentenceBox.x - composeSentenceBox.x)).toBeLessThanOrEqual(4);

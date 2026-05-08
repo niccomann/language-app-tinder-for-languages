@@ -1,8 +1,8 @@
 /**
- * useGrammarNodeFilters - Hook per filtering di GrammarNode
+ * useGrammarNodeFilters - hook for filtering GrammarNode items.
  * 
- * Versione specializzata del sistema di filtering linguistico
- * per i nodi grammaticali usati in FunSentenceBuilder e SentenceBuilder.
+ * Specialized version of the linguistic filtering system for grammar nodes
+ * used in FunSentenceBuilder and SentenceBuilder.
  */
 import { useState, useMemo, useCallback } from 'react';
 import { 
@@ -41,17 +41,17 @@ const DIFFICULTY_ORDER = ['easy', 'medium', 'hard', 'very_hard'];
 export const GRAMMAR_FILTER_CONFIGS: GrammarFilterConfig[] = [
   {
     id: 'all',
-    label: 'Tutti',
+    label: 'All',
     icon: Filter,
-    description: 'Mostra tutti i nodi',
+    description: 'Show all nodes',
     getOptions: () => ['all'],
     matchesFilter: () => true,
   },
   {
     id: 'cefr',
-    label: 'Livello CEFR',
+    label: 'CEFR Level',
     icon: GraduationCap,
-    description: 'Filtra per livello linguistico',
+    description: 'Filter by language level',
     getOptions: (nodes) => {
       const levels = new Set(nodes.map(n => n.cefr_level).filter(Boolean) as string[]);
       return CEFR_ORDER.filter(level => levels.has(level));
@@ -60,9 +60,9 @@ export const GRAMMAR_FILTER_CONFIGS: GrammarFilterConfig[] = [
   },
   {
     id: 'gender',
-    label: 'Genere',
+    label: 'Gender',
     icon: Users,
-    description: 'Filtra per genere grammaticale',
+    description: 'Filter by grammatical gender',
     getOptions: (nodes) => {
       const genders = new Set<string>();
       nodes.forEach(n => {
@@ -74,9 +74,9 @@ export const GRAMMAR_FILTER_CONFIGS: GrammarFilterConfig[] = [
   },
   {
     id: 'frequency',
-    label: 'Frequenza',
+    label: 'Frequency',
     icon: Activity,
-    description: 'Filtra per frequenza d\'uso',
+    description: 'Filter by usage frequency',
     getOptions: (nodes) => {
       const freqs = new Set(nodes.map(n => n.frequency_band).filter(Boolean) as string[]);
       return FREQUENCY_ORDER.filter(freq => freqs.has(freq));
@@ -85,9 +85,9 @@ export const GRAMMAR_FILTER_CONFIGS: GrammarFilterConfig[] = [
   },
   {
     id: 'register',
-    label: 'Registro',
+    label: 'Register',
     icon: MessageSquare,
-    description: 'Filtra per registro linguistico',
+    description: 'Filter by language register',
     getOptions: (nodes) => {
       const regs = new Set(nodes.map(n => n.register).filter(Boolean) as string[]);
       return Array.from(regs);
@@ -96,9 +96,9 @@ export const GRAMMAR_FILTER_CONFIGS: GrammarFilterConfig[] = [
   },
   {
     id: 'difficulty',
-    label: 'Difficoltà',
+    label: 'Difficulty',
     icon: Sparkles,
-    description: 'Filtra per difficoltà',
+    description: 'Filter by difficulty',
     getOptions: (nodes) => {
       const diffs = new Set(nodes.map(n => n.difficulty).filter(Boolean) as string[]);
       return DIFFICULTY_ORDER.filter(diff => diffs.has(diff));
@@ -107,9 +107,9 @@ export const GRAMMAR_FILTER_CONFIGS: GrammarFilterConfig[] = [
   },
   {
     id: 'category',
-    label: 'Categoria',
+    label: 'Category',
     icon: Layers,
-    description: 'Filtra per categoria semantica',
+    description: 'Filter by semantic category',
     getOptions: (nodes) => {
       const cats = new Set(nodes.map(n => n.category).filter(Boolean) as string[]);
       return Array.from(cats).sort();

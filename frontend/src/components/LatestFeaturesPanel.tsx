@@ -19,7 +19,7 @@ export function LatestFeaturesPanel() {
           <Sparkles size={16} />
         </span>
         <div>
-          <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">New Features / Nuove feature</h3>
+          <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">New Features</h3>
           <p className="mt-0.5 text-xs font-bold uppercase tracking-wide text-indigo-600 dark:text-indigo-300">Latest session updates</p>
         </div>
       </div>

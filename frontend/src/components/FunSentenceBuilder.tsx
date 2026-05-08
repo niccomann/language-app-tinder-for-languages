@@ -439,7 +439,7 @@ export function FunSentenceBuilder() {
                 .attr('font-weight', 'bold')
                 .attr('fill', '#ec4899')
                 .attr('opacity', connectionProgress)
-                .text('Rilascia per collegare!');
+                .text('Release to connect.');
             }
           }
         })
@@ -747,9 +747,9 @@ export function FunSentenceBuilder() {
 
   const getStatusLabel = (status: string): string => {
     switch (status) {
-      case 'green': return 'Perfetto! 🎉';
-      case 'yellow': return 'Grammatica OK, ma...';
-      case 'red': return 'Errore ❌';
+      case 'green': return 'Perfect!';
+      case 'yellow': return 'Grammar OK, but...';
+      case 'red': return 'Error';
       default: return '';
     }
   };
@@ -791,12 +791,12 @@ export function FunSentenceBuilder() {
           {validating ? (
             <>
               <Loader2 size={iconSize} className="animate-spin" />
-              {compact ? 'Verifica' : 'Validazione...'}
+              {compact ? 'Check' : 'Validating...'}
             </>
           ) : (
             <>
               <Check size={iconSize} />
-              {compact ? 'Verifica' : 'Verifica Frase'}
+              {compact ? 'Check' : 'Check Sentence'}
             </>
           )}
         </button>
@@ -806,7 +806,7 @@ export function FunSentenceBuilder() {
             className={`${resetSize} ${UI_RADIUS.control} font-medium transition-all flex items-center gap-2 ${isDark ? 'bg-slate-600 text-white hover:bg-slate-500' : 'bg-gray-600 text-white hover:bg-gray-500'}`}
           >
             <Minimize2 size={iconSize} />
-            Chiudi
+            Close
           </button>
         )}
       </div>
@@ -835,19 +835,19 @@ export function FunSentenceBuilder() {
               {getStatusLabel(validationResult.status)}
               {!isFloating && validationResult.grammar_correct && (
                 <span className={`text-xs bg-green-200 text-green-800 px-2 py-0.5 ${UI_RADIUS.pill}`}>
-                  ✓ Grammatica
+                  ✓ Grammar
                 </span>
               )}
               {!isFloating && validationResult.semantic_correct && (
                 <span className={`text-xs bg-green-200 text-green-800 px-2 py-0.5 ${UI_RADIUS.pill}`}>
-                  ✓ Semantica
+                  ✓ Semantics
                 </span>
               )}
             </h3>
             <p className={isFloating ? 'text-sm mt-1' : 'mt-2 text-gray-700'}>{validationResult.explanation}</p>
             {!isFloating && validationResult.suggestion && (
               <p className="mt-2 text-sm">
-                <span className="font-medium">Suggerimento:</span> {validationResult.suggestion}
+                <span className="font-medium">Suggestion:</span> {validationResult.suggestion}
               </p>
             )}
           </div>
@@ -899,7 +899,7 @@ export function FunSentenceBuilder() {
 
         <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 p-4 ${UI_RADIUS.surface} backdrop-blur-sm ${isDark ? 'bg-slate-800/90' : 'bg-white/90'} shadow-xl`}>
           <p className={`text-center font-medium mb-3 ${isDark ? 'text-white' : 'text-gray-800'}`}>
-            Frase: <span className="text-purple-500">"{builtSentence}"</span>
+            Sentence: <span className="text-purple-500">"{builtSentence}"</span>
           </p>
           {renderSentenceActions({ compact: true, showClose: true })}
         </div>
@@ -941,13 +941,13 @@ export function FunSentenceBuilder() {
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className={`text-center p-8 ${UI_RADIUS.surface} ${isDark ? 'bg-slate-800/50' : 'bg-white/50'} backdrop-blur-sm`}>
               <p className={`text-lg font-medium ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
-                Clicca sui pulsanti + per aggiungere nodi!
+                Click the + buttons to add nodes.
               </p>
               <p className={`text-sm mt-2 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                Poi trascinali uno sopra l'altro per collegarli
+                Then drag them onto each other to connect them.
               </p>
               <p className={`text-xs mt-4 ${isDark ? 'text-slate-600' : 'text-gray-400'}`}>
-                Scroll per zoom · trascina per spostare
+                Scroll to zoom · drag to move
               </p>
             </div>
           </div>
@@ -968,7 +968,7 @@ export function FunSentenceBuilder() {
 
         {draggedNode && potentialTarget && (
           <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 ${UI_RADIUS.pill} ${isDark ? 'bg-pink-600' : 'bg-pink-500'} text-white font-medium animate-pulse`}>
-            Rilascia per collegare a "{potentialTarget.label}"
+            Release to connect to "{potentialTarget.label}"
           </div>
         )}
       </div>
@@ -977,7 +977,7 @@ export function FunSentenceBuilder() {
         {canvasNodes.length > 0 && (
           <div className="text-center mb-4">
             <p className={`text-lg ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-              Frase: <span className="font-bold text-purple-600">"{builtSentence}"</span>
+              Sentence: <span className="font-bold text-purple-600">"{builtSentence}"</span>
             </p>
           </div>
         )}

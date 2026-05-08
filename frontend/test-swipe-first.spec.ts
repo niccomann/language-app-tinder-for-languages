@@ -33,15 +33,15 @@ test('first visit starts with a full-screen vocabulary intro before the swipe sc
   const intro = page.getByTestId('vocabulary-intro');
   await expect(intro).toBeVisible({ timeout: 15000 });
   await expect(intro.getByTestId('mascot-reaction')).toBeVisible();
-  await expect(intro.getByText('Questa app parte dal vocabolario che conosci davvero.')).toBeVisible();
-  await expect(intro.getByText('non vogliamo ripetere spesso le parole che già sai')).toBeVisible();
-  await expect(intro.getByText('capire quante parole sai, quali sai già e quali conosci solo un po')).toBeVisible();
+  await expect(intro.getByText('This app starts from the vocabulary you actually know.')).toBeVisible();
+  await expect(intro.getByText('we do not want to show you words you already know too often')).toBeVisible();
+  await expect(intro.getByText('understand how many words you know, which ones you already know, and which ones you only know a little')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Vocabulary Scan' })).toHaveCount(0);
 
-  await intro.getByRole('button', { name: 'Inizia la scansione' }).click();
+  await intro.getByRole('button', { name: 'Start the scan' }).click();
 
   await expect(page.getByRole('heading', { name: 'Vocabulary Scan' })).toBeVisible({ timeout: 15000 });
-  await expect(page.getByText('Prima capiamo quali parole sai.')).toBeVisible();
+  await expect(page.getByText('First we learn which words you know.')).toBeVisible();
   await expect(page.getByRole('button', { name: "Don't know", exact: true })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('button', { name: 'Know', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Library' })).toHaveCount(0);
@@ -88,7 +88,7 @@ test('demo flow ignores the old persisted onboarding flag on app start', async (
   await page.goto(APP_URL);
 
   await expect(page.getByTestId('vocabulary-intro')).toBeVisible({ timeout: 15000 });
-  await expect(page.getByText('Questa app parte dal vocabolario che conosci davvero.')).toBeVisible();
+  await expect(page.getByText('This app starts from the vocabulary you actually know.')).toBeVisible();
 });
 
 test('home leaves loading state when the category API stalls', async ({ page }) => {

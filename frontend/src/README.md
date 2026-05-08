@@ -17,94 +17,94 @@
 ## Cartelle
 
 ```
-components/     # Componenti React attivi
-├── CardStack.tsx         # ENTRY POINT UI - decide quale screen mostrare
-├── Card.tsx              # Singola flashcard draggable
-├── LearningScreen.tsx    # Schermata principale apprendimento
-├── LearningCategoryStrip.tsx # Topic deck gamificato
-├── LearningFiltersPanel.tsx # Filtri categorie dentro il deck
-├── LearningSystemMenu.tsx # Slogan/concetti del sistema adattivo
-├── FirstVocabularyOnboarding.tsx # Primo scan vocabolario
-├── GameGuideOverlay.tsx  # Guida animata event-driven per feature
-├── GrammarLab.tsx        # Laboratorio grammatica (7 tab)
-├── WordsLibraryEnriched.tsx  # Libreria parole
-└── ui/                   # Componenti base riutilizzabili
+components/     # Active React components
+├── CardStack.tsx         # UI entry point: decides which screen to show
+├── Card.tsx              # Single draggable flashcard
+├── LearningScreen.tsx    # Main learning screen
+├── LearningCategoryStrip.tsx # Gamified topic deck
+├── LearningFiltersPanel.tsx # Category filters inside the deck
+├── LearningSystemMenu.tsx # Adaptive system slogans/concepts
+├── FirstVocabularyOnboarding.tsx # First vocabulary scan
+├── GameGuideOverlay.tsx  # Event-driven animated feature guide
+├── GrammarLab.tsx        # Grammar lab (7 tabs)
+├── WordsLibraryEnriched.tsx  # Word library
+└── ui/                   # Reusable base components
 
 hooks/          # Custom React hooks
-├── useLearningSession.ts # ⭐ Core: stato sessione, swipe logic
-├── useCategories.ts      # Selezione categorie
-├── useAvailableGrammarNodes.ts # Nodi grammaticali condivisi dai builder
+├── useLearningSession.ts # ⭐ Core: session state, swipe logic
+├── useCategories.ts      # Category selection
+├── useAvailableGrammarNodes.ts # Grammar nodes shared by builders
 ├── useAudio.ts           # Audio playback hook
 ├── useGrammarNodeFilters.ts # Grammar node filtering
 ├── useLinguisticFilters.ts  # Linguistic filtering
 └── useZoomControls.ts    # Zoom controls
 
 services/       # Client API
-└── api.ts                # ⭐ Tutte le chiamate al backend
+└── api.ts                # ⭐ All backend calls
 
 contexts/       # React Context
 └── ThemeContext.tsx      # Dark/Light mode
 
-gamification/   # Manifest asset e mapping guide
-├── mascotManifest.ts     # Mascot feedback corretto/sbagliato/level up
+gamification/   # Asset manifests and guide mapping
+├── mascotManifest.ts     # Mascot feedback for correct/wrong/level up
 └── featureGuideManifest.ts # 13 guide x 2 frame cutout
 
 types/          # TypeScript interfaces
 └── index.ts              # Flashcard, Progress, GrammarNode, etc.
 
-config/         # Configurazione
+config/         # Configuration
 └── appMode.ts            # Feature flags (online/offline)
 
-routes/         # Routing leggero senza react-router
+routes/         # Lightweight routing without react-router
 └── appRoutes.ts          # parseAppRoute, grammarPath, libraryWordPath
 
 utils/          # Utility functions
 ├── animations.ts         # Framer Motion variants
-├── browserStorage.ts     # Accesso localStorage centralizzato
-├── grammarColors.ts      # Colori per tipi grammaticali
+├── browserStorage.ts     # Centralized localStorage access
+├── grammarColors.ts      # Colors for grammar types
 └── imageHelper.ts        # Base64 image handling
 ```
 
-## Flusso Principale
+## Main Flow
 
 ```
 App.tsx
   ├── appRoutes.ts → route state
-  ├── GameGuideOverlay → guida animata per la feature corrente
+  ├── GameGuideOverlay → animated guide for the current feature
   ├── CardStack.tsx → learning session
-  │     ├── FirstVocabularyOnboarding → primo scan vocabolario
-  │     ├── CompletionScreen → sessione finita
-  │     ├── LearningPathHome → percorso 400 livelli
-  │     └── LearningScreen → swipe flashcards + filtri categorie
+  │     ├── FirstVocabularyOnboarding → first vocabulary scan
+  │     ├── CompletionScreen → finished session
+  │     ├── LearningPathHome → 400-level path
+  │     └── LearningScreen → swipe flashcards + category filters
   │           ├── Card.tsx (draggable)
   │           ├── LearningCategoryStrip.tsx
   │           ├── LearningFiltersPanel.tsx
   │           ├── LearningSystemMenu.tsx
   │           └── SwipeButtons.tsx
-  ├── GrammarLab → esercizi grammatica
-  └── WordsLibraryEnriched → browse parole
+  ├── GrammarLab → grammar exercises
+  └── WordsLibraryEnriched → browse words
 ```
 
-## Hooks Chiave
+## Key Hooks
 
 ### `useLearningSession`
 ```typescript
-// Gestisce tutto il flusso di apprendimento
+// Handles the full learning flow
 const session = useLearningSession();
-session.loadFlashcards(categories);  // Carica cards
-session.handleSwipe('right');        // Swipe = conosco
-session.handleSwipe('left');         // Swipe = non conosco
+session.loadFlashcards(categories);  // Loads cards
+session.handleSwipe('right');        // Swipe = known
+session.handleSwipe('left');         // Swipe = unknown
 ```
 
 ### Deprecated
 
-Il vecchio flusso YouTube è stato spostato in `deprecated/youtube/` e non viene importato dal flusso principale.
-Il vecchio flusso video AI è stato spostato in `deprecated/ai-video/` e non viene importato dal flusso principale.
-Il vecchio gate iniziale di selezione categorie è stato spostato in `deprecated/category-gate/`.
+The old YouTube flow has been moved to `deprecated/youtube/` and is not imported by the main flow.
+The old AI video flow has been moved to `deprecated/ai-video/` and is not imported by the main flow.
+The old initial category gate has been moved to `deprecated/category-gate/`.
 
 ### `useCategories`
 ```typescript
-// Gestisce selezione categorie
+// Handles category selection
 const categories = useCategories();
 categories.toggleCategory('animals');
 categories.selectAll();
@@ -112,43 +112,43 @@ categories.selectAll();
 
 ### `useAvailableGrammarNodes`
 ```typescript
-// Condivide fetch + loading state fra i sentence builder
+// Shares fetch + loading state across sentence builders
 const { availableNodes, loading } = useAvailableGrammarNodes();
 ```
 
-## Superfici Centralizzate
+## Centralized Surfaces
 
-- `routes/appRoutes.ts`: route principali e tab deep-linkabili.
-- `components/ui/`: forme, panel, tab, header, bottoni e interaction token.
-- `gamification/featureGuideManifest.ts`: asset, copy e mapping route → guida.
-- `components/GameGuideOverlay.tsx`: unico layer per animazioni feature, event-driven e non continuo.
-- `utils/browserStorage.ts`: unico accesso diretto a `localStorage`.
-- `components/firstVocabularyOnboardingMeta.ts`: soglie, insight e persistenza del primo onboarding.
-- `frontend/test-utils/appTestHelpers.ts`: URL, mock API e helper Playwright condivisi.
+- `routes/appRoutes.ts`: main routes and deep-linkable tabs.
+- `components/ui/`: shapes, panels, tabs, headers, buttons, and interaction tokens.
+- `gamification/featureGuideManifest.ts`: assets, copy, and route-to-guide mapping.
+- `components/GameGuideOverlay.tsx`: single event-driven, non-continuous feature animation layer.
+- `utils/browserStorage.ts`: single direct access layer for `localStorage`.
+- `components/firstVocabularyOnboardingMeta.ts`: thresholds, insights, and first onboarding persistence.
+- `frontend/test-utils/appTestHelpers.ts`: shared URLs, API mocks, and Playwright helpers.
 
-Per dettagli manutentivi: `docs/frontend-maintenance.md`.
+For maintenance details: `docs/frontend-maintenance.md`.
 
 ## API Calls (services/api.ts)
 
-| Funzione | Endpoint | Descrizione |
+| Function | Endpoint | Description |
 |----------|----------|-------------|
-| `getFlashcards()` | GET /api/cards | Lista flashcards |
-| `recordProgress()` | POST /api/progress | Salva progresso |
+| `getFlashcards()` | GET /api/cards | Flashcard list |
+| `recordProgress()` | POST /api/progress | Saves progress |
 | `speakText()` | POST /api/tts/speak | Text-to-speech |
-| `getLibraryWords()` | GET /api/library/words | Parole con filtri |
+| `getLibraryWords()` | GET /api/library/words | Filtered words |
 
 ---
 
-## Progresso e Mastery
+## Progress and Mastery
 
-`useLearningSession` registra ogni swipe tramite `api.recordProgress()` e aggiorna il confidence score con `api.updateWordStatistics()`.
-La home usa anche `api.getAdaptiveLearningSummary()` per mostrare il percorso globale:
-il path dell'utente va da livello 1 a 400, mentre la singola parola mantiene una mastery separata da 1 a 10.
+`useLearningSession` records every swipe through `api.recordProgress()` and updates the confidence score with `api.updateWordStatistics()`.
+The home also uses `api.getAdaptiveLearningSummary()` to show the global path:
+the user path goes from level 1 to 400, while each individual word keeps a separate mastery score from 1 to 10.
 
 ```
-1. loadFlashcards(categories) → carica il deck filtrato
-2. handleSwipe('right' | 'left') → salva progresso known/unknown
-3. updateWordStatistics() → aggiorna la mastery score parola
-4. getAdaptiveLearningSummary() → aggiorna path level, XP e trend
-5. reset() → azzera progresso sessione e torna alla prima card
+1. loadFlashcards(categories) → loads the filtered deck
+2. handleSwipe('right' | 'left') → saves known/unknown progress
+3. updateWordStatistics() → updates the word mastery score
+4. getAdaptiveLearningSummary() → updates path level, XP, and trend
+5. reset() → clears session progress and returns to the first card
 ```

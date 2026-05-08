@@ -1,8 +1,8 @@
 /**
- * LinguisticFilterBar - Componente UI riutilizzabile per i filtri linguistici
+ * LinguisticFilterBar - reusable UI component for linguistic filters.
  * 
- * Questo componente può essere inserito in qualsiasi gioco/visualizzazione D3
- * per fornire una UI consistente per il filtering/grouping linguistico.
+ * This component can be used in any D3 game/view to provide consistent
+ * linguistic filtering/grouping UI.
  */
 import { useTheme } from '../contexts/useTheme';
 import type { LinguisticCriteria, LinguisticFilterConfig } from '../hooks/useLinguisticFilters';

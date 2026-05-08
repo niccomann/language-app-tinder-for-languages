@@ -29,9 +29,9 @@ const LAB_TABS: Array<PillTabItem<GrammarView>> = [
   { value: 'graph', label: 'Sentence Graph', icon: <GitBranch size={18} />, tone: 'blue' },
   { value: 'wordcloud', label: 'Word Cloud', icon: <Cloud size={18} />, tone: 'cyan' },
   { value: 'builder', label: 'Build Sentence', icon: <Puzzle size={18} />, tone: 'orange' },
-  { value: 'funbuilder', label: 'Componi Frase', icon: <Gamepad2 size={18} />, tone: 'pink' },
+  { value: 'funbuilder', label: 'Compose Sentence', icon: <Gamepad2 size={18} />, tone: 'pink' },
   { value: 'clusters', label: 'Clusters', icon: <Magnet size={18} />, tone: 'pink' },
-  { value: 'dialects', label: 'Dialetti', icon: <Globe2 size={18} />, tone: 'emerald' },
+  { value: 'dialects', label: 'Dialects', icon: <Globe2 size={18} />, tone: 'emerald' },
   { value: 'sunburst', label: 'Hierarchy', icon: <Layers size={18} />, tone: 'amber' },
 ];
 

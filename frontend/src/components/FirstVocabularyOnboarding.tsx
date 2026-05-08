@@ -75,24 +75,24 @@ export function FirstVocabularyOnboarding({
         mascotState="levelUp"
         mascotPersona="coach"
         eventKey={1}
-        eyebrow="Prima calibrazione"
-        title="Questa app parte dal vocabolario che conosci davvero."
-        body="A differenza delle app che ti fanno ripetere tutto allo stesso modo, noi non vogliamo ripetere spesso le parole che già sai: diamo loro un valore minore negli esercizi e ci concentriamo su quelle che devi consolidare."
-        primaryActionLabel="Inizia la scansione"
+        eyebrow="First calibration"
+        title="This app starts from the vocabulary you actually know."
+        body="Unlike apps that make you repeat everything the same way, we do not want to show you words you already know too often. We give those words lower weight in exercises and focus on the ones you still need to consolidate."
+        primaryActionLabel="Start the scan"
         onPrimaryAction={() => advanceWithMascot('scan')}
       >
         <div className={`${UI_RADIUS.control} border border-indigo-100 bg-indigo-50 p-4 dark:border-indigo-800 dark:bg-indigo-950/40`}>
           <p className="text-base font-extrabold leading-7 text-slate-950 dark:text-white">
-            Per questo analizziamo il tuo vocabolario: vogliamo capire quante parole sai, quali sai già e quali conosci solo un po.
+            That is why we analyze your vocabulary: we want to understand how many words you know, which ones you already know, and which ones you only know a little.
           </p>
           <p className="mt-3 text-sm font-semibold leading-6 text-slate-600 dark:text-slate-300">
-            Ogni parola puo avere un livello diverso: puoi saperla benissimo, riconoscerla appena, oppure non conoscerla ancora.
+            Every word can have a different level: you may know it very well, barely recognize it, or not know it yet.
           </p>
         </div>
         <div className="grid gap-3 sm:grid-cols-3">
-          <GameSignalBadge icon={<Target size={14} />} label="So questa parola" tone="emerald" />
-          <GameSignalBadge icon={<Brain size={14} />} label="Non la so ancora" tone="amber" />
-          <GameSignalBadge icon={<Sparkles size={14} />} label="Livello parola" tone="indigo" />
+          <GameSignalBadge icon={<Target size={14} />} label="I know this word" tone="emerald" />
+          <GameSignalBadge icon={<Brain size={14} />} label="I do not know it yet" tone="amber" />
+          <GameSignalBadge icon={<Sparkles size={14} />} label="Word level" tone="indigo" />
         </div>
       </AnimatedExplanationFrame>
     );
@@ -104,25 +104,25 @@ export function FirstVocabularyOnboarding({
         mascotState="levelUp"
         mascotPersona="explorer"
         eventKey={reactionEventId}
-        eyebrow="Analisi completata"
-        title={`Conosci circa ${insights.knownEstimate} parole`}
-        body="Personalizziamo il tuo apprendimento partendo dai segnali che hai appena creato."
-        primaryActionLabel="Continua"
+        eyebrow="Analysis complete"
+        title={`You know about ${insights.knownEstimate} words`}
+        body="We personalize your learning from the signals you just created."
+        primaryActionLabel="Continue"
         onPrimaryAction={() => advanceWithMascot('science')}
       >
         <div className="grid gap-3 sm:grid-cols-3">
-          <SignalSummaryTile icon={<Target size={18} />} label="Parole viste" value={signals.length} tone="indigo" />
-          <SignalSummaryTile icon={<Sparkles size={18} />} label="Segnali forti" value={insights.knownEstimate} tone="emerald" />
-          <SignalSummaryTile icon={<Brain size={18} />} label="Da ripetere" value={insights.reviewEstimate} tone="amber" />
+          <SignalSummaryTile icon={<Target size={18} />} label="Words seen" value={signals.length} tone="indigo" />
+          <SignalSummaryTile icon={<Sparkles size={18} />} label="Strong signals" value={insights.knownEstimate} tone="emerald" />
+          <SignalSummaryTile icon={<Brain size={18} />} label="To review" value={insights.reviewEstimate} tone="amber" />
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <SurfacePanel padding="md" className="border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/40">
-            <p className="text-xs font-extrabold uppercase tracking-wide text-emerald-600 dark:text-emerald-200">Più forte su</p>
+            <p className="text-xs font-extrabold uppercase tracking-wide text-emerald-600 dark:text-emerald-200">Strongest on</p>
             <p className="mt-2 text-xl font-extrabold text-emerald-900 dark:text-emerald-100">{insights.strongCategory}</p>
           </SurfacePanel>
           <SurfacePanel padding="md" className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40">
-            <p className="text-xs font-extrabold uppercase tracking-wide text-amber-600 dark:text-amber-200">Da rinforzare</p>
+            <p className="text-xs font-extrabold uppercase tracking-wide text-amber-600 dark:text-amber-200">Needs reinforcement</p>
             <p className="mt-2 text-xl font-extrabold text-amber-900 dark:text-amber-100">{insights.weakCategory}</p>
           </SurfacePanel>
         </div>
@@ -136,10 +136,10 @@ export function FirstVocabularyOnboarding({
         mascotState="correct"
         mascotPersona="robot"
         eventKey={reactionEventId}
-        eyebrow="Sistema adattivo"
-        title="La scienza lavora sotto"
-        body="Ogni swipe diventa un segnale. Tu divertiti: il sistema misura miglioramenti, difficoltà, parole da ripetere e contesti più adatti."
-        primaryActionLabel="Entra nel percorso"
+        eyebrow="Adaptive system"
+        title="The science works underneath"
+        body="Every swipe becomes a signal. You just play: the system measures improvements, difficulties, words to repeat, and the contexts that fit you best."
+        primaryActionLabel="Enter the path"
         onPrimaryAction={onComplete}
       >
         <div className="grid gap-3 sm:grid-cols-3">
@@ -169,25 +169,25 @@ export function FirstVocabularyOnboarding({
                   Vocabulary Scan
                 </h1>
                 <p className="mt-2 text-sm font-semibold leading-6 text-slate-500 dark:text-slate-300">
-                  Prima capiamo quali parole sai. Scorri a destra se la conosci, a sinistra se non la conosci.
+                  First we learn which words you know. Swipe right if you know it, left if you do not.
                 </p>
               </div>
             </div>
 
             <div className="mt-5 grid grid-cols-3 gap-2">
               <SignalSummaryTile icon={<Target size={17} />} label="Scan" value={signals.length} tone="indigo" compact />
-              <SignalSummaryTile icon={<Sparkles size={17} />} label="Sai" value={insights.knownEstimate} tone="emerald" compact />
-              <SignalSummaryTile icon={<Brain size={17} />} label="Rivedi" value={insights.reviewEstimate} tone="amber" compact />
+              <SignalSummaryTile icon={<Sparkles size={17} />} label="Known" value={insights.knownEstimate} tone="emerald" compact />
+              <SignalSummaryTile icon={<Brain size={17} />} label="Review" value={insights.reviewEstimate} tone="amber" compact />
             </div>
 
             <div className={`${UI_RADIUS.control} mt-5 border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/70`}>
               <p className="text-sm font-extrabold text-slate-900 dark:text-white">
                 {canPersonalize
-                  ? 'Hai abbastanza segnali per creare il primo profilo.'
-                  : `Ancora ${remainingToMinimum} swipe per stimare il primo vocabolario.`}
+                  ? 'You have enough signals to create the first profile.'
+                  : `${remainingToMinimum} more swipes to estimate the first vocabulary profile.`}
               </p>
               <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-300">
-                A {MAX_VOCABULARY_SCAN_SWIPES} swipe passiamo automaticamente alla personalizzazione.
+                At {MAX_VOCABULARY_SCAN_SWIPES} swipes, we automatically move to personalization.
               </p>
             </div>
 
@@ -197,7 +197,7 @@ export function FirstVocabularyOnboarding({
                 onClick={() => advanceWithMascot('analysis')}
                 className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} mt-5 flex min-h-12 w-full items-center justify-center gap-2 bg-indigo-600 px-5 py-3 text-sm font-extrabold text-white shadow-lg hover:bg-indigo-700`}
               >
-                Personalizza il mio percorso
+                Personalize my path
                 <ArrowRight size={17} />
               </button>
             )}
@@ -223,16 +223,16 @@ export function FirstVocabularyOnboarding({
               />
             ) : (
               <SurfacePanel className="w-full border-dashed border-slate-300 bg-white/80 text-center" padding="lg">
-                <h2 className="text-2xl font-extrabold text-slate-900">Nessuna parola disponibile</h2>
+                <h2 className="text-2xl font-extrabold text-slate-900">No words available</h2>
                 <p className="mt-2 text-sm font-medium text-slate-500">
-                  Entra nel percorso e ricarica il mazzo quando i dati sono pronti.
+                  Enter the path and reload the deck when the data is ready.
                 </p>
                 <button
                   type="button"
                   onClick={onComplete}
                   className={`${UI_RADIUS.control} mt-5 bg-indigo-600 px-5 py-3 text-sm font-extrabold text-white`}
                 >
-                  Entra nel percorso
+                  Enter the path
                 </button>
               </SurfacePanel>
             )}

@@ -1,9 +1,8 @@
 /**
- * useLinguisticFilters - Hook riutilizzabile per filtering/grouping linguistico
+ * useLinguisticFilters - reusable hook for linguistic filtering/grouping.
  * 
- * Questo hook centralizza tutta la logica di categorizzazione linguistica
- * per renderla riutilizzabile in tutti i componenti D3 (ClusteredNodes, 
- * FunSentenceBuilder, HierarchySunburst, etc.)
+ * This hook centralizes linguistic categorization logic so D3 components
+ * can reuse it consistently (ClusteredNodes, FunSentenceBuilder, HierarchySunburst, etc.).
  */
 import { useState, useMemo, useCallback } from 'react';
 import { 
@@ -48,133 +47,133 @@ export interface LinguisticFilterConfig {
 }
 
 const GENDER_LABELS: Record<string, string> = {
-  masculine: '🔵 der (maschile)',
-  feminine: '🔴 die (femminile)',
-  neuter: '🟢 das (neutro)',
-  m: '🔵 der (maschile)',
-  f: '🔴 die (femminile)',
-  n: '🟢 das (neutro)',
+  masculine: 'der (masculine)',
+  feminine: 'die (feminine)',
+  neuter: 'das (neuter)',
+  m: 'der (masculine)',
+  f: 'die (feminine)',
+  n: 'das (neuter)',
 };
 
 const CEFR_LABELS: Record<string, string> = {
-  A1: '🌱 A1 - Principiante',
-  A2: '🌿 A2 - Elementare',
-  B1: '🌳 B1 - Intermedio',
-  B2: '🌲 B2 - Intermedio+',
-  C1: '🏔️ C1 - Avanzato',
-  C2: '🎓 C2 - Madrelingua',
+  A1: 'A1 - Beginner',
+  A2: 'A2 - Elementary',
+  B1: 'B1 - Intermediate',
+  B2: 'B2 - Upper intermediate',
+  C1: 'C1 - Advanced',
+  C2: 'C2 - Near native',
 };
 
 const FREQUENCY_LABELS: Record<string, string> = {
-  very_common: '⭐⭐⭐ Molto comune',
-  common: '⭐⭐ Comune',
-  moderate: '⭐ Moderato',
-  rare: '💎 Raro',
-  archaic: '📜 Arcaico',
+  very_common: 'Very common',
+  common: 'Common',
+  moderate: 'Moderate',
+  rare: 'Rare',
+  archaic: 'Archaic',
 };
 
 const REGISTER_LABELS: Record<string, string> = {
-  formal: '🎩 Formale',
-  neutral: '📝 Neutro',
-  informal: '👋 Informale',
-  colloquial: '💬 Colloquiale',
+  formal: 'Formal',
+  neutral: 'Neutral',
+  informal: 'Informal',
+  colloquial: 'Colloquial',
   slang: '🔥 Slang',
-  literary: '📚 Letterario',
-  technical: '⚙️ Tecnico',
+  literary: 'Literary',
+  technical: 'Technical',
 };
 
 const DIFFICULTY_LABELS: Record<string, string> = {
-  easy: '🟢 Facile',
-  medium: '🟡 Medio',
-  hard: '🔴 Difficile',
-  very_hard: '💀 Molto difficile',
+  easy: 'Easy',
+  medium: 'Medium',
+  hard: 'Hard',
+  very_hard: 'Very hard',
 };
 
 const POS_LABELS: Record<string, string> = {
-  noun: '🔵 Sostantivo',
-  verb: '🔴 Verbo',
-  adjective: '🟠 Aggettivo',
-  adverb: '🟣 Avverbio',
-  preposition: '🟤 Preposizione',
-  conjunction: '⚪ Congiunzione',
-  pronoun: '🟡 Pronome',
-  article: '⬜ Articolo',
-  interjection: '❗ Interiezione',
+  noun: 'Noun',
+  verb: 'Verb',
+  adjective: 'Adjective',
+  adverb: 'Adverb',
+  preposition: 'Preposition',
+  conjunction: 'Conjunction',
+  pronoun: 'Pronoun',
+  article: 'Article',
+  interjection: 'Interjection',
 };
 
 export const LINGUISTIC_FILTER_CONFIGS: LinguisticFilterConfig[] = [
   {
     id: 'category',
-    label: 'Categoria',
+    label: 'Category',
     icon: Layers,
-    description: 'Raggruppa per categoria semantica',
+    description: 'Group by semantic category',
     color: '#3b82f6',
-    getGroup: (word) => word.category ? `📦 ${word.category}` : '❓ Senza categoria',
+    getGroup: (word) => word.category ? word.category : 'Uncategorized',
   },
   {
     id: 'cefr',
-    label: 'Livello CEFR',
+    label: 'CEFR Level',
     icon: GraduationCap,
-    description: 'Raggruppa per livello linguistico',
+    description: 'Group by language level',
     color: '#8b5cf6',
     getGroup: (word) => {
       const level = word.cefr_level?.toUpperCase();
-      return level ? (CEFR_LABELS[level] || `📊 ${level}`) : '❓ Non classificato';
+      return level ? (CEFR_LABELS[level] || level) : 'Unclassified';
     },
   },
   {
     id: 'gender',
-    label: 'Genere (der/die/das)',
+    label: 'Gender (der/die/das)',
     icon: Users,
-    description: 'Raggruppa per genere grammaticale',
+    description: 'Group by grammatical gender',
     color: '#ec4899',
     getGroup: (word) => {
       const gender = word.gender?.toLowerCase();
-      return gender ? (GENDER_LABELS[gender] || gender) : '❓ Senza genere';
+      return gender ? (GENDER_LABELS[gender] || gender) : 'No gender';
     },
   },
   {
     id: 'frequency',
-    label: 'Frequenza',
+    label: 'Frequency',
     icon: Activity,
-    description: 'Raggruppa per frequenza d\'uso',
+    description: 'Group by usage frequency',
     color: '#f59e0b',
     getGroup: (word) => {
       const freq = word.frequency_band?.toLowerCase();
-      return freq ? (FREQUENCY_LABELS[freq] || freq.replace('_', ' ')) : '❓ Non classificato';
+      return freq ? (FREQUENCY_LABELS[freq] || freq.replace('_', ' ')) : 'Unclassified';
     },
   },
   {
     id: 'register',
-    label: 'Registro',
+    label: 'Register',
     icon: MessageSquare,
-    description: 'Raggruppa per registro linguistico (formale/informale)',
+    description: 'Group by language register (formal/informal)',
     color: '#14b8a6',
     getGroup: (word) => {
       const reg = word.register?.toLowerCase();
-      return reg ? (REGISTER_LABELS[reg] || `📝 ${reg}`) : '❓ Non specificato';
+      return reg ? (REGISTER_LABELS[reg] || reg) : 'Not specified';
     },
   },
   {
     id: 'thematic_domain',
-    label: 'Dominio Tematico',
+    label: 'Thematic Domain',
     icon: Globe,
-    description: 'Raggruppa per area tematica specifica',
+    description: 'Group by specific thematic area',
     color: '#06b6d4',
     getGroup: (word) => {
-      return word.thematic_domain ? `🎯 ${word.thematic_domain}` : '❓ Non specificato';
+      return word.thematic_domain ? word.thematic_domain : 'Not specified';
     },
   },
   {
     id: 'part_of_speech',
-    label: 'Parte del Discorso',
+    label: 'Part of Speech',
     icon: BookOpen,
-    description: 'Raggruppa per funzione grammaticale',
+    description: 'Group by grammatical function',
     color: '#ef4444',
     getGroup: (word) => {
       if (word.part_of_speech) {
         const pos = word.part_of_speech.toLowerCase();
-        return POS_LABELS[pos] || `📝 ${word.part_of_speech}`;
+        return POS_LABELS[pos] || word.part_of_speech;
       }
       const category = word.category?.toLowerCase() || '';
       if (category === 'verbs' || category.includes('verb')) return POS_LABELS.verb;
@@ -184,34 +183,34 @@ export const LINGUISTIC_FILTER_CONFIGS: LinguisticFilterConfig[] = [
   },
   {
     id: 'compound',
-    label: 'Composte/Semplici',
+    label: 'Compound/Simple',
     icon: GitCompare,
-    description: 'Raggruppa parole composte vs semplici',
+    description: 'Group compound words vs simple words',
     color: '#84cc16',
     getGroup: (word) => {
-      if (word.is_compound === true) return '🔗 Parole Composte';
-      if (word.is_compound === false) return '📝 Parole Semplici';
-      if (word.word_formation === 'compound') return '🔗 Parole Composte';
-      if (word.word_formation === 'simple') return '📝 Parole Semplici';
-      return '❓ Non classificato';
+      if (word.is_compound === true) return 'Compound words';
+      if (word.is_compound === false) return 'Simple words';
+      if (word.word_formation === 'compound') return 'Compound words';
+      if (word.word_formation === 'simple') return 'Simple words';
+      return 'Unclassified';
     },
   },
   {
     id: 'difficulty',
-    label: 'Difficoltà',
+    label: 'Difficulty',
     icon: Sparkles,
-    description: 'Raggruppa per livello di difficoltà',
+    description: 'Group by difficulty level',
     color: '#f97316',
     getGroup: (word) => {
       const diff = (word as any).difficulty?.toLowerCase();
-      return diff ? (DIFFICULTY_LABELS[diff] || `⭐ ${diff}`) : '❓ Non specificato';
+      return diff ? (DIFFICULTY_LABELS[diff] || diff) : 'Not specified';
     },
   },
   {
     id: 'alphabetical',
-    label: 'Alfabetico',
+    label: 'Alphabetical',
     icon: Hash,
-    description: 'Raggruppa per lettera iniziale',
+    description: 'Group by initial letter',
     color: '#64748b',
     getGroup: (word) => {
       const firstLetter = word.text.charAt(0).toUpperCase();
@@ -223,22 +222,22 @@ export const LINGUISTIC_FILTER_CONFIGS: LinguisticFilterConfig[] = [
   },
   {
     id: 'length',
-    label: 'Lunghezza',
+    label: 'Length',
     icon: Ruler,
-    description: 'Raggruppa per lunghezza parola',
+    description: 'Group by word length',
     color: '#a855f7',
     getGroup: (word) => {
       const length = word.text.length;
-      if (length <= 4) return '📏 Corte (1-4)';
-      if (length <= 7) return '📏 Medie (5-7)';
-      return '📏 Lunghe (8+)';
+      if (length <= 4) return 'Short (1-4)';
+      if (length <= 7) return 'Medium (5-7)';
+      return 'Long (8+)';
     },
   },
   {
     id: 'similarity',
-    label: 'Similarità',
+    label: 'Similarity',
     icon: Type,
-    description: 'Raggruppa parole simili',
+    description: 'Group similar words',
     color: '#0ea5e9',
     getGroup: () => 'default',
   },
@@ -246,7 +245,7 @@ export const LINGUISTIC_FILTER_CONFIGS: LinguisticFilterConfig[] = [
     id: 'rhyme',
     label: 'Rap Mode 🎤',
     icon: Mic2,
-    description: 'Raggruppa parole che fanno rima',
+    description: 'Group rhyming words',
     color: '#d946ef',
     getGroup: () => 'default',
   },

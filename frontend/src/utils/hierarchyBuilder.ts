@@ -167,10 +167,10 @@ export function getCategoryColor(name: string): string {
         'Moderato': '#eab308',
         'Raro': '#f97316',
         'Arcaico': '#6b7280',
-        'Sostantivo': '#3b82f6',
-        'Verbo': '#ef4444',
-        'Aggettivo': '#f59e0b',
-        'Avverbio': '#8b5cf6',
+        'Noun': '#3b82f6',
+        'Verb': '#ef4444',
+        'Adjective': '#f59e0b',
+        'Adverb': '#8b5cf6',
     };
 
     return colorMap[name] || '#6B7280';
@@ -184,56 +184,56 @@ const HIERARCHY_CONFIGS: Record<HierarchyCriteria, {
     getGroup: (word: WordCloudItem) => string;
 }> = {
     category: {
-        rootName: 'Vocabolario',
-        getGroup: (word) => word.category || 'Altro',
+        rootName: 'Vocabulary',
+        getGroup: (word) => word.category || 'Other',
     },
     cefr: {
-        rootName: 'Livelli CEFR',
-        getGroup: (word) => word.cefr_level?.toUpperCase() || 'Non classificato',
+        rootName: 'CEFR Levels',
+        getGroup: (word) => word.cefr_level?.toUpperCase() || 'Unclassified',
     },
     gender: {
-        rootName: 'Genere Grammaticale',
+        rootName: 'Grammatical Gender',
         getGroup: (word) => {
             const gender = word.gender?.toLowerCase();
-            if (gender === 'masculine' || gender === 'm') return 'der (maschile)';
-            if (gender === 'feminine' || gender === 'f') return 'die (femminile)';
-            if (gender === 'neuter' || gender === 'n') return 'das (neutro)';
-            return 'Senza genere';
+            if (gender === 'masculine' || gender === 'm') return 'der (masculine)';
+            if (gender === 'feminine' || gender === 'f') return 'die (feminine)';
+            if (gender === 'neuter' || gender === 'n') return 'das (neuter)';
+            return 'No gender';
         },
     },
     frequency: {
-        rootName: 'Frequenza d\'uso',
+        rootName: 'Usage Frequency',
         getGroup: (word) => {
             const freq = word.frequency_band?.toLowerCase();
-            if (freq === 'very_common') return 'Molto comune';
-            if (freq === 'common') return 'Comune';
-            if (freq === 'moderate') return 'Moderato';
-            if (freq === 'rare') return 'Raro';
-            if (freq === 'archaic') return 'Arcaico';
-            return 'Non classificato';
+            if (freq === 'very_common') return 'Very common';
+            if (freq === 'common') return 'Common';
+            if (freq === 'moderate') return 'Moderate';
+            if (freq === 'rare') return 'Rare';
+            if (freq === 'archaic') return 'Archaic';
+            return 'Unclassified';
         },
     },
     register: {
-        rootName: 'Registro Linguistico',
+        rootName: 'Language Register',
         getGroup: (word) => {
             const reg = word.register?.toLowerCase();
-            if (reg === 'formal') return 'Formale';
-            if (reg === 'informal') return 'Informale';
-            if (reg === 'colloquial') return 'Colloquiale';
-            if (reg === 'literary') return 'Letterario';
-            return reg || 'Non specificato';
+            if (reg === 'formal') return 'Formal';
+            if (reg === 'informal') return 'Informal';
+            if (reg === 'colloquial') return 'Colloquial';
+            if (reg === 'literary') return 'Literary';
+            return reg || 'Not specified';
         },
     },
     part_of_speech: {
-        rootName: 'Parti del Discorso',
+        rootName: 'Parts of Speech',
         getGroup: (word) => {
             const pos = word.part_of_speech?.toLowerCase();
-            if (pos === 'noun') return 'Sostantivo';
-            if (pos === 'verb') return 'Verbo';
-            if (pos === 'adjective') return 'Aggettivo';
-            if (pos === 'adverb') return 'Avverbio';
-            if (pos === 'preposition') return 'Preposizione';
-            return pos || 'Non classificato';
+            if (pos === 'noun') return 'Noun';
+            if (pos === 'verb') return 'Verb';
+            if (pos === 'adjective') return 'Adjective';
+            if (pos === 'adverb') return 'Adverb';
+            if (pos === 'preposition') return 'Preposition';
+            return pos || 'Unclassified';
         },
     },
 };

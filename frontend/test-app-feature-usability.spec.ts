@@ -75,7 +75,7 @@ test('primary app features render usable and consistent surfaces', async ({ page
   await expectInViewport(page, page.getByRole('button', { name: /Validate Sentence/i }));
   await expectNoHorizontalOverflow(page);
 
-  await labViews.getByRole('button', { name: /Componi Frase/i }).click();
+  await labViews.getByRole('button', { name: /Compose Sentence/i }).click();
   await expect(page.getByRole('heading', { name: /Word Bank/i })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('heading', { name: 'Nouns', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Verbs', exact: true })).toBeVisible();
@@ -84,16 +84,16 @@ test('primary app features render usable and consistent surfaces', async ({ page
   await expectNoHorizontalOverflow(page);
 
   await labViews.getByRole('button', { name: /Clusters/i }).click();
-  await expect(page.getByRole('button', { name: /Immagini/i })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('button', { name: /Images/i })).toBeVisible({ timeout: 15000 });
   await expect(page.locator('svg').first()).toBeVisible();
   await expectNoHorizontalOverflow(page);
 
-  await labViews.getByRole('button', { name: /Dialetti/i }).click();
-  await expect(page.getByText(/Mappa Dialetti|Nessun dialetto disponibile/)).toBeVisible({ timeout: 15000 });
+  await labViews.getByRole('button', { name: /Dialects/i }).click();
+  await expect(page.getByText(/Dialect Map|No dialect data available/)).toBeVisible({ timeout: 15000 });
   await expectNoHorizontalOverflow(page);
 
   await labViews.getByRole('button', { name: /Hierarchy/i }).click();
-  await expect(page.getByLabel('Hierarchy grouping criteria').getByRole('button', { name: /Categoria/i })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByLabel('Hierarchy grouping criteria').getByRole('button', { name: /Category/i })).toBeVisible({ timeout: 15000 });
   await expect(page.locator('svg').first()).toBeVisible();
   await expectNoHorizontalOverflow(page);
 

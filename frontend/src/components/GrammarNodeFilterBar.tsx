@@ -62,7 +62,7 @@ export function GrammarNodeFilterBar({
             onChange={(value) => onFilterValueChange(value || null)}
             size="sm"
           >
-            <option value="">Seleziona...</option>
+            <option value="">Select...</option>
             {availableOptions.map((option) => (
               <option key={option} value={option}>
                 {formatFilterLabel(activeCriteria, option)}

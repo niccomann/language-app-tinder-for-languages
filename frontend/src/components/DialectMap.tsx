@@ -124,7 +124,7 @@ export function DialectMap({ initialWord }: DialectMapProps) {
       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
-          <span className="text-slate-400">Caricamento dialetti...</span>
+          <span className="text-slate-400">Loading dialects...</span>
         </div>
       </div>
     );
@@ -135,8 +135,8 @@ export function DialectMap({ initialWord }: DialectMapProps) {
       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
         <div className="flex flex-col items-center gap-3 text-center p-8">
           <Globe2 className="w-12 h-12 text-slate-500" />
-          <h3 className="text-lg font-semibold text-white">Nessun dialetto disponibile</h3>
-          <p className="text-slate-400 text-sm">I dati sui dialetti regionali devono essere popolati nel database.</p>
+          <h3 className="text-lg font-semibold text-white">No dialect data available</h3>
+          <p className="text-slate-400 text-sm">Regional dialect data needs to be populated in the database.</p>
         </div>
       </div>
     );
@@ -150,8 +150,8 @@ export function DialectMap({ initialWord }: DialectMapProps) {
             <Globe2 className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-white">Mappa Dialetti</h2>
-            <p className="text-xs text-slate-400">Esplora le varianti regionali tedesche</p>
+            <h2 className="text-lg font-bold text-white">Dialect Map</h2>
+            <p className="text-xs text-slate-400">Explore German regional variants</p>
           </div>
         </div>
 
@@ -159,7 +159,7 @@ export function DialectMap({ initialWord }: DialectMapProps) {
           <button
             onClick={toggleExpanded}
             className={`p-2 ${UI_RADIUS.control} transition-all hover:scale-[1.04] hover:bg-slate-700 ${isExpanded ? 'text-purple-400' : 'text-slate-300'}`}
-            title={isExpanded ? "Esci da fullscreen" : "Espandi a fullscreen"}
+            title={isExpanded ? "Exit fullscreen" : "Expand to fullscreen"}
           >
             {isExpanded ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
           </button>
@@ -169,7 +169,7 @@ export function DialectMap({ initialWord }: DialectMapProps) {
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className={`flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 ${UI_RADIUS.control} text-white transition-colors`}
             >
-              <span className="font-medium">{selectedWord || 'Seleziona parola'}</span>
+              <span className="font-medium">{selectedWord || 'Select word'}</span>
               <ChevronDown className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
           

@@ -346,10 +346,10 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
                 ? `bg-gradient-to-r from-emerald-500 to-teal-500 text-white ${UI_ELEVATION.floating}`
                 : isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:text-gray-900'
             }`}
-            title={showImages ? 'Nascondi immagini' : 'Mostra immagini'}
+            title={showImages ? 'Hide images' : 'Show images'}
           >
             {showImages ? <Image size={18} /> : <ImageOff size={18} />}
-            <span className="text-sm">{showImages ? 'Immagini ON' : 'Immagini OFF'}</span>
+            <span className="text-sm">{showImages ? 'Images ON' : 'Images OFF'}</span>
           </button>
         </div>
       )}

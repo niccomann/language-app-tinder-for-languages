@@ -91,9 +91,9 @@ test('grammar lab feature tabs have direct routes', async ({ page }) => {
     ['/grammar/graph', 'Sentence Graph'],
     ['/grammar/word-cloud', 'Word Cloud'],
     ['/grammar/build-sentence', 'Build Sentence'],
-    ['/grammar/compose-sentence', 'Componi Frase'],
+    ['/grammar/compose-sentence', 'Compose Sentence'],
     ['/grammar/clusters', 'Clusters'],
-    ['/grammar/dialects', 'Dialetti'],
+    ['/grammar/dialects', 'Dialects'],
     ['/grammar/hierarchy', 'Hierarchy'],
   ] as const;
 

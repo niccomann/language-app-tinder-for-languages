@@ -157,9 +157,9 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
 
   const getStatusLabel = (status: ValidationStatus): string => {
     switch (status) {
-      case 'green': return 'Corretto!';
-      case 'yellow': return 'Grammatica OK, ma...';
-      case 'red': return 'Errore';
+      case 'green': return 'Correct!';
+      case 'yellow': return 'Grammar OK, but...';
+      case 'red': return 'Error';
       default: return '';
     }
   };
