@@ -285,7 +285,15 @@ function AnimatedExplanationFrame({
           />
         </div>
 
-        <SurfacePanel padding="lg" className="space-y-5 border-indigo-100 bg-white/95 dark:border-slate-700 dark:bg-slate-900/95">
+        <section
+          data-testid="mascot-speech-bubble"
+          className={`${UI_RADIUS.surface} relative space-y-5 border-2 border-indigo-100 bg-white/95 p-5 shadow-2xl shadow-indigo-100/70 ring-4 ring-indigo-50/80 dark:border-slate-700 dark:bg-slate-900/95 dark:shadow-black/30 dark:ring-slate-800/70 sm:p-6`}
+        >
+          <span
+            data-testid="speech-bubble-tail"
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-3 left-1/2 h-6 w-6 -translate-x-1/2 rotate-45 border-l-2 border-t-2 border-indigo-100 bg-white dark:border-slate-700 dark:bg-slate-900 lg:left-0 lg:top-1/2 lg:-translate-x-3 lg:-translate-y-1/2 lg:border-b-2 lg:border-l-2 lg:border-t-0"
+          />
           <div>
             <p className="text-xs font-extrabold uppercase tracking-wide text-indigo-500">{eyebrow}</p>
             <h1 className="mt-2 text-4xl font-extrabold leading-tight text-slate-950 dark:text-white">{title}</h1>
@@ -302,7 +310,7 @@ function AnimatedExplanationFrame({
             {primaryActionLabel}
             <ArrowRight size={18} />
           </button>
-        </SurfacePanel>
+        </section>
       </main>
     </AppScreen>
   );

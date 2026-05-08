@@ -33,6 +33,8 @@ test('first visit starts with a full-screen vocabulary intro before the swipe sc
   const intro = page.getByTestId('vocabulary-intro');
   await expect(intro).toBeVisible({ timeout: 15000 });
   await expect(intro.getByTestId('mascot-reaction')).toBeVisible();
+  await expect(intro.getByTestId('mascot-speech-bubble')).toBeVisible();
+  await expect(intro.getByTestId('speech-bubble-tail')).toBeVisible();
   await expect(intro.getByText('This app starts from the vocabulary you actually know.')).toBeVisible();
   await expect(intro.getByText('we do not want to show you words you already know too often')).toBeVisible();
   await expect(intro.getByText('understand how many words you know, which ones you already know, and which ones you only know a little')).toBeVisible();
