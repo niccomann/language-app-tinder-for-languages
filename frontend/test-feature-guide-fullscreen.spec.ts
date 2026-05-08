@@ -19,6 +19,7 @@ test('feature guide opens as a full-screen introduction before entering a featur
   await expect(guide).toHaveAttribute('data-layout', 'fullscreen');
   await expect(guide).toHaveAttribute('data-guide-id', 'sentenceGraphBuilder');
   await expect(guide).toHaveAttribute('aria-modal', 'true');
+  await expect(guide).toHaveCSS('background-color', 'rgb(255, 255, 255)');
   await expect(guide.getByRole('heading', { name: 'Componi con i nodi' })).toBeVisible();
 
   const guideBox = await guide.boundingBox();

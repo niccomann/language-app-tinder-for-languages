@@ -11,29 +11,29 @@ interface GameGuideOverlayProps {
 
 const toneStyles = {
   practice: {
-    accent: 'text-emerald-300',
-    panel: 'border-emerald-300/30 bg-emerald-950/55',
-    action: 'bg-emerald-500 text-emerald-950 hover:bg-emerald-400 focus-visible:ring-emerald-300',
+    accent: 'text-emerald-700',
+    panel: 'border-emerald-200 bg-emerald-50',
+    action: 'bg-emerald-600 text-white hover:bg-emerald-500 focus-visible:ring-emerald-500',
   },
   science: {
-    accent: 'text-sky-300',
-    panel: 'border-sky-300/30 bg-sky-950/55',
-    action: 'bg-sky-500 text-sky-950 hover:bg-sky-400 focus-visible:ring-sky-300',
+    accent: 'text-sky-700',
+    panel: 'border-sky-200 bg-sky-50',
+    action: 'bg-sky-600 text-white hover:bg-sky-500 focus-visible:ring-sky-500',
   },
   map: {
-    accent: 'text-amber-300',
-    panel: 'border-amber-300/30 bg-amber-950/55',
-    action: 'bg-amber-400 text-amber-950 hover:bg-amber-300 focus-visible:ring-amber-200',
+    accent: 'text-amber-700',
+    panel: 'border-amber-200 bg-amber-50',
+    action: 'bg-amber-500 text-slate-950 hover:bg-amber-400 focus-visible:ring-amber-500',
   },
   library: {
-    accent: 'text-fuchsia-300',
-    panel: 'border-fuchsia-300/30 bg-fuchsia-950/55',
-    action: 'bg-fuchsia-500 text-fuchsia-950 hover:bg-fuchsia-400 focus-visible:ring-fuchsia-300',
+    accent: 'text-fuchsia-700',
+    panel: 'border-fuchsia-200 bg-fuchsia-50',
+    action: 'bg-fuchsia-600 text-white hover:bg-fuchsia-500 focus-visible:ring-fuchsia-500',
   },
   grammar: {
-    accent: 'text-indigo-300',
-    panel: 'border-indigo-300/30 bg-indigo-950/55',
-    action: 'bg-indigo-400 text-indigo-950 hover:bg-indigo-300 focus-visible:ring-indigo-200',
+    accent: 'text-indigo-700',
+    panel: 'border-indigo-200 bg-indigo-50',
+    action: 'bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:ring-indigo-500',
   },
 } satisfies Record<FeatureGuideTone, { accent: string; panel: string; action: string }>;
 
@@ -132,7 +132,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
       data-guide-id={guide.id}
       data-layout="fullscreen"
       data-motion-mode="event"
-      className="fixed inset-0 z-50 flex min-h-dvh w-screen items-stretch overflow-y-auto bg-slate-950/95 text-white backdrop-blur-md"
+      className="fixed inset-0 z-50 flex min-h-dvh w-screen items-stretch overflow-y-auto bg-white text-slate-950 backdrop-blur-md"
       role="dialog"
       aria-modal="true"
       aria-label="Feature introduction"
@@ -141,7 +141,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
         <button
           type="button"
           onClick={enterFeature}
-          className="absolute right-5 top-5 z-10 inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-white/15 bg-white/10 text-white shadow-sm transition hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75"
+          className="absolute right-5 top-5 z-10 inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
           aria-label="Chiudi introduzione"
         >
           <X size={20} aria-hidden="true" />
@@ -167,17 +167,17 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
             </div>
           </motion.div>
 
-          <div className={`rounded-lg border p-5 shadow-2xl shadow-black/25 sm:p-7 lg:p-8 ${styles.panel}`}>
-            <div className={`mb-5 inline-flex items-center gap-2 rounded-md border border-white/15 bg-white/10 px-3 py-2 text-sm font-bold ${styles.accent}`}>
+          <div className={`rounded-lg border p-5 shadow-2xl shadow-slate-200/80 sm:p-7 lg:p-8 ${styles.panel}`}>
+            <div className={`mb-5 inline-flex items-center gap-2 rounded-md border border-white bg-white px-3 py-2 text-sm font-bold shadow-sm ${styles.accent}`}>
               <Sparkles size={17} aria-hidden="true" />
               Briefing missione
             </div>
 
-            <h2 className="max-w-xl text-4xl font-extrabold leading-tight text-white sm:text-5xl lg:text-6xl">
+            <h2 className="max-w-xl text-4xl font-extrabold leading-tight text-slate-950 sm:text-5xl lg:text-6xl">
               {guide.title}
             </h2>
 
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-white/82 sm:text-xl">
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-700 sm:text-xl">
               {guide.body}
             </p>
 
@@ -185,7 +185,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
               <button
                 type="button"
                 onClick={enterFeature}
-                className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-md px-5 py-3 text-base font-extrabold shadow-lg shadow-black/20 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${styles.action}`}
+                className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-md px-5 py-3 text-base font-extrabold shadow-lg shadow-slate-200 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white ${styles.action}`}
               >
                 <Play size={18} aria-hidden="true" />
                 {guide.actionLabel}
@@ -194,7 +194,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
               <button
                 type="button"
                 onClick={replayGuide}
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-white/15 bg-white/10 px-5 py-3 text-base font-bold text-white transition hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-5 py-3 text-base font-bold text-slate-800 shadow-sm transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
               >
                 <RotateCcw size={18} aria-hidden="true" />
                 Rivedi animazione
