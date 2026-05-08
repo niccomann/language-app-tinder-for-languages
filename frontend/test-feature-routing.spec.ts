@@ -63,7 +63,13 @@ test('sentence placement gives dynamic mascot feedback while preserving the comp
 
   const challenge = page.getByTestId('sentence-placement-challenge');
   const mascot = challenge.getByTestId('mascot-reaction');
+  const promptBubble = challenge.getByTestId('sentence-prompt-bubble');
   await expect(mascot).toBeVisible({ timeout: 15000 });
+  await expect(promptBubble.getByTestId('mascot-speech-bubble')).toBeVisible();
+  await expect(promptBubble.getByTestId('streaming-speech-text')).toHaveAttribute('data-typewriter-interval-ms', '24');
+  await expect(mascot).toHaveAttribute('data-speaking', 'true');
+  await expect(promptBubble.getByTestId('streaming-speech-text')).toHaveAttribute('data-typing-state', 'complete', { timeout: 10000 });
+  await expect(mascot).toHaveAttribute('data-speaking', 'false');
   await expect(mascot.locator('img')).toHaveAttribute('alt', /Language coach mascot/i);
   await expect(mascot.locator('[data-asset-rendering="transparent-cutout"]')).toBeVisible();
   await expect(mascot.locator('[data-asset-rendering="transparent-cutout"]')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
@@ -82,8 +88,28 @@ test('sentence placement gives dynamic mascot feedback while preserving the comp
   await expect(mascot).toHaveAttribute('data-mascot-persona', 'explorer');
   await expect(mascot).toHaveAttribute('data-motion-mode', 'event');
   await expect(mascot).toHaveAttribute('data-motion-profile', 'explorerSwoop');
+  await expect(challenge.getByTestId('sentence-feedback-bubble').getByTestId('mascot-speech-bubble')).toBeVisible();
+  await expect(challenge.getByTestId('sentence-feedback-bubble').getByTestId('streaming-speech-text')).toHaveAttribute('data-typing-state', 'complete', { timeout: 10000 });
   await expect(challenge.getByText('XP reward')).toBeVisible();
-  await expect(challenge.getByText('Good job.')).toBeVisible();
+  await expect(challenge.getByRole('heading', { name: 'Good job.' })).toBeVisible();
+});
+
+test('learning swipe feedback uses the same streaming mascot speech pattern', async ({ page }) => {
+  await mockLearningApi(page);
+  await markFirstVocabularyOnboardingDone(page);
+  await page.setViewportSize({ width: 1440, height: 900 });
+
+  await page.goto(`${APP_URL}/learn`);
+  await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
+
+  await page.getByRole('button', { name: 'Know', exact: true }).click();
+
+  const feedbackBubble = page.getByTestId('learning-feedback-bubble');
+  await expect(feedbackBubble.getByTestId('mascot-reaction')).toBeVisible({ timeout: 15000 });
+  await expect(feedbackBubble.getByTestId('mascot-speech-bubble')).toBeVisible();
+  await expect(feedbackBubble.getByTestId('streaming-speech-text')).toHaveAttribute('data-typewriter-interval-ms', '24');
+  await expect(feedbackBubble.getByTestId('streaming-speech-text')).toHaveAttribute('data-typing-state', 'complete', { timeout: 10000 });
+  await expect(feedbackBubble.getByText('Katze reached Mastery 3')).toBeVisible();
 });
 
 test('grammar lab feature tabs have direct routes', async ({ page }) => {
@@ -108,6 +134,17 @@ test('grammar lab feature tabs have direct routes', async ({ page }) => {
 
   await page.goto(`${APP_URL}/grammar/compose-sentence`);
   await expect(page.getByRole('heading', { name: /Word Bank/i })).toBeVisible({ timeout: 15000 });
+});
+
+test('grammar lab shell stays usable while shared grammar data is loading', async ({ page }) => {
+  await page.route(/\/api\/grammar\/sentences$/, async () => new Promise(() => {}));
+  await page.route(/\/api\/library\/words\?/, async () => new Promise(() => {}));
+
+  await page.goto(`${APP_URL}/grammar/build-sentence`);
+
+  await expect(page.getByRole('heading', { name: /Grammar Lab/i })).toBeVisible({ timeout: 2500 });
+  await expect(page.getByLabel('Grammar Lab views').getByRole('button', { name: 'Build Sentence' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByText('Loading Grammar Lab...')).toHaveCount(0);
 });
 
 test('library list and word detail features have direct routes', async ({ page }) => {

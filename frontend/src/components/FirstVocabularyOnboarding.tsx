@@ -3,10 +3,12 @@ import { ArrowRight, Brain, ChartNoAxesColumnIncreasing, Sparkles, Target } from
 import type { AdaptiveFlashcard, UserProgress } from '../types';
 import { Card } from './Card';
 import { MascotReaction } from './MascotReaction';
+import { MascotSpeechCallout } from './MascotSpeechCallout';
 import { ProgressBar } from './ProgressBar';
 import { SwipeButtons } from './SwipeButtons';
 import { AppScreen, GameSignalBadge, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
 import { copy, formatCopy } from '../i18n/staticCopy';
+import { StreamingSpeechBubble, type StreamingSpeechStep } from './StreamingSpeechBubble';
 import {
   MAX_VOCABULARY_SCAN_SWIPES,
   MIN_VOCABULARY_SCAN_SWIPES,
@@ -80,17 +82,10 @@ export function FirstVocabularyOnboarding({
         eyebrow={onboardingCopy.intro.eyebrow}
         title={onboardingCopy.intro.title}
         body={onboardingCopy.intro.body}
+        speechSteps={onboardingCopy.intro.speechSteps}
         primaryActionLabel={onboardingCopy.intro.primaryAction}
         onPrimaryAction={() => advanceWithMascot('scan')}
       >
-        <div className={`${UI_RADIUS.control} border border-indigo-100 bg-indigo-50 p-4 dark:border-indigo-800 dark:bg-indigo-950/40`}>
-          <p className="text-base font-extrabold leading-7 text-slate-950 dark:text-white">
-            {onboardingCopy.intro.detailPrimary}
-          </p>
-          <p className="mt-3 text-sm font-semibold leading-6 text-slate-600 dark:text-slate-300">
-            {onboardingCopy.intro.detailSecondary}
-          </p>
-        </div>
         <div className="grid gap-3 sm:grid-cols-3">
           <GameSignalBadge icon={<Target size={14} />} label={onboardingCopy.intro.knownSignal} tone="emerald" />
           <GameSignalBadge icon={<Brain size={14} />} label={onboardingCopy.intro.unknownSignal} tone="amber" />
@@ -158,23 +153,24 @@ export function FirstVocabularyOnboarding({
       <main className="mx-auto grid w-full max-w-5xl gap-4 lg:min-h-[calc(100dvh-2rem)] lg:grid-cols-[minmax(300px,360px)_minmax(360px,440px)] lg:items-start lg:justify-center">
         <section className="space-y-3">
           <SurfacePanel padding="lg" className="border-indigo-100 bg-white/95 dark:border-slate-700 dark:bg-slate-900/95">
-            <div className="flex items-start gap-3">
-              <MascotReaction
-                state="idle"
-                persona="coach"
-                size="compact"
-                className="shrink-0"
-              />
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-extrabold uppercase tracking-wide text-indigo-500">{onboardingCopy.scan.eyebrow}</p>
-                <h1 className="mt-2 text-3xl font-extrabold leading-tight text-slate-950 dark:text-white">
-                  {onboardingCopy.scan.title}
-                </h1>
-                <p className="mt-2 text-sm font-semibold leading-6 text-slate-500 dark:text-slate-300">
-                  {onboardingCopy.scan.instructions}
-                </p>
-              </div>
-            </div>
+            <MascotSpeechCallout
+              testId="vocabulary-scan-bubble"
+              steps={[{
+                eyebrow: onboardingCopy.scan.eyebrow,
+                title: onboardingCopy.scan.title,
+                body: onboardingCopy.scan.instructions,
+              }]}
+              reactionState="levelUp"
+              restingState="idle"
+              persona="coach"
+              size="compact"
+              className="lg:grid-cols-[minmax(72px,96px)_minmax(0,1fr)]"
+              mascotClassName="shrink-0"
+              bubbleClassName="rounded-[1.75rem] border-indigo-100 bg-white p-4 shadow-sm ring-0 dark:border-slate-700 dark:bg-slate-800"
+              bubbleContentClassName="min-h-[148px]"
+              titleClassName="mt-2 min-h-[4.6rem] text-3xl font-extrabold leading-tight text-slate-950 dark:text-white"
+              bodyClassName="mt-2 min-h-[4.5rem] text-sm font-semibold leading-6 text-slate-500 dark:text-slate-300"
+            />
 
             <div className="mt-5 grid grid-cols-3 gap-2">
               <SignalSummaryTile icon={<Target size={17} />} label={onboardingCopy.scan.scanLabel} value={signals.length} tone="indigo" compact />
@@ -256,6 +252,7 @@ interface AnimatedExplanationFrameProps {
   eyebrow: string;
   title: string;
   body: string;
+  speechSteps?: StreamingSpeechStep[];
   primaryActionLabel: string;
   onPrimaryAction: () => void;
   children: ReactNode;
@@ -269,48 +266,53 @@ function AnimatedExplanationFrame({
   eyebrow,
   title,
   body,
+  speechSteps,
   primaryActionLabel,
   onPrimaryAction,
   children,
 }: AnimatedExplanationFrameProps) {
+  const steps = useMemo<StreamingSpeechStep[]>(() => (
+    speechSteps?.length
+      ? speechSteps
+      : [{ eyebrow, title, body }]
+  ), [body, eyebrow, speechSteps, title]);
+  const [speechState, setSpeechState] = useState({ stepIndex: 0, isTyping: true });
+
   return (
-    <AppScreen width="full" className="bg-white dark:bg-slate-950" contentClassName="flex min-h-dvh items-center px-4 py-6">
+    <AppScreen width="full" className="bg-white dark:bg-slate-950" contentClassName="flex min-h-dvh items-center px-4 pb-28 pt-6 sm:py-6">
       <main data-testid={dataTestId} className="mx-auto grid w-full max-w-5xl gap-5 lg:grid-cols-[minmax(220px,300px)_minmax(420px,1fr)] lg:items-center">
         <div className="flex justify-center">
           <MascotReaction
-            state={mascotState}
+            state={speechState.isTyping ? mascotState : 'idle'}
             persona={mascotPersona}
-            eventKey={eventKey}
+            eventKey={eventKey + speechState.stepIndex}
+            speaking={speechState.isTyping}
             className="max-w-[260px]"
           />
         </div>
 
-        <section
-          data-testid="mascot-speech-bubble"
-          className={`${UI_RADIUS.surface} relative space-y-5 border-2 border-indigo-100 bg-white/95 p-5 shadow-2xl shadow-indigo-100/70 ring-4 ring-indigo-50/80 dark:border-slate-700 dark:bg-slate-900/95 dark:shadow-black/30 dark:ring-slate-800/70 sm:p-6`}
+        <StreamingSpeechBubble
+          steps={steps}
+          onStepChange={(stepIndex) => setSpeechState((current) => (
+            current.stepIndex === stepIndex ? current : { ...current, stepIndex }
+          ))}
+          onTypingChange={(isTyping) => setSpeechState((current) => (
+            current.isTyping === isTyping ? current : { ...current, isTyping }
+          ))}
         >
-          <span
-            data-testid="speech-bubble-tail"
-            aria-hidden="true"
-            className="pointer-events-none absolute -top-3 left-1/2 h-6 w-6 -translate-x-1/2 rotate-45 border-l-2 border-t-2 border-indigo-100 bg-white dark:border-slate-700 dark:bg-slate-900 lg:left-0 lg:top-1/2 lg:-translate-x-3 lg:-translate-y-1/2 lg:border-b-2 lg:border-l-2 lg:border-t-0"
-          />
-          <div>
-            <p className="text-xs font-extrabold uppercase tracking-wide text-indigo-500">{eyebrow}</p>
-            <h1 className="mt-2 text-4xl font-extrabold leading-tight text-slate-950 dark:text-white">{title}</h1>
-            <p className="mt-3 text-base font-semibold leading-7 text-slate-500 dark:text-slate-300">{body}</p>
+          <div className="space-y-5">
+            {children}
+
+            <button
+              type="button"
+              onClick={onPrimaryAction}
+              className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-14 w-full items-center justify-center gap-3 bg-indigo-600 px-5 py-4 text-sm font-extrabold text-white shadow-lg hover:bg-indigo-700`}
+            >
+              {primaryActionLabel}
+              <ArrowRight size={18} />
+            </button>
           </div>
-
-          {children}
-
-          <button
-            type="button"
-            onClick={onPrimaryAction}
-            className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-14 w-full items-center justify-center gap-3 bg-indigo-600 px-5 py-4 text-sm font-extrabold text-white shadow-lg hover:bg-indigo-700`}
-          >
-            {primaryActionLabel}
-            <ArrowRight size={18} />
-          </button>
-        </section>
+        </StreamingSpeechBubble>
       </main>
     </AppScreen>
   );

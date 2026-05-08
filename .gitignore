@@ -78,3 +78,27 @@ backend/app.before-library-sync-*.db
 # Playwright
 playwright-report/
 test-results/
+
+# Auto-added safety rules
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*_rsa
+*_dsa
+*_ed25519
+__pycache__/
+*.pyc
+*.pyo
+node_modules/
+.DS_Store
+*.backup.json
+.state.*.json
+aws-cloud-credentials/config
+aws-cloud-credentials/credentials
+gcp-oauth-credentials/*.json
+credentials.json
+secrets.json
+service-account*.json
+

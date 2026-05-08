@@ -2,7 +2,7 @@ import { lazy, Suspense, useState, useEffect, useCallback, useRef } from 'react'
 import { GitBranch, Cloud, Play, Info, Volume2, Loader2, Puzzle, Magnet, Globe2, Layers, Gamepad2, Sparkles, Star, Trophy } from 'lucide-react';
 import { api } from '../services/api';
 import type { GrammarSentence, GrammarNode, FlashcardWithProgress, WordCloudItem } from '../types';
-import { AppScreen, GameSignalBadge, LoadingSpinner, PillTabs, ScreenHeader, SurfacePanel, UI_RADIUS } from './ui';
+import { AppScreen, GameSignalBadge, PillTabs, ScreenHeader, SurfacePanel, UI_RADIUS } from './ui';
 import type { PillTabItem } from './ui';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
 import { useTheme } from '../contexts/useTheme';
@@ -161,11 +161,8 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
     };
   }, []);
 
-  if (loading) {
-    return <LoadingSpinner message="Loading Grammar Lab..." fullScreen />;
-  }
-
   const currentSentence = sentences[currentIndex];
+  const wordDatasetLoading = loading && words.length === 0;
 
   return (
     <AppScreen mode="overlay" width="full" scroll="none" contentClassName="flex h-full flex-col">
@@ -230,7 +227,10 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
       {/* Content Area */}
       <div className="flex-1 overflow-visible relative">
         <Suspense fallback={<GrammarViewFallback />}>
-          {activeView === 'graph' && !currentSentence && (
+          {activeView === 'graph' && loading && !currentSentence && (
+            <GrammarDataLoadingPanel message="Loading graph data..." />
+          )}
+          {activeView === 'graph' && !loading && !currentSentence && (
             <div className="flex h-full items-center justify-center p-6">
               <SurfacePanel className="max-w-md text-center" padding="lg">
                 <Puzzle size={44} className="mx-auto mb-4 text-indigo-500" />
@@ -260,6 +260,9 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
           {activeView === 'wordcloud' && words.length > 0 && (
             <EmbeddedWordCloud words={words} onWordClick={setSelectedWord} />
           )}
+          {activeView === 'wordcloud' && wordDatasetLoading && (
+            <GrammarDataLoadingPanel message="Loading word cloud..." />
+          )}
           {activeView === 'builder' && (
             <SentenceBuilder />
           )}
@@ -269,11 +272,17 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
           {activeView === 'clusters' && words.length > 0 && (
             <ClusteredNodes words={words} onWordClick={setSelectedWord} />
           )}
+          {activeView === 'clusters' && wordDatasetLoading && (
+            <GrammarDataLoadingPanel message="Loading clusters..." />
+          )}
           {activeView === 'dialects' && (
             <DialectMap />
           )}
           {activeView === 'sunburst' && words.length > 0 && (
             <HierarchySunburst words={words} onWordClick={setSelectedWord} />
+          )}
+          {activeView === 'sunburst' && wordDatasetLoading && (
+            <GrammarDataLoadingPanel message="Loading hierarchy..." />
           )}
         </Suspense>
       </div>
@@ -362,6 +371,17 @@ function GrammarViewFallback() {
   return (
     <div className="w-full h-full flex items-center justify-center text-sm font-semibold text-slate-500 dark:text-slate-300">
       Loading view...
+    </div>
+  );
+}
+
+function GrammarDataLoadingPanel({ message }: { message: string }) {
+  return (
+    <div className="flex h-full items-center justify-center p-6">
+      <SurfacePanel className="flex items-center gap-3 text-sm font-semibold text-slate-500 dark:text-slate-300" padding="md">
+        <Loader2 size={18} className="animate-spin text-indigo-500" />
+        {message}
+      </SurfacePanel>
     </div>
   );
 }

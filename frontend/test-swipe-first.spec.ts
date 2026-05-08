@@ -34,15 +34,31 @@ test('first visit starts with a full-screen vocabulary intro before the swipe sc
   await expect(intro).toBeVisible({ timeout: 15000 });
   await expect(intro.getByTestId('mascot-reaction')).toBeVisible();
   await expect(intro.getByTestId('mascot-speech-bubble')).toBeVisible();
+  await expect(intro.getByTestId('mascot-speech-bubble')).toHaveAttribute('data-speech-step-total', '3');
   await expect(intro.getByTestId('speech-bubble-tail')).toBeVisible();
+  await expect(intro.getByTestId('speech-step-indicator')).toHaveText('1 / 3');
+  await expect(intro.getByTestId('streaming-speech-text')).toHaveAttribute('data-typing-state', 'streaming');
+  await expect(intro.getByTestId('streaming-speech-text')).toHaveAttribute('data-typewriter-interval-ms', '24');
+  await expect(intro.getByTestId('mascot-reaction')).toHaveAttribute('data-speaking', 'true');
   await expect(intro.getByText('This app starts from the vocabulary you actually know.')).toBeVisible();
   await expect(intro.getByText('we do not want to show you words you already know too often')).toBeVisible();
+
+  await expect(intro.getByTestId('speech-step-indicator')).toHaveText('2 / 3', { timeout: 15000 });
   await expect(intro.getByText('understand how many words you know, which ones you already know, and which ones you only know a little')).toBeVisible();
+
+  await expect(intro.getByTestId('speech-step-indicator')).toHaveText('3 / 3', { timeout: 15000 });
+  await expect(intro.getByText('Every word can have a different level')).toBeVisible();
+  await expect(intro.getByTestId('streaming-speech-text')).toHaveAttribute('data-typing-state', 'complete', { timeout: 15000 });
+  await expect(intro.getByTestId('mascot-reaction')).toHaveAttribute('data-speaking', 'false');
   await expect(page.getByRole('heading', { name: 'Vocabulary Scan' })).toHaveCount(0);
 
   await intro.getByRole('button', { name: 'Start the scan' }).click();
 
   await expect(page.getByRole('heading', { name: 'Vocabulary Scan' })).toBeVisible({ timeout: 15000 });
+  const scanBubble = page.getByTestId('vocabulary-scan-bubble');
+  await expect(scanBubble.getByTestId('mascot-reaction')).toBeVisible();
+  await expect(scanBubble.getByTestId('mascot-speech-bubble')).toBeVisible();
+  await expect(scanBubble.getByTestId('streaming-speech-text')).toHaveAttribute('data-typewriter-interval-ms', '24');
   await expect(page.getByText('First we learn which words you know.')).toBeVisible();
   await expect(page.getByRole('button', { name: "Don't know", exact: true })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('button', { name: 'Know', exact: true })).toBeVisible();

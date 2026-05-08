@@ -20,7 +20,11 @@ test('feature guide opens as a full-screen introduction before entering a featur
   await expect(guide).toHaveAttribute('data-guide-id', 'sentenceGraphBuilder');
   await expect(guide).toHaveAttribute('aria-modal', 'true');
   await expect(guide).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  await expect(guide.getByTestId('mascot-speech-bubble')).toBeVisible();
+  await expect(guide.getByTestId('streaming-speech-text')).toHaveAttribute('data-typing-state', 'streaming');
+  await expect(guide.getByTestId('streaming-speech-text')).toHaveAttribute('data-typewriter-interval-ms', '24');
   await expect(guide.getByRole('heading', { name: 'Compose with nodes' })).toBeVisible();
+  await expect(guide.getByRole('button', { name: 'Show me the nodes' })).toHaveCount(0);
 
   const guideBox = await guide.boundingBox();
   const viewport = page.viewportSize();
@@ -36,6 +40,7 @@ test('feature guide opens as a full-screen introduction before entering a featur
   expect(imageBox!.width).toBeGreaterThanOrEqual(260);
   expect(imageBox!.height).toBeGreaterThanOrEqual(260);
 
+  await expect(guide.getByTestId('streaming-speech-text')).toHaveAttribute('data-typing-state', 'complete', { timeout: 10000 });
   await guide.getByRole('button', { name: 'Show me the nodes' }).click();
 
   await expect(guide).toHaveCount(0);
@@ -68,6 +73,8 @@ test('feature guide plays the intro frame swap after cutout images are ready', a
   await expect(guide).toBeVisible({ timeout: 15000 });
 
   const guideImage = guide.locator('[data-asset-rendering="transparent-cutout"] img');
+  const guideMotion = guide.getByTestId('guide-animated-character');
+  await expect(guideMotion).toHaveAttribute('data-speaking', 'true');
   await expect(guideImage).toBeVisible();
   await guideImage.evaluate((image: HTMLImageElement) => new Promise<void>((resolve, reject) => {
     if (image.complete && image.naturalWidth > 0) {
@@ -79,8 +86,9 @@ test('feature guide plays the intro frame swap after cutout images are ready', a
   }));
 
   const firstFrame = await guideImage.getAttribute('src');
-  await expect.poll(async () => guideImage.getAttribute('src'), { timeout: 1200 }).toContain('guide_sentence_graph_builder_b');
-  await expect.poll(async () => guideImage.getAttribute('src'), { timeout: 1600 }).toBe(firstFrame);
+  await expect.poll(async () => guideImage.getAttribute('src'), { timeout: 1800 }).not.toBe(firstFrame);
+  await expect(guide.getByTestId('streaming-speech-text')).toHaveAttribute('data-typing-state', 'complete', { timeout: 10000 });
+  await expect(guideMotion).toHaveAttribute('data-speaking', 'false');
 });
 
 test('feature guide chrome uses locale JSON copy', async ({ page }) => {
@@ -98,7 +106,9 @@ test('feature guide chrome uses locale JSON copy', async ({ page }) => {
   const guide = page.getByTestId('game-guide-overlay');
   await expect(guide).toBeVisible({ timeout: 15000 });
   await expect(guide).toHaveAccessibleName('Introduzione feature');
+  await expect(guide.getByTestId('mascot-speech-bubble')).toBeVisible();
   await expect(guide.getByText('Briefing missione')).toBeVisible();
+  await expect(guide.getByTestId('streaming-speech-text')).toHaveAttribute('data-typing-state', 'complete', { timeout: 10000 });
   await expect(guide.getByRole('button', { name: 'Rivedi animazione' })).toBeVisible();
   await expect(guide.getByRole('button', { name: 'Chiudi introduzione' })).toBeVisible();
 });

@@ -14,6 +14,7 @@ interface MascotReactionProps {
   eventKey?: number;
   persona?: MascotPersona | 'auto';
   size?: 'default' | 'compact';
+  speaking?: boolean;
 }
 
 type MascotMotionProfile = 'still' | 'coachHop' | 'coachShake' | 'coachLift' | 'explorerSwoop' | 'explorerNod' | 'explorerLeap' | 'robotPop' | 'robotWobble' | 'robotBoost';
@@ -58,6 +59,7 @@ export function MascotReaction({
   eventKey = 0,
   persona: requestedPersona = 'auto',
   size = 'default',
+  speaking = false,
 }: MascotReactionProps) {
   const prefersReducedMotion = useReducedMotion();
   const persona = useMemo(() => (
@@ -65,7 +67,7 @@ export function MascotReaction({
       ? resolveMascotPersona(eventKey, state)
       : requestedPersona
   ), [eventKey, requestedPersona, state]);
-  const animationKey = `${persona}-${state}-${eventKey}`;
+  const animationKey = `${persona}-${state}-${eventKey}-${speaking ? 'speaking' : 'silent'}`;
   const [frameSequence, setFrameSequence] = useState({ animationKey, frameIndex: 0 });
   const framesByState = mascotPersonas[persona]?.framesByState ?? mascotPersonas.coach.framesByState;
   const frames = framesByState[state] ?? framesByState.idle;
@@ -75,6 +77,17 @@ export function MascotReaction({
 
   useEffect(() => {
     if (prefersReducedMotion || state === 'idle' || frames.length < 2) return undefined;
+
+    if (speaking) {
+      const frameTimer = window.setInterval(() => {
+        setFrameSequence((current) => ({
+          animationKey,
+          frameIndex: current.animationKey === animationKey ? current.frameIndex + 1 : 1,
+        }));
+      }, 220);
+
+      return () => window.clearInterval(frameTimer);
+    }
 
     const showReactionFrame = window.setTimeout(() => {
       setFrameSequence({ animationKey, frameIndex: 1 });
@@ -87,13 +100,28 @@ export function MascotReaction({
       window.clearTimeout(showReactionFrame);
       window.clearTimeout(settleFrame);
     };
-  }, [animationKey, frames.length, prefersReducedMotion, state]);
+  }, [animationKey, frames.length, prefersReducedMotion, speaking, state]);
 
   const motionProps = useMemo(() => {
     if (prefersReducedMotion || state === 'idle') {
       return {
         animate: { opacity: 1, x: 0, y: 0, rotate: 0, scale: 1 },
         transition: { duration: 0.01 },
+      };
+    }
+
+    if (speaking) {
+      return {
+        animate: {
+          y: [0, -8, 0],
+          rotate: [0, -2, 2, 0],
+          scale: [1, 1.04, 1],
+        },
+        transition: {
+          duration: 0.64,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        } satisfies Transition,
       };
     }
 
@@ -104,7 +132,7 @@ export function MascotReaction({
         ease: 'easeInOut',
       } satisfies Transition,
     };
-  }, [motionProfile, prefersReducedMotion, state]);
+  }, [motionProfile, prefersReducedMotion, speaking, state]);
 
   const sizeClass = size === 'compact'
     ? 'min-h-20 max-w-[96px]'
@@ -117,6 +145,7 @@ export function MascotReaction({
       data-reaction-state={state}
       data-mascot-persona={persona}
       data-event-key={eventKey}
+      data-speaking={speaking ? 'true' : 'false'}
       data-motion-mode={state === 'idle' ? 'still' : 'event'}
       data-motion-profile={state === 'idle' ? 'still' : motionProfile}
       data-motion-policy="prefers-reduced-motion"

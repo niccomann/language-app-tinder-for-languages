@@ -10,7 +10,24 @@
       "knownSignal": "Conosco questa parola",
       "unknownSignal": "Non la conosco ancora",
       "wordLevelSignal": "Livello parola",
-      "primaryAction": "Inizia la scansione"
+      "primaryAction": "Inizia la scansione",
+      "speechSteps": [
+        {
+          "eyebrow": "Prima calibrazione",
+          "title": "Questa app parte dal vocabolario che conosci davvero.",
+          "body": "A differenza delle app che ti fanno ripetere tutto allo stesso modo, noi non vogliamo mostrarti troppo spesso le parole che sai già. Diamo a quelle parole un peso minore negli esercizi e ci concentriamo su quelle che devi consolidare."
+        },
+        {
+          "eyebrow": "Mappa vocabolario",
+          "title": "Prima mappiamo quello che è già tuo.",
+          "body": "Per questo analizziamo il tuo vocabolario: vogliamo capire quante parole sai, quali sai già e quali conosci solo un po'."
+        },
+        {
+          "eyebrow": "Livello parola",
+          "title": "Ogni parola può avere un livello diverso.",
+          "body": "Puoi saperla benissimo, riconoscerla appena oppure non conoscerla ancora. Il primo scan dà al sistema abbastanza segnali per adattare il percorso."
+        }
+      ]
     },
     "analysis": {
       "eyebrow": "Analisi completata",

@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Play, RotateCcw, Sparkles, X } from 'lucide-react';
+import { Play, RotateCcw, X } from 'lucide-react';
 import { motion, useReducedMotion, type Transition } from 'framer-motion';
 import { featureGuides, type FeatureGuideId, type FeatureGuideTone } from '../gamification/featureGuideManifest';
 import { hasSeenFeatureGuide, markFeatureGuideSeen, shouldDeferGuideUntilVocabularyScan } from '../gamification/featureGuideStorage';
 import { copy } from '../i18n/staticCopy';
 import { UI_INTERACTION, UI_RADIUS } from './ui';
+import { StreamingSpeechBubble } from './StreamingSpeechBubble';
 
 interface GameGuideOverlayProps {
   guideId: FeatureGuideId;
@@ -67,6 +68,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
   const [eventKey, setEventKey] = useState(0);
   const [frameIndex, setFrameIndex] = useState(0);
   const [framesReady, setFramesReady] = useState(false);
+  const [speechState, setSpeechState] = useState({ stepIndex: 0, isTyping: true });
   const activeFrame = guide.frames[frameIndex % guide.frames.length];
   const styles = toneStyles[guide.tone];
   const overlayCopy = copy.featureGuideOverlay;
@@ -86,7 +88,17 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
   }, [guide.frames]);
 
   useEffect(() => {
-    if (!framesReady || prefersReducedMotion || guide.frames.length < 2) return undefined;
+    if (prefersReducedMotion || guide.frames.length < 2) return undefined;
+
+    if (speechState.isTyping) {
+      const speakingFrameTimer = window.setInterval(() => {
+        setFrameIndex((current) => (current + 1) % guide.frames.length);
+      }, 320);
+
+      return () => window.clearInterval(speakingFrameTimer);
+    }
+
+    if (!framesReady) return undefined;
 
     const showReactionFrame = window.setTimeout(() => {
       setFrameIndex(1);
@@ -99,7 +111,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
       window.clearTimeout(showReactionFrame);
       window.clearTimeout(settleFrame);
     };
-  }, [eventKey, framesReady, guide.frames.length, prefersReducedMotion]);
+  }, [eventKey, framesReady, guide.frames.length, prefersReducedMotion, speechState.isTyping]);
 
   const motionProps = useMemo(() => {
     if (prefersReducedMotion) {
@@ -109,11 +121,26 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
       };
     }
 
+    if (speechState.isTyping) {
+      return {
+        animate: {
+          y: [0, -10, 0],
+          rotate: [0, -2, 2, 0],
+          scale: [1, 1.035, 1],
+        },
+        transition: {
+          duration: 0.86,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        } satisfies Transition,
+      };
+    }
+
     return {
       animate: eventMotion,
       transition: eventTransition,
     };
-  }, [prefersReducedMotion]);
+  }, [prefersReducedMotion, speechState.isTyping]);
 
   const replayGuide = () => {
     setEventKey((current) => current + 1);
@@ -153,6 +180,8 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
         <div className="mx-auto grid min-h-[calc(100dvh-2.5rem)] w-full max-w-7xl flex-1 items-center gap-8 py-10 lg:grid-cols-[minmax(0,1.02fr)_minmax(390px,0.78fr)] lg:gap-12">
           <motion.div
             key={`${guide.id}-${eventKey}`}
+            data-testid="guide-animated-character"
+            data-speaking={speechState.isTyping ? 'true' : 'false'}
             className="flex min-h-[42dvh] items-center justify-center lg:min-h-[72dvh]"
             {...motionProps}
           >
@@ -170,20 +199,20 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
             </div>
           </motion.div>
 
-          <div className={`${UI_RADIUS.surface} border p-5 shadow-2xl shadow-slate-200/80 sm:p-7 lg:p-8 ${styles.panel}`}>
-            <div className={`mb-5 inline-flex items-center gap-2 ${UI_RADIUS.control} border border-white bg-white px-3 py-2 text-sm font-bold shadow-sm ${styles.accent}`}>
-              <Sparkles size={17} aria-hidden="true" />
-              {overlayCopy.eyebrow}
-            </div>
-
-            <h2 className="max-w-xl text-4xl font-extrabold leading-tight text-slate-950 sm:text-5xl lg:text-6xl">
-              {guide.title}
-            </h2>
-
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-700 sm:text-xl">
-              {guide.body}
-            </p>
-
+          <StreamingSpeechBubble
+            key={eventKey}
+            steps={[{ eyebrow: overlayCopy.eyebrow, title: guide.title, body: guide.body }]}
+            playbackKey={eventKey}
+            showStepIndicator={false}
+            contentClassName="min-h-[255px] sm:min-h-[300px]"
+            className={`shadow-slate-200/80 ${styles.panel}`}
+            onStepChange={(stepIndex) => setSpeechState((current) => (
+              current.stepIndex === stepIndex ? current : { ...current, stepIndex }
+            ))}
+            onTypingChange={(isTyping) => setSpeechState((current) => (
+              current.isTyping === isTyping ? current : { ...current, isTyping }
+            ))}
+          >
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <button
                 type="button"
@@ -203,7 +232,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
                 {overlayCopy.replayAction}
               </button>
             </div>
-          </div>
+          </StreamingSpeechBubble>
         </div>
       </div>
     </section>

@@ -4,9 +4,10 @@ import { api } from '../services/api';
 import type { SentenceChallenge } from '../types';
 import { GameSignalBadge, LoadingSpinner, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
 import { useTheme } from '../contexts/useTheme';
-import { MascotReaction } from './MascotReaction';
 import type { MascotReactionState } from '../gamification/mascotManifest';
 import { reportClientError } from '../utils/clientError';
+import { MascotSpeechCallout } from './MascotSpeechCallout';
+import type { StreamingSpeechStep } from './StreamingSpeechBubble';
 
 interface PlacementOption {
   id: string;
@@ -57,6 +58,33 @@ export function SentencePlacementChallenge() {
     : status === 'wrong'
       ? 'wrong'
       : 'idle';
+  const calloutReactionState: MascotReactionState = status === 'idle' ? 'levelUp' : reactionState;
+  const calloutRestingState: MascotReactionState = status === 'idle' ? 'idle' : reactionState;
+  const calloutSteps = useMemo<StreamingSpeechStep[]>(() => {
+    if (!challenge) return [];
+
+    if (status === 'correct') {
+      return [{
+        eyebrow: 'Sentence solved',
+        title: 'Good job.',
+        body: 'That order matches the ground truth. Your grammar signal gets stronger for the next challenge.',
+      }];
+    }
+
+    if (status === 'wrong') {
+      return [{
+        eyebrow: 'Try again',
+        title: 'Not quite yet.',
+        body: 'Adjust the word order and check again. The app keeps the retry lightweight.',
+      }];
+    }
+
+    return [{
+      eyebrow: 'Prompt',
+      title: challenge.prompt,
+      body: 'Choose the word tiles below, then check your sentence.',
+    }];
+  }, [challenge, status]);
 
   const handleSelectOption = (option: PlacementOption) => {
     if (status === 'correct' || selectedOptionIds.includes(option.id)) return;
@@ -136,20 +164,22 @@ export function SentencePlacementChallenge() {
             </div>
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-[minmax(150px,220px)_minmax(220px,300px)_minmax(0,1fr)] lg:items-center">
-            <MascotReaction
-              state={reactionState}
+          <div className="grid gap-4 lg:grid-cols-[minmax(390px,560px)_minmax(0,1fr)] lg:items-center">
+            <MascotSpeechCallout
+              testId={status === 'idle' ? 'sentence-prompt-bubble' : 'sentence-feedback-bubble'}
+              steps={calloutSteps}
+              reactionState={calloutReactionState}
+              restingState={calloutRestingState}
+              persona={status === 'idle' ? 'coach' : 'auto'}
               eventKey={reactionEventId}
-              className="mx-auto lg:mx-0"
+              playbackKey={`${challenge.id}-${status}-${reactionEventId}`}
+              className="lg:grid-cols-[minmax(110px,160px)_minmax(0,1fr)]"
+              mascotClassName="mx-auto lg:mx-0"
+              bubbleClassName="rounded-[1.75rem] border-slate-200 bg-slate-50 p-4 shadow-sm ring-0 dark:border-slate-700 dark:bg-slate-800/70"
+              bubbleContentClassName="min-h-[156px]"
+              titleClassName="mt-2 min-h-[4.2rem] text-2xl font-extrabold leading-snug text-slate-950 dark:text-white"
+              bodyClassName="mt-2 min-h-[3.2rem] text-sm font-semibold leading-6 text-slate-500 dark:text-slate-300"
             />
-
-            <div className={`${UI_RADIUS.surface} relative min-h-36 border border-slate-200 bg-slate-50 p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800/70`}>
-              <div className="absolute -left-2 top-1/2 hidden h-4 w-4 -translate-y-1/2 rotate-45 border-b border-l border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/70 lg:block" />
-              <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">Prompt</p>
-              <p className="mt-3 text-2xl font-extrabold leading-snug text-slate-900 dark:text-white">
-                {challenge.prompt}
-              </p>
-            </div>
 
             <div className={`${UI_RADIUS.surface} min-h-36 border-2 border-dashed border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-950/40`}>
               <div className="flex min-h-24 flex-wrap items-start gap-2">

@@ -1,7 +1,7 @@
 import { ArrowUpRight, CheckCircle2, X } from 'lucide-react';
 import type { LearningFeedback } from '../types';
 import { UI_INTERACTION, UI_RADIUS } from './ui';
-import { MascotReaction } from './MascotReaction';
+import { MascotSpeechCallout } from './MascotSpeechCallout';
 
 interface LearningFeedbackBannerProps {
   feedback: LearningFeedback | null;
@@ -21,29 +21,41 @@ export function LearningFeedbackBanner({ feedback, onDismiss }: LearningFeedback
   const mascotState = feedback.tone === 'level_up' ? 'levelUp' : 'correct';
 
   return (
-    <div className={`${UI_RADIUS.surface} ${toneClasses[feedback.tone]} border px-4 py-3 shadow-sm`}>
-      <div className="flex items-start gap-3">
-        <MascotReaction
-          state={mascotState}
-          size="compact"
-          className="hidden shrink-0 sm:flex"
-        />
-        <div className={`${UI_RADIUS.touchIcon} flex h-10 w-10 shrink-0 items-center justify-center bg-white/70 dark:bg-white/10`}>
-          <Icon size={18} />
+    <div className={`${UI_RADIUS.surface} ${toneClasses[feedback.tone]} border p-2 shadow-sm`}>
+      <MascotSpeechCallout
+        testId="learning-feedback-bubble"
+        steps={[{
+          eyebrow: feedback.tone === 'level_up' ? 'Level up' : 'Learning signal',
+          title: feedback.title,
+          body: feedback.message,
+        }]}
+        reactionState={mascotState}
+        restingState={mascotState}
+        size="compact"
+        className="gap-3 lg:grid-cols-[minmax(76px,96px)_minmax(0,1fr)]"
+        mascotClassName="hidden shrink-0 sm:flex"
+        bubbleClassName={`border-0 bg-white/75 p-3 shadow-none ring-0 dark:bg-white/10 ${UI_RADIUS.surface}`}
+        bubbleContentClassName="min-h-[100px]"
+        titleClassName="mt-1 min-h-[2.8rem] text-base font-extrabold leading-snug"
+        bodyClassName="mt-1 min-h-[2.8rem] text-sm font-semibold leading-5 opacity-80"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wide opacity-80">
+            <div className={`${UI_RADIUS.touchIcon} flex h-8 w-8 shrink-0 items-center justify-center bg-white/70 dark:bg-white/10`}>
+              <Icon size={16} />
+            </div>
+            Signal saved
+          </div>
+          <button
+            type="button"
+            onClick={onDismiss}
+            className={`${UI_RADIUS.touchIcon} ${UI_INTERACTION.transition} flex h-9 w-9 shrink-0 items-center justify-center hover:bg-white/70 dark:hover:bg-white/10`}
+            aria-label="Dismiss learning feedback"
+          >
+            <X size={16} />
+          </button>
         </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-extrabold">{feedback.title}</p>
-          <p className="mt-1 text-sm font-medium opacity-80">{feedback.message}</p>
-        </div>
-        <button
-          type="button"
-          onClick={onDismiss}
-          className={`${UI_RADIUS.touchIcon} ${UI_INTERACTION.transition} flex h-9 w-9 shrink-0 items-center justify-center hover:bg-white/70 dark:hover:bg-white/10`}
-          aria-label="Dismiss learning feedback"
-        >
-          <X size={16} />
-        </button>
-      </div>
+      </MascotSpeechCallout>
     </div>
   );
 }

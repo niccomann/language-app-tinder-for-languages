@@ -51,7 +51,7 @@ function App() {
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-colors duration-300">
-        <div className="fixed bottom-4 right-4 z-40">
+        <div className="fixed right-4 top-4 z-40 sm:bottom-4 sm:top-auto">
           <ThemeToggle />
         </div>
         <Suspense fallback={<RouteFallback />}>

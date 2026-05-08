@@ -10,7 +10,24 @@
       "knownSignal": "I know this word",
       "unknownSignal": "I do not know it yet",
       "wordLevelSignal": "Word level",
-      "primaryAction": "Start the scan"
+      "primaryAction": "Start the scan",
+      "speechSteps": [
+        {
+          "eyebrow": "First calibration",
+          "title": "This app starts from the vocabulary you actually know.",
+          "body": "Unlike apps that make you repeat everything the same way, we do not want to show you words you already know too often. We give those words lower weight in exercises and focus on the ones you still need to consolidate."
+        },
+        {
+          "eyebrow": "Vocabulary map",
+          "title": "First, we map what is already yours.",
+          "body": "That is why we analyze your vocabulary: we want to understand how many words you know, which ones you already know, and which ones you only know a little."
+        },
+        {
+          "eyebrow": "Word level",
+          "title": "Every word can have a different level.",
+          "body": "You may know it very well, barely recognize it, or not know it yet. The first scan gives the system enough signals to start adapting the path."
+        }
+      ]
     },
     "analysis": {
       "eyebrow": "Analysis complete",
