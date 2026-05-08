@@ -1,4 +1,5 @@
 import { copy } from '../i18n/staticCopy';
+import type { FeatureGuideId } from './featureGuideIds';
 
 export type FeatureFlowPhase = 'primary' | 'upcoming' | 'collection' | 'advanced';
 
@@ -17,6 +18,7 @@ export interface FeatureFlowItem {
   missionLabel: string;
   description: string;
   route: string;
+  guideId: FeatureGuideId;
   phase: FeatureFlowPhase;
   tone: FeatureFlowTone;
   order: number;
@@ -30,6 +32,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     missionLabel: copy.featureFlow.vocabularyReview.missionLabel,
     description: copy.featureFlow.vocabularyReview.description,
     route: '/learn',
+    guideId: 'vocabularyScan',
     phase: 'primary',
     tone: 'indigo',
     order: 10,
@@ -41,6 +44,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     missionLabel: copy.featureFlow.sentencePlacement.missionLabel,
     description: copy.featureFlow.sentencePlacement.description,
     route: '/placement/sentence',
+    guideId: 'sentencePlacement',
     phase: 'upcoming',
     tone: 'teal',
     order: 20,
@@ -52,6 +56,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     missionLabel: copy.featureFlow.grammarLab.missionLabel,
     description: copy.featureFlow.grammarLab.description,
     route: '/grammar/graph',
+    guideId: 'grammarGraph',
     phase: 'upcoming',
     tone: 'blue',
     order: 30,
@@ -63,6 +68,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     missionLabel: copy.featureFlow.topicDeck.missionLabel,
     description: copy.featureFlow.topicDeck.description,
     route: '/learn/filters',
+    guideId: 'learningFilters',
     phase: 'collection',
     tone: 'amber',
     order: 40,
@@ -74,6 +80,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     missionLabel: copy.featureFlow.wordLibrary.missionLabel,
     description: copy.featureFlow.wordLibrary.description,
     route: '/library',
+    guideId: 'library',
     phase: 'collection',
     tone: 'purple',
     order: 50,
@@ -85,6 +92,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     missionLabel: copy.featureFlow.learningSystem.missionLabel,
     description: copy.featureFlow.learningSystem.description,
     route: '/learn/system',
+    guideId: 'learningSystem',
     phase: 'collection',
     tone: 'emerald',
     order: 60,
@@ -96,6 +104,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     missionLabel: copy.featureFlow.wordCloud.missionLabel,
     description: copy.featureFlow.wordCloud.description,
     route: '/grammar/word-cloud',
+    guideId: 'wordCloud',
     phase: 'advanced',
     tone: 'blue',
     order: 70,
@@ -107,6 +116,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     missionLabel: copy.featureFlow.buildSentence.missionLabel,
     description: copy.featureFlow.buildSentence.description,
     route: '/grammar/build-sentence',
+    guideId: 'sentenceGraphBuilder',
     phase: 'advanced',
     tone: 'teal',
     order: 80,
@@ -118,6 +128,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     missionLabel: copy.featureFlow.composeSentence.missionLabel,
     description: copy.featureFlow.composeSentence.description,
     route: '/grammar/compose-sentence',
+    guideId: 'sentenceComposer',
     phase: 'advanced',
     tone: 'indigo',
     order: 90,
@@ -129,6 +140,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     missionLabel: copy.featureFlow.clusters.missionLabel,
     description: copy.featureFlow.clusters.description,
     route: '/grammar/clusters',
+    guideId: 'clusters',
     phase: 'advanced',
     tone: 'purple',
     order: 100,
@@ -140,6 +152,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     missionLabel: copy.featureFlow.dialects.missionLabel,
     description: copy.featureFlow.dialects.description,
     route: '/grammar/dialects',
+    guideId: 'dialects',
     phase: 'advanced',
     tone: 'amber',
     order: 110,
@@ -151,6 +164,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     missionLabel: copy.featureFlow.hierarchy.missionLabel,
     description: copy.featureFlow.hierarchy.description,
     route: '/grammar/hierarchy',
+    guideId: 'hierarchy',
     phase: 'advanced',
     tone: 'slate',
     order: 120,

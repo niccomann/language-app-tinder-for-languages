@@ -3,7 +3,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { ThemeToggle } from './components/ui/ThemeToggle';
 import { GameGuideOverlay } from './components/GameGuideOverlay';
 import { grammarPath, libraryWordPath, parseAppRoute } from './routes/appRoutes';
-import { featureGuideRouteKey, resolveFeatureGuideForRoute } from './gamification/featureGuideManifest';
+import { featureGuideRouteKey, resolveFeatureGuideForRoute } from './gamification/featureGuideResolver';
 
 const CardStack = lazy(() => import('./components/CardStack').then((module) => ({ default: module.CardStack })));
 const GrammarLab = lazy(() => import('./components/GrammarLab').then((module) => ({ default: module.GrammarLab })));

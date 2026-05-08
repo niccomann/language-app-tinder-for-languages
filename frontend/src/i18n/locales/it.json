@@ -68,6 +68,12 @@
     "dialects": { "title": "Scopri le varianti", "body": "La lingua cambia per area e contesto. Questa vista ti mostra dove una parola può assumere sfumature diverse.", "actionLabel": "Mostrami le varianti" },
     "hierarchy": { "title": "Dai ordine al sistema", "body": "La gerarchia ti fa vedere livelli e famiglie: dal concetto grande fino alle parole più specifiche.", "actionLabel": "Mostrami la gerarchia" }
   },
+  "featureGuideOverlay": {
+    "ariaLabel": "Introduzione feature",
+    "closeLabel": "Chiudi introduzione",
+    "eyebrow": "Briefing missione",
+    "replayAction": "Rivedi animazione"
+  },
   "featureFlow": {
     "vocabularyReview": { "title": "Ripasso vocabolario", "missionLabel": "Missione 1", "description": "Scorri le parole che sai o non sai così il sistema continua a calibrare il tuo livello di tedesco.", "ctaLabel": "Continua percorso" },
     "sentencePlacement": { "title": "Posizionamento frasi", "missionLabel": "Missione 2", "description": "Costruisci brevi frasi da una banca parole controllata per testare la grammatica oltre le singole parole.", "ctaLabel": "Apri missione frasi" },

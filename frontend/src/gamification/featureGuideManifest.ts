@@ -25,10 +25,10 @@ import guideVocabularyScanB from '../assets/gamification/guide_vocabulary_scan_b
 import guideWordCloudA from '../assets/gamification/guide_word_cloud_a.png';
 import guideWordCloudB from '../assets/gamification/guide_word_cloud_b.png';
 import { copy } from '../i18n/staticCopy';
-import type { RouteState } from '../routes/appRoutes';
 import type { FeatureGuideId } from './featureGuideIds';
 
 export type { FeatureGuideId } from './featureGuideIds';
+export { featureGuideRouteKey, resolveFeatureGuideForRoute } from './featureGuideResolver';
 
 export type FeatureGuideTone = 'practice' | 'science' | 'map' | 'library' | 'grammar';
 
@@ -191,46 +191,3 @@ export const featureGuides = {
     ],
   },
 } satisfies Record<FeatureGuideId, FeatureGuide>;
-
-export function resolveFeatureGuideForRoute(route: RouteState): FeatureGuideId {
-  if (route.screen === 'learning') {
-    if (route.mode === 'grammar_placement') return 'sentencePlacement';
-    if (route.mode === 'filters') return 'learningFilters';
-    if (route.mode === 'system') return 'learningSystem';
-    if (route.mode === 'path') return 'learningPath';
-    return 'vocabularyScan';
-  }
-
-  if (route.screen === 'library') return 'library';
-
-  if (route.screen === 'grammar') {
-    switch (route.view) {
-      case 'graph':
-        return 'grammarGraph';
-      case 'wordcloud':
-        return 'wordCloud';
-      case 'builder':
-        return 'sentenceGraphBuilder';
-      case 'funbuilder':
-        return 'sentenceComposer';
-      case 'clusters':
-        return 'clusters';
-      case 'dialects':
-        return 'dialects';
-      case 'sunburst':
-        return 'hierarchy';
-      default:
-        return 'grammarGraph';
-    }
-  }
-
-  return 'learningPath';
-}
-
-export function featureGuideRouteKey(route: RouteState) {
-  if (route.screen === 'learning') return `learning:${route.mode}`;
-  if (route.screen === 'library') {
-    return `library:${route.wordId ?? 'all'}:${route.detailTab ?? 'list'}:${route.filtersOpen ? 'filters' : 'browse'}`;
-  }
-  return `grammar:${route.view}`;
-}

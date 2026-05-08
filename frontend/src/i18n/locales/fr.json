@@ -68,6 +68,12 @@
     "dialects": { "title": "Découvrez les variantes", "body": "La langue change selon la région et le contexte. Cette vue montre où un mot peut prendre des nuances différentes.", "actionLabel": "Me montrer les variantes" },
     "hierarchy": { "title": "Structurez le système", "body": "La hiérarchie montre les niveaux et les familles : du grand concept aux mots plus spécifiques.", "actionLabel": "Me montrer la hiérarchie" }
   },
+  "featureGuideOverlay": {
+    "ariaLabel": "Introduction de la fonctionnalité",
+    "closeLabel": "Fermer l'introduction",
+    "eyebrow": "Briefing de mission",
+    "replayAction": "Revoir l'animation"
+  },
   "featureFlow": {
     "vocabularyReview": { "title": "Révision du vocabulaire", "missionLabel": "Mission 1", "description": "Swipez les mots que vous connaissez ou manquez pour que le système continue à calibrer votre niveau d'allemand.", "ctaLabel": "Continuer le parcours" },
     "sentencePlacement": { "title": "Placement de phrases", "missionLabel": "Mission 2", "description": "Construisez de courtes phrases depuis une banque de mots contrôlée pour tester la grammaire au-delà des mots isolés.", "ctaLabel": "Ouvrir la mission phrases" },

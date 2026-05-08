@@ -82,3 +82,23 @@ test('feature guide plays the intro frame swap after cutout images are ready', a
   await expect.poll(async () => guideImage.getAttribute('src'), { timeout: 1200 }).toContain('guide_sentence_graph_builder_b');
   await expect.poll(async () => guideImage.getAttribute('src'), { timeout: 1600 }).toBe(firstFrame);
 });
+
+test('feature guide chrome uses locale JSON copy', async ({ page }) => {
+  await page.goto(APP_URL);
+  await page.evaluate((prefix) => {
+    for (const key of Object.keys(window.localStorage)) {
+      if (key.startsWith(prefix)) {
+        window.localStorage.removeItem(key);
+      }
+    }
+  }, FEATURE_GUIDE_STORAGE_PREFIX);
+
+  await page.goto(`${APP_URL}/grammar/build-sentence?locale=it`);
+
+  const guide = page.getByTestId('game-guide-overlay');
+  await expect(guide).toBeVisible({ timeout: 15000 });
+  await expect(guide).toHaveAccessibleName('Introduzione feature');
+  await expect(guide.getByText('Briefing missione')).toBeVisible();
+  await expect(guide.getByRole('button', { name: 'Rivedi animazione' })).toBeVisible();
+  await expect(guide.getByRole('button', { name: 'Chiudi introduzione' })).toBeVisible();
+});

@@ -3,6 +3,8 @@ import { Play, RotateCcw, Sparkles, X } from 'lucide-react';
 import { motion, useReducedMotion, type Transition } from 'framer-motion';
 import { featureGuides, type FeatureGuideId, type FeatureGuideTone } from '../gamification/featureGuideManifest';
 import { hasSeenFeatureGuide, markFeatureGuideSeen, shouldDeferGuideUntilVocabularyScan } from '../gamification/featureGuideStorage';
+import { copy } from '../i18n/staticCopy';
+import { UI_INTERACTION, UI_RADIUS } from './ui';
 
 interface GameGuideOverlayProps {
   guideId: FeatureGuideId;
@@ -67,6 +69,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
   const [framesReady, setFramesReady] = useState(false);
   const activeFrame = guide.frames[frameIndex % guide.frames.length];
   const styles = toneStyles[guide.tone];
+  const overlayCopy = copy.featureGuideOverlay;
 
   useEffect(() => {
     let cancelled = false;
@@ -135,14 +138,14 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
       className="fixed inset-0 z-50 flex min-h-dvh w-screen items-stretch overflow-y-auto bg-white text-slate-950 backdrop-blur-md"
       role="dialog"
       aria-modal="true"
-      aria-label="Feature introduction"
+      aria-label={overlayCopy.ariaLabel}
     >
       <div className="relative flex min-h-dvh w-full flex-col px-5 py-5 sm:px-8 lg:px-12">
         <button
           type="button"
           onClick={enterFeature}
-          className="absolute right-5 top-5 z-10 inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
-          aria-label="Close introduction"
+          className={`absolute right-5 top-5 z-10 inline-flex min-h-11 min-w-11 items-center justify-center ${UI_RADIUS.control} border border-slate-200 bg-white text-slate-700 shadow-sm ${UI_INTERACTION.fastTransition} hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500`}
+          aria-label={overlayCopy.closeLabel}
         >
           <X size={20} aria-hidden="true" />
         </button>
@@ -167,10 +170,10 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
             </div>
           </motion.div>
 
-          <div className={`rounded-lg border p-5 shadow-2xl shadow-slate-200/80 sm:p-7 lg:p-8 ${styles.panel}`}>
-            <div className={`mb-5 inline-flex items-center gap-2 rounded-md border border-white bg-white px-3 py-2 text-sm font-bold shadow-sm ${styles.accent}`}>
+          <div className={`${UI_RADIUS.surface} border p-5 shadow-2xl shadow-slate-200/80 sm:p-7 lg:p-8 ${styles.panel}`}>
+            <div className={`mb-5 inline-flex items-center gap-2 ${UI_RADIUS.control} border border-white bg-white px-3 py-2 text-sm font-bold shadow-sm ${styles.accent}`}>
               <Sparkles size={17} aria-hidden="true" />
-              Briefing missione
+              {overlayCopy.eyebrow}
             </div>
 
             <h2 className="max-w-xl text-4xl font-extrabold leading-tight text-slate-950 sm:text-5xl lg:text-6xl">
@@ -185,7 +188,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
               <button
                 type="button"
                 onClick={enterFeature}
-                className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-md px-5 py-3 text-base font-extrabold shadow-lg shadow-slate-200 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white ${styles.action}`}
+                className={`inline-flex min-h-12 items-center justify-center gap-2 ${UI_RADIUS.control} px-5 py-3 text-base font-extrabold shadow-lg shadow-slate-200 ${UI_INTERACTION.fastTransition} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white ${styles.action}`}
               >
                 <Play size={18} aria-hidden="true" />
                 {guide.actionLabel}
@@ -194,10 +197,10 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
               <button
                 type="button"
                 onClick={replayGuide}
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-5 py-3 text-base font-bold text-slate-800 shadow-sm transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+                className={`inline-flex min-h-12 items-center justify-center gap-2 ${UI_RADIUS.control} border border-slate-200 bg-white px-5 py-3 text-base font-bold text-slate-800 shadow-sm ${UI_INTERACTION.fastTransition} hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500`}
               >
                 <RotateCcw size={18} aria-hidden="true" />
-                Replay animation
+                {overlayCopy.replayAction}
               </button>
             </div>
           </div>

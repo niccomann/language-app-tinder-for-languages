@@ -120,6 +120,12 @@
       "actionLabel": "Show me the hierarchy"
     }
   },
+  "featureGuideOverlay": {
+    "ariaLabel": "Feature introduction",
+    "closeLabel": "Close introduction",
+    "eyebrow": "Mission briefing",
+    "replayAction": "Replay animation"
+  },
   "featureFlow": {
     "vocabularyReview": {
       "title": "Vocabulary Review",
