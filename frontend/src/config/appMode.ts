@@ -59,6 +59,11 @@ const getApiBaseUrl = (): string => {
 
 export const API_BASE_URL = getApiBaseUrl();
 
+const parsedApiTimeoutMs = Number(import.meta.env.VITE_API_TIMEOUT_MS);
+export const API_REQUEST_TIMEOUT_MS = Number.isFinite(parsedApiTimeoutMs) && parsedApiTimeoutMs > 0
+  ? parsedApiTimeoutMs
+  : 4500;
+
 export function isFeatureEnabled(feature: keyof FeatureFlags): boolean {
   return FEATURES[feature];
 }

@@ -13,6 +13,7 @@ interface GrammarWordBankProps {
   onNodeClick: (node: GrammarNode) => void;
   className?: string;
   actionLabel?: string;
+  layout?: 'contained' | 'full';
 }
 
 interface GrammarWordGroup {
@@ -89,6 +90,26 @@ const WORD_GROUPS: GrammarWordGroup[] = [
     selectedClass: 'border-green-500 bg-white ring-2 ring-green-200 dark:bg-slate-900 dark:ring-green-900/70',
     idleClass: 'border-green-100 bg-white hover:border-green-300 hover:bg-green-50 dark:border-green-900/50 dark:bg-slate-900 dark:hover:bg-green-950/40',
   },
+  {
+    id: 'articles',
+    title: 'Articles',
+    matcher: (node) => node.type === 'article' || node.part_of_speech === 'article',
+    panelClass: 'border-orange-100 bg-orange-50/70 dark:border-orange-900/50 dark:bg-orange-950/20',
+    titleClass: 'text-orange-700 dark:text-orange-300',
+    countClass: 'text-orange-700 dark:text-orange-300',
+    selectedClass: 'border-orange-500 bg-white ring-2 ring-orange-200 dark:bg-slate-900 dark:ring-orange-900/70',
+    idleClass: 'border-orange-100 bg-white hover:border-orange-300 hover:bg-orange-50 dark:border-orange-900/50 dark:bg-slate-900 dark:hover:bg-orange-950/40',
+  },
+  {
+    id: 'conjunctions',
+    title: 'Conjunctions',
+    matcher: (node) => node.type === 'conjunction' || node.part_of_speech === 'conjunction',
+    panelClass: 'border-teal-100 bg-teal-50/70 dark:border-teal-900/50 dark:bg-teal-950/20',
+    titleClass: 'text-teal-700 dark:text-teal-300',
+    countClass: 'text-teal-700 dark:text-teal-300',
+    selectedClass: 'border-teal-500 bg-white ring-2 ring-teal-200 dark:bg-slate-900 dark:ring-teal-900/70',
+    idleClass: 'border-teal-100 bg-white hover:border-teal-300 hover:bg-teal-50 dark:border-teal-900/50 dark:bg-slate-900 dark:hover:bg-teal-950/40',
+  },
 ];
 
 export function GrammarWordBank({
@@ -97,8 +118,10 @@ export function GrammarWordBank({
   onNodeClick,
   className = '',
   actionLabel = 'Add word',
+  layout = 'contained',
 }: GrammarWordBankProps) {
   const { isDark } = useTheme();
+  const isFullLayout = layout === 'full';
   const selectedIds = useMemo(() => new Set(selectedNodeIds), [selectedNodeIds]);
   const {
     activeCriteria,
@@ -148,7 +171,11 @@ export function GrammarWordBank({
         totalCount={nodes.length}
       />
 
-      <div className="mt-3 grid gap-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className={`mt-3 grid gap-2 ${
+        isFullLayout
+          ? 'md:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-8'
+          : 'md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8'
+      }`}>
         {wordGroups.map((group) => (
           <div key={group.id} className={`${UI_RADIUS.control} border p-2 ${group.panelClass}`}>
             <div className="mb-1.5 flex items-center justify-between gap-2">
@@ -157,7 +184,9 @@ export function GrammarWordBank({
                 {group.nodes.length}
               </span>
             </div>
-            <div className="flex max-h-28 flex-col gap-1.5 overflow-y-auto pr-1">
+            <div className={`flex flex-col gap-1.5 overflow-y-auto pr-1 ${
+              isFullLayout ? 'max-h-44 xl:max-h-52' : 'max-h-28'
+            }`}>
               {group.nodes.map((node) => {
                 const isSelected = selectedIds.has(node.id);
                 const nodeTypeLabel = getNodeLabel(node.type);
@@ -196,7 +225,7 @@ export function GrammarWordBank({
                       />
                     )}
                     <span className="min-w-0 flex-1">
-                      <span className={`block truncate font-medium leading-tight ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>
+                      <span className={`block font-medium leading-tight ${isFullLayout ? 'break-words' : 'truncate'} ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>
                         {node.label}
                       </span>
                       <span className={`block truncate text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>

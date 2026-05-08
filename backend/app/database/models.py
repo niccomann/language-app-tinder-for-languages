@@ -227,6 +227,28 @@ class GrammarSentenceEntity(BaseEntity, table=True):
     extra_data: Optional[str] = Field(default=None, sa_column=Column(Text))
 
 
+class SentenceChallengeEntity(BaseEntity, table=True):
+    """
+    Ground-truth sentence placement challenge.
+    Used for instant, deterministic correction in production without AI inference.
+    """
+    __tablename__ = "sentence_challenges"
+
+    language: str = Field(default="de", nullable=False, index=True)
+    prompt_language: str = Field(default="en", nullable=False, index=True)
+    target_language: str = Field(default="de", nullable=False, index=True)
+    prompt: str = Field(sa_column=Column(Text, nullable=False))
+    correct_sentence: str = Field(sa_column=Column(Text, nullable=False))
+    correct_tokens: str = Field(sa_column=Column(Text, nullable=False))
+    distractor_tokens: str = Field(sa_column=Column(Text, nullable=False))
+    difficulty: str = Field(default="beginner", nullable=False, index=True)
+    grammar_focus: Optional[str] = Field(default=None, index=True)
+    cefr_level: Optional[str] = Field(default=None, index=True)
+    validation_mode: str = Field(default="ground_truth", nullable=False)
+    is_active: bool = Field(default=True, nullable=False, index=True)
+    extra_data: Optional[str] = Field(default=None, sa_column=Column(Text))
+
+
 class GrammarSentenceNodeEntity(BaseEntity, table=True):
     """
     Nodes within a grammar sentence (subject, predicate, object, etc.).

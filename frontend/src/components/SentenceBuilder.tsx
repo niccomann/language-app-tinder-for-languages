@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { 
   Check, 
   X, 
@@ -16,38 +16,27 @@ import { GrammarBuilderFrame } from './GrammarBuilderFrame';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
 import { buildOrderedSentence } from '../utils/sentenceBuilderOrder';
 import { useTheme } from '../contexts/useTheme';
+import { useAvailableGrammarNodes } from '../hooks/useAvailableGrammarNodes';
+import { reportClientError } from '../utils/clientError';
 
 interface Connection {
   fromId: string;
   toId: string;
 }
 
-export function SentenceBuilder() {
-  const [availableNodes, setAvailableNodes] = useState<GrammarNode[]>([]);
+interface SentenceBuilderProps {
+  layout?: 'contained' | 'full';
+}
+
+export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) {
+  const { availableNodes, loading } = useAvailableGrammarNodes();
   const [selectedNodes, setSelectedNodes] = useState<GrammarNode[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
   const [connectingFrom, setConnectingFrom] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [validating, setValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<ValidateSentenceResponse | null>(null);
   const [playingAudio, setPlayingAudio] = useState(false);
   const { isDark } = useTheme();
-
-  useEffect(() => {
-    loadAvailableNodes();
-  }, []);
-
-  const loadAvailableNodes = async () => {
-    setLoading(true);
-    try {
-      const nodes = await api.getAvailableNodes();
-      setAvailableNodes(nodes);
-    } catch (error) {
-      console.error('Failed to load available nodes:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleNodeClick = (node: GrammarNode) => {
     const isAlreadySelected = selectedNodes.some(selectedNode => selectedNode.id === node.id);
@@ -119,7 +108,7 @@ export function SentenceBuilder() {
       
       setValidationResult(result);
     } catch (error) {
-      console.error('Failed to validate sentence:', error);
+      reportClientError('Failed to validate sentence:', error);
     } finally {
       setValidating(false);
     }
@@ -143,7 +132,7 @@ export function SentenceBuilder() {
       audio.onerror = () => setPlayingAudio(false);
       await audio.play();
     } catch (error) {
-      console.error('Failed to play audio:', error);
+      reportClientError('Failed to play audio:', error);
       setPlayingAudio(false);
     }
   };
@@ -186,6 +175,7 @@ export function SentenceBuilder() {
       onWordClick={handleNodeClick}
       actionLabel="Toggle word"
       contentClassName="flex flex-col gap-3"
+      layout={layout}
     >
           <SurfacePanel className={`min-h-[220px] border-2 transition-colors duration-300 ${
             validationResult 

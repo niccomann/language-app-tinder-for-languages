@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../services/api';
+import { reportClientError } from '../utils/clientError';
 
 /**
  * Hook to manage category selection and loading
@@ -18,15 +19,13 @@ export const useCategories = () => {
     try {
       setLoading(true);
       setError(null);
-      const cards = await api.getFlashcards({ language: 'de' });
-      const categories = Array.from(
-        new Set(cards.map(card => card.category).filter(Boolean))
-      ) as string[];
+      const filters = await api.getLibraryFilters('de');
+      const categories = filters.categories;
       setAllCategories(categories);
       setSelectedCategories(categories); // Select all by default
     } catch (err) {
       setError('Failed to load categories. Make sure the backend is running.');
-      console.error('Error loading categories:', err);
+      reportClientError('Error loading categories:', err);
     } finally {
       setLoading(false);
     }

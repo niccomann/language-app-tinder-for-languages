@@ -3,15 +3,7 @@ import * as d3 from 'd3';
 import cloud from 'd3-cloud';
 import type { WordCloudItem } from '../types';
 import { ExpandedViewWrapper, UI_RADIUS, ZoomControlBar } from './ui';
-
-const CATEGORY_COLORS: Record<string, string> = {
-  animals: '#3B82F6',
-  food: '#10B981',
-  verbs: '#EF4444',
-  adjectives: '#F59E0B',
-  objects: '#8B5CF6',
-  default: '#64748B',
-};
+import { CATEGORY_COLORS } from '../utils/wordDisplayMeta';
 
 interface EmbeddedWordCloudProps {
   words: WordCloudItem[];

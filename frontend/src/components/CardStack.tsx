@@ -1,21 +1,42 @@
 import { useEffect, useState } from 'react';
 import { CompletionScreen } from './CompletionScreen';
+import { FirstVocabularyOnboarding } from './FirstVocabularyOnboarding';
+import { GrammarPlacementAssessment } from './GrammarPlacementAssessment';
 import { LearningPathHome } from './LearningPathHome';
 import { LearningScreen } from './LearningScreen';
 import { LoadingSpinner, ErrorState } from './ui';
 import { useCategories } from '../hooks/useCategories';
 import { useLearningSession } from '../hooks/useLearningSession';
+import type { LearningRouteMode } from '../routes/appRoutes';
+import {
+  markFirstVocabularyOnboardingDone,
+  readFirstVocabularyOnboardingDone,
+  shouldShowFirstVocabularyOnboarding,
+} from './firstVocabularyOnboardingMeta';
 
 interface CardStackProps {
+  mode: LearningRouteMode;
+  onOpenLearningPath: () => void;
+  onStartLearning: () => void;
+  onOpenLearningFilters: () => void;
+  onOpenLearningSystem: () => void;
+  onStartGrammarPlacement: () => void;
   onOpenLibrary: () => void;
   onOpenGrammarLab: () => void;
 }
 
-export const CardStack = ({ onOpenLibrary, onOpenGrammarLab }: CardStackProps) => {
-  const [filtersOpen, setFiltersOpen] = useState(false);
-  const [screenMode, setScreenMode] = useState<'path' | 'session'>('path');
-  
+export const CardStack = ({
+  mode,
+  onOpenLearningPath,
+  onStartLearning,
+  onOpenLearningFilters,
+  onOpenLearningSystem,
+  onStartGrammarPlacement,
+  onOpenLibrary,
+  onOpenGrammarLab,
+}: CardStackProps) => {
   const categories = useCategories();
+  const [firstVocabularyOnboardingDone, setFirstVocabularyOnboardingDone] = useState(readFirstVocabularyOnboardingDone);
   const {
     currentCard,
     nextCard,
@@ -33,30 +54,25 @@ export const CardStack = ({ onOpenLibrary, onOpenGrammarLab }: CardStackProps) =
   } = useLearningSession();
 
   useEffect(() => {
-    if (!categories.loading) {
+    if (!categories.loading && !categories.error) {
       loadFlashcards(categories.selectedCategories);
     }
-  }, [categories.loading, categories.selectedCategories, loadFlashcards]);
+  }, [categories.error, categories.loading, categories.selectedCategories, loadFlashcards]);
 
   const handleChangeFilters = () => {
     reset();
-    setScreenMode('session');
-    setFiltersOpen(true);
+    onOpenLearningFilters();
   };
 
   const handleOpenFilters = () => {
-    setScreenMode('session');
-    setFiltersOpen(true);
+    onOpenLearningFilters();
   };
 
-  // Loading state
-  if (categories.loading) {
-    return <LoadingSpinner message="Loading..." />;
-  }
-
-  if (loading && flashcards.length === 0) {
-    return <LoadingSpinner message="Loading flashcards..." />;
-  }
+  const handleCompleteFirstVocabularyOnboarding = () => {
+    markFirstVocabularyOnboardingDone();
+    setFirstVocabularyOnboardingDone(true);
+    onOpenLearningPath();
+  };
 
   // Error state
   if (error || categories.error) {
@@ -69,6 +85,33 @@ export const CardStack = ({ onOpenLibrary, onOpenGrammarLab }: CardStackProps) =
     );
   }
 
+  // Loading state
+  if (categories.loading) {
+    return <LoadingSpinner message="Loading..." />;
+  }
+
+  if (loading && flashcards.length === 0) {
+    return <LoadingSpinner message="Loading flashcards..." />;
+  }
+
+  if (shouldShowFirstVocabularyOnboarding({
+    mode,
+    firstVocabularyOnboardingDone,
+    learningSummary,
+    progress,
+  })) {
+    return (
+      <FirstVocabularyOnboarding
+        currentCard={currentCard}
+        nextCard={nextCard}
+        progress={progress}
+        totalCards={flashcards.length}
+        onSwipe={handleSwipe}
+        onComplete={handleCompleteFirstVocabularyOnboarding}
+      />
+    );
+  }
+
   // Completion screen
   if (isComplete) {
     return (
@@ -76,7 +119,7 @@ export const CardStack = ({ onOpenLibrary, onOpenGrammarLab }: CardStackProps) =
         progress={progress}
         onRestart={() => {
           reset();
-          setScreenMode('session');
+          onStartLearning();
         }}
         onChangeCategories={handleChangeFilters}
         onOpenLibrary={onOpenLibrary}
@@ -85,7 +128,7 @@ export const CardStack = ({ onOpenLibrary, onOpenGrammarLab }: CardStackProps) =
     );
   }
 
-  if (screenMode === 'path') {
+  if (mode === 'path') {
     return (
       <LearningPathHome
         learningSummary={learningSummary}
@@ -93,10 +136,21 @@ export const CardStack = ({ onOpenLibrary, onOpenGrammarLab }: CardStackProps) =
         totalCards={flashcards.length}
         categoriesCount={categories.allCategories.length}
         selectedCategoriesCount={categories.selectedCategories.length}
-        onStartSession={() => setScreenMode('session')}
+        onStartSession={onStartLearning}
         onOpenLibrary={onOpenLibrary}
         onOpenGrammarLab={onOpenGrammarLab}
         onOpenFilters={handleOpenFilters}
+        onStartGrammarPlacement={onStartGrammarPlacement}
+      />
+    );
+  }
+
+  if (mode === 'grammar_placement') {
+    return (
+      <GrammarPlacementAssessment
+        onBack={onOpenLearningPath}
+        onOpenLibrary={onOpenLibrary}
+        onOpenGrammarLab={onOpenGrammarLab}
       />
     );
   }
@@ -116,8 +170,22 @@ export const CardStack = ({ onOpenLibrary, onOpenGrammarLab }: CardStackProps) =
       onToggleCategory={categories.toggleCategory}
       onSelectAllCategories={categories.selectAll}
       onDeselectAllCategories={categories.deselectAll}
-      filtersOpen={filtersOpen}
-      onFiltersOpenChange={setFiltersOpen}
+      filtersOpen={mode === 'filters'}
+      onFiltersOpenChange={(open) => {
+        if (open) {
+          onOpenLearningFilters();
+        } else {
+          onStartLearning();
+        }
+      }}
+      learningSystemOpen={mode === 'system'}
+      onLearningSystemOpenChange={(open) => {
+        if (open) {
+          onOpenLearningSystem();
+        } else {
+          onStartLearning();
+        }
+      }}
       learningFeedback={learningFeedback}
       onClearLearningFeedback={clearLearningFeedback}
     />

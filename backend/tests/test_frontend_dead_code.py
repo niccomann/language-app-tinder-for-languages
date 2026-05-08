@@ -74,3 +74,40 @@ def test_stale_playwright_debug_specs_are_removed_from_active_suite():
     assert not (frontend_root / "test-debug.spec.ts").exists()
     assert not (frontend_root / "test-swipe.spec.ts").exists()
     assert "npx playwright test)" in pipeline
+
+
+def test_frontend_maintenance_notes_document_shared_surfaces():
+    maintenance_doc = REPO_ROOT / "docs" / "frontend-maintenance.md"
+    assert maintenance_doc.exists()
+
+    doc = maintenance_doc.read_text()
+    assert "appRoutes.ts" in doc
+    assert "components/ui" in doc
+    assert "browserStorage.ts" in doc
+    assert "firstVocabularyOnboardingMeta.ts" in doc
+    assert "frontend/test-utils/appTestHelpers.ts" in doc
+    assert "deprecated" in doc
+
+
+def test_active_frontend_errors_use_shared_reporter():
+    reporter = FRONTEND_SRC / "utils" / "clientError.ts"
+    assert reporter.exists()
+
+    reporter_source = reporter.read_text()
+    assert "reportClientError" in reporter_source
+    assert "console.error" in reporter_source
+
+    active_files = [
+        path
+        for root in ("components", "hooks", "gamification")
+        for path in (FRONTEND_SRC / root).rglob("*")
+        if path.suffix in {".ts", ".tsx"} and "deprecated" not in path.parts
+    ]
+
+    offenders = [
+        path.relative_to(FRONTEND_SRC)
+        for path in active_files
+        if "console.error" in path.read_text(errors="ignore")
+    ]
+
+    assert offenders == []

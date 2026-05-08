@@ -1,4 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { APP_URL, expectInViewport, markFeatureGuidesSeen } from './test-utils/appTestHelpers';
+
+test.beforeEach(async ({ page }) => {
+  await markFeatureGuidesSeen(page);
+});
 
 async function getWordBankBox(page) {
   const wordBank = page
@@ -12,7 +17,7 @@ async function getWordBankBox(page) {
 }
 
 test('grammar lab keeps the shared game menu visible inside builder views', async ({ page }) => {
-  await page.goto('http://127.0.0.1:5173/grammar');
+  await page.goto(`${APP_URL}/grammar`);
 
   await expect(page.getByRole('heading', { name: /Grammar Lab/i })).toBeVisible({ timeout: 15000 });
   const labViews = page.getByLabel('Grammar Lab views');
@@ -35,7 +40,7 @@ test('grammar lab keeps the shared game menu visible inside builder views', asyn
 
 test('build sentence keeps the build area usable in the first viewport', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('http://127.0.0.1:5173/grammar');
+  await page.goto(`${APP_URL}/grammar`);
 
   const labViews = page.getByLabel('Grammar Lab views');
   await labViews.getByRole('button', { name: /Build Sentence/i }).click();
@@ -44,23 +49,13 @@ test('build sentence keeps the build area usable in the first viewport', async (
   const buildAreaHeading = page.getByRole('heading', { name: /Build Area/i });
   const validateButton = page.getByRole('button', { name: /Validate Sentence/i });
 
-  await expect(buildAreaHeading).toBeVisible();
-  await expect(validateButton).toBeVisible();
-
-  const viewport = page.viewportSize();
-  const buildAreaBox = await buildAreaHeading.boundingBox();
-  const validateBox = await validateButton.boundingBox();
-
-  expect(viewport).not.toBeNull();
-  expect(buildAreaBox).not.toBeNull();
-  expect(validateBox).not.toBeNull();
-  expect(buildAreaBox!.y).toBeGreaterThanOrEqual(0);
-  expect(validateBox!.y + validateBox!.height).toBeLessThanOrEqual(viewport!.height);
+  await expectInViewport(page, buildAreaHeading);
+  await expectInViewport(page, validateButton);
 });
 
 test('sentence builder variants use the same page frame width', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('http://127.0.0.1:5173/grammar');
+  await page.goto(`${APP_URL}/grammar`);
 
   const labViews = page.getByLabel('Grammar Lab views');
 

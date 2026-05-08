@@ -8,6 +8,8 @@ const NODE_COLORS: Record<string, string> = {
   adverb: '#06B6D4',
   preposition: '#64748B',
   pronoun: '#EC4899',
+  article: '#F97316',
+  conjunction: '#14B8A6',
 };
 
 const NODE_LABELS: Record<string, string> = {
@@ -20,6 +22,8 @@ const NODE_LABELS: Record<string, string> = {
   adverb: 'Adverb',
   preposition: 'Preposition',
   pronoun: 'Pronoun',
+  article: 'Article',
+  conjunction: 'Conjunction',
 };
 
 export function getNodeColor(type: string): string {

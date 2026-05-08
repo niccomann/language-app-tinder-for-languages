@@ -9,5 +9,7 @@ export type { PillTabItem, PillTabTone } from './PillTabs';
 export { UI_ELEVATION, UI_INTERACTION, UI_RADIUS, UI_SIZE } from './geometry';
 export { PageHeader } from './PageHeader';
 export { StatCard } from './StatCard';
+export { GameSignalBadge } from './GameSignalBadge';
+export type { GameSignalTone } from './GameSignalBadge';
 export { NavButton } from './NavButton';
 export { ZoomControlBar, ExpandedViewWrapper } from './ZoomControlBar';

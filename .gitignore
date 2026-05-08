@@ -73,8 +73,8 @@ error*.png
 final-*.png
 *.png.metadata
 client_secrets.json
+backend/app.before-library-sync-*.db
 
 # Playwright
 playwright-report/
 test-results/
-

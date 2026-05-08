@@ -2,15 +2,7 @@ import type { WordCloudItem } from '../types';
 import { AudioButton } from './AudioButton';
 import { ConfidenceBadge } from './ConfidenceBadge';
 import { UI_RADIUS } from './ui';
-
-const CATEGORY_COLORS: Record<string, string> = {
-  animals: '#3B82F6',
-  food: '#10B981',
-  verbs: '#EF4444',
-  adjectives: '#F59E0B',
-  objects: '#8B5CF6',
-  default: '#64748B',
-};
+import { CATEGORY_COLORS } from '../utils/wordDisplayMeta';
 
 interface WordDetailModalProps {
   word: WordCloudItem;

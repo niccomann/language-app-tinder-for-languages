@@ -2,6 +2,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+FRONTEND_ROOT = REPO_ROOT / "frontend"
 FRONTEND_SRC = REPO_ROOT / "frontend" / "src"
 
 
@@ -82,6 +83,8 @@ def test_sentence_builders_share_the_same_word_bank_component():
     assert "Pronouns" in word_bank_source
     assert "Adverbs" in word_bank_source
     assert "Prepositions" in word_bank_source
+    assert "Articles" in word_bank_source
+    assert "Conjunctions" in word_bank_source
 
     assert "<GrammarBuilderFrame" in sentence_builder
     assert "<GrammarBuilderFrame" in fun_builder
@@ -100,6 +103,19 @@ def test_fun_sentence_builder_uses_shared_zoom_controls():
     assert "<ZoomIn" not in fun_builder
     assert "<ZoomOut" not in fun_builder
     assert "<Focus" not in fun_builder
+
+
+def test_grammar_node_types_include_sentence_function_words():
+    types_source = (FRONTEND_SRC / "types" / "index.ts").read_text()
+    colors_source = (FRONTEND_SRC / "utils" / "grammarColors.ts").read_text()
+    word_bank_source = (FRONTEND_SRC / "components" / "GrammarWordBank.tsx").read_text()
+
+    assert "| 'article'" in types_source
+    assert "| 'conjunction'" in types_source
+    assert "article: '#" in colors_source
+    assert "conjunction: '#" in colors_source
+    assert "node.type === 'article' || node.part_of_speech === 'article'" in word_bank_source
+    assert "node.type === 'conjunction' || node.part_of_speech === 'conjunction'" in word_bank_source
 
 
 def test_core_ui_geometry_uses_shared_shape_system():
@@ -172,10 +188,82 @@ def test_sentence_builders_share_sentence_ordering_utility():
     assert "const orderedLabels: string[]" not in fun_builder
 
 
+def test_sentence_builders_share_available_nodes_hook():
+    hook = FRONTEND_SRC / "hooks" / "useAvailableGrammarNodes.ts"
+    sentence_builder = (FRONTEND_SRC / "components" / "SentenceBuilder.tsx").read_text()
+    fun_builder = (FRONTEND_SRC / "components" / "FunSentenceBuilder.tsx").read_text()
+
+    assert hook.exists()
+    hook_source = hook.read_text()
+    assert "export function useAvailableGrammarNodes" in hook_source
+    assert "api.getAvailableNodes()" in hook_source
+
+    assert "useAvailableGrammarNodes" in sentence_builder
+    assert "useAvailableGrammarNodes" in fun_builder
+    assert "api.getAvailableNodes()" not in sentence_builder
+    assert "api.getAvailableNodes()" not in fun_builder
+    assert "loadAvailableNodes" not in sentence_builder
+    assert "loadAvailableNodes" not in fun_builder
+
+
 def test_app_mode_treats_loopback_hosts_as_development():
     app_mode = (FRONTEND_SRC / "config" / "appMode.ts").read_text()
 
     assert "'127.0.0.1'" in app_mode
+
+
+def test_browser_storage_access_is_centralized():
+    browser_storage = FRONTEND_SRC / "utils" / "browserStorage.ts"
+    theme_context = (FRONTEND_SRC / "contexts" / "ThemeContext.tsx").read_text()
+    onboarding_meta = (FRONTEND_SRC / "components" / "firstVocabularyOnboardingMeta.ts").read_text()
+    guide_storage = (FRONTEND_SRC / "gamification" / "featureGuideStorage.ts").read_text()
+    guide_overlay = (FRONTEND_SRC / "components" / "GameGuideOverlay.tsx").read_text()
+
+    assert browser_storage.exists()
+    storage_source = browser_storage.read_text()
+    assert "readStorageValue" in storage_source
+    assert "writeStorageValue" in storage_source
+    assert "localStorage.getItem" in storage_source
+    assert "localStorage.setItem" in storage_source
+
+    assert "readStorageValue" in theme_context
+    assert "writeStorageValue" in theme_context
+    assert "readStorageValue" in onboarding_meta
+    assert "writeStorageValue" in onboarding_meta
+    assert "readStorageValue" in guide_storage
+    assert "writeStorageValue" in guide_storage
+    assert "localStorage.getItem" not in theme_context
+    assert "localStorage.setItem" not in theme_context
+    assert "localStorage.getItem" not in onboarding_meta
+    assert "localStorage.setItem" not in onboarding_meta
+    assert "localStorage.getItem" not in guide_overlay
+    assert "localStorage.setItem" not in guide_overlay
+
+
+def test_playwright_specs_share_app_test_helpers():
+    helper = FRONTEND_ROOT / "test-utils" / "appTestHelpers.ts"
+    assert helper.exists()
+
+    helper_source = helper.read_text()
+    assert "export const APP_URL" in helper_source
+    assert "export const API_URL" in helper_source
+    assert "markFirstVocabularyOnboardingDone" in helper_source
+    assert "mockLearningApi" in helper_source
+    assert "expectNoHorizontalOverflow" in helper_source
+    assert "expectInViewport" in helper_source
+
+    specs = sorted(FRONTEND_ROOT.glob("*.spec.ts"))
+    assert specs
+    for spec in specs:
+        source = spec.read_text()
+        assert "http://127.0.0.1:5173" not in source
+        assert "http://localhost:5173" not in source
+        assert "http://127.0.0.1:8501" not in source
+
+    swipe_spec = (FRONTEND_ROOT / "test-swipe-first.spec.ts").read_text()
+    assert "from './test-utils/appTestHelpers'" in swipe_spec
+    assert "page.route('**/api/library/filters?**'" not in swipe_spec
+    assert "const MOCK_CARDS" not in swipe_spec
 
 
 def test_words_library_register_filter_is_wired_to_api_request():
@@ -202,6 +290,35 @@ def test_filter_views_use_shared_select_geometry():
         assert "FilterSelect" in source
 
     assert "<select" not in words_library
+
+
+def test_word_display_metadata_is_centralized():
+    display_meta = FRONTEND_SRC / "utils" / "wordDisplayMeta.ts"
+    assert display_meta.exists()
+
+    display_meta_source = display_meta.read_text()
+    assert "CATEGORY_COLORS" in display_meta_source
+    assert "CEFR_BADGE_CLASSES" in display_meta_source
+    assert "GENDER_BADGE_META" in display_meta_source
+    assert "FREQUENCY_ICONS" in display_meta_source
+    assert "CONFUSION_LEVEL_CLASSES" in display_meta_source
+
+    checked_components = [
+        "components/GrammarLab.tsx",
+        "components/EmbeddedWordCloud.tsx",
+        "components/WordDetailModal.tsx",
+        "components/WordsLibraryEnriched.tsx",
+        "components/WordDetailModalEnriched.tsx",
+    ]
+
+    for relative_path in checked_components:
+        source = (FRONTEND_SRC / relative_path).read_text()
+        assert "wordDisplayMeta" in source
+        assert "const CATEGORY_COLORS" not in source
+        assert "const CEFR_COLORS" not in source
+        assert "const GENDER_LABELS" not in source
+        assert "const FREQUENCY_ICONS" not in source
+        assert "const CONFUSION_COLORS" not in source
 
 
 def test_common_controls_use_shared_interaction_tokens():

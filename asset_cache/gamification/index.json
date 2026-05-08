@@ -1,0 +1,386 @@
+{
+  "entries": {
+    "021b7bf79cee70aff5ab78516e35197d": {
+      "character": "explorer",
+      "key": "guide_clusters_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "021ff9fb2efd12d644a335595e41f410": {
+      "character": "coach",
+      "key": "guide_vocabulary_scan_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "05a81d0b12cb418e77437589f7f1aab4": {
+      "character": "robot",
+      "key": "mascot_robot_idle_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "idle",
+      "transparent": true
+    },
+    "10dc1184ce421eda3279189d515963d8": {
+      "character": "explorer",
+      "key": "mascot_explorer_idle_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "idle",
+      "transparent": true
+    },
+    "1474f16a919e1e3f83e1d5cf051a9de9": {
+      "character": "coach",
+      "key": "guide_sentence_composer_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "1eb7bc5318a981a3bcf84299a86eeb54": {
+      "character": "explorer",
+      "key": "guide_learning_path_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "2336d57bf490369717e37c8c9a599b17": {
+      "character": "explorer",
+      "key": "guide_clusters_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "300cbabf5ff96444e4a821b631933798": {
+      "character": "explorer",
+      "key": "mascot_explorer_level_up_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "levelUp",
+      "transparent": true
+    },
+    "37529f1cae1dcf22006223601c7e8a8e": {
+      "character": "coach",
+      "key": "guide_sentence_placement_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "3a65ff2ef93560939131ffeb26f86480": {
+      "character": "robot",
+      "key": "mascot_robot_correct_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "correct",
+      "transparent": true
+    },
+    "3de92961cc34df1f448f73402cf19898": {
+      "character": "robot",
+      "key": "guide_learning_system_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "410445ab92dd1ec5d794041be3415ef3": {
+      "character": "coach",
+      "key": "guide_learning_filters_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "455b55a6a83f871df5b7847e4ae03187": {
+      "character": "robot",
+      "key": "guide_sentence_graph_builder_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "4863e3eac62f747428e320ac33cf49de": {
+      "character": "robot",
+      "key": "mascot_robot_wrong_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "wrong",
+      "transparent": true
+    },
+    "4bba1cb839ad63b293164993baee3669": {
+      "character": "explorer",
+      "key": "guide_library_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "51307cbed647d1beaf4b4e3cf89c70ff": {
+      "character": "explorer",
+      "key": "guide_word_cloud_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "64d8fd7a19af619584b80e9696cf8b07": {
+      "character": "explorer",
+      "key": "guide_dialects_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "66d2ff56347b286f367eb99378f53f60": {
+      "character": "robot",
+      "key": "guide_hierarchy_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "6b44191f00df81d98f1957d58803acf8": {
+      "character": "explorer",
+      "key": "guide_library_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "6eb668d8bef69b736aeccb65a0f22c5b": {
+      "character": "explorer",
+      "key": "mascot_explorer_wrong_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "wrong",
+      "transparent": true
+    },
+    "7f3640a7841cdcf71e03726ae1766f4e": {
+      "character": "explorer",
+      "key": "mascot_explorer_correct_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "correct",
+      "transparent": true
+    },
+    "94eb5b5000daee1193a10f7b34900ee2": {
+      "character": "robot",
+      "key": "mascot_robot_correct_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "correct",
+      "transparent": true
+    },
+    "9704b136d181ee8ad039176684084fb7": {
+      "character": "robot",
+      "key": "mascot_robot_wrong_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "wrong",
+      "transparent": true
+    },
+    "9b07fb7857756d8277b8ee5870a9d86c": {
+      "character": "explorer",
+      "key": "mascot_explorer_level_up_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "levelUp",
+      "transparent": true
+    },
+    "a212d244d90f8018893eef793ffceb8d": {
+      "character": "robot",
+      "key": "guide_grammar_graph_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "a27db19ff03b8253bd3efbccd3cd1731": {
+      "character": "robot",
+      "key": "mascot_robot_level_up_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "levelUp",
+      "transparent": true
+    },
+    "a2ef8091a07b0f871a1f31540eb4fb08": {
+      "character": "coach",
+      "key": "guide_learning_filters_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "af3e3a4a0f71b97f2fbdf838dd19a5ab": {
+      "character": "robot",
+      "key": "guide_learning_system_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "b635ff438e386d4ab9f788076228ecd5": {
+      "character": "robot",
+      "key": "mascot_robot_level_up_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "levelUp",
+      "transparent": true
+    },
+    "bcd4aaf535cb73d28b9098e91078521b": {
+      "character": "coach",
+      "key": "guide_sentence_placement_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "bdc8434803abb9d03ed31d68dda50276": {
+      "character": "coach",
+      "key": "guide_vocabulary_scan_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "bead3c56b458c0cee3e431191d0a7b23": {
+      "character": "explorer",
+      "key": "guide_learning_path_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "c0c9b0829ee7b1cf536327cd8635f7bb": {
+      "character": "coach",
+      "key": "guide_sentence_composer_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "c1cbbee7c532cceb44cb18be809c4a5b": {
+      "character": "explorer",
+      "key": "guide_word_cloud_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "caefbdc28e066a040d44420026142183": {
+      "character": "explorer",
+      "key": "mascot_explorer_idle_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "idle",
+      "transparent": true
+    },
+    "dcb8ce843683f3b48fb2a7bf0e41d767": {
+      "character": "explorer",
+      "key": "mascot_explorer_wrong_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "wrong",
+      "transparent": true
+    },
+    "dd463be7b6bb359c07aa3e4f56acfec3": {
+      "character": "explorer",
+      "key": "mascot_explorer_correct_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "correct",
+      "transparent": true
+    },
+    "df83d5c0cd49239a0cc44b64b8cf5082": {
+      "character": "robot",
+      "key": "guide_grammar_graph_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "e965de2078fba7fb9fd10b0d094f7e0e": {
+      "character": "explorer",
+      "key": "guide_dialects_a",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "ee4269ef877b6919ace662f07912c01d": {
+      "character": "robot",
+      "key": "guide_sentence_graph_builder_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    },
+    "f6cb229258ac4765d18ee094f8968615": {
+      "character": "robot",
+      "key": "mascot_robot_idle_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "idle",
+      "transparent": true
+    },
+    "fb918ba1139d16355499c1dbdd1d255f": {
+      "character": "robot",
+      "key": "guide_hierarchy_b",
+      "model": "gpt-image-2",
+      "prompt_preview": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportio",
+      "size": "1024x1024",
+      "state": "guide",
+      "transparent": true
+    }
+  },
+  "stats": {
+    "hits": 0,
+    "writes": 42
+  }
+}

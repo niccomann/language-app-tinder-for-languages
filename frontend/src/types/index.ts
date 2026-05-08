@@ -2,6 +2,7 @@ export interface Flashcard {
   id: number;
   word: string;
   translation: string;
+  image_url?: string;
   image_base64?: string;
   audio_base64?: string;
   language: string;
@@ -189,6 +190,7 @@ export interface WordCloudItem {
   swipe_right_count?: number;
   swipe_left_count?: number;
   review_count?: number;
+  image_url?: string;
   image_base64?: string;
   cefr_level?: string;
   frequency_band?: string;
@@ -222,7 +224,9 @@ export interface GrammarNode {
     | 'adjective'
     | 'adverb'
     | 'preposition'
-    | 'pronoun';
+    | 'pronoun'
+    | 'article'
+    | 'conjunction';
   lemma?: string;
   surface_form?: string;
   part_of_speech?: string;
@@ -252,6 +256,22 @@ export interface GrammarSentence {
   nodes: GrammarNode[];
   edges: GrammarEdge[];
   difficulty: string;
+}
+
+export interface SentenceChallenge {
+  id: number;
+  language: string;
+  prompt_language: string;
+  target_language: string;
+  prompt: string;
+  correct_sentence: string;
+  correct_tokens: string[];
+  distractor_tokens: string[];
+  option_tokens: string[];
+  difficulty: string;
+  grammar_focus?: string | null;
+  cefr_level?: string | null;
+  validation_mode: 'ground_truth';
 }
 
 export interface TTSResponse {

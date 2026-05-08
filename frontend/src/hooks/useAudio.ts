@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { api } from '../services/api';
+import { reportClientError } from '../utils/clientError';
 
 /**
  * Reusable hook for TTS audio playback.
@@ -40,7 +41,7 @@ export const useAudio = () => {
       
       await audio.play();
     } catch (error) {
-      console.error('Failed to play audio:', error);
+      reportClientError('Failed to play audio:', error);
       setIsPlaying(null);
       setIsLoading(null);
     }

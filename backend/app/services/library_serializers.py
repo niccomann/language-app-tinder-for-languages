@@ -31,6 +31,7 @@ def entity_to_enriched_data(card: FlashcardEntity) -> dict[str, Any]:
         "id": card.id,
         "word": card.word,
         "translation": card.translation,
+        "image_url": card.image_url,
         "image_base64": card.image_base64,
         "language": card.language,
         "difficulty": card.difficulty,

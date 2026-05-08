@@ -30,6 +30,8 @@ interface LearningScreenProps {
   onDeselectAllCategories: () => void;
   filtersOpen: boolean;
   onFiltersOpenChange: (open: boolean) => void;
+  learningSystemOpen: boolean;
+  onLearningSystemOpenChange: (open: boolean) => void;
   learningFeedback: LearningFeedback | null;
   onClearLearningFeedback: () => void;
 }
@@ -49,11 +51,12 @@ export function LearningScreen({
   onDeselectAllCategories,
   filtersOpen,
   onFiltersOpenChange,
+  learningSystemOpen,
+  onLearningSystemOpenChange,
   learningFeedback,
   onClearLearningFeedback,
 }: LearningScreenProps) {
   const [lastSwipeDirection, setLastSwipeDirection] = useState<'left' | 'right'>('left');
-  const [learningSystemOpen, setLearningSystemOpen] = useState(false);
 
   const handleDirectionalSwipe = (direction: 'left' | 'right') => {
     setLastSwipeDirection(direction);
@@ -107,7 +110,7 @@ export function LearningScreen({
 
           <LearningSystemMenu
             isOpen={learningSystemOpen}
-            onToggle={() => setLearningSystemOpen((open) => !open)}
+            onToggle={() => onLearningSystemOpenChange(!learningSystemOpen)}
           />
         </header>
 

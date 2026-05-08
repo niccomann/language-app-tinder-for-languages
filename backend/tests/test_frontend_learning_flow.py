@@ -30,6 +30,7 @@ def test_main_flow_starts_on_swipe_screen_with_embedded_filters():
     card_stack = (FRONTEND_SRC / "components" / "CardStack.tsx").read_text()
     learning_screen = (FRONTEND_SRC / "components" / "LearningScreen.tsx").read_text()
     filters_panel = (FRONTEND_SRC / "components" / "LearningFiltersPanel.tsx").read_text()
+    app_routes = (FRONTEND_SRC / "routes" / "appRoutes.ts").read_text()
 
     assert "CategorySelector" not in card_stack
     assert "showCategorySelector" not in card_stack
@@ -37,8 +38,9 @@ def test_main_flow_starts_on_swipe_screen_with_embedded_filters():
     assert "loadFlashcards(categories.selectedCategories)" in card_stack
     assert "categories={categories.allCategories}" in card_stack
     assert "selectedCategories={categories.selectedCategories}" in card_stack
-    assert "filtersOpen={filtersOpen}" in card_stack
-    assert "onFiltersOpenChange={setFiltersOpen}" in card_stack
+    assert "filtersOpen={mode === 'filters'}" in card_stack
+    assert "onOpenLearningFilters()" in card_stack
+    assert "feature === 'filters'" in app_routes
 
     assert "LearningFiltersPanel" in learning_screen
     assert 'label="Filters"' in learning_screen
@@ -112,11 +114,13 @@ def test_card_shows_word_mastery_badge_for_per_word_mastery():
 def test_learning_path_home_is_primary_entry_to_swipe_session():
     card_stack = (FRONTEND_SRC / "components" / "CardStack.tsx").read_text()
     path_home = FRONTEND_SRC / "components" / "LearningPathHome.tsx"
+    app_routes = (FRONTEND_SRC / "routes" / "appRoutes.ts").read_text()
 
     assert path_home.exists()
     assert "LearningPathHome" in card_stack
-    assert "screenMode" in card_stack
-    assert "setScreenMode('session')" in card_stack
+    assert "mode === 'path'" in card_stack
+    assert "onStartLearning" in card_stack
+    assert "section === 'learn'" in app_routes
     assert "Daily Learning Snapshot" in path_home.read_text()
     assert "Review German Level" in path_home.read_text()
     assert "learningSummary" in card_stack
@@ -124,6 +128,85 @@ def test_learning_path_home_is_primary_entry_to_swipe_session():
     assert "LEARNING_PATH_MILESTONES" in path_home.read_text()
     assert "const pathSteps" not in path_home.read_text()
     assert "400-level" in path_home.read_text()
+
+
+def test_first_run_vocabulary_onboarding_starts_with_swipe_only_scan():
+    card_stack = (FRONTEND_SRC / "components" / "CardStack.tsx").read_text()
+    onboarding = FRONTEND_SRC / "components" / "FirstVocabularyOnboarding.tsx"
+    onboarding_meta = FRONTEND_SRC / "components" / "firstVocabularyOnboardingMeta.ts"
+
+    assert onboarding.exists()
+    assert onboarding_meta.exists()
+    onboarding_source = onboarding.read_text()
+    meta_source = onboarding_meta.read_text()
+    assert "FIRST_VOCABULARY_ONBOARDING_STORAGE_KEY" not in card_stack
+    assert "firstVocabularyOnboardingMeta" in card_stack
+    assert "languageApp:firstVocabularyOnboardingDone:v1" in meta_source
+    assert "FirstVocabularyOnboarding" in card_stack
+    assert "readFirstVocabularyOnboardingDone" in card_stack
+    assert "markFirstVocabularyOnboardingDone" in card_stack
+    assert "shouldShowFirstVocabularyOnboarding" in card_stack
+    assert "localStorage.getItem" not in card_stack
+    assert "localStorage.setItem" not in card_stack
+
+    assert "export const MIN_VOCABULARY_SCAN_SWIPES = 20" in meta_source
+    assert "export const MAX_VOCABULARY_SCAN_SWIPES = 30" in meta_source
+    assert "buildVocabularyInsights" in meta_source
+    assert "formatVocabularyCategory" in meta_source
+    assert "readFirstVocabularyOnboardingDone" in meta_source
+    assert "markFirstVocabularyOnboardingDone" in meta_source
+    assert "hasVocabularyHistory" in meta_source
+    assert "shouldShowFirstVocabularyOnboarding" in meta_source
+    assert "learningSummary?.total_words_practiced" in meta_source
+    assert "progress.cards_reviewed > 0" in meta_source
+    assert "Vocabulary Scan" in onboarding_source
+    assert "MIN_VOCABULARY_SCAN_SWIPES" in onboarding_source
+    assert "MAX_VOCABULARY_SCAN_SWIPES" in onboarding_source
+    assert "buildVocabularyInsights" in onboarding_source
+    assert "formatVocabularyCategory" in onboarding_source
+    assert "onSwipe={handleSwipe}" in onboarding_source
+    assert "Library" not in onboarding_source
+    assert "Grammar" not in onboarding_source
+    assert "Filters" not in onboarding_source
+
+
+def test_first_run_vocabulary_onboarding_explains_analysis_and_science_after_scan():
+    onboarding = (FRONTEND_SRC / "components" / "FirstVocabularyOnboarding.tsx").read_text()
+
+    assert "Conosci circa" in onboarding
+    assert "Personalizziamo il tuo apprendimento" in onboarding
+    assert "La scienza lavora sotto" in onboarding
+    assert "Ogni swipe diventa un segnale" in onboarding
+    assert "Tu divertiti" in onboarding
+    assert "MascotReaction" in onboarding
+    assert "mascotPersona: 'explorer' | 'robot'" in onboarding
+    assert "persona={mascotPersona}" in onboarding
+    assert "setInterval" not in onboarding
+    assert "Infinity" not in onboarding
+
+
+def test_learning_path_home_offers_sentence_based_grammar_placement():
+    card_stack = (FRONTEND_SRC / "components" / "CardStack.tsx").read_text()
+    path_home = (FRONTEND_SRC / "components" / "LearningPathHome.tsx").read_text()
+    placement_screen = FRONTEND_SRC / "components" / "GrammarPlacementAssessment.tsx"
+    placement_challenge = FRONTEND_SRC / "components" / "SentencePlacementChallenge.tsx"
+    app_routes = (FRONTEND_SRC / "routes" / "appRoutes.ts").read_text()
+
+    assert placement_screen.exists()
+    assert placement_challenge.exists()
+    assert "GrammarPlacementAssessment" in card_stack
+    assert "mode === 'grammar_placement'" in card_stack
+    assert "'grammar_placement'" in card_stack
+    assert "section === 'placement' && feature === 'sentence'" in app_routes
+    assert "onStartGrammarPlacement" in path_home
+    assert "Sentence Placement" in path_home
+    assert "Compose sentences to check grammar, logic, and function words." in path_home
+    assert "Build a full German sentence" in placement_screen.read_text()
+    assert "SentencePlacementChallenge" in placement_screen.read_text()
+    assert "Translate this sentence" in placement_challenge.read_text()
+    assert "api.getSentenceChallenges" in placement_challenge.read_text()
+    assert "CHALLENGE_TEMPLATES" not in placement_challenge.read_text()
+    assert "image_base64" not in placement_challenge.read_text()
 
 
 def test_learning_path_milestones_are_centralized_outside_the_view():

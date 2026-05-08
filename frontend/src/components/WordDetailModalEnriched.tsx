@@ -4,36 +4,20 @@ import { api } from '../services/api';
 import type { FlashcardDetail, WordDbRow } from '../types';
 import { isFeatureEnabled } from '../config/appMode';
 import { UI_RADIUS } from './ui';
+import type { LibraryDetailTab } from '../routes/appRoutes';
+import { reportClientError } from '../utils/clientError';
+import {
+  CEFR_BADGE_CLASSES as CEFR_COLORS,
+  CONFUSION_LEVEL_CLASSES as CONFUSION_COLORS,
+  GENDER_BADGE_META as GENDER_LABELS,
+} from '../utils/wordDisplayMeta';
 
 interface WordDetailModalProps {
   wordId: number;
-  initialTab?: TabType;
+  initialTab?: LibraryDetailTab;
+  onTabChange?: (tab: LibraryDetailTab) => void;
   onClose: () => void;
 }
-
-type TabType = 'overview' | 'examples' | 'etymology' | 'false_friends' | 'proverbs' | 'collocations' | 'dialects' | 'db_row';
-
-const GENDER_LABELS: Record<string, { article: string; color: string }> = {
-  masculine: { article: 'der', color: 'bg-blue-500' },
-  feminine: { article: 'die', color: 'bg-pink-500' },
-  neuter: { article: 'das', color: 'bg-green-500' },
-};
-
-const CEFR_COLORS: Record<string, string> = {
-  A1: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-  A2: 'bg-green-200 text-green-900 dark:bg-green-800/30 dark:text-green-300',
-  B1: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-  B2: 'bg-yellow-200 text-yellow-900 dark:bg-yellow-800/30 dark:text-yellow-300',
-  C1: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
-  C2: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-};
-
-const CONFUSION_COLORS: Record<string, string> = {
-  critical: 'bg-red-500 text-white',
-  high: 'bg-orange-500 text-white',
-  medium: 'bg-yellow-500 text-black',
-  low: 'bg-green-500 text-white',
-};
 
 const formatDbValue = (value: unknown) => {
   if (value === null || value === undefined) return 'null';
@@ -57,11 +41,11 @@ const DbField = ({ name, value }: { name: string; value: unknown }) => (
   </div>
 );
 
-export function WordDetailModal({ wordId, initialTab = 'overview', onClose }: WordDetailModalProps) {
+export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, onClose }: WordDetailModalProps) {
   const [word, setWord] = useState<FlashcardDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<TabType>(initialTab);
+  const [activeTab, setActiveTab] = useState<LibraryDetailTab>(initialTab);
   const [isPlaying, setIsPlaying] = useState(false);
   const [dbRow, setDbRow] = useState<WordDbRow | null>(null);
   const [dbRowLoading, setDbRowLoading] = useState(false);
@@ -76,7 +60,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onClose }: Wo
         setWord(data);
       } catch (err) {
         setError('Failed to load word details');
-        console.error(err);
+        reportClientError('Failed to load word details:', err);
       } finally {
         setLoading(false);
       }
@@ -108,7 +92,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onClose }: Wo
         setDbRow(data);
       } catch (err) {
         setDbRowError('Failed to load database row');
-        console.error(err);
+        reportClientError('Failed to load database row:', err);
       } finally {
         setDbRowLoading(false);
       }
@@ -128,12 +112,12 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onClose }: Wo
       audio.onerror = () => setIsPlaying(false);
       await audio.play();
     } catch (err) {
-      console.error('Failed to play audio:', err);
+      reportClientError('Failed to play audio:', err);
       setIsPlaying(false);
     }
   };
 
-  const tabs: { id: TabType; label: string; icon: React.ReactNode; count?: number }[] = [
+  const tabs: { id: LibraryDetailTab; label: string; icon: React.ReactNode; count?: number }[] = [
     { id: 'overview', label: 'Overview', icon: <BookOpen size={16} /> },
     { id: 'examples', label: 'Examples', icon: <MessageCircle size={16} />, count: word?.examples.length },
     { id: 'etymology', label: 'Etymology', icon: <History size={16} />, count: word?.etymologies.length },
@@ -260,7 +244,11 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onClose }: Wo
             {visibleTabs.map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  onTabChange?.(tab.id);
+                }}
+                aria-pressed={activeTab === tab.id}
                 className={`flex items-center gap-2 px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 ${
                   activeTab === tab.id
                     ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'

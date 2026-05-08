@@ -5,6 +5,7 @@ import { api } from '../services/api';
 import type { DialectWord } from '../types';
 import germanyGeoJsonUrl from '../assets/germany-states.json?url';
 import { ExpandedViewWrapper, UI_RADIUS } from './ui';
+import { reportClientError } from '../utils/clientError';
 
 interface DialectMapProps {
   initialWord?: string;
@@ -65,7 +66,7 @@ export function DialectMap({ initialWord }: DialectMapProps) {
         setSelectedWord(initialWord || data[0].standardGerman);
       }
     } catch (error) {
-      console.error('Failed to load dialect words:', error);
+      reportClientError('Failed to load dialect words:', error);
     } finally {
       setLoading(false);
     }
@@ -90,7 +91,7 @@ export function DialectMap({ initialWord }: DialectMapProps) {
           setGeoJson(data);
         }
       } catch (error) {
-        console.error('Failed to load Germany map GeoJSON:', error);
+        reportClientError('Failed to load Germany map GeoJSON:', error);
       } finally {
         if (isMounted) {
           setGeoLoading(false);

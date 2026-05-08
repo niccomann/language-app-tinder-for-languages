@@ -7,6 +7,7 @@ import { getImageSrc } from '../utils/imageHelper';
 import { api } from '../services/api';
 import { UI_RADIUS } from './ui';
 import { WordMasteryBadge } from './WordMasteryBadge';
+import { reportClientError } from '../utils/clientError';
 
 interface CardProps {
   flashcard: Flashcard | AdaptiveFlashcard;
@@ -30,7 +31,7 @@ export const Card = ({ flashcard, onSwipe, swipeDirection = 'left' }: CardProps)
       audio.onerror = () => setIsPlaying(false);
       await audio.play();
     } catch (error) {
-      console.error('Failed to play audio:', error);
+      reportClientError('Failed to play audio:', error);
       setIsPlaying(false);
     }
   };

@@ -14,8 +14,17 @@ def test_available_nodes_exposes_student_ready_parts_of_speech():
     node_types = {node["type"] for node in nodes}
     parts_of_speech = {node["part_of_speech"] for node in nodes}
 
-    assert {"adjective", "adverb", "preposition", "pronoun"} <= node_types
-    assert {"noun", "verb", "adjective", "adverb", "preposition", "pronoun"} <= parts_of_speech
+    assert {"adjective", "adverb", "preposition", "pronoun", "article", "conjunction"} <= node_types
+    assert {
+        "noun",
+        "verb",
+        "adjective",
+        "adverb",
+        "preposition",
+        "pronoun",
+        "article",
+        "conjunction",
+    } <= parts_of_speech
 
 
 def test_available_nodes_exposes_noun_plural_and_case_forms():
@@ -58,3 +67,31 @@ def test_available_nodes_exposes_prepositions_and_adverbs_as_sentence_tokens():
 
     assert any(node["type"] == "preposition" and node["label"] == "in" for node in nodes)
     assert any(node["type"] == "adverb" and node["label"] == "heute" for node in nodes)
+
+
+def test_available_nodes_exposes_articles_and_conjunctions_as_sentence_tokens():
+    response = client.get("/api/grammar/available-nodes?limit=360")
+
+    assert response.status_code == 200
+    nodes = response.json()
+
+    assert any(node["type"] == "article" and node["label"] == "der" for node in nodes)
+    assert any(node["type"] == "article" and node["label"] == "eine" for node in nodes)
+    assert any(node["type"] == "conjunction" and node["label"] == "und" for node in nodes)
+    assert any(node["type"] == "conjunction" and node["label"] == "weil" for node in nodes)
+
+
+def test_available_nodes_prioritizes_function_words_for_sentence_building():
+    response = client.get("/api/grammar/available-nodes?limit=360")
+
+    assert response.status_code == 200
+    nodes = response.json()
+    counts = {}
+    for node in nodes:
+        counts[node["type"]] = counts.get(node["type"], 0) + 1
+
+    assert counts["adverb"] >= 24
+    assert counts["preposition"] >= 18
+    assert counts["pronoun"] >= 12
+    assert counts["article"] >= 8
+    assert counts["conjunction"] >= 12

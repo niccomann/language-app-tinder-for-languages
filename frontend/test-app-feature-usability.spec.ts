@@ -1,22 +1,11 @@
-import { expect, type Locator, type Page, test } from '@playwright/test';
-
-async function expectNoHorizontalOverflow(page: Page) {
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-  expect(overflow).toBeLessThanOrEqual(4);
-}
-
-async function expectInViewport(page: Page, locator: Locator) {
-  await expect(locator).toBeVisible();
-  const viewport = page.viewportSize();
-  const box = await locator.boundingBox();
-
-  expect(viewport).not.toBeNull();
-  expect(box).not.toBeNull();
-  expect(box!.x).toBeGreaterThanOrEqual(0);
-  expect(box!.y).toBeGreaterThanOrEqual(0);
-  expect(box!.x + box!.width).toBeLessThanOrEqual(viewport!.width);
-  expect(box!.y + box!.height).toBeLessThanOrEqual(viewport!.height);
-}
+import { expect, test } from '@playwright/test';
+import {
+  APP_URL,
+  expectInViewport,
+  expectNoHorizontalOverflow,
+  markFeatureGuidesSeen,
+  markFirstVocabularyOnboardingDone,
+} from './test-utils/appTestHelpers';
 
 test('primary app features render usable and consistent surfaces', async ({ page }) => {
   const browserFailures: string[] = [];
@@ -34,8 +23,10 @@ test('primary app features render usable and consistent surfaces', async ({ page
   page.on('pageerror', (error) => browserFailures.push(error.message));
 
   await page.setViewportSize({ width: 1440, height: 900 });
+  await markFirstVocabularyOnboardingDone(page);
+  await markFeatureGuidesSeen(page);
 
-  await page.goto('http://127.0.0.1:5173/');
+  await page.goto(`${APP_URL}/`);
   await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByText('Daily Learning Snapshot')).toBeVisible();
   await expectInViewport(page, page.getByRole('button', { name: 'Review German Level' }));
@@ -51,18 +42,18 @@ test('primary app features render usable and consistent surfaces', async ({ page
   await expectInViewport(page, page.getByRole('button', { name: 'Apply Filters' }));
   await page.getByRole('button', { name: 'Apply Filters' }).click();
 
-  await page.goto('http://127.0.0.1:5173/library');
+  await page.goto(`${APP_URL}/library`);
   await expect(page.getByText('Word Library')).toBeVisible({ timeout: 15000 });
-  await expect(page.getByText(/Showing\s+\d+\s+words/)).toBeVisible();
+  await expect(page.getByText(/Showing\s+\d+\s+of\s+\d+\s+words/)).toBeVisible();
   await expectNoHorizontalOverflow(page);
 
-  await page.goto('http://127.0.0.1:5173/library/words/2/db-row');
+  await page.goto(`${APP_URL}/library/words/2/db-row`);
   await expect(page.getByRole('heading', { name: 'der Hund', exact: true })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('heading', { name: 'words' })).toBeVisible();
   await expect(page.getByText('translation family')).toBeVisible();
   await expectNoHorizontalOverflow(page);
 
-  await page.goto('http://127.0.0.1:5173/grammar');
+  await page.goto(`${APP_URL}/grammar`);
   await expect(page.getByRole('heading', { name: /Grammar Lab/i })).toBeVisible({ timeout: 15000 });
   const labViews = page.getByLabel('Grammar Lab views');
 
@@ -76,6 +67,10 @@ test('primary app features render usable and consistent surfaces', async ({ page
 
   await labViews.getByRole('button', { name: /Build Sentence/i }).click();
   await expect(page.getByRole('heading', { name: /Word Bank/i })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('heading', { name: 'Articles', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Conjunctions', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Toggle word: der', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Toggle word: und', exact: true })).toBeVisible();
   await expectInViewport(page, page.getByRole('heading', { name: /Build Area/i }));
   await expectInViewport(page, page.getByRole('button', { name: /Validate Sentence/i }));
   await expectNoHorizontalOverflow(page);

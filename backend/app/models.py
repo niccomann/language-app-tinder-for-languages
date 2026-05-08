@@ -74,6 +74,7 @@ class Flashcard(OrmModel):
     id: int
     word: str
     translation: str
+    image_url: Optional[str] = None
     image_base64: Optional[str] = None
     audio_base64: Optional[str] = None
     language: str

@@ -1,6 +1,6 @@
-import { BookOpen, Clock3, Flame, FlaskConical, Gauge, Layers3, Play, Target, Trophy } from 'lucide-react';
+import { BookOpen, Clock3, Flame, FlaskConical, Gauge, Layers3, Play, Puzzle, ShieldCheck, Sparkles, Target, Trophy } from 'lucide-react';
 import type { AdaptiveLearningSummary, UserProgress } from '../types';
-import { AppScreen, NavButton, ScreenHeader, StatCard, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
+import { AppScreen, GameSignalBadge, NavButton, ScreenHeader, StatCard, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
 import { LatestFeaturesPanel } from './LatestFeaturesPanel';
 import {
   LEARNING_PATH_MILESTONES,
@@ -19,6 +19,7 @@ interface LearningPathHomeProps {
   onOpenLibrary: () => void;
   onOpenGrammarLab: () => void;
   onOpenFilters: () => void;
+  onStartGrammarPlacement: () => void;
 }
 
 export function LearningPathHome({
@@ -31,6 +32,7 @@ export function LearningPathHome({
   onOpenLibrary,
   onOpenGrammarLab,
   onOpenFilters,
+  onStartGrammarPlacement,
 }: LearningPathHomeProps) {
   const {
     averageMastery,
@@ -56,6 +58,11 @@ export function LearningPathHome({
               </div>
             )}
           />
+          <div className="flex flex-wrap gap-2">
+            <GameSignalBadge icon={<Sparkles size={14} />} label="Daily Quest" tone="amber" />
+            <GameSignalBadge icon={<ShieldCheck size={14} />} label="Streak Shield" tone="sky" />
+            <GameSignalBadge icon={<Trophy size={14} />} label="XP Bank" tone="emerald" />
+          </div>
 
           {shouldReengage && (
             <SurfacePanel className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40" padding="md">
@@ -113,14 +120,28 @@ export function LearningPathHome({
               <StatCard label="Avg Mastery" value={Number(averageMastery.toFixed(1))} icon={<Target size={20} />} color="blue" />
             </div>
 
-            <button
-              type="button"
-              onClick={onStartSession}
-              className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-14 w-full items-center justify-center gap-3 bg-indigo-600 px-5 py-4 text-sm font-extrabold text-white shadow-lg hover:bg-indigo-700`}
-            >
-              <Play size={18} />
-              Review German Level
-            </button>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={onStartSession}
+                className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-14 w-full items-center justify-center gap-3 bg-indigo-600 px-5 py-4 text-sm font-extrabold text-white shadow-lg hover:bg-indigo-700`}
+              >
+                <Play size={18} />
+                Review German Level
+              </button>
+              <button
+                type="button"
+                onClick={onStartGrammarPlacement}
+                className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-14 w-full items-center justify-center gap-3 bg-teal-600 px-5 py-4 text-sm font-extrabold text-white shadow-lg hover:bg-teal-700`}
+              >
+                <Puzzle size={18} />
+                Sentence Placement
+              </button>
+            </div>
+
+            <p className="text-sm font-semibold leading-6 text-slate-500 dark:text-slate-300">
+              Compose sentences to check grammar, logic, and function words.
+            </p>
 
             <div className="grid grid-cols-3 gap-2">
               <NavButton onClick={onOpenFilters} icon={<Layers3 size={17} />} label={`Topics ${selectedCategoriesCount}/${categoriesCount || 0}`} color="indigo" size="small" />

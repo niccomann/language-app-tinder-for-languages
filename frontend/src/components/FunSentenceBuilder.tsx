@@ -25,6 +25,8 @@ import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
 import { buildOrderedSentence } from '../utils/sentenceBuilderOrder';
 import { useTheme } from '../contexts/useTheme';
 import { GrammarBuilderFrame } from './GrammarBuilderFrame';
+import { useAvailableGrammarNodes } from '../hooks/useAvailableGrammarNodes';
+import { reportClientError } from '../utils/clientError';
 
 // ============================================================================
 // Types
@@ -58,12 +60,11 @@ export function FunSentenceBuilder() {
   const containerRef = useRef<HTMLDivElement>(null);
   const simulationRef = useRef<d3.Simulation<SimNode, undefined> | null>(null);
   const connectionsRef = useRef<SimLink[]>([]);  // Synced copy of connections for D3 callbacks
+  const { availableNodes, loading } = useAvailableGrammarNodes();
   
-  const [availableNodes, setAvailableNodes] = useState<GrammarNode[]>([]);
   const [canvasNodes, setCanvasNodes] = useState<SimNode[]>([]);
   const [connections, setConnections] = useState<SimLink[]>([]);
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
-  const [loading, setLoading] = useState(true);
   const [validating, setValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<ValidateSentenceResponse | null>(null);
   const [playingAudio, setPlayingAudio] = useState(false);
@@ -75,26 +76,6 @@ export function FunSentenceBuilder() {
   const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   
   const { isDark } = useTheme();
-
-  // ==========================================================================
-  // Data Loading
-  // ==========================================================================
-
-  useEffect(() => {
-    loadAvailableNodes();
-  }, []);
-
-  const loadAvailableNodes = async () => {
-    setLoading(true);
-    try {
-      const nodes = await api.getAvailableNodes();
-      setAvailableNodes(nodes);
-    } catch (error) {
-      console.error('Failed to load available nodes:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // ==========================================================================
   // Dimension Tracking
@@ -680,7 +661,7 @@ export function FunSentenceBuilder() {
     });
 
     } catch (error) {
-      console.error('D3 rendering error:', error);
+      reportClientError('D3 rendering error:', error);
     }
 
     return () => {
@@ -717,7 +698,7 @@ export function FunSentenceBuilder() {
       
       setValidationResult(result);
     } catch (error) {
-      console.error('Failed to validate sentence:', error);
+      reportClientError('Failed to validate sentence:', error);
     } finally {
       setValidating(false);
     }
@@ -741,7 +722,7 @@ export function FunSentenceBuilder() {
       audio.onerror = () => setPlayingAudio(false);
       await audio.play();
     } catch (error) {
-      console.error('Failed to play audio:', error);
+      reportClientError('Failed to play audio:', error);
       setPlayingAudio(false);
     }
   };

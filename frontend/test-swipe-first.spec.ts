@@ -1,13 +1,56 @@
 import { expect, test } from '@playwright/test';
+import {
+  APP_URL,
+  clearFirstVocabularyOnboardingDone,
+  expectInViewport,
+  markFeatureGuidesSeen,
+  markFirstVocabularyOnboardingDone,
+  mockLearningApi,
+  stallLibraryFiltersApi,
+} from './test-utils/appTestHelpers';
+
+test('first visit starts with the swipe-only vocabulary scan', async ({ page }) => {
+  await mockLearningApi(page, {
+    average_confidence: 0,
+    average_knowledge_level: 1,
+    total_words_practiced: 0,
+    total_practice_sessions: 0,
+    words_struggling: 0,
+    words_learning: 0,
+    words_mastered: 0,
+    path_xp: 0,
+    path_level: 1,
+    xp_to_next_level: 100,
+    path_level_progress: 0,
+    trend: 'new',
+    level_delta: 0,
+    last_practiced: null,
+    days_since_last_practice: null,
+  });
+  await clearFirstVocabularyOnboardingDone(page);
+  await page.goto(APP_URL);
+
+  await expect(page.getByRole('heading', { name: 'Vocabulary Scan' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText('Prima capiamo quali parole sai.')).toBeVisible();
+  await expect(page.getByRole('button', { name: "Don't know", exact: true })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('button', { name: 'Know', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Library' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Grammar' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Filters', exact: true })).toHaveCount(0);
+});
 
 test('home starts on the learning path and enters the swipe deck', async ({ page }) => {
-  await page.goto('http://127.0.0.1:5173/');
+  await mockLearningApi(page);
+  await markFirstVocabularyOnboardingDone(page);
+  await markFeatureGuidesSeen(page);
+  await page.goto(APP_URL);
 
   await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByText('Daily Learning Snapshot')).toBeVisible();
   await expect(page.getByText('400-level path', { exact: true })).toBeVisible();
   await expect(page.getByText('XP to next level', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Review German Level' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Sentence Placement' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Review German Level' }).click();
 
@@ -24,8 +67,39 @@ test('home starts on the learning path and enters the swipe deck', async ({ page
   await expect(page.getByRole('button', { name: 'Apply Filters' })).toBeVisible();
 });
 
+test('home leaves loading state when the category API stalls', async ({ page }) => {
+  await stallLibraryFiltersApi(page);
+  await markFirstVocabularyOnboardingDone(page);
+  await markFeatureGuidesSeen(page);
+
+  await page.goto(APP_URL);
+
+  await expect(page.getByRole('heading', { name: 'Connection Error' })).toBeVisible({ timeout: 7000 });
+  await expect(page.getByText('Failed to load categories. Make sure the backend is running.')).toBeVisible();
+  await expect(page.getByText('Loading...')).toHaveCount(0);
+});
+
+test('home opens sentence placement from the learning path', async ({ page }) => {
+  await mockLearningApi(page);
+  await markFirstVocabularyOnboardingDone(page);
+  await markFeatureGuidesSeen(page);
+  await page.goto(APP_URL);
+
+  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: 'Sentence Placement' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Grammar Placement' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText('Sentence-based level check')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Translate this sentence' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText('Tap the words in the right order.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Check' })).toBeVisible();
+});
+
 test('home shows prominent gamified topic filters', async ({ page }) => {
-  await page.goto('http://127.0.0.1:5173/');
+  await mockLearningApi(page);
+  await markFirstVocabularyOnboardingDone(page);
+  await markFeatureGuidesSeen(page);
+  await page.goto(APP_URL);
 
   await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('button', { name: /Topics/i })).toBeVisible();
@@ -40,7 +114,10 @@ test('home shows prominent gamified topic filters', async ({ page }) => {
 });
 
 test('home explains the adaptive learning system in a compact menu', async ({ page }) => {
-  await page.goto('http://127.0.0.1:5173/');
+  await mockLearningApi(page);
+  await markFirstVocabularyOnboardingDone(page);
+  await markFeatureGuidesSeen(page);
+  await page.goto(APP_URL);
 
   await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
   await page.getByRole('button', { name: 'Review German Level' }).click();
@@ -56,8 +133,11 @@ test('home explains the adaptive learning system in a compact menu', async ({ pa
 });
 
 test('home keeps the swipe card and decision buttons usable in the first viewport', async ({ page }) => {
+  await mockLearningApi(page);
+  await markFirstVocabularyOnboardingDone(page);
+  await markFeatureGuidesSeen(page);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('http://127.0.0.1:5173/');
+  await page.goto(APP_URL);
 
   await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
   await page.getByRole('button', { name: 'Review German Level' }).click();
@@ -68,13 +148,6 @@ test('home keeps the swipe card and decision buttons usable in the first viewpor
   await expect(knowButton).toBeVisible({ timeout: 15000 });
   await expect(dontKnowButton).toBeVisible();
 
-  const viewport = page.viewportSize();
-  const knowBox = await knowButton.boundingBox();
-  const dontKnowBox = await dontKnowButton.boundingBox();
-
-  expect(viewport).not.toBeNull();
-  expect(knowBox).not.toBeNull();
-  expect(dontKnowBox).not.toBeNull();
-  expect(knowBox!.y + knowBox!.height).toBeLessThanOrEqual(viewport!.height);
-  expect(dontKnowBox!.y + dontKnowBox!.height).toBeLessThanOrEqual(viewport!.height);
+  await expectInViewport(page, knowButton);
+  await expectInViewport(page, dontKnowButton);
 });

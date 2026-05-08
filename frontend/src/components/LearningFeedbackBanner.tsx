@@ -1,6 +1,7 @@
 import { ArrowUpRight, CheckCircle2, X } from 'lucide-react';
 import type { LearningFeedback } from '../types';
 import { UI_INTERACTION, UI_RADIUS } from './ui';
+import { MascotReaction } from './MascotReaction';
 
 interface LearningFeedbackBannerProps {
   feedback: LearningFeedback | null;
@@ -17,10 +18,16 @@ export function LearningFeedbackBanner({ feedback, onDismiss }: LearningFeedback
   if (!feedback) return null;
 
   const Icon = feedback.tone === 'level_up' ? ArrowUpRight : CheckCircle2;
+  const mascotState = feedback.tone === 'level_up' ? 'levelUp' : 'correct';
 
   return (
     <div className={`${UI_RADIUS.surface} ${toneClasses[feedback.tone]} border px-4 py-3 shadow-sm`}>
       <div className="flex items-start gap-3">
+        <MascotReaction
+          state={mascotState}
+          size="compact"
+          className="hidden shrink-0 sm:flex"
+        />
         <div className={`${UI_RADIUS.touchIcon} flex h-10 w-10 shrink-0 items-center justify-center bg-white/70 dark:bg-white/10`}>
           <Icon size={18} />
         </div>

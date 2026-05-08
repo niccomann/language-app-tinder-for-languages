@@ -27,6 +27,12 @@ interface SimulationNode extends d3.SimulationNodeDatum {
   wordData: WordCloudItem;
 }
 
+const getWordImageHref = (word: WordCloudItem) => (
+  word.image_base64 ? `data:image/jpeg;base64,${word.image_base64}` : word.image_url
+);
+
+const hasWordImage = (word: WordCloudItem) => Boolean(getWordImageHref(word));
+
 export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -210,7 +216,7 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
       );
 
     nodeElements
-      .filter(node => Boolean(node.wordData.image_base64))
+      .filter(node => hasWordImage(node.wordData))
       .each(function(node) {
         defs
           .append('clipPath')
@@ -225,12 +231,12 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
       .attr('fill', node => getGroupColor(node.group))
       .attr('stroke', node => getGroupColor(node.group))
       .attr('stroke-width', showImages ? 3 : 2)
-      .attr('opacity', node => showImages && node.wordData.image_base64 ? 0.18 : 0.9);
+      .attr('opacity', node => showImages && hasWordImage(node.wordData) ? 0.18 : 0.9);
 
     nodeElements
-      .filter(node => showImages && Boolean(node.wordData.image_base64))
+      .filter(node => showImages && hasWordImage(node.wordData))
       .append('image')
-      .attr('href', node => `data:image/jpeg;base64,${node.wordData.image_base64}`)
+      .attr('href', node => getWordImageHref(node.wordData) || '')
       .attr('x', node => -node.radius + 3)
       .attr('y', node => -node.radius + 3)
       .attr('width', node => (node.radius - 3) * 2)
@@ -244,14 +250,14 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
       .text(node => node.text.length > 8 ? node.text.slice(0, 7) + '…' : node.text)
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
-      .attr('y', node => showImages && node.wordData.image_base64 ? node.radius + 15 : 0)
-      .attr('fill', node => showImages && node.wordData.image_base64 ? (isDark ? '#E2E8F0' : '#0F172A') : '#fff')
+      .attr('y', node => showImages && hasWordImage(node.wordData) ? node.radius + 15 : 0)
+      .attr('fill', node => showImages && hasWordImage(node.wordData) ? (isDark ? '#E2E8F0' : '#0F172A') : '#fff')
       .attr('font-size', node => Math.max(10, node.radius / 3))
       .attr('font-weight', '600')
       .attr('paint-order', 'stroke')
-      .attr('stroke', node => showImages && node.wordData.image_base64 ? (isDark ? '#0F172A' : '#FFFFFF') : 'transparent')
-      .attr('stroke-width', node => showImages && node.wordData.image_base64 ? 4 : 0)
-      .attr('opacity', node => showImages && node.wordData.image_base64 ? 0 : 1)
+      .attr('stroke', node => showImages && hasWordImage(node.wordData) ? (isDark ? '#0F172A' : '#FFFFFF') : 'transparent')
+      .attr('stroke-width', node => showImages && hasWordImage(node.wordData) ? 4 : 0)
+      .attr('opacity', node => showImages && hasWordImage(node.wordData) ? 0 : 1)
       .attr('pointer-events', 'none');
 
     nodeElements
@@ -272,7 +278,7 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
           .transition()
           .duration(150)
           .attr('r', node.radius)
-          .attr('opacity', showImages && node.wordData.image_base64 ? 0.18 : 0.9);
+          .attr('opacity', showImages && hasWordImage(node.wordData) ? 0.18 : 0.9);
         setHoveredNode(null);
       })
       .on('click', (_event, node) => {

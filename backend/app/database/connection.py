@@ -1,10 +1,66 @@
 import logging
 
+from sqlalchemy import inspect
 from sqlmodel import Session, SQLModel, create_engine, text
 
 from app.core.config import config
 
 log = logging.getLogger(__name__)
+
+
+SQLITE_FLASHCARD_COLUMN_MIGRATIONS = {
+    "image_base64": "TEXT",
+    "image_coherence_score": "INTEGER",
+    "pronunciation_ipa": "VARCHAR",
+    "example_sentence": "TEXT",
+    "etymology_text": "TEXT",
+    "visual_mnemonic": "TEXT",
+    "memory_hook": "TEXT",
+    "audio_base64": "TEXT",
+}
+
+SQLITE_COLUMN_MIGRATIONS = {
+    "flashcards": SQLITE_FLASHCARD_COLUMN_MIGRATIONS,
+    "grammar_sentences": {
+        "audio_base64": "TEXT",
+    },
+    "grammar_sentence_nodes": {
+        "image_base64": "VARCHAR",
+    },
+}
+
+
+def ensure_sqlite_schema_compatibility(engine) -> None:
+    """Add nullable columns that older local SQLite databases may miss.
+
+    SQLModel's create_all creates missing tables but does not alter existing
+    tables. The local dev DB is intentionally preserved, so this migration is
+    additive only and never drops or rewrites rows.
+    """
+    if engine.dialect.name != "sqlite":
+        return
+
+    inspector = inspect(engine)
+    table_names = set(inspector.get_table_names())
+    migrations: list[tuple[str, str, str]] = []
+    for table_name, column_migrations in SQLITE_COLUMN_MIGRATIONS.items():
+        if table_name not in table_names:
+            continue
+
+        existing_columns = {column["name"] for column in inspector.get_columns(table_name)}
+        migrations.extend(
+            (table_name, column_name, column_type)
+            for column_name, column_type in column_migrations.items()
+            if column_name not in existing_columns
+        )
+
+    if not migrations:
+        return
+
+    log.info("Applying SQLite compatibility migration for %d columns", len(migrations))
+    with engine.begin() as connection:
+        for table_name, column_name, column_type in migrations:
+            connection.execute(text(f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type}"))
 
 
 class DatabaseConnection:
@@ -85,6 +141,7 @@ class DatabaseConnection:
             
             log.debug(f"Creating tables in schema: {config.database.db_schema}")
             SQLModel.metadata.create_all(self.engine)
+            ensure_sqlite_schema_compatibility(self.engine)
             
             log.info("Database tables created successfully")
             

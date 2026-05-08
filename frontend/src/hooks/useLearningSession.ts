@@ -1,6 +1,9 @@
 import { useCallback, useState } from 'react';
 import { api } from '../services/api';
 import type { AdaptiveFlashcard, AdaptiveLearningSummary, LearningFeedback, UserProgress } from '../types';
+import { reportClientError } from '../utils/clientError';
+
+const SESSION_CARD_LIMIT = 80;
 
 /**
  * Hook to manage learning session state and actions
@@ -39,7 +42,7 @@ export const useLearningSession = () => {
         api.getAdaptiveFlashcards({
           language: 'de',
           selectedCategories,
-          limit: 200,
+          limit: SESSION_CARD_LIMIT,
         }),
         loadLearningSummary(),
       ]);
@@ -48,7 +51,7 @@ export const useLearningSession = () => {
       setLearningFeedback(null);
     } catch (err) {
       setError('Failed to load flashcards. Make sure the backend is running.');
-      console.error(err);
+      reportClientError('Failed to load flashcards:', err);
     } finally {
       setLoading(false);
     }
@@ -81,12 +84,12 @@ export const useLearningSession = () => {
         }
         await loadLearningSummary();
       } catch (err) {
-        console.error('Failed to update word statistics:', err);
+        reportClientError('Failed to update word statistics:', err);
       }
       
       setCurrentIndex(prev => prev + 1);
     } catch (err) {
-      console.error('Failed to record progress:', err);
+      reportClientError('Failed to record progress:', err);
     }
   }, [currentIndex, flashcards, loadLearningSummary]);
 
@@ -98,7 +101,7 @@ export const useLearningSession = () => {
       setLearningFeedback(null);
       await loadLearningSummary();
     } catch (err) {
-      console.error('Failed to reset progress:', err);
+      reportClientError('Failed to reset progress:', err);
     }
   }, [loadLearningSummary]);
 

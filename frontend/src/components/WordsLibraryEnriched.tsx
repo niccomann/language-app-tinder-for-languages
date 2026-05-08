@@ -1,55 +1,48 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Search, BookOpen, CheckCircle, XCircle, Filter, ChevronDown, X, Sparkles } from 'lucide-react';
+import { Search, BookOpen, CheckCircle, XCircle, Filter, ChevronDown, X, Sparkles, Target, Trophy } from 'lucide-react';
 import { api } from '../services/api';
-import type { FlashcardWithProgress, LibraryFilters } from '../types';
-import { AppScreen, FilterSelect, LoadingSpinner, ErrorState, ScreenHeader, StatCard, SurfacePanel, UI_RADIUS } from './ui';
+import type { FlashcardWithProgress, LibraryFilters, LibraryStats } from '../types';
+import { AppScreen, FilterSelect, GameSignalBadge, LoadingSpinner, ErrorState, ScreenHeader, StatCard, SurfacePanel, UI_RADIUS } from './ui';
 import { WordDetailModal } from './WordDetailModalEnriched';
+import type { LibraryDetailTab } from '../routes/appRoutes';
+import { reportClientError } from '../utils/clientError';
+import {
+  CEFR_BADGE_CLASSES as CEFR_COLORS,
+  FREQUENCY_ICONS,
+  GENDER_BADGE_META as GENDER_LABELS,
+} from '../utils/wordDisplayMeta';
 
 interface WordsLibraryEnrichedProps {
   onClose: () => void;
   initialWordId?: number;
-  initialDetailTab?: 'overview' | 'db_row';
+  initialDetailTab?: LibraryDetailTab;
+  filtersOpen?: boolean;
+  onFiltersOpenChange?: (open: boolean) => void;
   onWordOpen?: (wordId: number) => void;
   onWordClose?: () => void;
+  onWordTabChange?: (wordId: number, tab: LibraryDetailTab) => void;
 }
 
-const GENDER_LABELS: Record<string, { article: string; color: string }> = {
-  masculine: { article: 'der', color: 'bg-blue-500' },
-  feminine: { article: 'die', color: 'bg-pink-500' },
-  neuter: { article: 'das', color: 'bg-green-500' },
-};
-
-const CEFR_COLORS: Record<string, string> = {
-  A1: 'bg-green-100 text-green-800',
-  A2: 'bg-green-200 text-green-900',
-  B1: 'bg-yellow-100 text-yellow-800',
-  B2: 'bg-yellow-200 text-yellow-900',
-  C1: 'bg-orange-100 text-orange-800',
-  C2: 'bg-red-100 text-red-800',
-};
-
-const FREQUENCY_ICONS: Record<string, string> = {
-  very_common: '⭐⭐⭐⭐⭐',
-  common: '⭐⭐⭐⭐',
-  moderate: '⭐⭐⭐',
-  rare: '⭐⭐',
-  archaic: '⭐',
-};
-
-const LIBRARY_PAGE_SIZE = 200;
+const LIBRARY_PAGE_SIZE = 120;
 
 export function WordsLibraryEnriched({
   onClose,
   initialWordId,
   initialDetailTab,
+  filtersOpen,
+  onFiltersOpenChange,
   onWordOpen,
   onWordClose,
+  onWordTabChange,
 }: WordsLibraryEnrichedProps) {
   const [words, setWords] = useState<FlashcardWithProgress[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<LibraryFilters | null>(null);
-  const [showFilters, setShowFilters] = useState(false);
+  const [libraryStats, setLibraryStats] = useState<LibraryStats | null>(null);
+  const [hasMoreWords, setHasMoreWords] = useState(false);
+  const [showFiltersState, setShowFiltersState] = useState(false);
   const [selectedWordId, setSelectedWordId] = useState<number | null>(initialWordId ?? null);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -64,66 +57,59 @@ export function WordsLibraryEnriched({
 
   const loadFilters = useCallback(async () => {
     try {
-      const filtersData = await api.getLibraryFilters('de');
+      const [filtersData, statsData] = await Promise.all([
+        api.getLibraryFilters('de'),
+        api.getLibraryStats('de'),
+      ]);
       setFilters(filtersData);
+      setLibraryStats(statsData);
     } catch (err) {
-      console.error('Failed to load filters:', err);
+      reportClientError('Failed to load filters:', err);
     }
   }, []);
+
+  const getWordQuery = useCallback((offset: number) => ({
+    language: 'de',
+    search: searchQuery || undefined,
+    category: categoryFilter || undefined,
+    cefr_level: cefrFilter || undefined,
+    gender: genderFilter || undefined,
+    frequency_band: frequencyFilter || undefined,
+    register: registerFilter || undefined,
+    part_of_speech: posFilter || undefined,
+    is_compound: compoundFilter === 'true' ? true : compoundFilter === 'false' ? false : undefined,
+    limit: LIBRARY_PAGE_SIZE,
+    offset,
+  }), [searchQuery, categoryFilter, cefrFilter, genderFilter, frequencyFilter, registerFilter, posFilter, compoundFilter]);
 
   const loadWords = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await api.getLibraryWords({
-        language: 'de',
-        search: searchQuery || undefined,
-        category: categoryFilter || undefined,
-        cefr_level: cefrFilter || undefined,
-        gender: genderFilter || undefined,
-        frequency_band: frequencyFilter || undefined,
-        register: registerFilter || undefined,
-        part_of_speech: posFilter || undefined,
-        is_compound: compoundFilter === 'true' ? true : compoundFilter === 'false' ? false : undefined,
-        limit: LIBRARY_PAGE_SIZE,
-        offset: 0,
-      });
-      const allWords = [...data];
-      let currentPage = data;
-      let offset = LIBRARY_PAGE_SIZE;
-
-      while (currentPage.length === LIBRARY_PAGE_SIZE) {
-        const page = await api.getLibraryWords({
-          language: 'de',
-          search: searchQuery || undefined,
-          category: categoryFilter || undefined,
-          cefr_level: cefrFilter || undefined,
-          gender: genderFilter || undefined,
-          frequency_band: frequencyFilter || undefined,
-          register: registerFilter || undefined,
-          part_of_speech: posFilter || undefined,
-          is_compound: compoundFilter === 'true' ? true : compoundFilter === 'false' ? false : undefined,
-          limit: LIBRARY_PAGE_SIZE,
-          offset,
-        });
-
-        if (page.length === 0) {
-          break;
-        }
-
-        allWords.push(...page);
-        currentPage = page;
-        offset += LIBRARY_PAGE_SIZE;
-      }
-
-      setWords(allWords);
+      const data = await api.getLibraryWords(getWordQuery(0));
+      setWords(data);
+      setHasMoreWords(data.length === LIBRARY_PAGE_SIZE);
     } catch (err) {
       setError('Error loading words');
-      console.error(err);
+      reportClientError('Error loading words:', err);
     } finally {
       setLoading(false);
     }
-  }, [searchQuery, categoryFilter, cefrFilter, genderFilter, frequencyFilter, registerFilter, posFilter, compoundFilter]);
+  }, [getWordQuery]);
+
+  const loadMoreWords = async () => {
+    try {
+      setLoadingMore(true);
+      const data = await api.getLibraryWords(getWordQuery(words.length));
+      setWords((currentWords) => [...currentWords, ...data]);
+      setHasMoreWords(data.length === LIBRARY_PAGE_SIZE);
+    } catch (err) {
+      setError('Error loading more words');
+      reportClientError('Error loading more words:', err);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   useEffect(() => {
     loadFilters();
@@ -156,6 +142,15 @@ export function WordsLibraryEnriched({
     setSelectedWordId(null);
   };
 
+  const showFilters = filtersOpen ?? showFiltersState;
+  const setShowFilters = (open: boolean) => {
+    if (onFiltersOpenChange) {
+      onFiltersOpenChange(open);
+      return;
+    }
+    setShowFiltersState(open);
+  };
+
   const handleToggleStatus = async (word: FlashcardWithProgress, event: React.MouseEvent) => {
     event.stopPropagation();
     try {
@@ -169,7 +164,7 @@ export function WordsLibraryEnriched({
         )
       );
     } catch (err) {
-      console.error('Failed to update word status:', err);
+      reportClientError('Failed to update word status:', err);
     }
   };
 
@@ -190,6 +185,8 @@ export function WordsLibraryEnriched({
   const knownWords = words.filter(word => word.known === true);
   const unknownWords = words.filter(word => word.known === false);
   const notReviewedWords = words.filter(word => word.known === null || word.known === undefined);
+  const hasActiveDataFilters = Boolean(searchQuery || categoryFilter || cefrFilter || genderFilter || frequencyFilter || registerFilter || posFilter || compoundFilter);
+  const totalWords = hasActiveDataFilters ? words.length : libraryStats?.total_words ?? words.length;
   const visibleWords = statusFilter === 'known'
     ? knownWords
     : statusFilter === 'unknown'
@@ -222,10 +219,16 @@ export function WordsLibraryEnriched({
           className="mb-6"
         />
 
+        <div className="mb-6 flex flex-wrap gap-2">
+          <GameSignalBadge icon={<Sparkles size={14} />} label="Collection Quest" tone="purple" />
+          <GameSignalBadge icon={<Trophy size={14} />} label="Mastery Loot" tone="emerald" />
+          <GameSignalBadge icon={<Target size={14} />} label="Review Queue" tone="amber" />
+        </div>
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <StatCard
             label="Total"
-            value={words.length}
+            value={totalWords}
             icon={<BookOpen size={20} className="text-gray-600 dark:text-gray-400" />}
             color="gray"
             isActive={!statusFilter}
@@ -384,7 +387,8 @@ export function WordsLibraryEnriched({
 
         <div className="mb-4">
           <p className="text-gray-600 dark:text-gray-400 font-medium">
-            Showing <span className="font-bold text-indigo-600">{visibleWords.length}</span> words
+            Showing <span className="font-bold text-indigo-600">{visibleWords.length}</span>
+            {' '}of <span className="font-bold text-indigo-600">{totalWords}</span> words
             {loading && <span className="ml-2 text-sm text-gray-400">(loading...)</span>}
           </p>
         </div>
@@ -503,10 +507,24 @@ export function WordsLibraryEnriched({
           </div>
         )}
 
+        {hasMoreWords && !statusFilter && (
+          <div className="mt-8 flex justify-center">
+            <button
+              type="button"
+              onClick={loadMoreWords}
+              disabled={loadingMore}
+              className={`${UI_RADIUS.control} min-h-12 border border-indigo-200 bg-indigo-600 px-6 py-2 text-sm font-extrabold text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300 dark:border-indigo-700 dark:disabled:bg-slate-700`}
+            >
+              {loadingMore ? 'Loading more...' : 'Load more words'}
+            </button>
+          </div>
+        )}
+
       {selectedWordId && (
         <WordDetailModal
           wordId={selectedWordId}
           initialTab={initialDetailTab}
+          onTabChange={(tab) => onWordTabChange?.(selectedWordId, tab)}
           onClose={handleCloseWord}
         />
       )}

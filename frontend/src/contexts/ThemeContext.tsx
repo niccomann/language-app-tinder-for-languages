@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { ThemeContext, type Theme } from './theme-context';
+import { readStorageValue, writeStorageValue } from '../utils/browserStorage';
 
 interface ThemeProviderProps {
   children: ReactNode;
@@ -8,12 +9,12 @@ interface ThemeProviderProps {
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(() => {
-    const savedTheme = localStorage.getItem('theme') as Theme;
+    const savedTheme = readStorageValue('theme') as Theme;
     return savedTheme || 'light';
   });
 
   useEffect(() => {
-    localStorage.setItem('theme', theme);
+    writeStorageValue('theme', theme);
     
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');

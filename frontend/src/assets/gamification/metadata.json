@@ -1,0 +1,378 @@
+{
+  "characters": [
+    {
+      "identity_prompt": "A friendly rounded learning coach mascot with glasses, a small bow tie, soft teal and coral clothing accents, and a confident teacher posture.",
+      "label": "Language coach",
+      "reference_identity_prompt": "Use the provided coach mascot as the exact reference identity: same character, same colors, same glasses, same bow tie, same proportions, same camera.",
+      "slug": "coach"
+    },
+    {
+      "identity_prompt": "A cheerful rounded language explorer mascot with a teal jacket, coral scarf, small blank backpack, chunky boots, and curious confident posture.",
+      "label": "Language explorer",
+      "reference_identity_prompt": "Use the provided explorer mascot as the exact reference identity: same teal jacket, same coral scarf, same backpack, same rounded boots, same proportions, same camera.",
+      "slug": "explorer"
+    },
+    {
+      "identity_prompt": "A small rounded robot tutor mascot with a friendly face screen, teal body, coral side panels, warm yellow antenna, stubby arms, and no marks or letters on the screen.",
+      "label": "Robot tutor",
+      "reference_identity_prompt": "Use the provided robot tutor mascot as the exact reference identity: same face screen, same teal body, same coral panels, same yellow antenna, same proportions, same camera.",
+      "slug": "robot"
+    }
+  ],
+  "frames": [
+    {
+      "character": "coach",
+      "key": "mascot_idle_a",
+      "prompt": "A friendly rounded learning coach mascot standing upright, relaxed pose, one small flashcard-shaped prop held at the side with no marks on it, curious confident expression.",
+      "state": "idle",
+      "use_reference": false
+    },
+    {
+      "character": "coach",
+      "key": "mascot_idle_b",
+      "prompt": "The same friendly rounded learning coach mascot in the same outfit and colors, tiny bounce pose, one foot slightly lifted, relaxed arms, curious confident expression.",
+      "state": "idle",
+      "use_reference": true
+    },
+    {
+      "character": "coach",
+      "key": "mascot_correct_a",
+      "prompt": "The same friendly rounded learning coach mascot celebrating a correct answer, arms lifted, a few simple star and confetti shapes around it, happy expression.",
+      "state": "correct",
+      "use_reference": true
+    },
+    {
+      "character": "coach",
+      "key": "mascot_correct_b",
+      "prompt": "The same friendly rounded learning coach mascot in a second celebration frame, leaning forward with a positive gesture, small star shapes, happy expression, same colors and proportions.",
+      "state": "correct",
+      "use_reference": true
+    },
+    {
+      "character": "coach",
+      "key": "mascot_wrong_a",
+      "prompt": "The same friendly rounded learning coach mascot giving gentle retry feedback, thoughtful pose with one hand near the chin, supportive expression, no sadness, no alarm.",
+      "state": "wrong",
+      "use_reference": true
+    },
+    {
+      "character": "coach",
+      "key": "mascot_wrong_b",
+      "prompt": "The same friendly rounded learning coach mascot in a second retry frame, slightly tilted pose, supportive expression, one small blank flashcard-shaped prop nearby with no marks on it.",
+      "state": "wrong",
+      "use_reference": true
+    },
+    {
+      "character": "coach",
+      "key": "mascot_level_up_a",
+      "prompt": "The same friendly rounded learning coach mascot celebrating progress, standing on a small glowing platform, simple starburst shapes, proud expression, same colors and proportions.",
+      "state": "levelUp",
+      "use_reference": true
+    },
+    {
+      "character": "coach",
+      "key": "mascot_level_up_b",
+      "prompt": "The same friendly rounded learning coach mascot in a second progress celebration frame, small upward jump, simple starburst shapes, proud expression, same colors and proportions.",
+      "state": "levelUp",
+      "use_reference": true
+    },
+    {
+      "character": "explorer",
+      "key": "mascot_explorer_idle_a",
+      "prompt": "The language explorer mascot standing upright, relaxed pose, one hand near a small blank map-shaped prop with no marks on it, curious confident expression.",
+      "state": "idle",
+      "use_reference": false
+    },
+    {
+      "character": "explorer",
+      "key": "mascot_explorer_idle_b",
+      "prompt": "The same language explorer mascot in a tiny bounce pose, backpack visible, one foot slightly lifted, relaxed arms, curious confident expression.",
+      "state": "idle",
+      "use_reference": true
+    },
+    {
+      "character": "explorer",
+      "key": "mascot_explorer_correct_a",
+      "prompt": "The same language explorer mascot celebrating a correct answer, arms lifted, small star and confetti shapes around it, happy expression.",
+      "state": "correct",
+      "use_reference": true
+    },
+    {
+      "character": "explorer",
+      "key": "mascot_explorer_correct_b",
+      "prompt": "The same language explorer mascot in a second celebration frame, leaning forward with a positive gesture, small star shapes, happy expression, same colors and proportions.",
+      "state": "correct",
+      "use_reference": true
+    },
+    {
+      "character": "explorer",
+      "key": "mascot_explorer_wrong_a",
+      "prompt": "The same language explorer mascot giving gentle retry feedback, thoughtful pose with one hand near the chin, supportive expression, no sadness, no alarm.",
+      "state": "wrong",
+      "use_reference": true
+    },
+    {
+      "character": "explorer",
+      "key": "mascot_explorer_wrong_b",
+      "prompt": "The same language explorer mascot in a second retry frame, slightly tilted pose, supportive expression, one small blank map-shaped prop nearby with no marks on it.",
+      "state": "wrong",
+      "use_reference": true
+    },
+    {
+      "character": "explorer",
+      "key": "mascot_explorer_level_up_a",
+      "prompt": "The same language explorer mascot celebrating progress, standing on a small glowing platform, simple starburst shapes, proud expression, same colors and proportions.",
+      "state": "levelUp",
+      "use_reference": true
+    },
+    {
+      "character": "explorer",
+      "key": "mascot_explorer_level_up_b",
+      "prompt": "The same language explorer mascot in a second progress celebration frame, small upward jump, simple starburst shapes, proud expression, same colors and proportions.",
+      "state": "levelUp",
+      "use_reference": true
+    },
+    {
+      "character": "robot",
+      "key": "mascot_robot_idle_a",
+      "prompt": "The robot tutor mascot standing upright, relaxed pose, one stubby arm raised slightly, friendly screen-face expression, no symbols or letters on the screen.",
+      "state": "idle",
+      "use_reference": false
+    },
+    {
+      "character": "robot",
+      "key": "mascot_robot_idle_b",
+      "prompt": "The same robot tutor mascot in a tiny bounce pose, antenna tilted slightly, one foot lifted, friendly screen-face expression, no symbols or letters.",
+      "state": "idle",
+      "use_reference": true
+    },
+    {
+      "character": "robot",
+      "key": "mascot_robot_correct_a",
+      "prompt": "The same robot tutor mascot celebrating a correct answer, arms lifted, small star and confetti shapes around it, happy screen-face expression, no symbols or letters.",
+      "state": "correct",
+      "use_reference": true
+    },
+    {
+      "character": "robot",
+      "key": "mascot_robot_correct_b",
+      "prompt": "The same robot tutor mascot in a second celebration frame, leaning forward with a positive gesture, small star shapes, happy screen-face expression, same colors and proportions.",
+      "state": "correct",
+      "use_reference": true
+    },
+    {
+      "character": "robot",
+      "key": "mascot_robot_wrong_a",
+      "prompt": "The same robot tutor mascot giving gentle retry feedback, thoughtful tilted pose, one hand near the face screen, supportive expression, no sadness, no alarm, no symbols or letters.",
+      "state": "wrong",
+      "use_reference": true
+    },
+    {
+      "character": "robot",
+      "key": "mascot_robot_wrong_b",
+      "prompt": "The same robot tutor mascot in a second retry frame, slightly tilted pose, supportive screen-face expression, one small blank flashcard-shaped prop nearby with no marks on it.",
+      "state": "wrong",
+      "use_reference": true
+    },
+    {
+      "character": "robot",
+      "key": "mascot_robot_level_up_a",
+      "prompt": "The same robot tutor mascot celebrating progress, standing on a small glowing platform, simple starburst shapes, proud screen-face expression, same colors and proportions.",
+      "state": "levelUp",
+      "use_reference": true
+    },
+    {
+      "character": "robot",
+      "key": "mascot_robot_level_up_b",
+      "prompt": "The same robot tutor mascot in a second progress celebration frame, small upward jump, simple starburst shapes, proud screen-face expression, same colors and proportions.",
+      "state": "levelUp",
+      "use_reference": true
+    },
+    {
+      "character": "coach",
+      "key": "guide_vocabulary_scan_a",
+      "prompt": "The same friendly rounded learning coach mascot sorting two blank flashcard piles, one pile glowing with warm confidence and one pile marked by a soft review sparkle, clear swipe-decision gesture.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "coach",
+      "key": "guide_vocabulary_scan_b",
+      "prompt": "The same friendly rounded learning coach mascot in a second frame, moving one blank flashcard from the center toward a glowing pile, supportive expression, same proportions.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "explorer",
+      "key": "guide_learning_path_a",
+      "prompt": "The same language explorer mascot pointing at a winding trail of round stepping stones rising upward, a few small stars around the next step, no symbols or labels.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "explorer",
+      "key": "guide_learning_path_b",
+      "prompt": "The same language explorer mascot in a second frame, stepping onto the next round stone on the learning trail, backpack visible, proud but gentle expression.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "coach",
+      "key": "guide_learning_filters_a",
+      "prompt": "The same friendly rounded learning coach mascot choosing between colorful blank category tokens floating nearby, one hand selecting a token, calm focused expression.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "coach",
+      "key": "guide_learning_filters_b",
+      "prompt": "The same friendly rounded learning coach mascot in a second frame, three selected blank category tokens forming a neat training set, simple check sparkle without any symbol.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "robot",
+      "key": "guide_learning_system_a",
+      "prompt": "The same robot tutor mascot holding a glowing rounded knowledge meter made of dots and bars, no numbers, one small brain-like spark shape, friendly screen-face expression.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "robot",
+      "key": "guide_learning_system_b",
+      "prompt": "The same robot tutor mascot in a second frame, knowledge dots gently rearranging into a smoother path, warm confident screen-face, no symbols or letters.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "coach",
+      "key": "guide_sentence_placement_a",
+      "prompt": "The same friendly rounded learning coach mascot arranging blank word tiles into an empty sentence rail, one correct tile glowing softly, focused encouraging expression.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "coach",
+      "key": "guide_sentence_placement_b",
+      "prompt": "The same friendly rounded learning coach mascot in a second frame, placing the final blank word tile into the sentence rail, small star shapes, no marks on the tiles.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "explorer",
+      "key": "guide_library_a",
+      "prompt": "The same language explorer mascot opening a chunky blank book with floating blank cards around it, organized archive feeling, no text on any surface.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "explorer",
+      "key": "guide_library_b",
+      "prompt": "The same language explorer mascot in a second frame, gently pulling one blank card from the open book archive, curious confident pose.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "robot",
+      "key": "guide_grammar_graph_a",
+      "prompt": "The same robot tutor mascot connecting glowing round nodes with soft lines, like a language relationship map, no labels, no letters, no numbers.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "robot",
+      "key": "guide_grammar_graph_b",
+      "prompt": "The same robot tutor mascot in a second frame, one new glowing node joining the relationship map, friendly screen-face, same colors.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "explorer",
+      "key": "guide_word_cloud_a",
+      "prompt": "The same language explorer mascot holding floating rounded word bubbles that have no readable text, some bubbles larger than others, curious expression.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "explorer",
+      "key": "guide_word_cloud_b",
+      "prompt": "The same language explorer mascot in a second frame, gently tapping the largest blank bubble as smaller bubbles drift nearby, no symbols.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "robot",
+      "key": "guide_sentence_graph_builder_a",
+      "prompt": "The same robot tutor mascot building a sentence as connected blank node tiles, a small arrow-like flow made only of shapes, no text.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "robot",
+      "key": "guide_sentence_graph_builder_b",
+      "prompt": "The same robot tutor mascot in a second frame, snapping two blank sentence nodes together with a soft glow, same proportions and palette.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "coach",
+      "key": "guide_sentence_composer_a",
+      "prompt": "The same friendly rounded learning coach mascot composing a sentence from several blank rounded tiles on a clean rail, one tile lifted in mid-placement.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "coach",
+      "key": "guide_sentence_composer_b",
+      "prompt": "The same friendly rounded learning coach mascot in a second frame, finished blank sentence rail glowing softly, happy focused expression.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "explorer",
+      "key": "guide_clusters_a",
+      "prompt": "The same language explorer mascot grouping colorful blank tokens into three tidy clusters, each cluster a different accent color, no labels.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "explorer",
+      "key": "guide_clusters_b",
+      "prompt": "The same language explorer mascot in a second frame, moving one blank token into its matching cluster, clear sorting motion.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "explorer",
+      "key": "guide_dialects_a",
+      "prompt": "The same language explorer mascot holding a blank stylized map made of colored regions, a small compass-like shape, no place names.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "explorer",
+      "key": "guide_dialects_b",
+      "prompt": "The same language explorer mascot in a second frame, pointing to one colored region on the blank map, curious confident expression.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "robot",
+      "key": "guide_hierarchy_a",
+      "prompt": "The same robot tutor mascot arranging layered round nodes like a tree of language levels, larger root node below smaller connected nodes, no labels.",
+      "state": "guide",
+      "use_reference": true
+    },
+    {
+      "character": "robot",
+      "key": "guide_hierarchy_b",
+      "prompt": "The same robot tutor mascot in a second frame, a new small node rising into the layered language tree, warm screen-face expression.",
+      "state": "guide",
+      "use_reference": true
+    }
+  ],
+  "model": "gpt-image-2",
+  "output_size_px": 512,
+  "size": "1024x1024",
+  "style": "soft 3D gaming sticker, polished mobile language-learning game asset, rounded toy-like shapes, clean silhouette, expressive but simple face, bright balanced teal, lime, coral, and warm yellow accents, consistent camera, consistent proportions, single centered character, generous padding, family-friendly, no text, no letters, no watermark, no UI frame, no photorealism"
+}

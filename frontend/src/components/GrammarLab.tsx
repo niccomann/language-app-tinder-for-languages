@@ -1,11 +1,14 @@
 import { lazy, Suspense, useState, useEffect, useCallback, useRef } from 'react';
-import { GitBranch, Cloud, Play, Info, Volume2, Loader2, Puzzle, Magnet, Globe2, Layers, Gamepad2 } from 'lucide-react';
+import { GitBranch, Cloud, Play, Info, Volume2, Loader2, Puzzle, Magnet, Globe2, Layers, Gamepad2, Sparkles, Star, Trophy } from 'lucide-react';
 import { api } from '../services/api';
 import type { GrammarSentence, GrammarNode, FlashcardWithProgress, WordCloudItem } from '../types';
-import { AppScreen, LoadingSpinner, PillTabs, ScreenHeader, SurfacePanel, UI_RADIUS } from './ui';
+import { AppScreen, GameSignalBadge, LoadingSpinner, PillTabs, ScreenHeader, SurfacePanel, UI_RADIUS } from './ui';
 import type { PillTabItem } from './ui';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
 import { useTheme } from '../contexts/useTheme';
+import type { GrammarView } from '../routes/appRoutes';
+import { reportClientError } from '../utils/clientError';
+import { CATEGORY_COLORS } from '../utils/wordDisplayMeta';
 
 const EmbeddedGrammarGraph = lazy(() => import('./EmbeddedGrammarGraph').then((module) => ({ default: module.EmbeddedGrammarGraph })));
 const EmbeddedWordCloud = lazy(() => import('./EmbeddedWordCloud').then((module) => ({ default: module.EmbeddedWordCloud })));
@@ -16,22 +19,13 @@ const ClusteredNodes = lazy(() => import('./ClusteredNodes').then((module) => ({
 const DialectMap = lazy(() => import('./DialectMap').then((module) => ({ default: module.DialectMap })));
 const HierarchySunburst = lazy(() => import('./HierarchySunburst').then((module) => ({ default: module.HierarchySunburst })));
 
-type LabView = 'graph' | 'wordcloud' | 'builder' | 'funbuilder' | 'clusters' | 'dialects' | 'sunburst';
-
 interface GrammarLabProps {
+  activeView: GrammarView;
+  onViewChange: (view: GrammarView) => void;
   onBack: () => void;
 }
 
-const CATEGORY_COLORS: Record<string, string> = {
-  animals: '#3B82F6',
-  food: '#10B981',
-  verbs: '#EF4444',
-  adjectives: '#F59E0B',
-  objects: '#8B5CF6',
-  default: '#64748B',
-};
-
-const LAB_TABS: Array<PillTabItem<LabView>> = [
+const LAB_TABS: Array<PillTabItem<GrammarView>> = [
   { value: 'graph', label: 'Sentence Graph', icon: <GitBranch size={18} />, tone: 'blue' },
   { value: 'wordcloud', label: 'Word Cloud', icon: <Cloud size={18} />, tone: 'cyan' },
   { value: 'builder', label: 'Build Sentence', icon: <Puzzle size={18} />, tone: 'orange' },
@@ -41,8 +35,7 @@ const LAB_TABS: Array<PillTabItem<LabView>> = [
   { value: 'sunburst', label: 'Hierarchy', icon: <Layers size={18} />, tone: 'amber' },
 ];
 
-export function GrammarLab({ onBack }: GrammarLabProps) {
-  const [activeView, setActiveView] = useState<LabView>('graph');
+export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps) {
   const [sentences, setSentences] = useState<GrammarSentence[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [words, setWords] = useState<WordCloudItem[]>([]);
@@ -59,6 +52,10 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    setSelectedNode(null);
+  }, [activeView]);
 
   const loadData = async () => {
     setLoading(true);
@@ -78,6 +75,7 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
         swipe_right_count: word.swipe_right_count,
         swipe_left_count: word.swipe_left_count,
         review_count: word.review_count,
+        image_url: word.image_url,
         image_base64: word.image_base64,
         cefr_level: word.cefr_level,
         frequency_band: word.frequency_band,
@@ -90,7 +88,7 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
       }));
       setWords(wordCloudData);
     } catch (error) {
-      console.error('Failed to load grammar lab data:', error);
+      reportClientError('Failed to load grammar lab data:', error);
     } finally {
       setLoading(false);
     }
@@ -107,7 +105,7 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
       const response = await api.checkAudioExists(textsToCheck);
       setAudioCache(prev => ({ ...prev, ...response.results }));
     } catch (error) {
-      console.error('Failed to check audio cache:', error);
+      reportClientError('Failed to check audio cache:', error);
     }
   }, []);
 
@@ -149,7 +147,7 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
       await audio.play();
 
     } catch (error) {
-      console.error('Failed to play audio:', error);
+      reportClientError('Failed to play audio:', error);
       setLoadingAudio(null);
     }
   }, [loadingAudio, playingAudio]);
@@ -187,11 +185,16 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
               </button>
             ) : <div className="w-20" />}
           />
+          <div className="mt-3 flex flex-wrap justify-center gap-2">
+            <GameSignalBadge icon={<Star size={14} />} label="Grammar Quest" tone="indigo" />
+            <GameSignalBadge icon={<Sparkles size={14} />} label="Combo Lab" tone="purple" />
+            <GameSignalBadge icon={<Trophy size={14} />} label="Syntax Loot" tone="amber" />
+          </div>
         </div>
         <PillTabs
           items={LAB_TABS}
           value={activeView}
-          onChange={setActiveView}
+          onChange={onViewChange}
           className="px-4 pb-3"
           ariaLabel="Grammar Lab views"
         />
@@ -239,7 +242,7 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
                 </p>
                 <button
                   type="button"
-                  onClick={() => setActiveView('builder')}
+                  onClick={() => onViewChange('builder')}
                   className={`mt-5 inline-flex min-h-11 items-center gap-2 ${UI_RADIUS.pill} bg-gradient-to-r from-indigo-600 to-purple-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg transition hover:scale-[1.02] active:scale-95`}
                 >
                   <Puzzle size={17} />

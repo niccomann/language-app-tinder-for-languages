@@ -108,7 +108,7 @@ def read_word_detail(session: Session, word_id: int) -> FlashcardDetail:
 
     producer_word = fetch_producer_word_for_card(session, card)
     producer_word_id = producer_word["id"] if producer_word else None
-    related = fetch_detail_related_rows(session, producer_word_id)
+    related = fetch_detail_related_rows(session, producer_word_id, flashcard_id=card.id)
     return build_flashcard_detail(card, related)
 
 
@@ -121,7 +121,13 @@ def read_word_db_row(session: Session, word_id: int) -> dict:
     if not producer_word:
         raise HTTPException(status_code=404, detail="Producer word row not found")
 
-    related = fetch_full_related_rows(session, producer_word["id"])
+    related = fetch_full_related_rows(
+        session,
+        producer_word["id"],
+        flashcard_id=card.id,
+        producer_word=producer_word,
+        card=card,
+    )
     return build_word_db_row(card, producer_word, related)
 
 

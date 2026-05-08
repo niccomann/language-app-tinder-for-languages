@@ -1,5 +1,24 @@
-import type { AdaptiveFlashcard, AdaptiveLearningSummary, Flashcard, UserProgress, FlashcardWithProgress, GrammarSentence, GrammarNode, TTSResponse, TTSCheckResponse, ValidateSentenceRequest, ValidateSentenceResponse, LibraryFilters, LibraryStats, FlashcardDetail, DialectWord, WordDbRow } from '../types';
-import { API_BASE_URL, isFeatureEnabled } from '../config/appMode';
+import type { AdaptiveFlashcard, AdaptiveLearningSummary, Flashcard, UserProgress, FlashcardWithProgress, GrammarSentence, GrammarNode, SentenceChallenge, TTSResponse, TTSCheckResponse, ValidateSentenceRequest, ValidateSentenceResponse, LibraryFilters, LibraryStats, FlashcardDetail, DialectWord, WordDbRow } from '../types';
+import { API_BASE_URL, API_REQUEST_TIMEOUT_MS, isFeatureEnabled } from '../config/appMode';
+
+async function fetchWithTimeout(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = globalThis.setTimeout(() => controller.abort(), API_REQUEST_TIMEOUT_MS);
+
+  try {
+    return await fetch(input, {
+      ...init,
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new Error(`Request timed out after ${API_REQUEST_TIMEOUT_MS}ms`);
+    }
+    throw error;
+  } finally {
+    globalThis.clearTimeout(timeoutId);
+  }
+}
 
 export const api = {
   async getFlashcards(params?: {
@@ -14,7 +33,7 @@ export const api = {
     if (params?.limit) queryParams.append('limit', params.limit.toString());
     
     const url = `${API_BASE_URL}/api/cards${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    const response = await fetch(url);
+    const response = await fetchWithTimeout(url);
     
     if (!response.ok) {
       throw new Error('Failed to fetch flashcards');
@@ -35,7 +54,7 @@ export const api = {
     if (params?.limit) queryParams.append('limit', params.limit.toString());
 
     const url = `${API_BASE_URL}/api/cards/adaptive${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    const response = await fetch(url);
+    const response = await fetchWithTimeout(url);
 
     if (!response.ok) {
       throw new Error('Failed to fetch adaptive flashcards');
@@ -45,7 +64,7 @@ export const api = {
   },
 
   async getAdaptiveLearningSummary(language: string = 'de'): Promise<AdaptiveLearningSummary> {
-    const response = await fetch(`${API_BASE_URL}/api/statistics/adaptive-summary?language=${language}`);
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/statistics/adaptive-summary?language=${language}`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch adaptive learning summary');
@@ -55,7 +74,7 @@ export const api = {
   },
 
   async recordProgress(cardId: number, known: boolean): Promise<UserProgress> {
-    const response = await fetch(`${API_BASE_URL}/api/progress`, {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/progress`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -74,7 +93,7 @@ export const api = {
   },
 
   async getProgress(): Promise<UserProgress> {
-    const response = await fetch(`${API_BASE_URL}/api/progress`);
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/progress`);
     
     if (!response.ok) {
       throw new Error('Failed to fetch progress');
@@ -84,7 +103,7 @@ export const api = {
   },
 
   async resetProgress(): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/api/progress/reset`, {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/progress/reset`, {
       method: 'POST',
     });
     
@@ -94,7 +113,7 @@ export const api = {
   },
 
   async speakText(text: string, language: string = 'de'): Promise<TTSResponse> {
-    const response = await fetch(`${API_BASE_URL}/api/tts/speak`, {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/tts/speak`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text, language }),
@@ -108,7 +127,7 @@ export const api = {
   },
 
   async getGrammarSentences(): Promise<GrammarSentence[]> {
-    const response = await fetch(`${API_BASE_URL}/api/grammar/sentences`);
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/grammar/sentences`);
     
     if (!response.ok) {
       throw new Error('Failed to fetch grammar sentences');
@@ -122,7 +141,7 @@ export const api = {
       throw new Error('Text-to-speech is not available in offline mode');
     }
     
-    const response = await fetch(`${API_BASE_URL}/api/tts/speak`, {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/tts/speak`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -142,7 +161,7 @@ export const api = {
       return { results: Object.fromEntries(texts.map((text) => [text, false])) };
     }
     
-    const response = await fetch(`${API_BASE_URL}/api/tts/check`, {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/tts/check`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -157,13 +176,33 @@ export const api = {
     return response.json();
   },
 
-  async getAvailableNodes(): Promise<GrammarNode[]> {
-    const response = await fetch(`${API_BASE_URL}/api/grammar/available-nodes`);
+  async getAvailableNodes(limit: number = 360): Promise<GrammarNode[]> {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/grammar/available-nodes?limit=${limit}`);
     
     if (!response.ok) {
       throw new Error('Failed to fetch available nodes');
     }
     
+    return response.json();
+  },
+
+  async getSentenceChallenges(params?: {
+    language?: string;
+    difficulty?: string;
+    limit?: number;
+  }): Promise<SentenceChallenge[]> {
+    const queryParams = new URLSearchParams();
+    if (params?.language) queryParams.append('language', params.language);
+    if (params?.difficulty) queryParams.append('difficulty', params.difficulty);
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+
+    const url = `${API_BASE_URL}/api/grammar/sentence-challenges${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    const response = await fetchWithTimeout(url);
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch sentence challenges');
+    }
+
     return response.json();
   },
 
@@ -179,7 +218,7 @@ export const api = {
       };
     }
     
-    const response = await fetch(`${API_BASE_URL}/api/grammar/validate-sentence`, {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/grammar/validate-sentence`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -199,7 +238,7 @@ export const api = {
     if (language) queryParams.append('language', language);
     
     const url = `${API_BASE_URL}/api/library/filters${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    const response = await fetch(url);
+    const response = await fetchWithTimeout(url);
     
     if (!response.ok) {
       throw new Error('Failed to fetch library filters');
@@ -213,7 +252,7 @@ export const api = {
     if (language) queryParams.append('language', language);
     
     const url = `${API_BASE_URL}/api/library/stats${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    const response = await fetch(url);
+    const response = await fetchWithTimeout(url);
     
     if (!response.ok) {
       throw new Error('Failed to fetch library stats');
@@ -254,7 +293,7 @@ export const api = {
     if (params?.offset) queryParams.append('offset', String(params.offset));
     
     const url = `${API_BASE_URL}/api/library/words${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    const response = await fetch(url);
+    const response = await fetchWithTimeout(url);
     
     if (!response.ok) {
       throw new Error('Failed to fetch library words');
@@ -264,7 +303,7 @@ export const api = {
   },
 
   async getWordDetail(wordId: number): Promise<FlashcardDetail> {
-    const response = await fetch(`${API_BASE_URL}/api/library/words/${wordId}`);
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/library/words/${wordId}`);
     
     if (!response.ok) {
       throw new Error('Failed to fetch word detail');
@@ -274,7 +313,7 @@ export const api = {
   },
 
   async getWordDbRow(wordId: number): Promise<WordDbRow> {
-    const response = await fetch(`${API_BASE_URL}/api/library/words/${wordId}/db-row`);
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/library/words/${wordId}/db-row`);
     
     if (!response.ok) {
       throw new Error('Failed to fetch word database row');
@@ -284,7 +323,7 @@ export const api = {
   },
 
   async getDialectWords(language: string = 'de'): Promise<DialectWord[]> {
-    const response = await fetch(`${API_BASE_URL}/api/library/dialects?language=${language}`);
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/library/dialects?language=${language}`);
     
     if (!response.ok) {
       throw new Error('Failed to fetch dialect words');
@@ -301,7 +340,7 @@ export const api = {
     times_correct: number;
     times_incorrect: number;
   }> {
-    const response = await fetch(`${API_BASE_URL}/api/statistics/update`, {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/statistics/update`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ word, language, correct }),
@@ -324,7 +363,7 @@ export const api = {
     times_incorrect: number;
     last_practiced: string | null;
   }> {
-    const response = await fetch(`${API_BASE_URL}/api/statistics/word/${encodeURIComponent(word)}?language=${language}`);
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/statistics/word/${encodeURIComponent(word)}?language=${language}`);
     
     if (!response.ok) {
       throw new Error('Failed to fetch word statistics');

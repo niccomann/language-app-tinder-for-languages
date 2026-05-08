@@ -1,4 +1,4 @@
-> Last updated: 2026-03-07
+> Last updated: 2026-05-07
 
 # Frontend Source Code
 
@@ -11,6 +11,8 @@
 | `main.tsx` | Bootstrap React app |
 | `App.tsx` | Root component, routing leggero, keyboard handlers |
 | `components/CardStack.tsx` | Sessione learning + completion |
+| `routes/appRoutes.ts` | Parsing e generazione route app |
+| `gamification/featureGuideManifest.ts` | Guide animate per ogni feature routata |
 
 ## Cartelle
 
@@ -22,6 +24,8 @@ components/     # Componenti React attivi
 ├── LearningCategoryStrip.tsx # Topic deck gamificato
 ├── LearningFiltersPanel.tsx # Filtri categorie dentro il deck
 ├── LearningSystemMenu.tsx # Slogan/concetti del sistema adattivo
+├── FirstVocabularyOnboarding.tsx # Primo scan vocabolario
+├── GameGuideOverlay.tsx  # Guida animata event-driven per feature
 ├── GrammarLab.tsx        # Laboratorio grammatica (7 tab)
 ├── WordsLibraryEnriched.tsx  # Libreria parole
 └── ui/                   # Componenti base riutilizzabili
@@ -29,6 +33,7 @@ components/     # Componenti React attivi
 hooks/          # Custom React hooks
 ├── useLearningSession.ts # ⭐ Core: stato sessione, swipe logic
 ├── useCategories.ts      # Selezione categorie
+├── useAvailableGrammarNodes.ts # Nodi grammaticali condivisi dai builder
 ├── useAudio.ts           # Audio playback hook
 ├── useGrammarNodeFilters.ts # Grammar node filtering
 ├── useLinguisticFilters.ts  # Linguistic filtering
@@ -40,14 +45,22 @@ services/       # Client API
 contexts/       # React Context
 └── ThemeContext.tsx      # Dark/Light mode
 
+gamification/   # Manifest asset e mapping guide
+├── mascotManifest.ts     # Mascot feedback corretto/sbagliato/level up
+└── featureGuideManifest.ts # 13 guide x 2 frame cutout
+
 types/          # TypeScript interfaces
 └── index.ts              # Flashcard, Progress, GrammarNode, etc.
 
 config/         # Configurazione
 └── appMode.ts            # Feature flags (online/offline)
 
+routes/         # Routing leggero senza react-router
+└── appRoutes.ts          # parseAppRoute, grammarPath, libraryWordPath
+
 utils/          # Utility functions
 ├── animations.ts         # Framer Motion variants
+├── browserStorage.ts     # Accesso localStorage centralizzato
 ├── grammarColors.ts      # Colori per tipi grammaticali
 └── imageHelper.ts        # Base64 image handling
 ```
@@ -56,8 +69,12 @@ utils/          # Utility functions
 
 ```
 App.tsx
+  ├── appRoutes.ts → route state
+  ├── GameGuideOverlay → guida animata per la feature corrente
   ├── CardStack.tsx → learning session
+  │     ├── FirstVocabularyOnboarding → primo scan vocabolario
   │     ├── CompletionScreen → sessione finita
+  │     ├── LearningPathHome → percorso 400 livelli
   │     └── LearningScreen → swipe flashcards + filtri categorie
   │           ├── Card.tsx (draggable)
   │           ├── LearningCategoryStrip.tsx
@@ -92,6 +109,24 @@ const categories = useCategories();
 categories.toggleCategory('animals');
 categories.selectAll();
 ```
+
+### `useAvailableGrammarNodes`
+```typescript
+// Condivide fetch + loading state fra i sentence builder
+const { availableNodes, loading } = useAvailableGrammarNodes();
+```
+
+## Superfici Centralizzate
+
+- `routes/appRoutes.ts`: route principali e tab deep-linkabili.
+- `components/ui/`: forme, panel, tab, header, bottoni e interaction token.
+- `gamification/featureGuideManifest.ts`: asset, copy e mapping route → guida.
+- `components/GameGuideOverlay.tsx`: unico layer per animazioni feature, event-driven e non continuo.
+- `utils/browserStorage.ts`: unico accesso diretto a `localStorage`.
+- `components/firstVocabularyOnboardingMeta.ts`: soglie, insight e persistenza del primo onboarding.
+- `frontend/test-utils/appTestHelpers.ts`: URL, mock API e helper Playwright condivisi.
+
+Per dettagli manutentivi: `docs/frontend-maintenance.md`.
 
 ## API Calls (services/api.ts)
 
