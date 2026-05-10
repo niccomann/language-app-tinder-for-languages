@@ -33,9 +33,9 @@ export function StreamingSpeechBubble({
   children,
   className = '',
   contentClassName = 'min-h-[250px] sm:min-h-[220px]',
-  eyebrowClassName = 'text-xs font-extrabold uppercase tracking-wide text-indigo-500',
-  titleClassName = 'mt-2 min-h-[5.8rem] text-4xl font-extrabold leading-tight text-slate-950 dark:text-white',
-  bodyClassName = 'mt-3 min-h-[6.75rem] text-base font-semibold leading-7 text-slate-500 dark:text-slate-300',
+  eyebrowClassName = 'text-xs font-extrabold uppercase tracking-wide text-primary',
+  titleClassName = 'mt-2 min-h-[5.8rem] text-4xl font-extrabold leading-tight text-ink',
+  bodyClassName = 'mt-3 min-h-[6.75rem] text-base font-semibold leading-7 text-muted',
   playbackKey = 0,
   showStepIndicator,
   stream = true,
@@ -134,16 +134,16 @@ export function StreamingSpeechBubble({
       data-testid="mascot-speech-bubble"
       data-speech-step-index={activeStepIndex + 1}
       data-speech-step-total={normalizedSteps.length}
-      className={`relative space-y-5 rounded-[2rem] border-2 border-indigo-100 bg-white/95 p-5 shadow-2xl shadow-indigo-100/70 ring-4 ring-indigo-50/80 dark:border-slate-700 dark:bg-slate-900/95 dark:shadow-black/30 dark:ring-slate-800/70 sm:p-6 lg:rounded-[2.5rem] ${className}`}
+      className={`relative space-y-5 rounded-[2rem] border border-hairline bg-canvas p-5 sm:p-6 lg:rounded-[2.5rem] ${className}`}
     >
       <span
         data-testid="speech-bubble-tail"
         aria-hidden="true"
         className="pointer-events-none absolute -top-4 left-1/2 flex h-10 w-16 -translate-x-1/2 items-end justify-center gap-1 lg:-left-10 lg:top-1/2 lg:h-16 lg:w-10 lg:-translate-y-1/2 lg:translate-x-0 lg:flex-col"
       >
-        <span className="h-3 w-3 rounded-full border-2 border-indigo-100 bg-white dark:border-slate-700 dark:bg-slate-900" />
-        <span className="h-5 w-5 rounded-full border-2 border-indigo-100 bg-white dark:border-slate-700 dark:bg-slate-900" />
-        <span className="h-7 w-7 rounded-full border-2 border-indigo-100 bg-white dark:border-slate-700 dark:bg-slate-900" />
+        <span className="h-3 w-3 rounded-full border border-hairline bg-canvas" />
+        <span className="h-5 w-5 rounded-full border border-hairline bg-canvas" />
+        <span className="h-7 w-7 rounded-full border border-hairline bg-canvas" />
       </span>
 
       <div
@@ -160,7 +160,7 @@ export function StreamingSpeechBubble({
               <button
                 type="button"
                 onClick={skipSpeech}
-                className="min-h-9 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-extrabold text-slate-700 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-indigo-700"
+                className="min-h-9 rounded-full border border-hairline bg-canvas px-3 py-1 text-xs font-extrabold text-body transition hover:border-primary hover:bg-surface-soft"
               >
                 {skipSpeechLabel}
               </button>
@@ -168,7 +168,7 @@ export function StreamingSpeechBubble({
             {shouldShowStepIndicator && (
               <p
                 data-testid="speech-step-indicator"
-                className="rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-xs font-extrabold text-indigo-700 dark:border-slate-700 dark:bg-slate-800 dark:text-indigo-100"
+                className="rounded-full border border-hairline bg-surface-soft px-3 py-1 text-xs font-extrabold text-primary"
               >
                 {activeStepIndex + 1} / {normalizedSteps.length}
               </p>
@@ -178,13 +178,13 @@ export function StreamingSpeechBubble({
         <h1 className={titleClassName}>
           {visibleTitle}
           {isTyping && visibleCharacters <= activeStep.title.length && (
-            <span data-testid="typing-cursor" className="ml-1 inline-block h-9 w-1 translate-y-1 animate-pulse rounded-full bg-indigo-500" />
+            <span data-testid="typing-cursor" className="ml-1 inline-block h-9 w-1 translate-y-1 animate-pulse rounded-full bg-primary" />
           )}
         </h1>
         <p className={bodyClassName}>
           {visibleBody}
           {isTyping && visibleCharacters > activeStep.title.length && (
-            <span data-testid="typing-cursor" className="ml-1 inline-block h-5 w-1 translate-y-1 animate-pulse rounded-full bg-indigo-500" />
+            <span data-testid="typing-cursor" className="ml-1 inline-block h-5 w-1 translate-y-1 animate-pulse rounded-full bg-primary" />
           )}
         </p>
       </div>
@@ -193,7 +193,7 @@ export function StreamingSpeechBubble({
         <button
           type="button"
           onClick={goToNextStep}
-          className="flex min-h-12 w-full items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 px-5 py-3 text-sm font-extrabold text-indigo-700 transition hover:border-indigo-200 hover:bg-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:text-indigo-100 dark:hover:border-indigo-700"
+          className="flex min-h-12 w-full items-center justify-center rounded-2xl border border-hairline bg-surface-soft px-5 py-3 text-sm font-extrabold text-primary transition hover:bg-surface-cream-strong"
         >
           {nextStepLabel}
         </button>

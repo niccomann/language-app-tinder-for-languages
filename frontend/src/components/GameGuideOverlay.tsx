@@ -14,29 +14,29 @@ interface GameGuideOverlayProps {
 
 const toneStyles = {
   practice: {
-    accent: 'text-emerald-700',
-    panel: 'border-emerald-200 bg-emerald-50',
-    action: 'bg-emerald-600 text-white hover:bg-emerald-500 focus-visible:ring-emerald-500',
+    accent: 'text-success',
+    panel: 'border-success/20 bg-success/10',
+    action: 'bg-success text-on-primary hover:opacity-90 focus-visible:ring-success',
   },
   science: {
-    accent: 'text-sky-700',
-    panel: 'border-sky-200 bg-sky-50',
-    action: 'bg-sky-600 text-white hover:bg-sky-500 focus-visible:ring-sky-500',
+    accent: 'text-accent-teal',
+    panel: 'border-accent-teal/20 bg-accent-teal/10',
+    action: 'bg-accent-teal text-on-primary hover:opacity-90 focus-visible:ring-accent-teal',
   },
   map: {
-    accent: 'text-amber-700',
-    panel: 'border-amber-200 bg-amber-50',
-    action: 'bg-amber-500 text-slate-950 hover:bg-amber-400 focus-visible:ring-amber-500',
+    accent: 'text-accent-amber',
+    panel: 'border-accent-amber/20 bg-accent-amber/10',
+    action: 'bg-accent-amber text-on-primary hover:opacity-90 focus-visible:ring-accent-amber',
   },
   library: {
-    accent: 'text-fuchsia-700',
-    panel: 'border-fuchsia-200 bg-fuchsia-50',
-    action: 'bg-fuchsia-600 text-white hover:bg-fuchsia-500 focus-visible:ring-fuchsia-500',
+    accent: 'text-primary',
+    panel: 'border-hairline bg-surface-soft',
+    action: 'bg-primary text-on-primary hover:bg-primary-active focus-visible:ring-primary',
   },
   grammar: {
-    accent: 'text-indigo-700',
-    panel: 'border-indigo-200 bg-indigo-50',
-    action: 'bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:ring-indigo-500',
+    accent: 'text-primary',
+    panel: 'border-hairline bg-surface-soft',
+    action: 'bg-primary text-on-primary hover:bg-primary-active focus-visible:ring-primary',
   },
 } satisfies Record<FeatureGuideTone, { accent: string; panel: string; action: string }>;
 
@@ -167,7 +167,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
       data-guide-id={guide.id}
       data-layout="fullscreen"
       data-motion-mode="event"
-      className="fixed inset-0 z-50 flex min-h-dvh w-screen items-stretch overflow-y-auto bg-white text-slate-950 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex min-h-dvh w-screen items-stretch overflow-y-auto bg-canvas text-ink"
       role="dialog"
       aria-modal="true"
       aria-label={overlayCopy.ariaLabel}
@@ -176,7 +176,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
         <button
           type="button"
           onClick={enterFeature}
-          className={`absolute right-5 top-5 z-10 inline-flex min-h-11 min-w-11 items-center justify-center ${UI_RADIUS.control} border border-slate-200 bg-white text-slate-700 shadow-sm ${UI_INTERACTION.fastTransition} hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500`}
+          className={`absolute right-5 top-5 z-10 inline-flex min-h-11 min-w-11 items-center justify-center ${UI_RADIUS.control} border border-hairline bg-canvas text-body ${UI_INTERACTION.fastTransition} hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
           aria-label={overlayCopy.closeLabel}
         >
           <X size={20} aria-hidden="true" />
@@ -198,7 +198,8 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
                 key={activeFrame.key}
                 src={activeFrame.src}
                 alt=""
-                className="h-full w-full object-contain drop-shadow-2xl"
+                className="h-full w-full object-contain"
+                style={{ filter: 'drop-shadow(0 25px 25px rgba(0,0,0,0.15))' }}
                 draggable={false}
               />
             </div>
@@ -210,7 +211,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
             playbackKey={eventKey}
             showStepIndicator={false}
             contentClassName="min-h-[255px] sm:min-h-[300px]"
-            className={`shadow-slate-200/80 ${styles.panel}`}
+            className={`border ${styles.panel}`}
             onStepChange={(stepIndex) => setSpeechState((current) => (
               current.stepIndex === stepIndex ? current : { ...current, stepIndex }
             ))}
@@ -222,7 +223,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
               <button
                 type="button"
                 onClick={enterFeature}
-                className={`inline-flex min-h-12 items-center justify-center gap-2 ${UI_RADIUS.control} px-5 py-3 text-base font-extrabold shadow-lg shadow-slate-200 ${UI_INTERACTION.fastTransition} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white ${styles.action}`}
+                className={`inline-flex min-h-12 items-center justify-center gap-2 ${UI_RADIUS.control} px-5 py-3 text-base font-extrabold ${UI_INTERACTION.fastTransition} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${styles.action}`}
               >
                 <Play size={18} aria-hidden="true" />
                 {guide.actionLabel}
@@ -231,7 +232,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
               <button
                 type="button"
                 onClick={replayGuide}
-                className={`inline-flex min-h-12 items-center justify-center gap-2 ${UI_RADIUS.control} border border-slate-200 bg-white px-5 py-3 text-base font-bold text-slate-800 shadow-sm ${UI_INTERACTION.fastTransition} hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500`}
+                className={`inline-flex min-h-12 items-center justify-center gap-2 ${UI_RADIUS.control} border border-hairline bg-canvas px-5 py-3 text-base font-bold text-body ${UI_INTERACTION.fastTransition} hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
               >
                 <RotateCcw size={18} aria-hidden="true" />
                 {overlayCopy.replayAction}

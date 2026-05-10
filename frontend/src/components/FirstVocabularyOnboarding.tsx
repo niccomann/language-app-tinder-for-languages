@@ -150,13 +150,13 @@ export function FirstVocabularyOnboarding({
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <SurfacePanel padding="md" className="border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/40">
-            <p className="text-xs font-extrabold uppercase tracking-wide text-emerald-600 dark:text-emerald-200">{onboardingCopy.analysis.strongestOn}</p>
-            <p className="mt-2 text-xl font-extrabold text-emerald-900 dark:text-emerald-100">{insights.strongCategory}</p>
+          <SurfacePanel padding="md" className="border-success/20 bg-success/10">
+            <p className="text-xs font-extrabold uppercase tracking-wide text-success">{onboardingCopy.analysis.strongestOn}</p>
+            <p className="mt-2 text-xl font-extrabold text-ink">{insights.strongCategory}</p>
           </SurfacePanel>
-          <SurfacePanel padding="md" className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40">
-            <p className="text-xs font-extrabold uppercase tracking-wide text-amber-600 dark:text-amber-200">{onboardingCopy.analysis.needsReinforcement}</p>
-            <p className="mt-2 text-xl font-extrabold text-amber-900 dark:text-amber-100">{insights.weakCategory}</p>
+          <SurfacePanel padding="md" className="border-accent-amber/20 bg-accent-amber/10">
+            <p className="text-xs font-extrabold uppercase tracking-wide text-accent-amber">{onboardingCopy.analysis.needsReinforcement}</p>
+            <p className="mt-2 text-xl font-extrabold text-ink">{insights.weakCategory}</p>
           </SurfacePanel>
         </div>
       </AnimatedExplanationFrame>
@@ -188,7 +188,7 @@ export function FirstVocabularyOnboarding({
     <AppScreen width="wide" contentClassName="min-h-dvh px-4 py-4">
       <main className="mx-auto grid w-full max-w-5xl gap-4 lg:min-h-[calc(100dvh-2rem)] lg:grid-cols-[minmax(300px,360px)_minmax(360px,440px)] lg:items-start lg:justify-center">
         <section className="space-y-3">
-          <SurfacePanel padding="lg" className="border-indigo-100 bg-white/95 dark:border-slate-700 dark:bg-slate-900/95">
+          <SurfacePanel padding="lg" className="border-hairline bg-canvas">
             <MascotSpeechCallout
               testId="vocabulary-scan-bubble"
               steps={[{
@@ -202,10 +202,10 @@ export function FirstVocabularyOnboarding({
               size="compact"
               className="lg:grid-cols-[minmax(72px,96px)_minmax(0,1fr)]"
               mascotClassName="shrink-0"
-              bubbleClassName="rounded-[1.75rem] border-indigo-100 bg-white p-4 shadow-sm ring-0 dark:border-slate-700 dark:bg-slate-800"
+              bubbleClassName="rounded-[1.75rem] border-hairline bg-canvas p-4 ring-0"
               bubbleContentClassName="min-h-[148px]"
-              titleClassName="mt-2 min-h-[4.6rem] text-3xl font-extrabold leading-tight text-slate-950 dark:text-white"
-              bodyClassName="mt-2 min-h-[4.5rem] text-sm font-semibold leading-6 text-slate-500 dark:text-slate-300"
+              titleClassName="mt-2 min-h-[4.6rem] text-3xl font-extrabold leading-tight text-ink"
+              bodyClassName="mt-2 min-h-[4.5rem] text-sm font-semibold leading-6 text-muted"
             />
 
             <div className="mt-5 grid grid-cols-3 gap-2">
@@ -214,13 +214,13 @@ export function FirstVocabularyOnboarding({
               <SignalSummaryTile icon={<Brain size={17} />} label={onboardingCopy.scan.reviewLabel} value={insights.reviewEstimate} tone="amber" compact />
             </div>
 
-            <div className={`${UI_RADIUS.control} mt-5 border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/70`}>
-              <p className="text-sm font-extrabold text-slate-900 dark:text-white">
+            <div className={`${UI_RADIUS.control} mt-5 border border-hairline bg-surface-soft p-4`}>
+              <p className="text-sm font-extrabold text-ink">
                 {canPersonalize
                   ? onboardingCopy.scan.readyMessage
                   : formatCopy(onboardingCopy.scan.remainingMessage, { remaining: remainingToMinimum })}
               </p>
-              <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-300">
+              <p className="mt-1 text-sm font-medium text-muted">
                 {formatCopy(onboardingCopy.scan.autoAdvanceMessage, { maxSwipes: MAX_VOCABULARY_SCAN_SWIPES })}
               </p>
             </div>
@@ -229,7 +229,7 @@ export function FirstVocabularyOnboarding({
               <button
                 type="button"
                 onClick={() => advanceWithMascot('analysis')}
-                className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} mt-5 flex min-h-12 w-full items-center justify-center gap-2 bg-indigo-600 px-5 py-3 text-sm font-extrabold text-white shadow-lg hover:bg-indigo-700`}
+                className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} mt-5 flex min-h-12 w-full items-center justify-center gap-2 bg-primary px-5 py-3 text-sm font-extrabold text-on-primary hover:bg-primary-active`}
               >
                 {onboardingCopy.scan.personalizeAction}
                 <ArrowRight size={17} />
@@ -242,8 +242,8 @@ export function FirstVocabularyOnboarding({
           <div className="relative flex min-h-[520px] items-start justify-center">
             {nextCard && (
               <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 w-full scale-90 opacity-20 blur-sm">
-                <div className={`overflow-hidden border border-gray-200 bg-white ${UI_RADIUS.surface} shadow-xl`}>
-                  <div className="aspect-[4/3] bg-slate-100" />
+                <div className={`overflow-hidden border border-hairline bg-canvas ${UI_RADIUS.surface}`}>
+                  <div className="aspect-[4/3] bg-surface-soft" />
                 </div>
               </div>
             )}
@@ -256,15 +256,15 @@ export function FirstVocabularyOnboarding({
                 swipeDirection={lastSwipeDirection}
               />
             ) : (
-              <SurfacePanel className="w-full border-dashed border-slate-300 bg-white/80 text-center" padding="lg">
-                <h2 className="text-2xl font-extrabold text-slate-900">{onboardingCopy.scan.emptyTitle}</h2>
-                <p className="mt-2 text-sm font-medium text-slate-500">
+              <SurfacePanel className="w-full border-dashed border-hairline bg-canvas text-center" padding="lg">
+                <h2 className="text-2xl font-extrabold text-ink">{onboardingCopy.scan.emptyTitle}</h2>
+                <p className="mt-2 text-sm font-medium text-muted">
                   {onboardingCopy.scan.emptyBody}
                 </p>
                 <button
                   type="button"
                   onClick={onComplete}
-                  className={`${UI_RADIUS.control} mt-5 bg-indigo-600 px-5 py-3 text-sm font-extrabold text-white`}
+                  className={`${UI_RADIUS.control} mt-5 bg-primary px-5 py-3 text-sm font-extrabold text-on-primary`}
                 >
                   {onboardingCopy.scan.emptyAction}
                 </button>
@@ -315,7 +315,7 @@ function AnimatedExplanationFrame({
   const [speechState, setSpeechState] = useState({ stepIndex: 0, isTyping: true });
 
   return (
-    <AppScreen width="full" className="bg-white dark:bg-slate-950" contentClassName="flex min-h-dvh items-center px-4 pb-28 pt-6 sm:py-6">
+    <AppScreen width="full" className="bg-canvas" contentClassName="flex min-h-dvh items-center px-4 pb-28 pt-6 sm:py-6">
       <main data-testid={dataTestId} className="relative mx-auto grid w-full max-w-5xl gap-5 pt-14 lg:grid-cols-[minmax(220px,300px)_minmax(420px,1fr)] lg:items-center lg:pt-0">
         <div className="flex justify-center">
           <MascotReaction
@@ -346,7 +346,7 @@ function AnimatedExplanationFrame({
               <button
                 type="button"
                 onClick={onPrimaryAction}
-                className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-14 w-full items-center justify-center gap-3 bg-indigo-600 px-5 py-4 text-sm font-extrabold text-white shadow-lg hover:bg-indigo-700`}
+                className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-14 w-full items-center justify-center gap-3 bg-primary px-5 py-4 text-sm font-extrabold text-on-primary hover:bg-primary-active`}
               >
                 {primaryActionLabel}
                 <ArrowRight size={18} />
@@ -406,25 +406,25 @@ function PreferenceQuestionnaire({
   return (
     <section className="space-y-5" data-testid="onboarding-preference-questionnaire">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs font-extrabold uppercase tracking-wide text-indigo-600 dark:text-indigo-200">
+        <p className="text-xs font-extrabold uppercase tracking-wide text-primary">
           {formatCopy(preferencesCopy.progressLabel, { current: questionIndex + 1, total: questions.length })}
         </p>
-        <div className={`${UI_RADIUS.control} h-2 min-w-28 flex-1 overflow-hidden bg-slate-100 dark:bg-slate-800`}>
+        <div className={`${UI_RADIUS.control} h-2 min-w-28 flex-1 overflow-hidden bg-surface-soft`}>
           <div
-            className="h-full bg-indigo-600 transition-all duration-300"
+            className="h-full bg-primary transition-all duration-300"
             style={{ width: `${((questionIndex + 1) / questions.length) * 100}%` }}
           />
         </div>
       </div>
 
-      <SurfacePanel padding="md" className="border-indigo-100 bg-indigo-50/70 dark:border-indigo-800 dark:bg-indigo-950/30">
-        <p className="text-xs font-extrabold uppercase tracking-wide text-indigo-600 dark:text-indigo-200">
+      <SurfacePanel padding="md" className="border-hairline bg-surface-soft">
+        <p className="text-xs font-extrabold uppercase tracking-wide text-primary">
           {currentQuestion.eyebrow}
         </p>
-        <h2 className="mt-2 text-2xl font-extrabold leading-tight text-slate-950 dark:text-white">
+        <h2 className="mt-2 text-2xl font-extrabold leading-tight text-ink">
           {currentQuestion.title}
         </h2>
-        <p className="mt-2 text-sm font-semibold leading-6 text-slate-600 dark:text-slate-300">
+        <p className="mt-2 text-sm font-semibold leading-6 text-body">
           {currentQuestion.body}
         </p>
       </SurfacePanel>
@@ -438,21 +438,21 @@ function PreferenceQuestionnaire({
               type="button"
               aria-pressed={selected}
               onClick={() => selectOption(option.id)}
-              className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} border px-4 py-3 text-left shadow-sm ${
+              className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} border px-4 py-3 text-left ${
                 selected
-                  ? 'border-indigo-500 bg-indigo-600 text-white shadow-indigo-200 dark:shadow-none'
-                  : 'border-slate-200 bg-white text-slate-900 hover:border-indigo-200 hover:bg-indigo-50 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:hover:border-indigo-700 dark:hover:bg-indigo-950/40'
+                  ? 'border-primary bg-primary text-on-primary'
+                  : 'border-hairline bg-canvas text-ink hover:border-primary hover:bg-surface-soft'
               }`}
             >
               <span className="flex items-start justify-between gap-3">
                 <span>
                   <span className="block text-sm font-extrabold">{option.label}</span>
-                  <span className={`mt-1 block text-sm font-semibold leading-5 ${selected ? 'text-indigo-50' : 'text-slate-500 dark:text-slate-300'}`}>
+                  <span className={`mt-1 block text-sm font-semibold leading-5 ${selected ? 'text-on-primary/80' : 'text-muted'}`}>
                     {option.description}
                   </span>
                 </span>
                 {selected && (
-                  <span className="flex shrink-0 items-center gap-1 text-xs font-extrabold uppercase tracking-wide text-white">
+                  <span className="flex shrink-0 items-center gap-1 text-xs font-extrabold uppercase tracking-wide text-on-primary">
                     <CheckCircle2 size={17} />
                     {preferencesCopy.selectedLabel}
                   </span>
@@ -467,7 +467,7 @@ function PreferenceQuestionnaire({
         <button
           type="button"
           onClick={goBack}
-          className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-12 items-center justify-center gap-2 border border-slate-200 bg-white px-4 py-3 text-sm font-extrabold text-slate-700 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800`}
+          className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-12 items-center justify-center gap-2 border border-hairline bg-canvas px-4 py-3 text-sm font-extrabold text-body hover:bg-surface-soft`}
         >
           <ArrowLeft size={17} />
           {preferencesCopy.backAction}
@@ -476,7 +476,7 @@ function PreferenceQuestionnaire({
           type="button"
           onClick={goNext}
           disabled={!hasSelection}
-          className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-12 items-center justify-center gap-2 bg-indigo-600 px-5 py-3 text-sm font-extrabold text-white shadow-lg hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none dark:disabled:bg-slate-700`}
+          className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-12 items-center justify-center gap-2 bg-primary px-5 py-3 text-sm font-extrabold text-on-primary hover:bg-primary-active disabled:cursor-not-allowed disabled:bg-primary-disabled`}
         >
           {isLastQuestion ? preferencesCopy.finishAction : preferencesCopy.nextAction}
           <ArrowRight size={17} />
@@ -496,9 +496,9 @@ interface SignalSummaryTileProps {
 
 function SignalSummaryTile({ icon, label, value, tone, compact = false }: SignalSummaryTileProps) {
   const tones = {
-    coral: 'border-indigo-100 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950/40 dark:text-indigo-100',
-    success: 'border-emerald-100 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100',
-    amber: 'border-amber-100 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-100',
+    coral: 'border-hairline bg-surface-soft text-primary',
+    success: 'border-success/20 bg-success/10 text-success',
+    amber: 'border-accent-amber/20 bg-accent-amber/10 text-accent-amber',
   };
 
   return (

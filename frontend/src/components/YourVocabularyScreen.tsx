@@ -25,40 +25,40 @@ function getVocabularyTone(word: WordStatistics) {
   if (stars >= 5) {
     return {
       label: copy.yourVocabulary.masteredLabel,
-      card: 'border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/35',
-      badge: 'bg-emerald-600 text-white',
-      text: 'text-emerald-800 dark:text-emerald-100',
-      bar: 'bg-emerald-500',
-      star: 'text-emerald-600 fill-emerald-500 dark:text-emerald-200 dark:fill-emerald-300',
+      card: 'border-success/20 bg-success/10',
+      badge: 'bg-success text-on-primary',
+      text: 'text-success',
+      bar: 'bg-success',
+      star: 'text-success fill-success',
     };
   }
   if (stars >= 3) {
     return {
       label: copy.yourVocabulary.learningLabel,
-      card: 'border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/35',
-      badge: 'bg-yellow-500 text-slate-950',
-      text: 'text-yellow-900 dark:text-yellow-100',
-      bar: 'bg-yellow-500',
-      star: 'text-yellow-600 fill-yellow-500 dark:text-yellow-200 dark:fill-yellow-300',
+      card: 'border-accent-amber/20 bg-accent-amber/10',
+      badge: 'bg-accent-amber text-on-primary',
+      text: 'text-accent-amber',
+      bar: 'bg-accent-amber',
+      star: 'text-accent-amber fill-accent-amber',
     };
   }
   if (stars >= 1) {
     return {
       label: copy.yourVocabulary.weakLabel,
-      card: 'border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/35',
-      badge: 'bg-orange-500 text-white',
-      text: 'text-orange-900 dark:text-orange-100',
-      bar: 'bg-orange-500',
-      star: 'text-orange-600 fill-orange-500 dark:text-orange-200 dark:fill-orange-300',
+      card: 'border-warning/20 bg-warning/10',
+      badge: 'bg-warning text-on-primary',
+      text: 'text-warning',
+      bar: 'bg-warning',
+      star: 'text-warning fill-warning',
     };
   }
   return {
     label: copy.yourVocabulary.unknownLabel,
-    card: 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/35',
-    badge: 'bg-red-600 text-white',
-    text: 'text-red-900 dark:text-red-100',
-    bar: 'bg-red-500',
-    star: 'text-red-300 dark:text-red-700',
+    card: 'border-error/20 bg-error/10',
+    badge: 'bg-error text-on-primary',
+    text: 'text-error',
+    bar: 'bg-error',
+    star: 'text-error/30',
   };
 }
 
@@ -135,7 +135,7 @@ export function YourVocabularyScreen({
           <ScreenHeader
             title={vocabularyCopy.title}
             subtitle={vocabularyCopy.subtitle}
-            icon={<BookOpenCheck size={30} className="shrink-0 text-indigo-600" />}
+            icon={<BookOpenCheck size={30} className="shrink-0 text-primary" />}
             onBack={onBack}
             density="compact"
           />
@@ -147,11 +147,11 @@ export function YourVocabularyScreen({
               <VocabularyStatTile icon={<CircleAlert size={18} />} label={vocabularyCopy.weakStat} value={weakCount} tone="error" />
             </div>
 
-            <div className={`${UI_RADIUS.control} border border-indigo-100 bg-indigo-50 p-4 dark:border-indigo-800 dark:bg-indigo-950/40`}>
-              <p className="text-xs font-extrabold uppercase tracking-wide text-indigo-600 dark:text-indigo-200">
+            <div className={`${UI_RADIUS.control} border border-hairline bg-surface-soft p-4`}>
+              <p className="text-xs font-extrabold uppercase tracking-wide text-primary">
                 {vocabularyCopy.logicEyebrow}
               </p>
-              <p className="mt-2 text-sm font-semibold leading-6 text-indigo-950 dark:text-indigo-100">
+              <p className="mt-2 text-sm font-semibold leading-6 text-body">
                 {vocabularyCopy.logicBody}
               </p>
             </div>
@@ -159,7 +159,7 @@ export function YourVocabularyScreen({
             <button
               type="button"
               onClick={onStartLearning}
-              className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-12 w-full items-center justify-center gap-2 bg-indigo-600 px-5 py-3 text-sm font-extrabold text-white shadow-lg hover:bg-indigo-700`}
+              className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-12 w-full items-center justify-center gap-2 bg-primary px-5 py-3 text-sm font-extrabold text-on-primary hover:bg-primary-active`}
             >
               <ArrowDownAZ size={17} />
               {vocabularyCopy.continueAction}
@@ -170,15 +170,15 @@ export function YourVocabularyScreen({
         <section className="space-y-3">
           {sortedWords.length === 0 ? (
             <SurfacePanel padding="lg" className="text-center">
-              <BookOpenCheck size={34} className="mx-auto text-slate-400" />
-              <h2 className="mt-3 text-2xl font-extrabold text-slate-950 dark:text-white">{vocabularyCopy.emptyTitle}</h2>
-              <p className="mx-auto mt-2 max-w-md text-sm font-semibold leading-6 text-slate-500 dark:text-slate-300">
+              <BookOpenCheck size={34} className="mx-auto text-muted" />
+              <h2 className="mt-3 text-2xl font-extrabold text-ink">{vocabularyCopy.emptyTitle}</h2>
+              <p className="mx-auto mt-2 max-w-md text-sm font-semibold leading-6 text-muted">
                 {vocabularyCopy.emptyBody}
               </p>
               <button
                 type="button"
                 onClick={onStartLearning}
-                className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} mt-5 inline-flex min-h-12 items-center justify-center gap-2 bg-indigo-600 px-5 py-3 text-sm font-extrabold text-white shadow-lg hover:bg-indigo-700`}
+                className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} mt-5 inline-flex min-h-12 items-center justify-center gap-2 bg-primary px-5 py-3 text-sm font-extrabold text-on-primary hover:bg-primary-active`}
               >
                 {vocabularyCopy.emptyAction}
               </button>
@@ -210,11 +210,11 @@ function VocabularyRow({
   const accuracy = word.times_seen > 0 ? Math.round((word.times_correct / word.times_seen) * 100) : 0;
 
   return (
-    <article className={`${UI_RADIUS.surface} border p-4 shadow-sm ${tone.card}`}>
+    <article className={`${UI_RADIUS.surface} border p-4 ${tone.card}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span className={`${UI_RADIUS.pill} bg-white px-2.5 py-1 text-xs font-extrabold text-slate-500 shadow-sm dark:bg-slate-900 dark:text-slate-300`}>
+            <span className={`${UI_RADIUS.pill} bg-canvas border border-hairline px-2.5 py-1 text-xs font-extrabold text-muted`}>
               #{rank}
             </span>
             <span className={`${UI_RADIUS.pill} px-2.5 py-1 text-xs font-extrabold ${tone.badge}`}>
@@ -222,7 +222,7 @@ function VocabularyRow({
             </span>
           </div>
           <h2 className={`mt-3 text-2xl font-extrabold ${tone.text}`}>{word.word}</h2>
-          <p className="mt-1 flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-300">
+          <p className="mt-1 flex flex-wrap items-center gap-2 text-sm font-semibold text-muted">
             <Clock3 size={15} />
             {word.times_seen} reviews · {accuracy}% correct
           </p>
@@ -230,13 +230,13 @@ function VocabularyRow({
 
         <div className="text-right">
           <MasteryStars value={stars} />
-          <p className="mt-2 text-xs font-extrabold uppercase tracking-wide text-slate-500 dark:text-slate-300">
+          <p className="mt-2 text-xs font-extrabold uppercase tracking-wide text-muted">
             {copy.yourVocabulary.levelLabel} {word.knowledge_level}/10
           </p>
         </div>
       </div>
 
-      <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/80 dark:bg-slate-900/70">
+      <div className="mt-4 h-2 overflow-hidden rounded-full bg-surface-soft">
         <div
           className={`h-full rounded-full ${tone.bar}`}
           style={{ width: `${Math.max(0, Math.min(100, word.confidence_score))}%` }}
@@ -255,7 +255,7 @@ function MasteryStars({ value }: { value: number }) {
           <Star
             key={index}
             size={18}
-            className={active ? 'text-yellow-500 fill-yellow-400' : 'text-slate-300 dark:text-slate-600'}
+            className={active ? 'text-accent-amber fill-accent-amber' : 'text-muted'}
           />
         );
       })}
@@ -275,9 +275,9 @@ function VocabularyStatTile({
   tone: 'success' | 'yellow' | 'error';
 }) {
   const classes = {
-    success: 'border-emerald-100 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100',
-    yellow: 'border-yellow-100 bg-yellow-50 text-yellow-800 dark:border-yellow-800 dark:bg-yellow-950/40 dark:text-yellow-100',
-    error: 'border-red-100 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950/40 dark:text-red-100',
+    success: 'border-success/20 bg-success/10 text-success',
+    yellow: 'border-accent-amber/20 bg-accent-amber/10 text-accent-amber',
+    error: 'border-error/20 bg-error/10 text-error',
   };
 
   return (
