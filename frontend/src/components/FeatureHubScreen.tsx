@@ -155,7 +155,7 @@ const hubToneClasses: Record<FeatureFlowTone, {
   },
   teal: {
     surface: 'border-hairline bg-surface-card',
-    icon: 'bg-accent-teal text-on-primary',
+    icon: 'bg-accent-teal text-ink',
     badge: 'bg-surface-card text-accent-teal border border-hairline',
   },
   amber: {
@@ -165,7 +165,7 @@ const hubToneClasses: Record<FeatureFlowTone, {
   },
   success: {
     surface: 'border-hairline bg-surface-card',
-    icon: 'bg-success text-on-primary',
+    icon: 'bg-success text-ink',
     badge: 'bg-surface-card text-success border border-hairline',
   },
   muted: {

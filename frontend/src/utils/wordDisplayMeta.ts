@@ -34,5 +34,5 @@ export const CONFUSION_LEVEL_CLASSES: Record<string, string> = {
   critical: 'bg-error text-on-primary',
   high: 'bg-primary text-on-primary',
   medium: 'bg-accent-amber text-ink',
-  low: 'bg-success text-on-primary',
+  low: 'bg-success text-ink',
 };

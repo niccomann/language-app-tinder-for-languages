@@ -16,17 +16,17 @@ const toneStyles = {
   practice: {
     accent: 'text-success',
     panel: 'border-success/20 bg-success/10',
-    action: 'bg-success text-on-primary hover:opacity-90 focus-visible:ring-success',
+    action: 'bg-success text-ink hover:opacity-90 focus-visible:ring-success',
   },
   science: {
     accent: 'text-accent-teal',
     panel: 'border-accent-teal/20 bg-accent-teal/10',
-    action: 'bg-accent-teal text-on-primary hover:opacity-90 focus-visible:ring-accent-teal',
+    action: 'bg-accent-teal text-ink hover:opacity-90 focus-visible:ring-accent-teal',
   },
   map: {
     accent: 'text-accent-amber',
     panel: 'border-accent-amber/20 bg-accent-amber/10',
-    action: 'bg-accent-amber text-on-primary hover:opacity-90 focus-visible:ring-accent-amber',
+    action: 'bg-accent-amber text-ink hover:opacity-90 focus-visible:ring-accent-amber',
   },
   library: {
     accent: 'text-primary',

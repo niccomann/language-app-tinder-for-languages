@@ -142,7 +142,7 @@ export function LearningPathHome({
                   <div key={step.title} className="relative flex gap-4">
                     <div className={`z-10 flex h-12 w-12 shrink-0 items-center justify-center ${UI_RADIUS.touchIcon} border ${
                       isComplete
-                        ? 'border-hairline bg-success text-on-primary'
+                        ? 'border-hairline bg-success text-ink'
                         : isActive
                           ? 'border-hairline bg-primary text-on-primary'
                           : 'border-hairline bg-surface-card text-muted'
@@ -266,7 +266,7 @@ function PathFocusFlow({
             aria-label={nextMission.ctaLabel}
             className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} flex min-h-24 w-full items-start gap-3 border border-hairline bg-surface-card p-4 text-left hover:bg-surface-cream-strong`}
           >
-            <span className={`${UI_RADIUS.touchIcon} flex h-10 w-10 shrink-0 items-center justify-center bg-accent-teal text-on-primary`}>
+            <span className={`${UI_RADIUS.touchIcon} flex h-10 w-10 shrink-0 items-center justify-center bg-accent-teal text-ink`}>
               <Puzzle size={18} />
             </span>
             <span className="min-w-0">

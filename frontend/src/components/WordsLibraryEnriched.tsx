@@ -438,7 +438,7 @@ export function WordsLibraryEnriched({
                       onClick={(e) => handleToggleStatus(word, e)}
                       className={`px-2.5 py-1 ${UI_RADIUS.pill} text-xs font-semibold flex items-center gap-1 transition-colors ${
                         word.known === true
-                          ? 'bg-success text-on-primary hover:opacity-90'
+                          ? 'bg-success text-ink hover:opacity-90'
                           : word.known === false
                           ? 'bg-error text-on-primary hover:opacity-90'
                           : 'bg-primary text-on-primary hover:opacity-90'
@@ -451,7 +451,7 @@ export function WordsLibraryEnriched({
 
                   {word.is_compound && (
                     <div className="absolute bottom-2 left-2">
-                      <span className={`bg-accent-teal text-on-primary px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-semibold`}>
+                      <span className={`bg-accent-teal text-ink px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-semibold`}>
                         Compound
                       </span>
                     </div>

@@ -26,7 +26,7 @@ function getVocabularyTone(word: WordStatistics) {
     return {
       label: copy.yourVocabulary.masteredLabel,
       card: 'border-success/20 bg-success/10',
-      badge: 'bg-success text-on-primary',
+      badge: 'bg-success text-ink',
       text: 'text-success',
       bar: 'bg-success',
       star: 'text-success fill-success',
@@ -36,7 +36,7 @@ function getVocabularyTone(word: WordStatistics) {
     return {
       label: copy.yourVocabulary.learningLabel,
       card: 'border-accent-amber/20 bg-accent-amber/10',
-      badge: 'bg-accent-amber text-on-primary',
+      badge: 'bg-accent-amber text-ink',
       text: 'text-accent-amber',
       bar: 'bg-accent-amber',
       star: 'text-accent-amber fill-accent-amber',
@@ -46,7 +46,7 @@ function getVocabularyTone(word: WordStatistics) {
     return {
       label: copy.yourVocabulary.weakLabel,
       card: 'border-warning/20 bg-warning/10',
-      badge: 'bg-warning text-on-primary',
+      badge: 'bg-warning text-ink',
       text: 'text-warning',
       bar: 'bg-warning',
       star: 'text-warning fill-warning',

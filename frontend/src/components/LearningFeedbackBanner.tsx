@@ -8,10 +8,12 @@ interface LearningFeedbackBannerProps {
   onDismiss: () => void;
 }
 
+// Soft accent backgrounds: cream-tinted with a colored border so the
+// banner reads as a positive signal without a saturated full-bleed fill.
 const toneClasses: Record<LearningFeedback['tone'], string> = {
-  level_up: 'bg-success text-on-primary',
-  progress: 'bg-primary text-on-primary',
-  review: 'bg-accent-amber text-ink',
+  level_up: 'bg-success/10 border border-success/40 text-ink',
+  progress: 'bg-primary/10 border border-primary/40 text-ink',
+  review: 'bg-accent-amber/15 border border-accent-amber/40 text-ink',
 };
 
 export function LearningFeedbackBanner({ feedback, onDismiss }: LearningFeedbackBannerProps) {

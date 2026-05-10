@@ -199,7 +199,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                   </span>
                 )}
                 {word.is_compound && (
-                  <span className={`bg-accent-teal text-on-primary px-3 py-1 ${UI_RADIUS.pill} text-sm font-semibold`}>
+                  <span className={`bg-accent-teal text-ink px-3 py-1 ${UI_RADIUS.pill} text-sm font-semibold`}>
                     Compound
                   </span>
                 )}

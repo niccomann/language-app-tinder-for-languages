@@ -30,7 +30,7 @@ const reasonMeta: Record<SelectionReason, { label: string; Icon: typeof Target; 
   review: {
     label: 'Review',
     Icon: Gauge,
-    className: 'border-hairline bg-success text-on-primary',
+    className: 'border-hairline bg-success text-ink',
   },
 };
 

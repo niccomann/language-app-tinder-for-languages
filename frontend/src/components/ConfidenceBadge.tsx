@@ -62,7 +62,7 @@ export function ConfidenceBadge({
 
   const getConfig = (score: number) => {
     if (score >= 10) return {
-      color: 'bg-success text-on-primary border-transparent',
+      color: 'bg-success text-ink border-transparent',
       label: 'Mastered',
       icon: Star,
     };

@@ -341,7 +341,7 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
             onClick={() => setShowImages(!showImages)}
             className={`flex items-center gap-2 px-6 py-2.5 ${UI_RADIUS.pill} font-medium transition-all duration-300 whitespace-nowrap min-w-fit ${
               showImages
-                ? `bg-success text-on-primary ${UI_ELEVATION.floating}`
+                ? `bg-success text-ink ${UI_ELEVATION.floating}`
                 : 'bg-surface-card text-body hover:bg-surface-cream-strong'
             }`}
             title={showImages ? 'Hide images' : 'Show images'}
