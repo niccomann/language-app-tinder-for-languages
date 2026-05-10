@@ -78,7 +78,7 @@ export function LearningScreen({
             )}
           />
 
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid auto-rows-fr grid-cols-3 gap-2">
             <NavButton
               onClick={() => onFiltersOpenChange(true)}
               icon={<SlidersHorizontal size={17} />}

@@ -97,7 +97,7 @@ export function FirstVocabularyOnboarding({
         primaryActionLabel={onboardingCopy.intro.primaryAction}
         onPrimaryAction={() => advanceWithMascot('preferences')}
       >
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid auto-rows-fr gap-3 sm:grid-cols-3">
           <GameSignalBadge icon={<Target size={14} />} label={onboardingCopy.intro.knownSignal} tone="success" />
           <GameSignalBadge icon={<Brain size={14} />} label={onboardingCopy.intro.unknownSignal} tone="amber" />
           <GameSignalBadge icon={<Sparkles size={14} />} label={onboardingCopy.intro.wordLevelSignal} tone="coral" />
@@ -143,13 +143,13 @@ export function FirstVocabularyOnboarding({
         primaryActionLabel={onboardingCopy.analysis.primaryAction}
         onPrimaryAction={() => advanceWithMascot('science')}
       >
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid auto-rows-fr gap-3 sm:grid-cols-3">
           <SignalSummaryTile icon={<Target size={18} />} label={onboardingCopy.analysis.wordsSeen} value={signals.length} tone="coral" />
           <SignalSummaryTile icon={<Sparkles size={18} />} label={onboardingCopy.analysis.strongSignals} value={insights.knownEstimate} tone="success" />
           <SignalSummaryTile icon={<Brain size={18} />} label={onboardingCopy.analysis.toReview} value={insights.reviewEstimate} tone="amber" />
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid auto-rows-fr gap-3 sm:grid-cols-2">
           <SurfacePanel padding="md" className="border-success/20 bg-success/10">
             <p className="text-xs font-semibold uppercase tracking-wide text-success">{onboardingCopy.analysis.strongestOn}</p>
             <p className="mt-2 text-xl font-semibold text-ink">{insights.strongCategory}</p>
@@ -175,7 +175,7 @@ export function FirstVocabularyOnboarding({
         primaryActionLabel={onboardingCopy.science.primaryAction}
         onPrimaryAction={onComplete}
       >
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid auto-rows-fr gap-3 sm:grid-cols-3">
           <GameSignalBadge icon={<Brain size={14} />} label={onboardingCopy.science.memorySignals} tone="coral" />
           <GameSignalBadge icon={<ChartNoAxesColumnIncreasing size={14} />} label={onboardingCopy.science.progressScience} tone="teal" />
           <GameSignalBadge icon={<Sparkles size={14} />} label={onboardingCopy.science.adaptivePath} tone="success" />
@@ -208,7 +208,7 @@ export function FirstVocabularyOnboarding({
               bodyClassName="mt-2 min-h-[4.5rem] text-sm font-semibold leading-6 text-muted"
             />
 
-            <div className="mt-5 grid grid-cols-3 gap-2">
+            <div className="mt-5 grid auto-rows-fr grid-cols-3 gap-2">
               <SignalSummaryTile icon={<Target size={17} />} label={onboardingCopy.scan.scanLabel} value={signals.length} tone="coral" compact />
               <SignalSummaryTile icon={<Sparkles size={17} />} label={onboardingCopy.scan.knownLabel} value={insights.knownEstimate} tone="success" compact />
               <SignalSummaryTile icon={<Brain size={17} />} label={onboardingCopy.scan.reviewLabel} value={insights.reviewEstimate} tone="amber" compact />

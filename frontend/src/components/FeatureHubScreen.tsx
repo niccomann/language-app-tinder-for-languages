@@ -94,7 +94,7 @@ export function FeatureHubScreen({
                 </p>
               </div>
 
-              <div className="grid gap-3 md:grid-cols-2">
+              <div className="grid auto-rows-fr gap-3 md:grid-cols-2">
                 {section.items.map((item) => (
                   <HubFeatureButton
                     key={item.id}
@@ -127,15 +127,15 @@ function HubFeatureButton({
       type="button"
       aria-label={`Open ${item.title}`}
       onClick={onOpen}
-      className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} flex min-h-24 w-full items-start gap-3 border p-4 text-left hover:bg-surface-cream-strong ${tone.surface}`}
+      className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} flex h-full min-h-24 w-full items-start gap-3 border p-4 text-left hover:bg-surface-cream-strong ${tone.surface}`}
     >
       <span className={`${UI_RADIUS.touchIcon} flex h-11 w-11 shrink-0 items-center justify-center ${tone.icon}`}>
         {icon}
       </span>
-      <span className="min-w-0 flex-1">
+      <span className="flex min-w-0 flex-1 flex-col self-stretch">
         <span className="block font-sans font-semibold text-body-md text-ink">{item.title}</span>
         <span className="mt-1 block text-body-sm font-medium leading-5 text-muted">{item.description}</span>
-        <span className={`mt-3 inline-flex ${UI_RADIUS.pill} px-3 py-1.5 text-caption font-medium ${tone.badge}`}>
+        <span className={`mt-auto inline-flex w-fit ${UI_RADIUS.pill} px-3 py-1.5 text-caption font-medium ${tone.badge}`}>
           Open
         </span>
       </span>

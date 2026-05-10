@@ -110,7 +110,7 @@ export function LearningPathHome({
               onOpenExplore={() => onNavigateToFeature('/explore')}
             />
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid auto-rows-fr grid-cols-2 gap-3">
               <StatCard label="Path Level" value={pathLevel} icon={<Gauge size={20} />} color="coral" />
               <StatCard label="Words" value={learningSummary?.total_words_practiced ?? 0} icon={<BookOpen size={20} />} color="coral-strong" />
               <StatCard label="Strong" value={learningSummary?.words_mastered ?? 0} icon={<Trophy size={20} />} color="success" />
@@ -280,7 +280,7 @@ function PathFocusFlow({
         )}
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className="grid auto-rows-fr gap-2 sm:grid-cols-2">
         <PathToolButton
           icon={<BookOpenCheck size={18} />}
           title="Review tools"
@@ -313,12 +313,12 @@ function PathToolButton({
     <button
       type="button"
       onClick={onOpen}
-      className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} flex min-h-20 w-full items-center gap-3 border border-hairline bg-canvas p-3 text-left hover:bg-surface-card`}
+      className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} flex h-full min-h-20 w-full items-start gap-3 border border-hairline bg-canvas p-3 text-left hover:bg-surface-card`}
     >
       <span className={`${UI_RADIUS.touchIcon} flex h-10 w-10 shrink-0 items-center justify-center bg-ink text-canvas`}>
         {icon}
       </span>
-      <span className="min-w-0">
+      <span className="min-w-0 flex-1">
         <span className="block text-body-sm font-semibold text-ink">{title}</span>
         <span className="mt-1 block text-caption font-medium leading-5 text-muted">{body}</span>
       </span>

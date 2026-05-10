@@ -43,7 +43,7 @@ export function LearningCategoryStrip({
         </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid auto-rows-fr grid-cols-2 gap-3">
         {visibleCategories.length > 0 ? (
           visibleCategories.map((category, index) => {
             const meta = getLearningCategoryMeta(category, index);

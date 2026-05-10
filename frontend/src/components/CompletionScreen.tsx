@@ -44,7 +44,7 @@ export function CompletionScreen({
         />
 
         <SurfacePanel className="mb-6" padding="lg">
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid auto-rows-fr grid-cols-3 gap-6">
             <div className={`p-4 bg-surface-card ${UI_RADIUS.control}`}>
               <Target size={24} className="mx-auto mb-2 text-primary" />
               <div className="font-display font-normal text-display-sm text-primary mb-1 text-center">
@@ -69,7 +69,7 @@ export function CompletionScreen({
           </div>
         </SurfacePanel>
 
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid auto-rows-fr gap-3 sm:grid-cols-3">
           <NavButton
             onClick={onChangeCategories}
             icon={<SlidersHorizontal size={24} strokeWidth={2.5} />}
