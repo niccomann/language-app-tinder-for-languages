@@ -23,8 +23,8 @@ Questo modulo contiene il backend Python embeddabile per le app mobile Android/i
 │  │ ✅ Progress     │    │ ✅ Progress                 │ │   │
 │  │ ✅ Library      │    │ ✅ Library                  │ │   │
 │  │ ✅ Grammar      │    │ ✅ Grammar + Validation     │ │   │
-│  │ ❌ YouTube      │    │ ✅ YouTube Videos           │ │   │
-│  │ ❌ AI Videos    │    │ ✅ AI Videos (Sora)         │ │   │
+│  │ ❌ YouTube      │    │ ❌ Deprecated               │ │   │
+│  │ ❌ AI Videos    │    │ ❌ Deprecated               │ │   │
 │  │ ❌ TTS          │    │ ✅ Text-to-Speech           │ │   │
 │  └─────────────────┘    └─────────────────────────────┘ │   │
 │           │                        │                    │   │
@@ -49,8 +49,8 @@ Questo modulo contiene il backend Python embeddabile per le app mobile Android/i
 | Words Library | ✅ | Filtri e ricerca |
 | Grammar sentences | ✅ | Dati statici |
 | Grammar validation | ❌ | Richiede LLM |
-| YouTube videos | ❌ | Richiede API |
-| AI videos | ❌ | Richiede OpenAI |
+| YouTube videos | ❌ | Deprecato nel prodotto attivo |
+| AI videos | ❌ | Deprecato nel prodotto attivo |
 | Text-to-speech | ❌ | Richiede OpenAI |
 
 ## Integrazione Chaquopy (Android)
@@ -92,21 +92,12 @@ chaquopy {
 cp mobile-backend/embedded_backend.py frontend/android/app/src/main/python/
 ```
 
-### 3. Chiamare da Kotlin/Java
+### 3. Bridge Capacitor
 
-```kotlin
-import com.chaquo.python.Python
-import com.chaquo.python.android.AndroidPlatform
-
-class EmbeddedBackendBridge {
-    private val python = Python.getInstance()
-    private val backend = python.getModule("embedded_backend")
-    
-    fun handleRequest(method: String, path: String, body: String? = null): String {
-        return backend.callAttr("handle_request", method, path, body).toString()
-    }
-}
-```
+Il progetto Android registra `OfflineBackendPlugin`, che espone il plugin Capacitor
+`OfflineBackend`. In modalità `VITE_APP_MODE=offline`, il client TypeScript invia
+le chiamate `/api/*` a quel plugin invece che a `localhost`; il plugin chiama
+`embedded_backend.handle_request()` via Chaquopy.
 
 ## Test Locale
 

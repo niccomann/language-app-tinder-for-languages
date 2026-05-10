@@ -75,6 +75,18 @@ export const featureFlowItems: FeatureFlowItem[] = [
     ctaLabel: copy.featureFlow.topicDeck.ctaLabel,
   },
   {
+    id: 'your-vocabulary',
+    title: copy.featureFlow.yourVocabulary.title,
+    missionLabel: copy.featureFlow.yourVocabulary.missionLabel,
+    description: copy.featureFlow.yourVocabulary.description,
+    route: '/vocabulary',
+    guideId: 'vocabularyScan',
+    phase: 'collection',
+    tone: 'emerald',
+    order: 45,
+    ctaLabel: copy.featureFlow.yourVocabulary.ctaLabel,
+  },
+  {
     id: 'word-library',
     title: copy.featureFlow.wordLibrary.title,
     missionLabel: copy.featureFlow.wordLibrary.missionLabel,

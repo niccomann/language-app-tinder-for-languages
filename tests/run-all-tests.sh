@@ -12,7 +12,7 @@ PROJECT_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 cd "$PROJECT_ROOT"
 
 echo ""
-echo "🧪 Running All E2E Tests"
+echo "🧪 Running Active E2E Tests"
 echo "════════════════════════════════════════"
 echo "📁 Project root: $PROJECT_ROOT"
 echo ""
@@ -42,77 +42,55 @@ echo ""
 
 # Test 1: Quick Check
 echo "════════════════════════════════════════"
-echo "Test 1/3: Quick Check ⚡"
+echo "Test 1/5: Quick Check ⚡"
 echo "════════════════════════════════════════"
-node tests/test-quick-check.js
+node tests/e2e/web/test-quick-check.js
 if [ $? -ne 0 ]; then
     echo "❌ Quick check failed!"
     exit 1
 fi
 echo ""
 
-# Test 2: Video Reel E2E
+# Test 2: Grammar Lab
 echo "════════════════════════════════════════"
-echo "Test 2/3: Video Reel E2E 🎬"
+echo "Test 2/5: Grammar Lab 🧪"
 echo "════════════════════════════════════════"
-node tests/test-video-reel-e2e.js
-if [ $? -ne 0 ]; then
-    echo "❌ Video reel E2E test failed!"
-    exit 1
-fi
-echo ""
-
-# Test 3: Video Playback
-echo "════════════════════════════════════════"
-echo "Test 3/4: Video Playback 🎥"
-echo "════════════════════════════════════════"
-node tests/test-video-playback.js
-if [ $? -ne 0 ]; then
-    echo "❌ Video playback test failed!"
-    exit 1
-fi
-echo ""
-
-# Test 4: AI Video Selector
-echo "════════════════════════════════════════"
-echo "Test 4/7: AI Video Selector 🤖"
-echo "════════════════════════════════════════"
-node tests/test-ai-video-selector.js
-if [ $? -ne 0 ]; then
-    echo "❌ AI video selector test failed!"
-    exit 1
-fi
-echo ""
-
-# Test 5: Grammar Lab
-echo "════════════════════════════════════════"
-echo "Test 5/7: Grammar Lab 🧪"
-echo "════════════════════════════════════════"
-node tests/test-grammar-lab.js
+node tests/e2e/web/test-grammar-lab.js
 if [ $? -ne 0 ]; then
     echo "❌ Grammar Lab test failed!"
     exit 1
 fi
 echo ""
 
-# Test 6: Words Library
+# Test 3: Words Library
 echo "════════════════════════════════════════"
-echo "Test 6/7: Words Library 📚"
+echo "Test 3/5: Words Library 📚"
 echo "════════════════════════════════════════"
-node tests/test-words-library.js
+node tests/e2e/web/test-words-library.js
 if [ $? -ne 0 ]; then
     echo "❌ Words Library test failed!"
     exit 1
 fi
 echo ""
 
-# Test 7: Flashcard Flow
+# Test 4: Flashcard Flow
 echo "════════════════════════════════════════"
-echo "Test 7/7: Flashcard Flow 🎴"
+echo "Test 4/5: Flashcard Flow 🎴"
 echo "════════════════════════════════════════"
-node tests/test-flashcard-flow.js
+node tests/e2e/web/test-flashcard-flow.js
 if [ $? -ne 0 ]; then
     echo "❌ Flashcard flow test failed!"
+    exit 1
+fi
+echo ""
+
+# Test 5: New Features
+echo "════════════════════════════════════════"
+echo "Test 5/5: New Features ✨"
+echo "════════════════════════════════════════"
+node tests/e2e/web/test-new-features.js
+if [ $? -ne 0 ]; then
+    echo "❌ New features test failed!"
     exit 1
 fi
 echo ""
@@ -130,7 +108,4 @@ echo "🧹 Cleaning up test screenshots..."
 sleep 2  # Give time to view the summary
 rm -f "$PROJECT_ROOT"/*.png 2>/dev/null
 echo "✅ Screenshots cleaned up"
-echo ""
-echo "💡 To test full AI video generation (5-10 min, costs money):"
-echo "   node tests/test-ai-video-generation.js"
 echo ""

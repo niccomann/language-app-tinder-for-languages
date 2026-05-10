@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import {
   APP_URL,
   clearFirstVocabularyOnboardingDone,
@@ -10,6 +10,7 @@ import {
 } from './test-utils/appTestHelpers';
 
 test('first visit starts with a full-screen vocabulary intro before the swipe scan', async ({ page }) => {
+  test.setTimeout(60000);
   await mockLearningApi(page, {
     average_confidence: 0,
     average_knowledge_level: 1,
@@ -34,25 +35,36 @@ test('first visit starts with a full-screen vocabulary intro before the swipe sc
   await expect(intro).toBeVisible({ timeout: 15000 });
   await expect(intro.getByTestId('mascot-reaction')).toBeVisible();
   await expect(intro.getByTestId('mascot-speech-bubble')).toBeVisible();
-  await expect(intro.getByTestId('mascot-speech-bubble')).toHaveAttribute('data-speech-step-total', '3');
+  await expect(intro.getByTestId('mascot-speech-bubble')).toHaveAttribute('data-speech-step-total', '4');
   await expect(intro.getByTestId('speech-bubble-tail')).toBeVisible();
-  await expect(intro.getByTestId('speech-step-indicator')).toHaveText('1 / 3');
+  await expect(intro.getByTestId('speech-step-indicator')).toHaveText('1 / 4');
   await expect(intro.getByTestId('streaming-speech-text')).toHaveAttribute('data-typing-state', 'streaming');
   await expect(intro.getByTestId('streaming-speech-text')).toHaveAttribute('data-typewriter-interval-ms', '24');
   await expect(intro.getByTestId('mascot-reaction')).toHaveAttribute('data-speaking', 'true');
+  await expect(intro.getByRole('button', { name: 'Skip', exact: true })).toBeVisible();
   await expect(intro.getByText('This app starts from the vocabulary you actually know.')).toBeVisible();
   await expect(intro.getByText('we do not want to show you words you already know too often')).toBeVisible();
 
-  await expect(intro.getByTestId('speech-step-indicator')).toHaveText('2 / 3', { timeout: 15000 });
-  await expect(intro.getByText('understand how many words you know, which ones you already know, and which ones you only know a little')).toBeVisible();
-
-  await expect(intro.getByTestId('speech-step-indicator')).toHaveText('3 / 3', { timeout: 15000 });
-  await expect(intro.getByText('Every word can have a different level')).toBeVisible();
   await expect(intro.getByTestId('streaming-speech-text')).toHaveAttribute('data-typing-state', 'complete', { timeout: 15000 });
+  await expect(intro.getByRole('button', { name: 'Next page' })).toBeVisible();
+  await page.waitForTimeout(1300);
+  await expect(intro.getByTestId('speech-step-indicator')).toHaveText('1 / 4');
+
+  await intro.getByRole('button', { name: 'Next page' }).click();
+  await expect(intro.getByTestId('speech-step-indicator')).toHaveText('2 / 4');
+  await expect(intro.getByText('spend real mental effort learning words you may never use')).toBeVisible();
+  await expect(intro.getByRole('button', { name: 'Start the scan' })).toHaveCount(0);
+
+  await intro.getByRole('button', { name: 'Skip', exact: true }).click();
+  await expect(intro.getByTestId('speech-step-indicator')).toHaveText('4 / 4');
+  await expect(intro.getByText('Every word can have a different level')).toBeVisible();
+  await expect(intro.getByTestId('streaming-speech-text')).toHaveAttribute('data-typing-state', 'complete');
   await expect(intro.getByTestId('mascot-reaction')).toHaveAttribute('data-speaking', 'false');
+  await expect(intro.getByRole('button', { name: 'Skip', exact: true })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Vocabulary Scan' })).toHaveCount(0);
 
   await intro.getByRole('button', { name: 'Start the scan' }).click();
+  await completePreferenceQuestionnaire(page);
 
   await expect(page.getByRole('heading', { name: 'Vocabulary Scan' })).toBeVisible({ timeout: 15000 });
   const scanBubble = page.getByTestId('vocabulary-scan-bubble');
@@ -66,6 +78,26 @@ test('first visit starts with a full-screen vocabulary intro before the swipe sc
   await expect(page.getByRole('button', { name: 'Grammar' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Filters', exact: true })).toHaveCount(0);
 });
+
+async function completePreferenceQuestionnaire(page: Page) {
+  const questionnaire = page.getByTestId('onboarding-preference-questionnaire');
+  await expect(questionnaire).toBeVisible({ timeout: 15000 });
+
+  for (let questionIndex = 0; questionIndex < 11; questionIndex += 1) {
+    await questionnaire.locator('button[aria-pressed]').first().click();
+    await questionnaire
+      .getByRole('button', { name: questionIndex === 10 ? 'Start vocabulary scan' : 'Next question' })
+      .click();
+  }
+}
+
+async function skipIntroNarration(page: Page) {
+  const intro = page.getByTestId('vocabulary-intro');
+  await expect(intro).toBeVisible({ timeout: 15000 });
+  await intro.getByRole('button', { name: 'Skip', exact: true }).click();
+  await expect(intro.getByRole('button', { name: 'Start the scan' })).toBeVisible();
+  return intro;
+}
 
 test('home starts on the learning path and enters the swipe deck', async ({ page }) => {
   await mockLearningApi(page);
@@ -95,7 +127,7 @@ test('home starts on the learning path and enters the swipe deck', async ({ page
   await expect(page.getByRole('button', { name: 'Apply Filters' })).toBeVisible();
 });
 
-test('demo flow ignores the old persisted onboarding flag on app start', async ({ page }) => {
+test('completed first-run setup opens the learning path on next app start', async ({ page }) => {
   await mockLearningApi(page);
   await markFeatureGuidesSeen(page);
   await page.addInitScript(() => {
@@ -105,8 +137,54 @@ test('demo flow ignores the old persisted onboarding flag on app start', async (
 
   await page.goto(APP_URL);
 
+  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByTestId('vocabulary-intro')).toHaveCount(0);
+});
+
+test('first-run setup is mandatory before the learning path is available', async ({ page }) => {
+  await mockLearningApi(page);
+  await clearFirstVocabularyOnboardingDone(page);
+  await markFeatureGuidesSeen(page);
+  await page.goto(APP_URL);
+
+  const intro = page.getByTestId('vocabulary-intro');
+  await expect(intro).toBeVisible({ timeout: 15000 });
+  await expect(intro.getByRole('button', { name: 'Skip setup' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toHaveCount(0);
+
+  await skipIntroNarration(page);
+  await intro.getByRole('button', { name: 'Start the scan' }).click();
+  const preferences = page.getByTestId('vocabulary-preferences');
+  await expect(preferences).toBeVisible({ timeout: 15000 });
+  await preferences.getByRole('button', { name: 'Back' }).click();
+
   await expect(page.getByTestId('vocabulary-intro')).toBeVisible({ timeout: 15000 });
-  await expect(page.getByText('This app starts from the vocabulary you actually know.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toHaveCount(0);
+});
+
+test('first setup questions allow selecting multiple options at once', async ({ page }) => {
+  await mockLearningApi(page);
+  await clearFirstVocabularyOnboardingDone(page);
+  await markFeatureGuidesSeen(page);
+  await page.goto(APP_URL);
+
+  const intro = page.getByTestId('vocabulary-intro');
+  await expect(intro).toBeVisible({ timeout: 15000 });
+  await skipIntroNarration(page);
+  await intro.getByRole('button', { name: 'Start the scan' }).click();
+
+  const preferences = page.getByTestId('vocabulary-preferences');
+  await expect(preferences.getByRole('heading', { name: 'Modern, classic, or both?' })).toBeVisible({ timeout: 15000 });
+
+  const modern = preferences.getByRole('button', { name: /Modern everyday/i });
+  const classic = preferences.getByRole('button', { name: /Classic and cultural/i });
+
+  await modern.click();
+  await classic.click();
+
+  await expect(modern).toHaveAttribute('aria-pressed', 'true');
+  await expect(classic).toHaveAttribute('aria-pressed', 'true');
+  await expect(preferences.getByText('Selected')).toHaveCount(2);
 });
 
 test('home leaves loading state when the category API stalls', async ({ page }) => {
@@ -137,19 +215,21 @@ test('home opens sentence placement from the learning path', async ({ page }) =>
   await expect(page.getByRole('button', { name: 'Check' })).toBeVisible();
 });
 
-test('home shows prominent gamified topic filters', async ({ page }) => {
+test('review hub keeps gamified topic filters one step away from the path', async ({ page }) => {
   await mockLearningApi(page);
   await markFirstVocabularyOnboardingDone(page);
   await markFeatureGuidesSeen(page);
   await page.goto(APP_URL);
 
   await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
-  await expect(page.getByRole('button', { name: /Topics/i })).toBeVisible();
+  await page.getByRole('button', { name: /Review tools/i }).click();
 
-  await page.getByRole('button', { name: /Topics/i }).click();
+  await expect(page).toHaveURL(`${APP_URL}/review`);
+  await expect(page.getByRole('heading', { name: 'Review & Setup' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: /Open Topic Deck/i }).click();
 
   const filtersDialog = page.getByRole('dialog', { name: 'Build your topic deck' });
-  await expect(filtersDialog.getByRole('heading', { name: 'Build your topic deck' })).toBeVisible();
+  await expect(filtersDialog.getByRole('heading', { name: 'Build your topic deck' })).toBeVisible({ timeout: 15000 });
   await expect(filtersDialog.getByText('Pick the packs you want in the swipe deck.')).toBeVisible();
   await expect(filtersDialog.getByRole('button', { name: /Animal Pack/i })).toBeVisible();
   await expect(filtersDialog.getByText('Game packs')).toBeVisible();
@@ -172,6 +252,8 @@ test('home explains the adaptive learning system in a compact menu', async ({ pa
   await expect(page.getByText('Your global path can grow through 400 levels.')).toBeVisible();
   await expect(page.getByText('Each word still has a focused mastery score from 1 to 10.')).toBeVisible();
   await expect(page.getByText('Future sentences can mix strong words with weaker words, keeping context useful without overload.')).toBeVisible();
+  await expect(page.getByText('New Features')).toHaveCount(0);
+  await expect(page.getByText('Latest session updates')).toHaveCount(0);
 });
 
 test('home keeps the swipe card and decision buttons usable in the first viewport', async ({ page }) => {
@@ -194,28 +276,27 @@ test('home keeps the swipe card and decision buttons usable in the first viewpor
   await expectInViewport(page, dontKnowButton);
 });
 
-test('home presents a constrained guided mission flow without hiding existing features', async ({ page }) => {
+test('home prioritizes the next learning action and moves secondary features into hubs', async ({ page }) => {
   await mockLearningApi(page);
   await markFirstVocabularyOnboardingDone(page);
   await markFeatureGuidesSeen(page);
   await page.goto(APP_URL);
 
   await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
-  const missionFlow = page.getByTestId('guided-mission-flow');
-  await expect(missionFlow).toBeVisible();
-  await expect(missionFlow.getByRole('button', { name: /Continue path/i })).toBeVisible();
-  await expect(missionFlow.getByRole('button', { name: /Continue path/i })).toHaveCount(1);
-  await expect(missionFlow.getByText('Mission 1')).toBeVisible();
-  await expect(missionFlow.getByText('Vocabulary Review')).toBeVisible();
-  await expect(missionFlow.getByText('Mission 2')).toBeVisible();
-  await expect(missionFlow.getByText('Sentence Placement')).toBeVisible();
-  await expect(missionFlow.getByText('Mission 3')).toBeVisible();
-  await expect(missionFlow.getByText('Grammar Lab')).toBeVisible();
-  await expect(missionFlow.getByText('Collection', { exact: true })).toBeVisible();
-  await expect(missionFlow.getByText('Word Library')).toBeVisible();
-  await expect(missionFlow.getByText('Advanced exploration')).toBeVisible();
+  const focusFlow = page.getByTestId('path-focus-flow');
+  await expect(focusFlow).toBeVisible();
+  await expect(focusFlow.getByRole('button', { name: /Continue path/i })).toBeVisible();
+  await expect(focusFlow.getByRole('button', { name: /Continue path/i })).toHaveCount(1);
+  await expect(focusFlow.getByRole('button', { name: /Open Sentence Placement mission/i })).toBeVisible();
+  await expect(focusFlow.getByRole('button', { name: /Review tools/i })).toBeVisible();
+  await expect(focusFlow.getByRole('button', { name: /Explore tools/i })).toBeVisible();
+  await expect(page.getByText('Advanced exploration')).toHaveCount(0);
+  await expect(page.getByText('Word Cloud')).toHaveCount(0);
+  await expect(page.getByText('Hierarchy')).toHaveCount(0);
+  await expect(page.getByText('Product updates')).toHaveCount(0);
+  await expect(page.getByText('New Features')).toHaveCount(0);
 
-  await missionFlow.getByRole('button', { name: /Open Sentence Placement mission/i }).click();
+  await focusFlow.getByRole('button', { name: /Open Sentence Placement mission/i }).click();
 
   await expect(page).toHaveURL(`${APP_URL}/placement/sentence`);
   await expect(page.getByRole('heading', { name: 'Grammar Placement' })).toBeVisible({ timeout: 15000 });

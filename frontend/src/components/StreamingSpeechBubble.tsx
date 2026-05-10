@@ -21,6 +21,9 @@ interface StreamingSpeechBubbleProps {
   playbackKey?: string | number;
   showStepIndicator?: boolean;
   stream?: boolean;
+  manualStepControl?: boolean;
+  skipSpeechLabel?: string;
+  nextStepLabel?: string;
   onStepChange?: (stepIndex: number) => void;
   onTypingChange?: (isTyping: boolean) => void;
 }
@@ -36,6 +39,9 @@ export function StreamingSpeechBubble({
   playbackKey = 0,
   showStepIndicator,
   stream = true,
+  manualStepControl = false,
+  skipSpeechLabel = 'Skip',
+  nextStepLabel = 'Next page',
   onStepChange,
   onTypingChange,
 }: StreamingSpeechBubbleProps) {
@@ -62,6 +68,25 @@ export function StreamingSpeechBubble({
   const isTyping = shouldStreamSpeech && visibleCharacters < fullSpeechText.length;
   const isFinalSpeechStep = activeStepIndex === normalizedSteps.length - 1;
   const showInteractiveContent = !shouldStreamSpeech || (isFinalSpeechStep && !isTyping);
+  const showManualControls = manualStepControl && shouldStreamSpeech && normalizedSteps.length > 1;
+  const showSkipSpeech = showManualControls && (isTyping || !isFinalSpeechStep);
+  const showNextStep = showManualControls && !isTyping && !isFinalSpeechStep;
+
+  const skipSpeech = () => {
+    const finalStepIndex = normalizedSteps.length - 1;
+    const finalStep = normalizedSteps[finalStepIndex];
+    setSpeechPlayback({
+      stepIndex: finalStepIndex,
+      visibleCharacters: `${finalStep.title}\n${finalStep.body}`.length,
+    });
+  };
+
+  const goToNextStep = () => {
+    setSpeechPlayback((current) => ({
+      stepIndex: Math.min(current.stepIndex + 1, normalizedSteps.length - 1),
+      visibleCharacters: 0,
+    }));
+  };
 
   useEffect(() => {
     onTypingChange?.(isTyping);
@@ -92,7 +117,7 @@ export function StreamingSpeechBubble({
   }, [activeStepIndex, fullSpeechText.length, isTyping, shouldStreamSpeech, visibleCharacters]);
 
   useEffect(() => {
-    if (!shouldStreamSpeech || isTyping || isFinalSpeechStep) return undefined;
+    if (!shouldStreamSpeech || manualStepControl || isTyping || isFinalSpeechStep) return undefined;
 
     const nextStepTimer = window.setTimeout(() => {
       setSpeechPlayback((current) => ({
@@ -102,7 +127,7 @@ export function StreamingSpeechBubble({
     }, SPEECH_STEP_PAUSE_MS);
 
     return () => window.clearTimeout(nextStepTimer);
-  }, [isFinalSpeechStep, isTyping, normalizedSteps.length, shouldStreamSpeech]);
+  }, [isFinalSpeechStep, isTyping, manualStepControl, normalizedSteps.length, shouldStreamSpeech]);
 
   return (
     <section
@@ -130,14 +155,25 @@ export function StreamingSpeechBubble({
       >
         <div className="flex items-center justify-between gap-3">
           <p className={eyebrowClassName}>{activeStep.eyebrow}</p>
-          {shouldShowStepIndicator && (
-            <p
-              data-testid="speech-step-indicator"
-              className="rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-xs font-extrabold text-indigo-700 dark:border-slate-700 dark:bg-slate-800 dark:text-indigo-100"
-            >
-              {activeStepIndex + 1} / {normalizedSteps.length}
-            </p>
-          )}
+          <div className="flex shrink-0 items-center gap-2">
+            {showSkipSpeech && (
+              <button
+                type="button"
+                onClick={skipSpeech}
+                className="min-h-9 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-extrabold text-slate-700 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-indigo-700"
+              >
+                {skipSpeechLabel}
+              </button>
+            )}
+            {shouldShowStepIndicator && (
+              <p
+                data-testid="speech-step-indicator"
+                className="rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-xs font-extrabold text-indigo-700 dark:border-slate-700 dark:bg-slate-800 dark:text-indigo-100"
+              >
+                {activeStepIndex + 1} / {normalizedSteps.length}
+              </p>
+            )}
+          </div>
         </div>
         <h1 className={titleClassName}>
           {visibleTitle}
@@ -152,6 +188,16 @@ export function StreamingSpeechBubble({
           )}
         </p>
       </div>
+
+      {showNextStep && (
+        <button
+          type="button"
+          onClick={goToNextStep}
+          className="flex min-h-12 w-full items-center justify-center rounded-2xl border border-indigo-100 bg-indigo-50 px-5 py-3 text-sm font-extrabold text-indigo-700 transition hover:border-indigo-200 hover:bg-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:text-indigo-100 dark:hover:border-indigo-700"
+        >
+          {nextStepLabel}
+        </button>
+      )}
 
       {showInteractiveContent && children}
     </section>

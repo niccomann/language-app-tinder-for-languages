@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { CompletionScreen } from './CompletionScreen';
+import { FeatureHubScreen } from './FeatureHubScreen';
 import { FirstVocabularyOnboarding } from './FirstVocabularyOnboarding';
 import { GrammarPlacementAssessment } from './GrammarPlacementAssessment';
 import { LearningPathHome } from './LearningPathHome';
 import { LearningScreen } from './LearningScreen';
 import { LoadingSpinner, ErrorState } from './ui';
+import { YourVocabularyScreen } from './YourVocabularyScreen';
 import { useCategories } from '../hooks/useCategories';
 import { useLearningSession } from '../hooks/useLearningSession';
 import type { LearningRouteMode } from '../routes/appRoutes';
@@ -23,6 +25,7 @@ interface CardStackProps {
   onOpenLibrary: () => void;
   onOpenGrammarLab: () => void;
   onNavigateToFeature: (path: string) => void;
+  onFirstVocabularyOnboardingComplete?: () => void;
 }
 
 export const CardStack = ({
@@ -34,6 +37,7 @@ export const CardStack = ({
   onOpenLibrary,
   onOpenGrammarLab,
   onNavigateToFeature,
+  onFirstVocabularyOnboardingComplete,
 }: CardStackProps) => {
   const categories = useCategories();
   const [firstVocabularyOnboardingDone, setFirstVocabularyOnboardingDone] = useState(readFirstVocabularyOnboardingDone);
@@ -67,6 +71,7 @@ export const CardStack = ({
   const handleCompleteFirstVocabularyOnboarding = () => {
     markFirstVocabularyOnboardingDone();
     setFirstVocabularyOnboardingDone(true);
+    onFirstVocabularyOnboardingComplete?.();
     onOpenLearningPath();
   };
 
@@ -104,6 +109,27 @@ export const CardStack = ({
         totalCards={flashcards.length}
         onSwipe={handleSwipe}
         onComplete={handleCompleteFirstVocabularyOnboarding}
+      />
+    );
+  }
+
+  if (mode === 'vocabulary') {
+    return (
+      <YourVocabularyScreen
+        onBack={onOpenLearningPath}
+        onStartLearning={onStartLearning}
+      />
+    );
+  }
+
+  if (mode === 'review' || mode === 'explore') {
+    return (
+      <FeatureHubScreen
+        kind={mode}
+        selectedCategoriesCount={categories.selectedCategories.length}
+        categoriesCount={categories.allCategories.length}
+        onBack={onOpenLearningPath}
+        onNavigateToFeature={onNavigateToFeature}
       />
     );
   }

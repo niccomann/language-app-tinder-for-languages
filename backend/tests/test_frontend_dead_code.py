@@ -86,7 +86,6 @@ def test_frontend_maintenance_notes_document_shared_surfaces():
     assert "browserStorage.ts" in doc
     assert "firstVocabularyOnboardingMeta.ts" in doc
     assert "frontend/test-utils/appTestHelpers.ts" in doc
-    assert "deprecated" in doc
 
 
 def test_active_frontend_errors_use_shared_reporter():

@@ -2,10 +2,10 @@ from fastapi import APIRouter, Query
 from typing import Optional, List
 from sqlmodel import select, func
 from datetime import datetime, UTC
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 from types import SimpleNamespace
 
-from app.models import Flashcard, ProgressRequest, ProgressResponse
+from app.models import AdaptiveFlashcardQueryRequest, Flashcard, ProgressRequest, ProgressResponse
 from app.database import SessionDependency
 from app.database.models import FlashcardEntity, UserProgressEntity, UserWordStatisticsEntity
 from app.services.adaptive_learning import (
@@ -13,6 +13,7 @@ from app.services.adaptive_learning import (
     knowledge_level_from_confidence,
     selection_reason,
 )
+from app.services.preference_filter import select_preference_weighted_candidates
 
 router = APIRouter(prefix="/api", tags=["cards"])
 
@@ -35,6 +36,13 @@ class FlashcardWithProgress(BaseModel):
 
 class AdaptiveFlashcard(Flashcard):
     """Flashcard enriched with adaptive learning metadata."""
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+
+    cefr_level: Optional[str] = None
+    frequency_band: Optional[str] = None
+    language_register: Optional[str] = Field(default=None, alias="register", serialization_alias="register")
+    thematic_domain: Optional[str] = None
+    part_of_speech: Optional[str] = None
     confidence_score: int = 0
     knowledge_level: int = 1
     times_seen: int = 0
@@ -42,6 +50,88 @@ class AdaptiveFlashcard(Flashcard):
     times_incorrect: int = 0
     last_practiced: Optional[datetime] = None
     selection_reason: str
+
+
+def build_adaptive_candidates(
+    cards: list[FlashcardEntity],
+    stats_by_word: dict[tuple[str, str], UserWordStatisticsEntity],
+) -> list[tuple[SimpleNamespace, FlashcardEntity, Optional[UserWordStatisticsEntity]]]:
+    candidates: list[tuple[SimpleNamespace, FlashcardEntity, Optional[UserWordStatisticsEntity]]] = []
+    for card in cards:
+        stats = stats_by_word.get((card.word, card.language))
+        confidence_score = stats.confidence_score if stats else 0
+        times_seen = stats.times_seen if stats else 0
+        last_practiced = stats.last_practiced if stats else None
+        candidate = SimpleNamespace(
+            id=card.id,
+            confidence_score=confidence_score,
+            times_seen=times_seen,
+            last_practiced=last_practiced,
+        )
+        candidates.append((candidate, card, stats))
+    return candidates
+
+
+def adaptive_flashcard_from_candidate(
+    candidate: SimpleNamespace,
+    card: FlashcardEntity,
+    stats: Optional[UserWordStatisticsEntity],
+) -> AdaptiveFlashcard:
+    card_data = Flashcard.model_validate(card).model_dump()
+    confidence_score = candidate.confidence_score
+    return AdaptiveFlashcard(
+        **card_data,
+        cefr_level=card.cefr_level,
+        frequency_band=card.frequency_band,
+        language_register=card.language_register,
+        thematic_domain=card.thematic_domain,
+        part_of_speech=card.part_of_speech,
+        confidence_score=confidence_score,
+        knowledge_level=knowledge_level_from_confidence(confidence_score),
+        times_seen=candidate.times_seen,
+        times_correct=stats.times_correct if stats else 0,
+        times_incorrect=stats.times_incorrect if stats else 0,
+        last_practiced=candidate.last_practiced,
+        selection_reason=selection_reason(candidate),
+    )
+
+
+def get_user_stats_by_word(
+    session: SessionDependency,
+    language: str,
+    user_id: str,
+) -> dict[tuple[str, str], UserWordStatisticsEntity]:
+    stats_rows = session.exec(
+        select(UserWordStatisticsEntity).where(
+            UserWordStatisticsEntity.language == language,
+            UserWordStatisticsEntity.user_id == user_id,
+        )
+    ).all()
+    return {(stats.word, stats.language): stats for stats in stats_rows}
+
+
+def progress_response_for_user(session: SessionDependency, user_id: str) -> ProgressResponse:
+    total_reviewed = session.exec(
+        select(func.count(UserProgressEntity.id)).where(UserProgressEntity.user_id == user_id)
+    ).one()
+    known_count = session.exec(
+        select(func.count(UserProgressEntity.id)).where(
+            UserProgressEntity.user_id == user_id,
+            UserProgressEntity.known == True,
+        )
+    ).one()
+    unknown_count = session.exec(
+        select(func.count(UserProgressEntity.id)).where(
+            UserProgressEntity.user_id == user_id,
+            UserProgressEntity.known == False,
+        )
+    ).one()
+
+    return ProgressResponse(
+        cards_reviewed=total_reviewed,
+        known_count=known_count,
+        unknown_count=unknown_count,
+    )
 
 
 @router.get("/cards", response_model=List[Flashcard])
@@ -90,48 +180,48 @@ async def get_adaptive_flashcards(
         query = query.where(FlashcardEntity.category.in_(category))
 
     cards = session.exec(query).all()
-    stats_rows = session.exec(
-        select(UserWordStatisticsEntity).where(
-            UserWordStatisticsEntity.language == language,
-            UserWordStatisticsEntity.user_id == user_id,
-        )
-    ).all()
-    stats_by_word = {(stats.word, stats.language): stats for stats in stats_rows}
-
-    candidates = []
-    for card in cards:
-        stats = stats_by_word.get((card.word, card.language))
-        confidence_score = stats.confidence_score if stats else 0
-        times_seen = stats.times_seen if stats else 0
-        last_practiced = stats.last_practiced if stats else None
-        candidate = SimpleNamespace(
-            id=card.id,
-            confidence_score=confidence_score,
-            times_seen=times_seen,
-            last_practiced=last_practiced,
-        )
-        candidates.append((candidate, card, stats))
+    stats_by_word = get_user_stats_by_word(session, language, user_id)
+    candidates = build_adaptive_candidates(cards, stats_by_word)
 
     selected = sorted(candidates, key=lambda item: adaptive_sort_key(item[0]))[:limit]
 
-    adaptive_cards: list[AdaptiveFlashcard] = []
-    for candidate, card, stats in selected:
-        card_data = Flashcard.model_validate(card).model_dump()
-        confidence_score = candidate.confidence_score
-        adaptive_cards.append(
-            AdaptiveFlashcard(
-                **card_data,
-                confidence_score=confidence_score,
-                knowledge_level=knowledge_level_from_confidence(confidence_score),
-                times_seen=candidate.times_seen,
-                times_correct=stats.times_correct if stats else 0,
-                times_incorrect=stats.times_incorrect if stats else 0,
-                last_practiced=candidate.last_practiced,
-                selection_reason=selection_reason(candidate),
-            )
-        )
+    return [
+        adaptive_flashcard_from_candidate(candidate, card, stats)
+        for candidate, card, stats in selected
+    ]
 
-    return adaptive_cards
+
+@router.post("/cards/adaptive/query", response_model=List[AdaptiveFlashcard])
+async def query_adaptive_flashcards(
+    session: SessionDependency,
+    request: AdaptiveFlashcardQueryRequest,
+):
+    """
+    Get adaptive flashcards through a soft preference profile.
+
+    The profile biases ordering without hard-locking the learner into one topic:
+    selected domains are prioritized, functional grammar words are preserved,
+    and fallback/exploration cards remain available.
+    """
+    query = select(FlashcardEntity).where(FlashcardEntity.language == request.language)
+
+    if request.selected_categories:
+        query = query.where(FlashcardEntity.category.in_(request.selected_categories))
+
+    cards = session.exec(query).all()
+    stats_by_word = get_user_stats_by_word(session, request.language, request.user_id)
+    candidates = build_adaptive_candidates(cards, stats_by_word)
+    selected = select_preference_weighted_candidates(
+        candidates,
+        request.profile,
+        request.limit,
+        adaptive_sort_key,
+    )
+
+    return [
+        adaptive_flashcard_from_candidate(candidate, card, stats)
+        for candidate, card, stats in selected
+    ]
 
 
 @router.post("/progress", response_model=ProgressResponse)
@@ -144,7 +234,10 @@ async def record_progress(
     """
     # Check if progress already exists for this card
     existing_progress = session.exec(
-        select(UserProgressEntity).where(UserProgressEntity.card_id == progress_request.card_id)
+        select(UserProgressEntity).where(
+            UserProgressEntity.user_id == progress_request.user_id,
+            UserProgressEntity.card_id == progress_request.card_id,
+        )
     ).first()
     
     if existing_progress:
@@ -160,6 +253,7 @@ async def record_progress(
     else:
         # Create new progress entry
         new_progress = UserProgressEntity(
+            user_id=progress_request.user_id,
             card_id=progress_request.card_id,
             known=progress_request.known,
             review_count=1,
@@ -171,49 +265,32 @@ async def record_progress(
     
     session.commit()
     
-    # Calculate statistics
-    total_reviewed = session.exec(select(func.count(UserProgressEntity.id))).one()
-    known_count = session.exec(
-        select(func.count(UserProgressEntity.id)).where(UserProgressEntity.known == True)
-    ).one()
-    unknown_count = session.exec(
-        select(func.count(UserProgressEntity.id)).where(UserProgressEntity.known == False)
-    ).one()
-    
-    return ProgressResponse(
-        cards_reviewed=total_reviewed,
-        known_count=known_count,
-        unknown_count=unknown_count
-    )
+    return progress_response_for_user(session, progress_request.user_id)
 
 
 @router.get("/progress", response_model=ProgressResponse)
-async def get_progress(session: SessionDependency):
+async def get_progress(
+    session: SessionDependency,
+    user_id: str = Query("default_user", description="User ID"),
+):
     """
     Get current progress statistics from database
     """
-    total_reviewed = session.exec(select(func.count(UserProgressEntity.id))).one()
-    known_count = session.exec(
-        select(func.count(UserProgressEntity.id)).where(UserProgressEntity.known == True)
-    ).one()
-    unknown_count = session.exec(
-        select(func.count(UserProgressEntity.id)).where(UserProgressEntity.known == False)
-    ).one()
-    
-    return ProgressResponse(
-        cards_reviewed=total_reviewed,
-        known_count=known_count,
-        unknown_count=unknown_count
-    )
+    return progress_response_for_user(session, user_id)
 
 
 @router.post("/progress/reset")
-async def reset_progress(session: SessionDependency):
+async def reset_progress(
+    session: SessionDependency,
+    user_id: str = Query("default_user", description="User ID"),
+):
     """
     Reset progress statistics by deleting all progress records from database
     """
     # Delete all progress records
-    progress_records = session.exec(select(UserProgressEntity)).all()
+    progress_records = session.exec(
+        select(UserProgressEntity).where(UserProgressEntity.user_id == user_id)
+    ).all()
     for record in progress_records:
         session.delete(record)
     
@@ -228,7 +305,8 @@ async def get_words_library(
     status: Optional[str] = Query(None, description="Filter by status: 'known', 'unknown', or 'all'"),
     language: Optional[str] = Query("de", description="Filter by language code"),
     category: Optional[str] = Query(None, description="Filter by category"),
-    search: Optional[str] = Query(None, description="Search by word or translation")
+    search: Optional[str] = Query(None, description="Search by word or translation"),
+    user_id: str = Query("default_user", description="User ID"),
 ):
     """
     Get all words with their learning progress status
@@ -253,7 +331,9 @@ async def get_words_library(
     flashcards = session.exec(flashcards_query).all()
     
     # Get all progress records
-    progress_records = session.exec(select(UserProgressEntity)).all()
+    progress_records = session.exec(
+        select(UserProgressEntity).where(UserProgressEntity.user_id == user_id)
+    ).all()
     progress_map = {record.card_id: record for record in progress_records}
     
     # Combine flashcards with progress

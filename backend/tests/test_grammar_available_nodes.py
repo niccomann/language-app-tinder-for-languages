@@ -95,3 +95,18 @@ def test_available_nodes_prioritizes_function_words_for_sentence_building():
     assert counts["pronoun"] >= 12
     assert counts["article"] >= 8
     assert counts["conjunction"] >= 12
+
+
+def test_available_nodes_accepts_learning_preference_profile_domains():
+    response = client.get(
+        "/api/grammar/available-nodes"
+        "?limit=220"
+        "&profile_domain=technology"
+        "&profile_part_of_speech=noun"
+        "&profile_part_of_speech=verb"
+    )
+
+    assert response.status_code == 200
+    nodes = response.json()
+    assert nodes
+    assert any(node["category"] == "technology" for node in nodes[:40])

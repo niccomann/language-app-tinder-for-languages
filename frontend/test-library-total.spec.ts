@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('word library total reflects all German flashcards instead of the first limited page', async ({ page }) => {
-  const response = await page.request.get(`${API_URL}/api/library/words?language=de&limit=1000`);
+  const response = await page.request.get(`${API_URL}/api/library/words?language=de&limit=5000`);
   expect(response.ok()).toBeTruthy();
   const allGermanWords = await response.json();
 

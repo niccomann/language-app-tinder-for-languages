@@ -150,9 +150,28 @@ class LibraryStats(BaseModel):
 class ProgressRequest(BaseModel):
     card_id: str
     known: bool
+    user_id: str = "default_user"
 
 
 class ProgressResponse(BaseModel):
     cards_reviewed: int
     known_count: int
     unknown_count: int
+
+
+class LearningPreferenceProfile(BaseModel):
+    domains: List[str] = []
+    tones: List[str] = []
+    wordStyles: List[str] = []
+    preferredPartsOfSpeech: List[str] = []
+    difficultyMode: str = "adaptive"
+    semanticDiversityMode: str = "balanced"
+    exerciseBias: List[str] = []
+
+
+class AdaptiveFlashcardQueryRequest(BaseModel):
+    language: str = "de"
+    selected_categories: List[str] = []
+    profile: LearningPreferenceProfile = Field(default_factory=LearningPreferenceProfile)
+    limit: int = Field(default=50, ge=1, le=500)
+    user_id: str = "default_user"

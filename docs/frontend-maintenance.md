@@ -37,8 +37,3 @@ Do not add looping decorative motion inside individual feature views.
 
 Shared browser-test URLs, onboarding setup, learning API mocks, and viewport assertions live in `frontend/test-utils/appTestHelpers.ts`.
 Specs should import `APP_URL`, `API_URL`, `mockLearningApi`, `markFirstVocabularyOnboardingDone`, `expectInViewport`, and `expectNoHorizontalOverflow` rather than redefining them.
-
-## Deprecated Code
-
-Old YouTube and AI video flows are intentionally under `deprecated` paths.
-Do not reconnect deprecated modules to active routes unless the feature is intentionally restored and reviewed as part of the main flow.

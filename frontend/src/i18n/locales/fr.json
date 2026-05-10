@@ -18,6 +18,11 @@
           "body": "Contrairement aux apps qui vous font tout répéter de la même façon, nous ne voulons pas vous montrer trop souvent les mots que vous connaissez déjà. Nous leur donnons un poids plus faible dans les exercices et nous nous concentrons sur ceux à consolider."
         },
         {
+          "eyebrow": "Parcours personnel",
+          "title": "Le coach commence par filtrer ce qui compte pour vous.",
+          "body": "Chaque personne veut personnaliser son apprentissage autour des mots qu'elle utilisera vraiment. La plupart des apps sautent ce premier tri, donc vous depensez un vrai effort mental sur des mots que vous n'utiliserez peut-etre jamais."
+        },
+        {
           "eyebrow": "Carte du vocabulaire",
           "title": "Nous cartographions d'abord ce qui est déjà à vous.",
           "body": "C'est pourquoi nous analysons votre vocabulaire : nous voulons comprendre combien de mots vous connaissez, lesquels vous connaissez déjà et lesquels vous connaissez seulement un peu."
@@ -29,10 +34,314 @@
         }
       ]
     },
+    "animation": {
+      "skipAction": "Ignorer",
+      "nextPageAction": "Page suivante"
+    },
+    "preferences": {
+      "eyebrow": "Configuration",
+      "title": "Dites-moi quel allemand vous voulez construire.",
+      "body": "Avant le scan du vocabulaire, choisissez le style des mots, les domaines, le ton et les exercices qui doivent orienter votre parcours.",
+      "progressLabel": "Question {{current}} sur {{total}}",
+      "selectedLabel": "Sélectionné",
+      "nextAction": "Question suivante",
+      "finishAction": "Démarrer le scan",
+      "backAction": "Retour",
+      "questions": [
+        {
+          "id": "question-1",
+          "eyebrow": "Style de mots",
+          "title": "Moderne, classique ou les deux ?",
+          "body": "Cela indique si l'app favorise le vocabulaire actuel, les mots culturels plus classiques ou un mélange équilibré.",
+          "options": [
+            {
+              "id": "modern",
+              "label": "Quotidien moderne",
+              "description": "Mots de la vie quotidienne, des médias, de la technologie et des conversations actuelles."
+            },
+            {
+              "id": "classic",
+              "label": "Classique et culturel",
+              "description": "Plus de littérature, d'histoire, de langue formelle et de registres plus élevés."
+            },
+            {
+              "id": "balanced",
+              "label": "Mélange équilibré",
+              "description": "Un mélange pratique de mots modernes et de vocabulaire intemporel."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-2",
+          "multiSelect": true,
+          "eyebrow": "Domaines",
+          "title": "Quels domaines l'app doit-elle prioriser ?",
+          "body": "Vous pouvez sélectionner un ou plusieurs sujets. Le parcours peut donner plus de poids aux domaines qui vous semblent les plus utiles.",
+          "options": [
+            {
+              "id": "travel",
+              "label": "Voyage et ville",
+              "description": "Gares, nourriture, directions, magasins et situations quotidiennes."
+            },
+            {
+              "id": "work",
+              "label": "Travail et business",
+              "description": "Réunions, rôles, tâches, e-mails, planification et vocabulaire professionnel."
+            },
+            {
+              "id": "study",
+              "label": "Études et culture",
+              "description": "Université, livres, idées, art, histoire et sujets sociaux."
+            },
+            {
+              "id": "technology",
+              "label": "Technologie",
+              "description": "Apps, appareils, données, logiciels et outils modernes."
+            }
+          ]
+        },
+        {
+          "id": "question-3",
+          "eyebrow": "Ton",
+          "title": "Quel ton les exercices doivent-ils avoir ?",
+          "body": "Le même mot peut apparaître dans des contextes très différents selon le ton.",
+          "options": [
+            {
+              "id": "friendly",
+              "label": "Amical",
+              "description": "Chaleureux, conversationnel et facile à réutiliser avec des personnes."
+            },
+            {
+              "id": "casual",
+              "label": "Décontracté",
+              "description": "Court, naturel et proche de la langue parlée quotidienne."
+            },
+            {
+              "id": "formal",
+              "label": "Formel",
+              "description": "Utile pour le travail, les institutions et la communication écrite."
+            },
+            {
+              "id": "technical",
+              "label": "Technique",
+              "description": "Des mots précis pour les systèmes, la science, les outils et les processus."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-4",
+          "eyebrow": "Objectif",
+          "title": "Que voulez-vous améliorer en premier ?",
+          "body": "Cela aide à décider si les futures tâches doivent travailler la reconnaissance, la production ou la logique des phrases.",
+          "options": [
+            {
+              "id": "speaking",
+              "label": "Parler",
+              "description": "Rappel rapide et phrases simples à dire à voix haute."
+            },
+            {
+              "id": "reading",
+              "label": "Lire",
+              "description": "Reconnaître plus de mots dans les articles, livres et sites."
+            },
+            {
+              "id": "listening",
+              "label": "Écouter",
+              "description": "Construire un vocabulaire utile pour les vidéos, la parole et les podcasts."
+            },
+            {
+              "id": "writing",
+              "label": "Écrire",
+              "description": "Composer des phrases plus claires avec un meilleur choix de mots."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-5",
+          "eyebrow": "Type d'exercice",
+          "title": "Quel style d'exercice vous convient le mieux ?",
+          "body": "L'app pourra donner plus de poids aux activités qui vous gardent engagé.",
+          "options": [
+            {
+              "id": "quick",
+              "label": "Choix rapides",
+              "description": "Décisions rapides et légères comme le scan du vocabulaire."
+            },
+            {
+              "id": "sentences",
+              "label": "Construction de phrases",
+              "description": "Plus d'activités où vous composez des mots en phrases complètes."
+            },
+            {
+              "id": "visual",
+              "label": "Mémoire visuelle",
+              "description": "Plus de prompts avec images et associations visuelles."
+            },
+            {
+              "id": "mixed",
+              "label": "Boucle mixte",
+              "description": "Alterner cartes, phrases, visuels et révision."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-6",
+          "eyebrow": "Difficulté",
+          "title": "Quelle difficulté pour le premier parcours ?",
+          "body": "Cela influence la vitesse à laquelle l'app introduit des mots inconnus dans les exercices.",
+          "options": [
+            {
+              "id": "gentle",
+              "label": "Douce",
+              "description": "Plus de mots familiers autour de chaque nouveau mot."
+            },
+            {
+              "id": "normal",
+              "label": "Normale",
+              "description": "Un mélange équilibré de mots connus, faibles et nouveaux."
+            },
+            {
+              "id": "ambitious",
+              "label": "Ambitieuse",
+              "description": "Des contextes plus exigeants et une croissance plus rapide du vocabulaire."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-7",
+          "eyebrow": "Grammaire",
+          "title": "Quelle zone grammaticale compte le plus maintenant ?",
+          "body": "Cela aidera les futures tâches de phrase à choisir quoi tester.",
+          "options": [
+            {
+              "id": "function-words",
+              "label": "Mots fonctionnels",
+              "description": "Articles, pronoms, prépositions, conjonctions et particules."
+            },
+            {
+              "id": "verbs",
+              "label": "Verbes",
+              "description": "Conjugaisons, temps, verbes séparables et mots d'action."
+            },
+            {
+              "id": "sentence-order",
+              "label": "Ordre de phrase",
+              "description": "Qui fait quoi, où placer les mots et comment relier les phrases."
+            },
+            {
+              "id": "all-grammar",
+              "label": "Tout",
+              "description": "Un mélange grammatical large qui évolue avec vos réponses."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-8",
+          "eyebrow": "Contexte",
+          "title": "Quel type de contexte doit apparaître plus souvent ?",
+          "body": "Cela donne à l'app un signal sur le monde d'où doivent venir les exemples.",
+          "options": [
+            {
+              "id": "current-life",
+              "label": "Vie actuelle",
+              "description": "Situations modernes, technologie, voyages et contextes sociaux."
+            },
+            {
+              "id": "timeless",
+              "label": "Bases intemporelles",
+              "description": "Maison, personnes, nature, émotions, mouvement et objets."
+            },
+            {
+              "id": "culture-history",
+              "label": "Culture et histoire",
+              "description": "Littérature, institutions, mots historiques et vie publique."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-9",
+          "eyebrow": "Feedback",
+          "title": "Comment le feedback doit-il se sentir ?",
+          "body": "L'app peut expliquer les erreurs de différentes manières en devenant plus adaptive.",
+          "options": [
+            {
+              "id": "concise",
+              "label": "Concise",
+              "description": "Confirmations et corrections courtes."
+            },
+            {
+              "id": "detailed",
+              "label": "Détaillée",
+              "description": "Plus d'explications sur pourquoi une réponse fonctionne."
+            },
+            {
+              "id": "playful",
+              "label": "Ludique",
+              "description": "Plus de réactions de mascotte, récompenses et feedback de jeu."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-10",
+          "eyebrow": "Temps",
+          "title": "Combien de temps doit durer une session normale ?",
+          "body": "Cela aide le parcours à sembler complet plutôt qu'infini.",
+          "options": [
+            {
+              "id": "five-minutes",
+              "label": "5 minutes",
+              "description": "Sessions très courtes et ciblées."
+            },
+            {
+              "id": "ten-minutes",
+              "label": "10 minutes",
+              "description": "Une boucle quotidienne compacte."
+            },
+            {
+              "id": "twenty-minutes",
+              "label": "20 minutes",
+              "description": "Sessions plus longues avec plus de travail sur les phrases."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-11",
+          "eyebrow": "Distance semantique",
+          "title": "A quel point les nouveaux mots doivent-ils etre differents ?",
+          "body": "Pour reduire la charge cognitive, l'app peut eviter trop de quasi-synonymes au debut. Des mots semantiquement distants aident a exprimer plus de concepts avec moins d'effort de memoire.",
+          "options": [
+            {
+              "id": "wide-concepts",
+              "label": "Concepts larges d'abord",
+              "description": "Preferer des verbes et des mots semantiquement distants afin que chaque nouveau mot ouvre une idee differente."
+            },
+            {
+              "id": "balanced-distance",
+              "label": "Distance equilibree",
+              "description": "Melanger une large couverture avec des mots similaires quand ils sont vraiment utiles."
+            },
+            {
+              "id": "precise-synonyms",
+              "label": "Synonymes precis aussi",
+              "description": "Autoriser plus tot des quasi-synonymes proches pour une expression plus nuancee."
+            }
+          ]
+        }
+      ]
+    },
     "analysis": {
       "eyebrow": "Analyse terminée",
-      "title": "Vous connaissez environ {{knownEstimate}} mots",
-      "body": "Nous personnalisons votre apprentissage à partir des signaux que vous venez de créer.",
+      "title": "Vous avez placé {{knownEstimate}} mots dans votre vocabulaire",
+      "body": "Chaque interaction mettra maintenant votre vocabulaire à jour. Vous pouvez toujours le consulter dans Votre vocabulaire.",
       "primaryAction": "Continuer",
       "wordsSeen": "Mots vus",
       "strongSignals": "Signaux forts",
@@ -70,20 +379,93 @@
       "fallbackMixed": "mots mixtes"
     }
   },
+  "yourVocabulary": {
+    "title": "Votre vocabulaire",
+    "subtitle": "Les mots avec lesquels vous interagissez sont classés par maîtrise. Les mots forts montent en haut; les mots faibles restent visibles pour la révision.",
+    "loadingMessage": "Chargement de votre vocabulaire...",
+    "errorTitle": "Vocabulaire indisponible",
+    "errorMessage": "Impossible de charger votre vocabulaire. Réessayez quand le backend est joignable.",
+    "strongStat": "Forts",
+    "learningStat": "En cours",
+    "weakStat": "Faibles",
+    "logicEyebrow": "Fonctionnement",
+    "logicBody": "Chaque swipe, phrase et correction met à jour cette mémoire. L'app l'utilise pour moins répéter les mots déjà connus et ramener ceux à consolider.",
+    "continueAction": "Continuer l'entraînement",
+    "emptyTitle": "Aucun signal pour l'instant",
+    "emptyBody": "Commencez par le scan du vocabulaire. Dès que vous interagissez avec des mots, cette section devient votre carte personnelle.",
+    "emptyAction": "Démarrer le scan",
+    "masteredLabel": "5 étoiles",
+    "learningLabel": "3-4 étoiles",
+    "weakLabel": "1-2 étoiles",
+    "unknownLabel": "0 étoile",
+    "levelLabel": "Niveau"
+  },
   "featureGuides": {
-    "vocabularyScan": { "title": "D'abord, voyons ce que vous savez", "body": "Faites défiler les mots : ceux que vous reconnaissez et ceux à revoir deviennent votre profil initial.", "actionLabel": "Me montrer le scan" },
-    "learningPath": { "title": "Le parcours s'adapte", "body": "Chaque étape vient de ce que vous venez de montrer : vocabulaire fort, vocabulaire faible et prochain défi.", "actionLabel": "Me montrer le parcours" },
-    "learningFilters": { "title": "Choisissez le terrain", "body": "Les filtres vous aident à entraîner une zone précise : noms, verbes, concepts ou catégories à renforcer.", "actionLabel": "Me montrer les filtres" },
-    "learningSystem": { "title": "La science garde le score", "body": "Vous répondez naturellement. Le système met à jour votre connaissance de chaque mot et le bon moment pour le revoir.", "actionLabel": "Me montrer la méthode" },
-    "sentencePlacement": { "title": "Maintenant, construisons des phrases", "body": "Connaître des mots isolés ne suffit pas : ici vous choisissez le bon ordre et entraînez grammaire, logique et mémoire.", "actionLabel": "Me montrer la phrase" },
-    "library": { "title": "La bibliothèque est votre mémoire", "body": "Vous y retrouvez chaque mot avec traductions, exemples, liens et détails utiles pour mieux étudier.", "actionLabel": "Me montrer la bibliothèque" },
-    "grammarGraph": { "title": "Regardez les connexions", "body": "Le graphe montre comment les mots, les rôles et les relations s'assemblent au lieu de rester des listes séparées.", "actionLabel": "Me montrer le graphe" },
-    "wordCloud": { "title": "Voyez ce qui pèse le plus", "body": "Le nuage met en évidence les mots les plus présents ou pertinents, pour savoir où regarder d'abord.", "actionLabel": "Me montrer le nuage" },
-    "sentenceGraphBuilder": { "title": "Composez avec des nœuds", "body": "Cette vue permet de construire des phrases tout en voyant la structure : qui fait quoi, avec quels liens.", "actionLabel": "Me montrer les nœuds" },
-    "sentenceComposer": { "title": "Composez simplement", "body": "Ici vous mettez les mots en ordre et testez tout de suite si la phrase semble correcte et compréhensible.", "actionLabel": "Me montrer le composeur" },
-    "clusters": { "title": "Groupez les concepts", "body": "Les clusters révèlent des familles de mots : ils aident à étudier par blocs, pas mot par mot.", "actionLabel": "Me montrer les groupes" },
-    "dialects": { "title": "Découvrez les variantes", "body": "La langue change selon la région et le contexte. Cette vue montre où un mot peut prendre des nuances différentes.", "actionLabel": "Me montrer les variantes" },
-    "hierarchy": { "title": "Structurez le système", "body": "La hiérarchie montre les niveaux et les familles : du grand concept aux mots plus spécifiques.", "actionLabel": "Me montrer la hiérarchie" }
+    "vocabularyScan": {
+      "title": "D'abord, voyons ce que vous savez",
+      "body": "Faites défiler les mots : ceux que vous reconnaissez et ceux à revoir deviennent votre profil initial.",
+      "actionLabel": "Me montrer le scan"
+    },
+    "learningPath": {
+      "title": "Le parcours s'adapte",
+      "body": "Chaque étape vient de ce que vous venez de montrer : vocabulaire fort, vocabulaire faible et prochain défi.",
+      "actionLabel": "Me montrer le parcours"
+    },
+    "learningFilters": {
+      "title": "Choisissez le terrain",
+      "body": "Les filtres vous aident à entraîner une zone précise : noms, verbes, concepts ou catégories à renforcer.",
+      "actionLabel": "Me montrer les filtres"
+    },
+    "learningSystem": {
+      "title": "La science garde le score",
+      "body": "Vous répondez naturellement. Le système met à jour votre connaissance de chaque mot et le bon moment pour le revoir.",
+      "actionLabel": "Me montrer la méthode"
+    },
+    "sentencePlacement": {
+      "title": "Maintenant, construisons des phrases",
+      "body": "Connaître des mots isolés ne suffit pas : ici vous choisissez le bon ordre et entraînez grammaire, logique et mémoire.",
+      "actionLabel": "Me montrer la phrase"
+    },
+    "library": {
+      "title": "La bibliothèque est votre mémoire",
+      "body": "Vous y retrouvez chaque mot avec traductions, exemples, liens et détails utiles pour mieux étudier.",
+      "actionLabel": "Me montrer la bibliothèque"
+    },
+    "grammarGraph": {
+      "title": "Regardez les connexions",
+      "body": "Le graphe montre comment les mots, les rôles et les relations s'assemblent au lieu de rester des listes séparées.",
+      "actionLabel": "Me montrer le graphe"
+    },
+    "wordCloud": {
+      "title": "Voyez ce qui pèse le plus",
+      "body": "Le nuage met en évidence les mots les plus présents ou pertinents, pour savoir où regarder d'abord.",
+      "actionLabel": "Me montrer le nuage"
+    },
+    "sentenceGraphBuilder": {
+      "title": "Composez avec des nœuds",
+      "body": "Cette vue permet de construire des phrases tout en voyant la structure : qui fait quoi, avec quels liens.",
+      "actionLabel": "Me montrer les nœuds"
+    },
+    "sentenceComposer": {
+      "title": "Composez simplement",
+      "body": "Ici vous mettez les mots en ordre et testez tout de suite si la phrase semble correcte et compréhensible.",
+      "actionLabel": "Me montrer le composeur"
+    },
+    "clusters": {
+      "title": "Groupez les concepts",
+      "body": "Les clusters révèlent des familles de mots : ils aident à étudier par blocs, pas mot par mot.",
+      "actionLabel": "Me montrer les groupes"
+    },
+    "dialects": {
+      "title": "Découvrez les variantes",
+      "body": "La langue change selon la région et le contexte. Cette vue montre où un mot peut prendre des nuances différentes.",
+      "actionLabel": "Me montrer les variantes"
+    },
+    "hierarchy": {
+      "title": "Structurez le système",
+      "body": "La hiérarchie montre les niveaux et les familles : du grand concept aux mots plus spécifiques.",
+      "actionLabel": "Me montrer la hiérarchie"
+    }
   },
   "featureGuideOverlay": {
     "ariaLabel": "Introduction de la fonctionnalité",
@@ -92,17 +474,83 @@
     "replayAction": "Revoir l'animation"
   },
   "featureFlow": {
-    "vocabularyReview": { "title": "Révision du vocabulaire", "missionLabel": "Mission 1", "description": "Swipez les mots que vous connaissez ou manquez pour que le système continue à calibrer votre niveau d'allemand.", "ctaLabel": "Continuer le parcours" },
-    "sentencePlacement": { "title": "Placement de phrases", "missionLabel": "Mission 2", "description": "Construisez de courtes phrases depuis une banque de mots contrôlée pour tester la grammaire au-delà des mots isolés.", "ctaLabel": "Ouvrir la mission phrases" },
-    "grammarLab": { "title": "Laboratoire de grammaire", "missionLabel": "Mission 3", "description": "Inspectez la logique de phrase, les relations grammaticales et les outils de construction quand vous êtes prêt.", "ctaLabel": "Ouvrir la mission grammaire" },
-    "topicDeck": { "title": "Deck de thèmes", "missionLabel": "Setup", "description": "Réglez les packs utilisés dans le deck de swipe sans transformer l'app en écran de paramètres.", "ctaLabel": "Ouvrir les thèmes" },
-    "wordLibrary": { "title": "Bibliothèque de mots", "missionLabel": "Collection", "description": "Revoyez chaque mot sauvegardé, image, traduction, exemple, étymologie et ligne de base de données.", "ctaLabel": "Ouvrir la bibliothèque" },
-    "learningSystem": { "title": "Système d'apprentissage", "missionLabel": "Science", "description": "Voyez comment chaque swipe met à jour la maîtrise, le niveau et les prochains contextes recommandés.", "ctaLabel": "Ouvrir le système" },
-    "wordCloud": { "title": "Nuage de mots", "missionLabel": "Explorer", "description": "Explorez visuellement l'espace du vocabulaire après la boucle principale.", "ctaLabel": "Ouvrir le nuage" },
-    "buildSentence": { "title": "Construire une phrase", "missionLabel": "Explorer", "description": "Composez des structures de phrase avec toute la banque grammaticale.", "ctaLabel": "Ouvrir le builder" },
-    "composeSentence": { "title": "Composer une phrase", "missionLabel": "Explorer", "description": "Utilisez la vue composeur alternative en gardant le même langage de construction de phrases.", "ctaLabel": "Ouvrir le composeur" },
-    "clusters": { "title": "Clusters", "missionLabel": "Explorer", "description": "Inspectez les groupes sémantiques et les voisinages mot-image.", "ctaLabel": "Ouvrir les clusters" },
-    "dialects": { "title": "Dialectes", "missionLabel": "Explorer", "description": "Parcourez les variations régionales une fois la boucle principale familière.", "ctaLabel": "Ouvrir les dialectes" },
-    "hierarchy": { "title": "Hiérarchie", "missionLabel": "Explorer", "description": "Voyez la hiérarchie du vocabulaire et la structure des concepts.", "ctaLabel": "Ouvrir la hiérarchie" }
+    "vocabularyReview": {
+      "title": "Révision du vocabulaire",
+      "missionLabel": "Mission 1",
+      "description": "Swipez les mots que vous connaissez ou manquez pour que le système continue à calibrer votre niveau d'allemand.",
+      "ctaLabel": "Continuer le parcours"
+    },
+    "sentencePlacement": {
+      "title": "Placement de phrases",
+      "missionLabel": "Mission 2",
+      "description": "Construisez de courtes phrases depuis une banque de mots contrôlée pour tester la grammaire au-delà des mots isolés.",
+      "ctaLabel": "Ouvrir la mission phrases"
+    },
+    "grammarLab": {
+      "title": "Laboratoire de grammaire",
+      "missionLabel": "Mission 3",
+      "description": "Inspectez la logique de phrase, les relations grammaticales et les outils de construction quand vous êtes prêt.",
+      "ctaLabel": "Ouvrir la mission grammaire"
+    },
+    "topicDeck": {
+      "title": "Deck de thèmes",
+      "missionLabel": "Setup",
+      "description": "Réglez les packs utilisés dans le deck de swipe sans transformer l'app en écran de paramètres.",
+      "ctaLabel": "Ouvrir les thèmes"
+    },
+    "yourVocabulary": {
+      "title": "Votre vocabulaire",
+      "missionLabel": "Collection",
+      "description": "Voyez les mots classés selon ce que le système pense que vous connaissez le mieux.",
+      "ctaLabel": "Ouvrir votre vocabulaire"
+    },
+    "wordLibrary": {
+      "title": "Bibliothèque de mots",
+      "missionLabel": "Collection",
+      "description": "Revoyez chaque mot sauvegardé, image, traduction, exemple, étymologie et ligne de base de données.",
+      "ctaLabel": "Ouvrir la bibliothèque"
+    },
+    "learningSystem": {
+      "title": "Système d'apprentissage",
+      "missionLabel": "Science",
+      "description": "Voyez comment chaque swipe met à jour la maîtrise, le niveau et les prochains contextes recommandés.",
+      "ctaLabel": "Ouvrir le système"
+    },
+    "wordCloud": {
+      "title": "Nuage de mots",
+      "missionLabel": "Explorer",
+      "description": "Explorez visuellement l'espace du vocabulaire après la boucle principale.",
+      "ctaLabel": "Ouvrir le nuage"
+    },
+    "buildSentence": {
+      "title": "Construire une phrase",
+      "missionLabel": "Explorer",
+      "description": "Composez des structures de phrase avec toute la banque grammaticale.",
+      "ctaLabel": "Ouvrir le builder"
+    },
+    "composeSentence": {
+      "title": "Composer une phrase",
+      "missionLabel": "Explorer",
+      "description": "Utilisez la vue composeur alternative en gardant le même langage de construction de phrases.",
+      "ctaLabel": "Ouvrir le composeur"
+    },
+    "clusters": {
+      "title": "Clusters",
+      "missionLabel": "Explorer",
+      "description": "Inspectez les groupes sémantiques et les voisinages mot-image.",
+      "ctaLabel": "Ouvrir les clusters"
+    },
+    "dialects": {
+      "title": "Dialectes",
+      "missionLabel": "Explorer",
+      "description": "Parcourez les variations régionales une fois la boucle principale familière.",
+      "ctaLabel": "Ouvrir les dialectes"
+    },
+    "hierarchy": {
+      "title": "Hiérarchie",
+      "missionLabel": "Explorer",
+      "description": "Voyez la hiérarchie du vocabulaire et la structure des concepts.",
+      "ctaLabel": "Ouvrir la hiérarchie"
+    }
   }
 }

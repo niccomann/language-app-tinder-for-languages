@@ -10,6 +10,16 @@ from app.core.config import config
 log = logging.getLogger(__name__)
 
 
+def table_reference(table_name: str) -> str:
+    if config.database.use_sqlite:
+        return f"{table_name}.id"
+    return f"{config.database.db_schema}.{table_name}.id"
+
+
+FLASHCARD_REFERENCE = table_reference("flashcards")
+GRAMMAR_SENTENCE_REFERENCE = table_reference("grammar_sentences")
+
+
 class BaseEntity(SQLModel):
     """
     Base entity for all database models.
@@ -76,7 +86,7 @@ class EtymologyEntity(BaseEntity, table=True):
     """Etymology information for a word. Extensible for future linguistic data."""
     __tablename__ = "etymologies"
     
-    flashcard_id: int = Field(foreign_key="public.flashcards.id", index=True)
+    flashcard_id: int = Field(foreign_key=FLASHCARD_REFERENCE, index=True)
     origin_language: Optional[str] = Field(default=None)
     origin_word: Optional[str] = Field(default=None)
     etymology_text: Optional[str] = Field(default=None, sa_column=Column(Text))
@@ -89,7 +99,7 @@ class ExampleSentenceEntity(BaseEntity, table=True):
     """Example sentences showing word usage."""
     __tablename__ = "example_sentences"
     
-    flashcard_id: int = Field(foreign_key="public.flashcards.id", index=True)
+    flashcard_id: int = Field(foreign_key=FLASHCARD_REFERENCE, index=True)
     sentence: str = Field(nullable=False)
     translation: Optional[str] = Field(default=None)
     difficulty_level: Optional[str] = Field(default=None)
@@ -101,7 +111,7 @@ class FalseFriendEntity(BaseEntity, table=True):
     """False friends - words that look similar but have different meanings."""
     __tablename__ = "false_friends"
     
-    flashcard_id: int = Field(foreign_key="public.flashcards.id", index=True)
+    flashcard_id: int = Field(foreign_key=FLASHCARD_REFERENCE, index=True)
     target_language: str = Field(nullable=False)
     similar_word: str = Field(nullable=False)
     similar_word_meaning: Optional[str] = Field(default=None)
@@ -113,7 +123,7 @@ class ProverbEntity(BaseEntity, table=True):
     """Proverbs and idioms containing the word."""
     __tablename__ = "proverbs"
     
-    flashcard_id: int = Field(foreign_key="public.flashcards.id", index=True)
+    flashcard_id: int = Field(foreign_key=FLASHCARD_REFERENCE, index=True)
     expression: str = Field(nullable=False)
     literal_meaning: Optional[str] = Field(default=None)
     figurative_meaning: Optional[str] = Field(default=None)
@@ -125,7 +135,7 @@ class CollocationEntity(BaseEntity, table=True):
     """Common word combinations and collocations."""
     __tablename__ = "collocations"
     
-    flashcard_id: int = Field(foreign_key="public.flashcards.id", index=True)
+    flashcard_id: int = Field(foreign_key=FLASHCARD_REFERENCE, index=True)
     collocate_word: str = Field(nullable=False)
     collocation_type: Optional[str] = Field(default=None)
     example_phrase: Optional[str] = Field(default=None)
@@ -137,7 +147,7 @@ class DialectVariantEntity(BaseEntity, table=True):
     """Regional dialect variants of a word."""
     __tablename__ = "dialect_variants"
     
-    flashcard_id: int = Field(foreign_key="public.flashcards.id", index=True)
+    flashcard_id: int = Field(foreign_key=FLASHCARD_REFERENCE, index=True)
     region: str = Field(nullable=False)
     dialect_name: Optional[str] = Field(default=None)
     variant_word: str = Field(nullable=False)
@@ -153,6 +163,7 @@ class UserProgressEntity(BaseEntity, table=True):
     """
     __tablename__ = "user_progress"
     
+    user_id: str = Field(default="default_user", nullable=False, index=True)
     card_id: str = Field(nullable=False, index=True)
     known: bool = Field(nullable=False)
     review_count: int = Field(default=1, nullable=False)
@@ -255,7 +266,7 @@ class GrammarSentenceNodeEntity(BaseEntity, table=True):
     """
     __tablename__ = "grammar_sentence_nodes"
     
-    sentence_id: int = Field(foreign_key="public.grammar_sentences.id", index=True)
+    sentence_id: int = Field(foreign_key=GRAMMAR_SENTENCE_REFERENCE, index=True)
     node_id: str = Field(nullable=False)
     label: str = Field(nullable=False)
     node_type: str = Field(nullable=False)
@@ -275,7 +286,7 @@ class GrammarSentenceEdgeEntity(BaseEntity, table=True):
     """
     __tablename__ = "grammar_sentence_edges"
     
-    sentence_id: int = Field(foreign_key="public.grammar_sentences.id", index=True)
+    sentence_id: int = Field(foreign_key=GRAMMAR_SENTENCE_REFERENCE, index=True)
     source_node_id: str = Field(nullable=False)
     target_node_id: str = Field(nullable=False)
     label: str = Field(nullable=False)

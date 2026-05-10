@@ -51,7 +51,7 @@ def test_sentence_placement_uses_mascot_for_ground_truth_feedback():
 def test_learning_feedback_banner_uses_level_up_mascot_state():
     banner = (FRONTEND_SRC / "components" / "LearningFeedbackBanner.tsx").read_text()
 
-    assert "MascotReaction" in banner
+    assert "MascotSpeechCallout" in banner
     assert "feedback.tone === 'level_up' ? 'levelUp' : 'correct'" in banner
 
 
@@ -149,6 +149,7 @@ def test_feature_guides_define_many_cutout_assets_and_route_mapping():
     guide_ids = FRONTEND_SRC / "gamification" / "featureGuideIds.ts"
     guide_storage = FRONTEND_SRC / "gamification" / "featureGuideStorage.ts"
     overlay = FRONTEND_SRC / "components" / "GameGuideOverlay.tsx"
+    resolver = FRONTEND_SRC / "gamification" / "featureGuideResolver.ts"
     app = FRONTEND_SRC / "App.tsx"
     provider = REPO_ROOT / "scripts" / "generate_gamification_assets.py"
 
@@ -156,8 +157,10 @@ def test_feature_guides_define_many_cutout_assets_and_route_mapping():
     assert guide_ids.exists()
     assert guide_storage.exists()
     assert overlay.exists()
+    assert resolver.exists()
 
     manifest_source = manifest.read_text()
+    resolver_source = resolver.read_text()
     guide_ids_source = guide_ids.read_text()
     guide_storage_source = guide_storage.read_text()
     overlay_source = overlay.read_text()
@@ -192,18 +195,11 @@ def test_feature_guides_define_many_cutout_assets_and_route_mapping():
 
     for route_case in [
         "route.screen === 'learning'",
-        "route.mode === 'grammar_placement'",
         "route.screen === 'library'",
-        "route.screen === 'grammar'",
-        "case 'graph'",
-        "case 'wordcloud'",
-        "case 'builder'",
-        "case 'funbuilder'",
-        "case 'clusters'",
-        "case 'dialects'",
-        "case 'sunburst'",
+        "featureGuideByRoute",
+        "routeStatePath(route)",
     ]:
-        assert route_case in manifest_source
+        assert route_case in resolver_source
 
     assert "GUIDE_ASSET_FRAMES" in provider_source
     assert provider_source.count("guide_") >= 26

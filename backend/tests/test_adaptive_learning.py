@@ -3,12 +3,66 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from fastapi.testclient import TestClient
+from sqlmodel import select
 
 from app.database.connection import DatabaseConnection
+from app.database.models import FlashcardEntity
 from app.main import app
 
 
 DatabaseConnection().create_database_and_tables()
+
+
+def ensure_adaptive_test_flashcards():
+    with DatabaseConnection().session as session:
+        existing = session.exec(
+            select(FlashcardEntity).where(FlashcardEntity.language == "de")
+        ).first()
+        if existing:
+            return
+
+        session.add_all([
+            FlashcardEntity(
+                word="Computer",
+                translation="computer",
+                image_url="",
+                language="de",
+                category="technology",
+                thematic_domain="technology",
+                part_of_speech="noun",
+                frequency_band="common",
+                cefr_level="A1",
+                language_register="neutral",
+            ),
+            FlashcardEntity(
+                word="arbeiten",
+                translation="to work",
+                image_url="",
+                language="de",
+                category="work",
+                thematic_domain="work",
+                part_of_speech="verb",
+                frequency_band="common",
+                cefr_level="A1",
+                language_register="neutral",
+            ),
+            FlashcardEntity(
+                word="der",
+                translation="the",
+                image_url="",
+                language="de",
+                category="function_words",
+                thematic_domain="grammar",
+                part_of_speech="article",
+                frequency_band="very_common",
+                cefr_level="A1",
+                language_register="neutral",
+            ),
+        ])
+        session.commit()
+
+
+ensure_adaptive_test_flashcards()
 client = TestClient(app)
 
 
@@ -80,6 +134,128 @@ def test_adaptive_cards_endpoint_respects_category_filters():
     data = response.json()
     assert data
     assert {card["category"] for card in data} == {selected_category}
+
+
+def test_preference_profile_adaptive_query_prioritizes_selected_domain():
+    response = client.post(
+        "/api/cards/adaptive/query",
+        json={
+            "language": "de",
+            "limit": 30,
+            "profile": {
+                "domains": ["technology"],
+                "tones": ["friendly"],
+                "wordStyles": ["modern"],
+            },
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data
+    assert any(card["category"] == "technology" for card in data[:10])
+
+
+def test_preference_profile_adaptive_query_keeps_functional_words_available():
+    response = client.post(
+        "/api/cards/adaptive/query",
+        json={
+            "language": "de",
+            "limit": 40,
+            "profile": {
+                "domains": ["technology"],
+                "preferredPartsOfSpeech": ["noun", "verb"],
+            },
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data
+    assert any(
+        card.get("part_of_speech") in {"article", "pronoun", "preposition", "conjunction", "adverb", "particle"}
+        or card["category"] == "function_words"
+        for card in data
+    )
+
+
+def test_semantic_diversity_mode_makes_preference_profile_active():
+    from app.models import LearningPreferenceProfile
+    from app.services.preference_filter import has_active_profile
+
+    assert has_active_profile(LearningPreferenceProfile(semanticDiversityMode="wide")) is True
+
+
+def test_wide_semantic_diversity_spreads_adjacent_categories():
+    from app.models import LearningPreferenceProfile
+    from app.services.preference_filter import select_preference_weighted_candidates
+
+    def make_item(item_id: int, category: str):
+        candidate = SimpleNamespace(
+            id=item_id,
+            confidence_score=0,
+            times_seen=0,
+            last_practiced=None,
+        )
+        card = SimpleNamespace(
+            id=item_id,
+            word=f"word-{item_id}",
+            category=category,
+            thematic_domain=category,
+            part_of_speech="noun",
+            frequency_band="common",
+            cefr_level="A1",
+            language_register="neutral",
+        )
+        return (candidate, card, None)
+
+    candidates = [
+        make_item(1, "technology"),
+        make_item(2, "technology"),
+        make_item(3, "food"),
+        make_item(4, "food"),
+    ]
+
+    selected = select_preference_weighted_candidates(
+        candidates,
+        LearningPreferenceProfile(semanticDiversityMode="wide"),
+        4,
+        lambda candidate: (0, 0.0, 0, candidate.id),
+    )
+
+    assert [item[1].category for item in selected] == [
+        "technology",
+        "food",
+        "technology",
+        "food",
+    ]
+
+
+def test_progress_isolated_by_user_id():
+    card_id = "pytest-progress-isolation-card"
+    users = ["pytest-progress-a", "pytest-progress-b"]
+
+    for user_id in users:
+        reset_response = client.post(f"/api/progress/reset?user_id={user_id}")
+        assert reset_response.status_code == 200
+
+    first_response = client.post(
+        "/api/progress",
+        json={"card_id": card_id, "known": True, "user_id": users[0]},
+    )
+    second_response = client.post(
+        "/api/progress",
+        json={"card_id": card_id, "known": False, "user_id": users[1]},
+    )
+
+    assert first_response.status_code == 200
+    assert second_response.status_code == 200
+
+    first_progress = client.get(f"/api/progress?user_id={users[0]}").json()
+    second_progress = client.get(f"/api/progress?user_id={users[1]}").json()
+
+    assert first_progress == {"cards_reviewed": 1, "known_count": 1, "unknown_count": 0}
+    assert second_progress == {"cards_reviewed": 1, "known_count": 0, "unknown_count": 1}
 
 
 def test_learning_summary_tracks_average_level_trend_and_inactivity():

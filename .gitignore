@@ -35,10 +35,24 @@ env/
 .DS_Store
 
 # Environment variables
+.env
 .env.local
+.env.*.local
+
+# Local assistant/tool settings
+.claude/settings.local.json
 
 # Logs
 *.log
+
+# Local databases
+*.db
+*.db-*
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+backups/
 
 # Node
 node_modules/
@@ -51,6 +65,12 @@ pnpm-debug.log*
 dist/
 dist-ssr/
 *.local
+
+# Native/mobile generated outputs
+frontend/android/.gradle/
+frontend/android/**/build/
+frontend/ios/DerivedData/
+frontend/ios/App/Pods/
 
 # Testing
 .coverage
@@ -66,11 +86,25 @@ Thumbs.db
 postgres_data/
 *.sql
 
+# Terraform local state and secrets
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+tfplan
+*.tfplan
+!*.tfvars.example
+infrastructure/k8s/secrets.yaml
+!infrastructure/k8s/secrets.yaml.example
+
 # Test artifacts
 test-*.png
 step*.png
 error*.png
 final-*.png
+tests/quick-check.png
+tests/screenshots/
+tests/tests/screenshots/
 *.png.metadata
 client_secrets.json
 backend/app.before-library-sync-*.db
@@ -80,9 +114,6 @@ playwright-report/
 test-results/
 
 # Auto-added safety rules
-.env
-.env.local
-.env.*.local
 *.pem
 *.key
 *_rsa
@@ -101,4 +132,3 @@ gcp-oauth-credentials/*.json
 credentials.json
 secrets.json
 service-account*.json
-

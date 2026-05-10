@@ -94,7 +94,13 @@ print_error() {
 # Load secrets
 load_secrets() {
     print_header "Loading Secrets"
+    # .env contains AWS_REGION/CLUSTER_NAME defaults that would overwrite the
+    # region-specific values selected via the CLI argument. Save and restore.
+    local _saved_region="$AWS_REGION" _saved_cluster="$CLUSTER_NAME"
     source "$SCRIPT_DIR/setup-secrets.sh"
+    AWS_REGION="$_saved_region"
+    CLUSTER_NAME="$_saved_cluster"
+    export AWS_DEFAULT_REGION="$AWS_REGION"
 }
 
 # Check prerequisites

@@ -1,5 +1,4 @@
 import { Brain, ChevronDown, Database, Gauge, Layers } from 'lucide-react';
-import { LatestFeaturesPanel } from './LatestFeaturesPanel';
 import { UI_RADIUS, UI_SIZE } from './ui';
 
 const learningSystemItems = [
@@ -56,10 +55,6 @@ export function LearningSystemMenu({ isOpen, onToggle }: LearningSystemMenuProps
           className={`shrink-0 text-slate-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
-
-      <div className="mt-3">
-        <LatestFeaturesPanel />
-      </div>
 
       {isOpen && (
         <div id="learning-system-menu" className="mt-3 grid gap-2">

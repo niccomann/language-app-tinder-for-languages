@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine, inspect, text
+from sqlmodel import SQLModel
 
-from app.database.connection import ensure_sqlite_schema_compatibility
+from app.database.connection import ensure_sqlite_schema_compatibility, main_database_tables
 
 
 def test_sqlite_schema_migration_adds_missing_flashcard_columns():
@@ -87,3 +88,39 @@ def test_sqlite_schema_migration_adds_missing_grammar_columns():
     node_columns = {column["name"] for column in inspect(engine).get_columns("grammar_sentence_nodes")}
     assert "audio_base64" in sentence_columns
     assert "image_base64" in node_columns
+
+
+def test_sqlite_schema_migration_adds_user_progress_user_id():
+    engine = create_engine("sqlite:///:memory:")
+    with engine.begin() as connection:
+        connection.execute(text("""
+            CREATE TABLE user_progress (
+                id INTEGER PRIMARY KEY,
+                created_at DATETIME,
+                updated_at DATETIME,
+                card_id VARCHAR NOT NULL,
+                known BOOLEAN NOT NULL,
+                review_count INTEGER NOT NULL,
+                swipe_right_count INTEGER NOT NULL,
+                swipe_left_count INTEGER NOT NULL,
+                last_reviewed DATETIME NOT NULL
+            )
+        """))
+
+    ensure_sqlite_schema_compatibility(engine)
+
+    columns = {column["name"] for column in inspect(engine).get_columns("user_progress")}
+    assert "user_id" in columns
+
+
+def test_main_database_table_list_excludes_tracking_tables_even_when_imported():
+    from app.database import models as _main_models  # noqa: F401
+    from app.database import tracking_models as _tracking_models  # noqa: F401
+
+    engine = create_engine("sqlite:///:memory:")
+    SQLModel.metadata.create_all(engine, tables=main_database_tables())
+
+    table_names = set(inspect(engine).get_table_names())
+    assert "flashcards" in table_names
+    assert "user_progress" in table_names
+    assert not {table for table in table_names if table.startswith("tracking_")}

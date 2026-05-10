@@ -27,9 +27,64 @@ test('learning features have direct routes', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByText('One memory database tracks every word you know, miss, or are still learning.')).toBeVisible();
 
+  await page.goto(`${APP_URL}/vocabulary`);
+  await expect(page.getByRole('heading', { name: 'Your Vocabulary' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('heading', { name: 'schnell' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'laufen' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Katze' })).toBeVisible();
+  await expect(page.getByText('5-star')).toBeVisible();
+  await expect(page.getByText('3-4 stars')).toBeVisible();
+  await expect(page.getByText('0 stars')).toBeVisible();
+
   await page.goto(`${APP_URL}/placement/sentence`);
   await expect(page.getByRole('heading', { name: 'Grammar Placement' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('heading', { name: 'Translate this sentence' })).toBeVisible({ timeout: 15000 });
+
+  await page.goto(`${APP_URL}/review`);
+  await expect(page.getByRole('heading', { name: 'Review & Setup' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('button', { name: /Open Topic Deck/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Open Word Library/i })).toBeVisible();
+
+  await page.goto(`${APP_URL}/explore`);
+  await expect(page.getByRole('heading', { name: 'Explore German' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('button', { name: /Open Sentence Placement/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Open Word Cloud/i })).toBeVisible();
+});
+
+test('product navigation exposes a simpler Path Learn Review Explore model without hiding direct routes', async ({ page }) => {
+  await mockLearningApi(page);
+  await markFirstVocabularyOnboardingDone(page);
+  await page.goto(APP_URL);
+
+  const nav = page.getByRole('navigation', { name: 'Product navigation' });
+  await expect(nav).toBeVisible({ timeout: 15000 });
+  await expect(nav.getByRole('button', { name: 'Path' })).toBeVisible();
+  await expect(nav.getByRole('button', { name: 'Learn' })).toBeVisible();
+  await expect(nav.getByRole('button', { name: 'Review' })).toBeVisible();
+  await expect(nav.getByRole('button', { name: 'Explore' })).toBeVisible();
+  await expect(nav.getByRole('button', { name: 'Vocabulary' })).toHaveCount(0);
+  await expect(nav.getByRole('button', { name: 'Library' })).toHaveCount(0);
+  await expect(nav.getByRole('button', { name: 'Grammar' })).toHaveCount(0);
+
+  await nav.getByRole('button', { name: 'Learn' }).click();
+  await expect(page).toHaveURL(`${APP_URL}/learn`);
+  await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
+
+  await nav.getByRole('button', { name: 'Review' }).click();
+  await expect(page).toHaveURL(`${APP_URL}/review`);
+  await expect(page.getByRole('heading', { name: 'Review & Setup' })).toBeVisible({ timeout: 15000 });
+
+  await page.getByRole('button', { name: /Open Word Library/i }).click();
+  await expect(page).toHaveURL(`${APP_URL}/library`);
+  await expect(page.getByText('Word Library')).toBeVisible({ timeout: 15000 });
+
+  await nav.getByRole('button', { name: 'Explore' }).click();
+  await expect(page).toHaveURL(`${APP_URL}/explore`);
+  await expect(page.getByRole('heading', { name: 'Explore German' })).toBeVisible({ timeout: 15000 });
+
+  await page.getByRole('button', { name: /Open Grammar Lab/i }).click();
+  await expect(page).toHaveURL(`${APP_URL}/grammar/graph`);
+  await expect(page.getByRole('heading', { name: /Grammar Lab/i })).toBeVisible({ timeout: 15000 });
 });
 
 test('sentence placement uses a guided Duolingo-style word choice exercise', async ({ page }) => {

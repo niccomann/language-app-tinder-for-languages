@@ -1,4 +1,4 @@
-export type LearningRouteMode = 'path' | 'session' | 'filters' | 'system' | 'grammar_placement';
+export type LearningRouteMode = 'path' | 'session' | 'filters' | 'system' | 'grammar_placement' | 'vocabulary' | 'review' | 'explore';
 
 export type GrammarView =
   | 'graph'
@@ -22,7 +22,8 @@ export type LibraryDetailTab =
 export type RouteState =
   | { screen: 'learning'; mode: LearningRouteMode }
   | { screen: 'grammar'; view: GrammarView }
-  | { screen: 'library'; filtersOpen: boolean; wordId?: number; detailTab?: LibraryDetailTab };
+  | { screen: 'library'; filtersOpen: boolean; wordId?: number; detailTab?: LibraryDetailTab }
+  | { screen: 'developer' };
 
 const GRAMMAR_SEGMENTS: Record<GrammarView, string> = {
   graph: 'graph',
@@ -61,8 +62,24 @@ export function parseAppRoute(pathname: string): RouteState {
     return { screen: 'learning', mode: 'session' };
   }
 
+  if (section === 'vocabulary') {
+    return { screen: 'learning', mode: 'vocabulary' };
+  }
+
+  if (section === 'review') {
+    return { screen: 'learning', mode: 'review' };
+  }
+
+  if (section === 'explore') {
+    return { screen: 'learning', mode: 'explore' };
+  }
+
   if (section === 'placement' && feature === 'sentence') {
     return { screen: 'learning', mode: 'grammar_placement' };
+  }
+
+  if (section === 'developer') {
+    return { screen: 'developer' };
   }
 
   if (section === 'grammar') {
@@ -107,11 +124,18 @@ export function routeStatePath(route: RouteState) {
     if (route.mode === 'filters') return '/learn/filters';
     if (route.mode === 'system') return '/learn/system';
     if (route.mode === 'grammar_placement') return '/placement/sentence';
+    if (route.mode === 'vocabulary') return '/vocabulary';
+    if (route.mode === 'review') return '/review';
+    if (route.mode === 'explore') return '/explore';
     return '/learn';
   }
 
   if (route.screen === 'grammar') {
     return grammarPath(route.view);
+  }
+
+  if (route.screen === 'developer') {
+    return '/developer';
   }
 
   if (route.wordId) {

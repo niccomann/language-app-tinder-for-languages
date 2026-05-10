@@ -18,6 +18,11 @@
           "body": "Unlike apps that make you repeat everything the same way, we do not want to show you words you already know too often. We give those words lower weight in exercises and focus on the ones you still need to consolidate."
         },
         {
+          "eyebrow": "Personal path",
+          "title": "The coach starts by screening what matters to you.",
+          "body": "Every person wants to personalize learning around words they will actually use. Most apps skip this first screening, so you spend real mental effort learning words you may never use."
+        },
+        {
           "eyebrow": "Vocabulary map",
           "title": "First, we map what is already yours.",
           "body": "That is why we analyze your vocabulary: we want to understand how many words you know, which ones you already know, and which ones you only know a little."
@@ -29,10 +34,314 @@
         }
       ]
     },
+    "animation": {
+      "skipAction": "Skip",
+      "nextPageAction": "Next page"
+    },
+    "preferences": {
+      "eyebrow": "Training setup",
+      "title": "Tell me what kind of German you want to build.",
+      "body": "Before the vocabulary scan, choose the style of words, domains, tone, and exercises that should shape your path.",
+      "progressLabel": "Question {{current}} of {{total}}",
+      "selectedLabel": "Selected",
+      "nextAction": "Next question",
+      "finishAction": "Start vocabulary scan",
+      "backAction": "Back",
+      "questions": [
+        {
+          "id": "question-1",
+          "eyebrow": "Word style",
+          "title": "Modern, classic, or both?",
+          "body": "This controls whether the app favors current everyday vocabulary, older cultural vocabulary, or a balanced mix.",
+          "options": [
+            {
+              "id": "modern",
+              "label": "Modern everyday",
+              "description": "Words from daily life, media, technology, and current conversation."
+            },
+            {
+              "id": "classic",
+              "label": "Classic and cultural",
+              "description": "More literature, history, formal language, and older registers."
+            },
+            {
+              "id": "balanced",
+              "label": "Balanced mix",
+              "description": "A practical blend of modern words and timeless vocabulary."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-2",
+          "multiSelect": true,
+          "eyebrow": "Domains",
+          "title": "Which domains should the app prioritize?",
+          "body": "Pick one or more topics. The learning path can weight the domains that feel useful to you first.",
+          "options": [
+            {
+              "id": "travel",
+              "label": "Travel and city life",
+              "description": "Stations, food, directions, shops, and everyday situations."
+            },
+            {
+              "id": "work",
+              "label": "Work and business",
+              "description": "Meetings, roles, tasks, email, planning, and professional words."
+            },
+            {
+              "id": "study",
+              "label": "Study and culture",
+              "description": "University, books, ideas, art, history, and social topics."
+            },
+            {
+              "id": "technology",
+              "label": "Technology",
+              "description": "Apps, devices, data, software, and modern tools."
+            }
+          ]
+        },
+        {
+          "id": "question-3",
+          "eyebrow": "Tone",
+          "title": "What tone should exercises lean toward?",
+          "body": "The same word can appear in very different contexts depending on tone.",
+          "options": [
+            {
+              "id": "friendly",
+              "label": "Friendly",
+              "description": "Warm, conversational, and easy to reuse with people."
+            },
+            {
+              "id": "casual",
+              "label": "Casual",
+              "description": "Short, natural, and close to everyday spoken language."
+            },
+            {
+              "id": "formal",
+              "label": "Formal",
+              "description": "Useful for work, institutions, and written communication."
+            },
+            {
+              "id": "technical",
+              "label": "Technical",
+              "description": "Precise words for systems, science, tools, and processes."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-4",
+          "eyebrow": "Goal",
+          "title": "What do you want to improve first?",
+          "body": "This helps decide whether future tasks should ask for recognition, production, or sentence logic.",
+          "options": [
+            {
+              "id": "speaking",
+              "label": "Speaking",
+              "description": "Fast recall and simple sentences you can say aloud."
+            },
+            {
+              "id": "reading",
+              "label": "Reading",
+              "description": "Recognize more words in articles, books, and websites."
+            },
+            {
+              "id": "listening",
+              "label": "Listening",
+              "description": "Build vocabulary that helps with videos, speech, and podcasts."
+            },
+            {
+              "id": "writing",
+              "label": "Writing",
+              "description": "Compose clearer sentences with better word choice."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-5",
+          "eyebrow": "Exercise feel",
+          "title": "Which exercise style sounds best?",
+          "body": "The app can later weight the types of activities that keep you engaged.",
+          "options": [
+            {
+              "id": "quick",
+              "label": "Quick choices",
+              "description": "Fast, low-friction decisions like the vocabulary scan."
+            },
+            {
+              "id": "sentences",
+              "label": "Sentence building",
+              "description": "More tasks where you compose words into complete phrases."
+            },
+            {
+              "id": "visual",
+              "label": "Visual memory",
+              "description": "More image-based prompts and visual associations."
+            },
+            {
+              "id": "mixed",
+              "label": "Mixed game loop",
+              "description": "Rotate between cards, sentences, visuals, and review."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-6",
+          "eyebrow": "Difficulty",
+          "title": "How hard should the first path feel?",
+          "body": "This affects how aggressively the app introduces unknown words into exercises.",
+          "options": [
+            {
+              "id": "gentle",
+              "label": "Gentle",
+              "description": "More familiar words around each new word."
+            },
+            {
+              "id": "normal",
+              "label": "Normal",
+              "description": "A balanced mix of known, weak, and new words."
+            },
+            {
+              "id": "ambitious",
+              "label": "Ambitious",
+              "description": "More challenging contexts and faster vocabulary growth."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-7",
+          "eyebrow": "Grammar",
+          "title": "Which grammar area matters most now?",
+          "body": "This will help future sentence tasks choose what to test.",
+          "options": [
+            {
+              "id": "function-words",
+              "label": "Function words",
+              "description": "Articles, pronouns, prepositions, conjunctions, and particles."
+            },
+            {
+              "id": "verbs",
+              "label": "Verbs",
+              "description": "Conjugations, tense, separable verbs, and action words."
+            },
+            {
+              "id": "sentence-order",
+              "label": "Sentence order",
+              "description": "Who does what, where words go, and how clauses connect."
+            },
+            {
+              "id": "all-grammar",
+              "label": "All of it",
+              "description": "A broad grammar mix that changes with your answers."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-8",
+          "eyebrow": "Context age",
+          "title": "Which kind of context should appear more often?",
+          "body": "This gives the app a signal about the world your examples should come from.",
+          "options": [
+            {
+              "id": "current-life",
+              "label": "Current life",
+              "description": "Modern situations, technology, travel, and social contexts."
+            },
+            {
+              "id": "timeless",
+              "label": "Timeless basics",
+              "description": "Home, people, nature, feelings, movement, and objects."
+            },
+            {
+              "id": "culture-history",
+              "label": "Culture and history",
+              "description": "Literature, institutions, historical words, and public life."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-9",
+          "eyebrow": "Feedback",
+          "title": "How should feedback feel?",
+          "body": "The app can explain mistakes in different ways as it becomes more adaptive.",
+          "options": [
+            {
+              "id": "concise",
+              "label": "Concise",
+              "description": "Short confirmations and corrections."
+            },
+            {
+              "id": "detailed",
+              "label": "Detailed",
+              "description": "More explanation of why an answer works."
+            },
+            {
+              "id": "playful",
+              "label": "Playful",
+              "description": "More mascot reactions, rewards, and game-like feedback."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-10",
+          "eyebrow": "Time",
+          "title": "How long should a normal session be?",
+          "body": "This helps the path feel complete instead of endless.",
+          "options": [
+            {
+              "id": "five-minutes",
+              "label": "5 minutes",
+              "description": "Very short, focused sessions."
+            },
+            {
+              "id": "ten-minutes",
+              "label": "10 minutes",
+              "description": "A compact daily training loop."
+            },
+            {
+              "id": "twenty-minutes",
+              "label": "20 minutes",
+              "description": "Longer sessions with more sentence work."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-11",
+          "eyebrow": "Semantic distance",
+          "title": "How different should new words be from each other?",
+          "body": "To reduce cognitive load, the app can avoid too many near-synonyms early. Semantically distant words help you express more concepts with less memory friction.",
+          "options": [
+            {
+              "id": "wide-concepts",
+              "label": "Wide concepts first",
+              "description": "Prefer semantically distant verbs and words so each new item unlocks a different idea."
+            },
+            {
+              "id": "balanced-distance",
+              "label": "Balanced spacing",
+              "description": "Mix broad coverage with useful similar words when they matter."
+            },
+            {
+              "id": "precise-synonyms",
+              "label": "Precise synonyms too",
+              "description": "Allow closer near-synonyms earlier for more nuanced expression."
+            }
+          ]
+        }
+      ]
+    },
     "analysis": {
       "eyebrow": "Analysis complete",
-      "title": "You know about {{knownEstimate}} words",
-      "body": "We personalize your learning from the signals you just created.",
+      "title": "You placed {{knownEstimate}} words in your vocabulary",
+      "body": "Every interaction from now on updates your vocabulary. You can always inspect it in Your Vocabulary.",
       "primaryAction": "Continue",
       "wordsSeen": "Words seen",
       "strongSignals": "Strong signals",
@@ -69,6 +378,27 @@
       "fallbackWeak": "verbs and adjectives",
       "fallbackMixed": "mixed words"
     }
+  },
+  "yourVocabulary": {
+    "title": "Your Vocabulary",
+    "subtitle": "The words you interact with are ranked by mastery. Strong words rise to the top; weak or unknown words stay visible for review.",
+    "loadingMessage": "Loading your vocabulary...",
+    "errorTitle": "Vocabulary unavailable",
+    "errorMessage": "Failed to load your vocabulary. Try again when the backend is reachable.",
+    "strongStat": "Strong",
+    "learningStat": "Learning",
+    "weakStat": "Weak",
+    "logicEyebrow": "How it works",
+    "logicBody": "Every swipe, sentence, and correction updates this memory. The app uses it to avoid over-repeating words you already know and to bring back words that need consolidation.",
+    "continueAction": "Continue training",
+    "emptyTitle": "No vocabulary signals yet",
+    "emptyBody": "Start with the swipe scan. As soon as you interact with words, this section becomes your personal vocabulary map.",
+    "emptyAction": "Start vocabulary scan",
+    "masteredLabel": "5-star",
+    "learningLabel": "3-4 stars",
+    "weakLabel": "1-2 stars",
+    "unknownLabel": "0 stars",
+    "levelLabel": "Level"
   },
   "featureGuides": {
     "vocabularyScan": {
@@ -167,6 +497,12 @@
       "missionLabel": "Setup",
       "description": "Tune the packs used in the swipe deck without turning the app into a settings screen.",
       "ctaLabel": "Open Topics mission"
+    },
+    "yourVocabulary": {
+      "title": "Your Vocabulary",
+      "missionLabel": "Collection",
+      "description": "See the words ranked by how strongly the system thinks you know them.",
+      "ctaLabel": "Open Your Vocabulary"
     },
     "wordLibrary": {
       "title": "Word Library",

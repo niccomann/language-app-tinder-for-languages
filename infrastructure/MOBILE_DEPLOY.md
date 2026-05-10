@@ -284,10 +284,7 @@ VITE_API_URL=http://localhost:8501
 # Required
 DATABASE_URL=sqlite:///./tinder_languages.db
 
-# For YouTube videos
-YOUTUBE_API_KEY=your_key
-
-# For AI features
+# For active AI features
 OPENAI_API_KEY=your_key
 
 # For Grammar validation

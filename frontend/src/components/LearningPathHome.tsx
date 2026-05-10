@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react';
-import { BookOpen, Clock3, Flame, FlaskConical, Gauge, Layers3, Play, Puzzle, ShieldCheck, Sparkles, Target, Trophy } from 'lucide-react';
+import { BookOpen, BookOpenCheck, Clock3, Compass, Flame, Gauge, Play, Puzzle, ShieldCheck, Sparkles, Target, Trophy } from 'lucide-react';
 import type { AdaptiveLearningSummary, UserProgress } from '../types';
 import { AppScreen, GameSignalBadge, ScreenHeader, StatCard, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
-import { LatestFeaturesPanel } from './LatestFeaturesPanel';
 import {
   LEARNING_PATH_MILESTONES,
   getActiveMilestoneIndex,
@@ -13,7 +12,6 @@ import {
   getFeatureFlowItemsByPhase,
   getPrimaryFeatureFlowItem,
   type FeatureFlowItem,
-  type FeatureFlowTone,
 } from '../gamification/featureFlowRegistry';
 
 interface LearningPathHomeProps {
@@ -41,16 +39,19 @@ export function LearningPathHome({
     pathLevelProgress,
   } = getPathDisplayValues(learningSummary);
   const activeMilestoneIndex = getActiveMilestoneIndex(pathLevel);
+  const visibleMilestones = LEARNING_PATH_MILESTONES.slice(
+    Math.max(0, activeMilestoneIndex - 1),
+    Math.min(LEARNING_PATH_MILESTONES.length, activeMilestoneIndex + 2),
+  );
   const shouldReengage = Boolean(learningSummary?.should_reengage);
   const primaryMission = getPrimaryFeatureFlowItem();
   const upcomingMissions = getFeatureFlowItemsByPhase('upcoming');
-  const collectionMissions = getFeatureFlowItemsByPhase('collection');
-  const advancedMissions = getFeatureFlowItemsByPhase('advanced');
+  const nextMission = upcomingMissions[0];
   const handleOpenMission = (mission: FeatureFlowItem) => onNavigateToFeature(mission.route);
 
   return (
-    <AppScreen width="wide" contentClassName="min-h-dvh px-4 py-4">
-      <main className="mx-auto grid w-full max-w-6xl gap-4 lg:grid-cols-[minmax(320px,420px)_minmax(420px,1fr)]">
+    <AppScreen width="wide" contentClassName="min-h-dvh px-4 pb-4 pt-24 md:pt-20">
+      <main className="mx-auto grid w-full max-w-7xl gap-4 lg:grid-cols-[minmax(460px,560px)_minmax(420px,1fr)]">
         <section className="space-y-3">
           <ScreenHeader
             title="German Learning Path"
@@ -95,27 +96,19 @@ export function LearningPathHome({
               </p>
             </div>
 
-            <div className={`${UI_RADIUS.control} border border-indigo-100 bg-indigo-50 p-4 dark:border-indigo-800 dark:bg-indigo-950/40`}>
-              <div className="flex flex-wrap items-end justify-between gap-3">
-                <div>
-                  <p className="text-xs font-extrabold uppercase tracking-wide text-indigo-500">400-level path</p>
-                  <p className="mt-1 text-3xl font-extrabold text-indigo-700 dark:text-indigo-100">
-                    Level {pathLevel}
-                    <span className="text-base text-indigo-500 dark:text-indigo-300">/{maxPathLevel}</span>
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">XP to next level</p>
-                  <p className="mt-1 text-2xl font-extrabold text-slate-900 dark:text-white">{xpToNextLevel}</p>
-                </div>
-              </div>
-              <div className="mt-4 h-3 overflow-hidden rounded-full bg-white shadow-inner dark:bg-slate-800">
-                <div
-                  className="h-full rounded-full bg-indigo-600"
-                  style={{ width: `${Math.max(0, Math.min(100, pathLevelProgress))}%` }}
-                />
-              </div>
-            </div>
+            <PathFocusFlow
+              primaryMission={primaryMission}
+              nextMission={nextMission}
+              pathLevel={pathLevel}
+              maxPathLevel={maxPathLevel}
+              xpToNextLevel={xpToNextLevel}
+              pathLevelProgress={pathLevelProgress}
+              selectedCategoriesCount={selectedCategoriesCount}
+              categoriesCount={categoriesCount}
+              onOpenMission={handleOpenMission}
+              onOpenReview={() => onNavigateToFeature('/review')}
+              onOpenExplore={() => onNavigateToFeature('/explore')}
+            />
 
             <div className="grid grid-cols-2 gap-3">
               <StatCard label="Path Level" value={pathLevel} icon={<Gauge size={20} />} color="indigo" />
@@ -124,83 +117,15 @@ export function LearningPathHome({
               <StatCard label="Avg Mastery" value={Number(averageMastery.toFixed(1))} icon={<Target size={20} />} color="blue" />
             </div>
 
-            <div data-testid="guided-mission-flow" className="space-y-4">
-              <div className="grid gap-2 sm:grid-cols-2">
-                <button
-                  type="button"
-                  onClick={() => handleOpenMission(primaryMission)}
-                  aria-label={primaryMission.ctaLabel}
-                  className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-14 w-full items-center justify-center gap-3 bg-indigo-600 px-5 py-4 text-sm font-extrabold text-white shadow-lg hover:bg-indigo-700`}
-                >
-                  <Play size={18} />
-                  {primaryMission.ctaLabel}
-                </button>
-                <div className={`${UI_RADIUS.control} border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/70`}>
-                  <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">{primaryMission.missionLabel}</p>
-                  <p className="mt-1 text-sm font-extrabold text-slate-950 dark:text-white">{primaryMission.title}</p>
-                  <p className="mt-1 text-xs font-semibold leading-5 text-slate-500 dark:text-slate-300">{primaryMission.description}</p>
-                </div>
-              </div>
-
-              <p className="text-sm font-semibold leading-6 text-slate-500 dark:text-slate-300">
-                Compose sentences to check grammar, logic, and function words.
-              </p>
-
-              <div className="grid gap-3">
-                {upcomingMissions.map((mission) => (
-                  <MissionCard
-                    key={mission.id}
-                    mission={mission}
-                    icon={getMissionIcon(mission.id)}
-                    onOpen={() => handleOpenMission(mission)}
-                  />
-                ))}
-              </div>
-
-              <div>
-                <div className="mb-2 flex items-center justify-between gap-3">
-                  <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">Collection and setup</p>
-                  <span className={`${UI_RADIUS.pill} bg-slate-100 px-2.5 py-1 text-xs font-extrabold text-slate-500 dark:bg-slate-700 dark:text-slate-200`}>
-                    Topics {selectedCategoriesCount}/{categoriesCount || 0}
-                  </span>
-                </div>
-                <div className="grid gap-2 sm:grid-cols-3">
-                  {collectionMissions.map((mission) => (
-                    <CompactMissionButton
-                      key={mission.id}
-                      mission={mission}
-                      icon={getMissionIcon(mission.id)}
-                      onOpen={() => handleOpenMission(mission)}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <p className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-400">Advanced exploration</p>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {advancedMissions.map((mission) => (
-                    <CompactMissionButton
-                      key={mission.id}
-                      mission={mission}
-                      icon={getMissionIcon(mission.id)}
-                      onOpen={() => handleOpenMission(mission)}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
           </SurfacePanel>
         </section>
 
         <section className="space-y-3">
-          <LatestFeaturesPanel />
-
           <SurfacePanel padding="lg" className="relative overflow-hidden">
             <div className="mb-5 flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">Learning Diary</p>
-                <h2 className="mt-2 text-2xl font-extrabold text-slate-950 dark:text-white">Path progress</h2>
+                <h2 className="mt-2 text-2xl font-extrabold text-slate-950 dark:text-white">Current progress</h2>
               </div>
               <div className={`${UI_RADIUS.pill} bg-slate-100 px-3 py-2 text-xs font-extrabold text-slate-600 dark:bg-slate-700 dark:text-slate-200`}>
                 {progress.cards_reviewed}/{totalCards || 0} today
@@ -209,7 +134,8 @@ export function LearningPathHome({
 
             <div className="relative space-y-3">
               <div className="absolute bottom-8 left-6 top-8 w-0.5 bg-slate-200 dark:bg-slate-700" />
-              {LEARNING_PATH_MILESTONES.map((step, index) => {
+              {visibleMilestones.map((step) => {
+                const index = LEARNING_PATH_MILESTONES.indexOf(step);
                 const isComplete = pathLevel >= step.level;
                 const isActive = index === activeMilestoneIndex;
                 return (
@@ -238,6 +164,23 @@ export function LearningPathHome({
                 );
               })}
             </div>
+
+            <details className="mt-4 border-t border-slate-100 pt-4 dark:border-slate-800">
+              <summary className="cursor-pointer text-sm font-extrabold text-indigo-600 dark:text-indigo-200">
+                Show full 400-level path
+              </summary>
+              <div className="mt-3 grid gap-2">
+                {LEARNING_PATH_MILESTONES.map((step) => (
+                  <div key={step.title} className={`${UI_RADIUS.control} border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/70`}>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <h3 className="text-sm font-extrabold text-slate-950 dark:text-white">{step.title}</h3>
+                      <span className="text-xs font-extrabold text-slate-500 dark:text-slate-300">Level {step.level}</span>
+                    </div>
+                    <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-300">{step.detail}</p>
+                  </div>
+                ))}
+              </div>
+            </details>
           </SurfacePanel>
         </section>
       </main>
@@ -245,123 +188,140 @@ export function LearningPathHome({
   );
 }
 
-const missionToneClasses: Record<FeatureFlowTone, {
-  border: string;
-  badge: string;
-  icon: string;
-  button: string;
-}> = {
-  indigo: {
-    border: 'border-indigo-200 bg-indigo-50 dark:border-indigo-800 dark:bg-indigo-950/40',
-    badge: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-100',
-    icon: 'bg-indigo-600 text-white',
-    button: 'bg-indigo-600 text-white hover:bg-indigo-700',
-  },
-  teal: {
-    border: 'border-teal-200 bg-teal-50 dark:border-teal-800 dark:bg-teal-950/40',
-    badge: 'bg-teal-100 text-teal-700 dark:bg-teal-900 dark:text-teal-100',
-    icon: 'bg-teal-600 text-white',
-    button: 'bg-teal-600 text-white hover:bg-teal-700',
-  },
-  purple: {
-    border: 'border-purple-200 bg-purple-50 dark:border-purple-800 dark:bg-purple-950/40',
-    badge: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-100',
-    icon: 'bg-purple-600 text-white',
-    button: 'bg-purple-600 text-white hover:bg-purple-700',
-  },
-  amber: {
-    border: 'border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40',
-    badge: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100',
-    icon: 'bg-amber-500 text-slate-950',
-    button: 'bg-amber-500 text-slate-950 hover:bg-amber-400',
-  },
-  blue: {
-    border: 'border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/40',
-    badge: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100',
-    icon: 'bg-blue-600 text-white',
-    button: 'bg-blue-600 text-white hover:bg-blue-700',
-  },
-  emerald: {
-    border: 'border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/40',
-    badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-100',
-    icon: 'bg-emerald-600 text-white',
-    button: 'bg-emerald-600 text-white hover:bg-emerald-700',
-  },
-  slate: {
-    border: 'border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/70',
-    badge: 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-100',
-    icon: 'bg-slate-700 text-white',
-    button: 'bg-slate-700 text-white hover:bg-slate-800 dark:hover:bg-slate-600',
-  },
-};
-
-function MissionCard({
-  mission,
-  icon,
-  onOpen,
+function PathFocusFlow({
+  primaryMission,
+  nextMission,
+  pathLevel,
+  maxPathLevel,
+  xpToNextLevel,
+  pathLevelProgress,
+  selectedCategoriesCount,
+  categoriesCount,
+  onOpenMission,
+  onOpenReview,
+  onOpenExplore,
 }: {
-  mission: FeatureFlowItem;
-  icon: ReactNode;
-  onOpen: () => void;
+  primaryMission: FeatureFlowItem;
+  nextMission?: FeatureFlowItem;
+  pathLevel: number;
+  maxPathLevel: number;
+  xpToNextLevel: number;
+  pathLevelProgress: number;
+  selectedCategoriesCount: number;
+  categoriesCount: number;
+  onOpenMission: (mission: FeatureFlowItem) => void;
+  onOpenReview: () => void;
+  onOpenExplore: () => void;
 }) {
-  const tone = missionToneClasses[mission.tone];
   return (
-    <button
-      type="button"
-      aria-label={mission.ctaLabel}
-      onClick={onOpen}
-      className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.subtlePress} flex w-full items-stretch gap-3 border p-3 text-left hover:shadow-md ${tone.border}`}
-    >
-      <span className={`${UI_RADIUS.touchIcon} flex h-11 w-11 shrink-0 items-center justify-center ${tone.icon}`}>
-        {icon}
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className={`inline-flex ${UI_RADIUS.pill} px-2.5 py-1 text-xs font-extrabold ${tone.badge}`}>
-          {mission.missionLabel}
-        </span>
-        <span className="mt-2 block text-base font-extrabold text-slate-950 dark:text-white">{mission.title}</span>
-        <span className="mt-1 block text-sm font-semibold leading-5 text-slate-600 dark:text-slate-300">{mission.description}</span>
-      </span>
-      <span className={`${UI_RADIUS.pill} ${tone.button} self-center px-3 py-2 text-xs font-extrabold`}>
-        Play
-      </span>
-    </button>
+    <div data-testid="path-focus-flow" className="space-y-4">
+      <div className={`${UI_RADIUS.control} border border-indigo-100 bg-indigo-50 p-4 dark:border-indigo-800 dark:bg-indigo-950/40`}>
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-wide text-indigo-500">400-level path</p>
+            <p className="mt-1 text-3xl font-extrabold text-indigo-700 dark:text-indigo-100">
+              Level {pathLevel}
+              <span className="text-base text-indigo-500 dark:text-indigo-300">/{maxPathLevel}</span>
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-xs font-extrabold uppercase tracking-wide text-slate-400">XP to next level</p>
+            <p className="mt-1 text-2xl font-extrabold text-slate-900 dark:text-white">{xpToNextLevel}</p>
+          </div>
+        </div>
+        <div className="mt-4 h-3 overflow-hidden rounded-full bg-white shadow-inner dark:bg-slate-800">
+          <div
+            className="h-full rounded-full bg-indigo-600"
+            style={{ width: `${Math.max(0, Math.min(100, pathLevelProgress))}%` }}
+          />
+        </div>
+      </div>
+
+      <div className="grid gap-3">
+        <button
+          type="button"
+          onClick={() => onOpenMission(primaryMission)}
+          aria-label={primaryMission.ctaLabel}
+          className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-24 w-full flex-col items-start justify-between gap-4 bg-indigo-600 px-5 py-4 text-left text-white shadow-lg hover:bg-indigo-700`}
+        >
+          <span className="flex min-w-0 items-center gap-3">
+            <span className={`${UI_RADIUS.touchIcon} flex h-11 w-11 shrink-0 items-center justify-center bg-white/15`}>
+              <Play size={20} />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-xs font-extrabold uppercase tracking-wide text-indigo-100">{primaryMission.missionLabel}</span>
+              <span className="mt-1 block text-xl font-extrabold">{primaryMission.title}</span>
+              <span className="mt-1 block text-sm font-semibold leading-5 text-indigo-50">{primaryMission.description}</span>
+            </span>
+          </span>
+          <span className={`${UI_RADIUS.pill} bg-white px-3 py-2 text-xs font-extrabold text-indigo-700`}>
+            Continue
+          </span>
+        </button>
+
+        {nextMission && (
+          <button
+            type="button"
+            onClick={() => onOpenMission(nextMission)}
+            aria-label={nextMission.ctaLabel}
+            className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-24 w-full items-start gap-3 border border-teal-200 bg-teal-50 p-4 text-left hover:bg-teal-100 dark:border-teal-800 dark:bg-teal-950/40 dark:hover:bg-teal-900/60`}
+          >
+            <span className={`${UI_RADIUS.touchIcon} flex h-10 w-10 shrink-0 items-center justify-center bg-teal-600 text-white`}>
+              <Puzzle size={18} />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-xs font-extrabold uppercase tracking-wide text-teal-700 dark:text-teal-100">Next when ready</span>
+              <span className="mt-1 block text-base font-extrabold text-slate-950 dark:text-white">{nextMission.title}</span>
+              <span className="mt-1 block text-sm font-semibold leading-5 text-slate-600 dark:text-slate-300">
+                Compose sentences to check grammar, logic, and function words.
+              </span>
+            </span>
+          </button>
+        )}
+      </div>
+
+      <div className="grid gap-2 sm:grid-cols-2">
+        <PathToolButton
+          icon={<BookOpenCheck size={18} />}
+          title="Review tools"
+          body={`Your Vocabulary, Topic Deck, Word Library, and Learning System. Topics ${selectedCategoriesCount}/${categoriesCount || 0}.`}
+          onOpen={onOpenReview}
+        />
+        <PathToolButton
+          icon={<Compass size={18} />}
+          title="Explore tools"
+          body="Grammar training and language-map tools are available when the path asks for deeper work."
+          onOpen={onOpenExplore}
+        />
+      </div>
+    </div>
   );
 }
 
-function CompactMissionButton({
-  mission,
+function PathToolButton({
   icon,
+  title,
+  body,
   onOpen,
 }: {
-  mission: FeatureFlowItem;
   icon: ReactNode;
+  title: string;
+  body: string;
   onOpen: () => void;
 }) {
-  const tone = missionToneClasses[mission.tone];
   return (
     <button
       type="button"
-      aria-label={mission.ctaLabel}
       onClick={onOpen}
-      className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-20 w-full items-center gap-2 border bg-white p-3 text-left hover:shadow-md dark:bg-slate-900 ${tone.border}`}
+      className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-20 w-full items-center gap-3 border border-slate-200 bg-white p-3 text-left shadow-sm hover:border-indigo-200 hover:bg-indigo-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-indigo-700 dark:hover:bg-slate-800`}
     >
-      <span className={`${UI_RADIUS.touchIcon} flex h-9 w-9 shrink-0 items-center justify-center ${tone.icon}`}>
+      <span className={`${UI_RADIUS.touchIcon} flex h-10 w-10 shrink-0 items-center justify-center bg-slate-900 text-white dark:bg-white dark:text-slate-950`}>
         {icon}
       </span>
       <span className="min-w-0">
-        <span className="block text-sm font-extrabold text-slate-950 dark:text-white">{mission.title}</span>
-        <span className="mt-0.5 block text-xs font-semibold leading-4 text-slate-500 dark:text-slate-300">{mission.missionLabel}</span>
+        <span className="block text-sm font-extrabold text-slate-950 dark:text-white">{title}</span>
+        <span className="mt-1 block text-xs font-semibold leading-5 text-slate-500 dark:text-slate-300">{body}</span>
       </span>
     </button>
   );
-}
-
-function getMissionIcon(missionId: string) {
-  if (missionId === 'sentence-placement') return <Puzzle size={18} />;
-  if (missionId === 'grammar-lab') return <FlaskConical size={18} />;
-  if (missionId === 'topic-deck') return <Layers3 size={17} />;
-  if (missionId === 'word-library') return <BookOpen size={17} />;
-  if (missionId === 'learning-system') return <ShieldCheck size={17} />;
-  return <Sparkles size={17} />;
 }

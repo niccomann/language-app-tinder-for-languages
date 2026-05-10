@@ -5,7 +5,7 @@ set -euo pipefail
 # Deploy Android ONLINE - Remote Backend (AWS/localhost)
 # =============================================================================
 # Builds the Android app that connects to a remote backend.
-# Features: ALL features enabled (videos, TTS, AI, etc.)
+# Features: active remote-backend features enabled (TTS, grammar validation, infographics, etc.)
 #
 # Usage:
 #   scripts/deploy_android_online.sh                    # Build (localhost backend)

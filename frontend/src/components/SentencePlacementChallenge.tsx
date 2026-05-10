@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AlertCircle, ArrowRight, CheckCircle2, RotateCcw, Sparkles, Star, Trophy } from 'lucide-react';
 import { api } from '../services/api';
+import { readSavedLearningPreferenceProfile } from '../learning/preferenceProfile';
 import type { SentenceChallenge } from '../types';
 import { GameSignalBadge, LoadingSpinner, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
 import { useTheme } from '../contexts/useTheme';
@@ -29,7 +30,12 @@ export function SentencePlacementChallenge() {
     const loadChallenges = async () => {
       try {
         setLoading(true);
-        const sentenceChallenges = await api.getSentenceChallenges({ language: 'de', limit: 20 });
+        const preferenceProfile = readSavedLearningPreferenceProfile();
+        const sentenceChallenges = await api.getSentenceChallenges({
+          language: 'de',
+          limit: 20,
+          learningPreferenceProfile: preferenceProfile,
+        });
         setChallenges(sentenceChallenges);
       } catch (error) {
         reportClientError('Failed to load sentence placement challenges:', error);

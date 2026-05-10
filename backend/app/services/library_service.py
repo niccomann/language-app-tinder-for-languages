@@ -69,6 +69,7 @@ def read_library_words(
     status: Optional[str],
     limit: Optional[int],
     offset: Optional[int],
+    user_id: str = "default_user",
 ) -> list[FlashcardWithProgress]:
     flashcards = fetch_library_flashcards(
         session=session,
@@ -85,7 +86,7 @@ def read_library_words(
         limit=limit,
         offset=offset,
     )
-    progress_map = fetch_progress_map(session)
+    progress_map = fetch_progress_map(session, user_id)
 
     result = []
     for card in flashcards:

@@ -87,12 +87,10 @@ const MOCK_CARDS = [
 ];
 
 export async function markFirstVocabularyOnboardingDone(page: Page) {
-  await page.addInitScript(({ doneKey, bypassKey }) => {
+  await page.addInitScript(({ doneKey }) => {
     window.localStorage.setItem(doneKey, 'true');
-    window.localStorage.setItem(bypassKey, 'true');
   }, {
     doneKey: FIRST_VOCABULARY_ONBOARDING_STORAGE_KEY,
-    bypassKey: FIRST_VOCABULARY_ONBOARDING_TEST_BYPASS_STORAGE_KEY,
   });
 }
 
@@ -150,6 +148,45 @@ export async function mockLearningApi(
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify(summary),
+    });
+  });
+
+  await page.route('**/api/statistics/all?**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([
+        {
+          word: 'schnell',
+          language: 'de',
+          confidence_score: 88,
+          knowledge_level: 9,
+          times_seen: 8,
+          times_correct: 7,
+          times_incorrect: 1,
+          last_practiced: '2026-05-07T08:00:00Z',
+        },
+        {
+          word: 'laufen',
+          language: 'de',
+          confidence_score: 42,
+          knowledge_level: 5,
+          times_seen: 4,
+          times_correct: 2,
+          times_incorrect: 2,
+          last_practiced: '2026-05-07T08:00:00Z',
+        },
+        {
+          word: 'Katze',
+          language: 'de',
+          confidence_score: 0,
+          knowledge_level: 1,
+          times_seen: 1,
+          times_correct: 0,
+          times_incorrect: 1,
+          last_practiced: '2026-05-07T08:00:00Z',
+        },
+      ]),
     });
   });
 

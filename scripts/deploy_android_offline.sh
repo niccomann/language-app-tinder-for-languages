@@ -16,6 +16,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FRONTEND_DIR="${ROOT_DIR}/frontend"
 MOBILE_BACKEND_DIR="${ROOT_DIR}/mobile-backend"
 ANDROID_PYTHON_DIR="${FRONTEND_DIR}/android/app/src/main/python"
+ANDROID_BRIDGE_PLUGIN="${FRONTEND_DIR}/android/app/src/main/java/it/nicco/tinderforlanguages/OfflineBackendPlugin.java"
 
 RUN_APP=false
 [[ "${1:-}" == "--run" ]] && RUN_APP=true
@@ -52,6 +53,11 @@ log_info ""
 
 setup_java
 setup_android_env
+
+if [[ ! -f "$ANDROID_BRIDGE_PLUGIN" ]]; then
+  log_warn "OfflineBackendPlugin.java is missing; offline API calls would not reach Chaquopy."
+  exit 1
+fi
 
 cd "$FRONTEND_DIR"
 
@@ -92,5 +98,6 @@ else
 fi
 
 log_info ""
-log_info "NOTE: This build does NOT require a backend server."
-log_info "All data is stored locally on the device."
+log_info "NOTE: This build does NOT require an external backend server."
+log_info "The Android OfflineBackend plugin routes /api calls to the embedded Chaquopy backend."
+log_info "All progress data is stored locally on the device."

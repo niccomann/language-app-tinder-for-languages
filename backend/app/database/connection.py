@@ -21,6 +21,9 @@ SQLITE_FLASHCARD_COLUMN_MIGRATIONS = {
 
 SQLITE_COLUMN_MIGRATIONS = {
     "flashcards": SQLITE_FLASHCARD_COLUMN_MIGRATIONS,
+    "user_progress": {
+        "user_id": "VARCHAR DEFAULT 'default_user' NOT NULL",
+    },
     "grammar_sentences": {
         "audio_base64": "TEXT",
     },
@@ -28,6 +31,15 @@ SQLITE_COLUMN_MIGRATIONS = {
         "image_base64": "VARCHAR",
     },
 }
+
+
+def main_database_tables():
+    """Return SQLModel tables that belong in the main application database."""
+    return [
+        table
+        for table in SQLModel.metadata.sorted_tables
+        if not table.name.startswith("tracking_")
+    ]
 
 
 def ensure_sqlite_schema_compatibility(engine) -> None:
@@ -136,11 +148,11 @@ class DatabaseConnection:
         try:
             log.info("Creating database tables...")
             
-            # Import models to register them with SQLModel
-            from app.database.models import FlashcardEntity, UserProgressEntity
+            # Import models to register them with SQLModel.
+            import app.database.models  # noqa: F401
             
             log.debug(f"Creating tables in schema: {config.database.db_schema}")
-            SQLModel.metadata.create_all(self.engine)
+            SQLModel.metadata.create_all(self.engine, tables=main_database_tables())
             ensure_sqlite_schema_compatibility(self.engine)
             
             log.info("Database tables created successfully")
@@ -187,7 +199,8 @@ class DatabaseConnection:
                 log.info(f"✓ Schema '{schema}' created")
             
             log.info("Creating tables from ORM...")
-            SQLModel.metadata.create_all(self.engine)
+            import app.database.models  # noqa: F401
+            SQLModel.metadata.create_all(self.engine, tables=main_database_tables())
             log.info("✓ Tables created")
             
             with self.session as session:

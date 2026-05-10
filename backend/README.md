@@ -90,7 +90,11 @@ GEMINI_API_KEY=your_gemini_key
 # Optional (for full features)
 OPENAI_API_KEY=your_openai_key
 
-# Database (optional - only needed for PostgreSQL instead of default SQLite)
+# Database (SQLite is default)
+USE_SQLITE=True
+
+# PostgreSQL alternative
+# USE_SQLITE=False
 # DB_HOST=localhost
 # DB_PORT=5433
 ```
@@ -107,7 +111,7 @@ sentence_build_start, sentence_build_complete, sentence_validated
 # Library
 word_view, word_search, filter_apply
 
-# Video tracking
+# Deprecated video tracking event names retained for historical sessions
 video_play, video_complete
 
 # Session

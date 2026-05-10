@@ -13,6 +13,9 @@ node tests/e2e/web/test-flashcard-flow.js    # 8 tests
 node tests/e2e/web/test-grammar-lab.js       # 7 tests
 node tests/e2e/web/test-words-library.js     # 8 tests
 node tests/e2e/web/test-new-features.js      # 8 tests
+
+# Active suite runner
+./tests/run-all-tests.sh
 ```
 
 ## 📊 Test Summary

@@ -91,11 +91,17 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
     if (prefersReducedMotion || guide.frames.length < 2) return undefined;
 
     if (speechState.isTyping) {
-      const speakingFrameTimer = window.setInterval(() => {
-        setFrameIndex((current) => (current + 1) % guide.frames.length);
-      }, 320);
+      const frameTimers = [180, 380, 580].map((delay, index) => window.setTimeout(() => {
+        setFrameIndex((index + 1) % guide.frames.length);
+      }, delay));
+      const settleFrame = window.setTimeout(() => {
+        setFrameIndex(0);
+      }, 780);
 
-      return () => window.clearInterval(speakingFrameTimer);
+      return () => {
+        frameTimers.forEach((timer) => window.clearTimeout(timer));
+        window.clearTimeout(settleFrame);
+      };
     }
 
     if (!framesReady) return undefined;
@@ -130,7 +136,6 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
         },
         transition: {
           duration: 0.86,
-          repeat: Infinity,
           ease: 'easeInOut',
         } satisfies Transition,
       };

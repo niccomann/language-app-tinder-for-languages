@@ -50,7 +50,11 @@ test('static UI copy can be switched from the URL locale', async ({ page }) => {
   const intro = page.getByTestId('vocabulary-intro');
   await expect(intro).toBeVisible({ timeout: 15000 });
   await expect(intro.getByText('Questa app parte dal vocabolario che conosci davvero.')).toBeVisible();
-  await expect(intro.getByTestId('speech-step-indicator')).toHaveText('3 / 3', { timeout: 15000 });
+  await expect(intro.getByRole('button', { name: 'Salta', exact: true })).toBeVisible();
+  await expect(intro.getByTestId('streaming-speech-text')).toHaveAttribute('data-typing-state', 'complete', { timeout: 15000 });
+  await expect(intro.getByRole('button', { name: 'Pagina successiva' })).toBeVisible();
+  await intro.getByRole('button', { name: 'Salta', exact: true }).click();
+  await expect(intro.getByTestId('speech-step-indicator')).toHaveText('4 / 4');
   await expect(intro.getByTestId('streaming-speech-text')).toHaveAttribute('data-typing-state', 'complete', { timeout: 15000 });
   await expect(intro.getByRole('button', { name: 'Inizia la scansione' })).toBeVisible();
 });

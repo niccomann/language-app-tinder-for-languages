@@ -33,3 +33,18 @@ def test_sentence_challenge_options_are_stable_between_requests():
     first_options = first_response.json()[0]["option_tokens"]
     second_options = second_response.json()[0]["option_tokens"]
     assert first_options == second_options
+
+
+def test_sentence_challenges_prioritize_preferred_grammar_focus():
+    with TestClient(app) as client:
+        response = client.get(
+            "/api/grammar/sentence-challenges"
+            "?language=de"
+            "&limit=1"
+            "&profile_part_of_speech=adverb"
+        )
+
+    assert response.status_code == 200
+    challenges = response.json()
+    assert challenges
+    assert "adverb" in challenges[0]["grammar_focus"]

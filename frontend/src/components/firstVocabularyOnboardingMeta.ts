@@ -4,8 +4,12 @@ import { readStorageValue, writeStorageValue } from '../utils/browserStorage';
 
 export const FIRST_VOCABULARY_ONBOARDING_STORAGE_KEY = 'languageApp:firstVocabularyOnboardingDone:v1';
 export const FIRST_VOCABULARY_ONBOARDING_TEST_BYPASS_STORAGE_KEY = 'languageApp:firstVocabularyOnboardingTestBypass:v1';
+export const ONBOARDING_PREFERENCES_STORAGE_KEY = 'languageApp:onboardingPreferences:v1';
 export const MIN_VOCABULARY_SCAN_SWIPES = 20;
 export const MAX_VOCABULARY_SCAN_SWIPES = 30;
+
+export type OnboardingPreferenceAnswer = string | string[];
+export type OnboardingPreferenceAnswers = Record<string, OnboardingPreferenceAnswer>;
 
 export interface VocabularySignal {
   word: string;
@@ -64,12 +68,37 @@ export function formatVocabularyCategory(category?: string) {
 }
 
 export function readFirstVocabularyOnboardingDone() {
-  // Demo mode: ignore the old persistent "done" flag so every real app start can replay the full first-run flow.
-  return readStorageValue(FIRST_VOCABULARY_ONBOARDING_TEST_BYPASS_STORAGE_KEY) === 'true';
+  return (
+    readStorageValue(FIRST_VOCABULARY_ONBOARDING_STORAGE_KEY) === 'true'
+    || readStorageValue(FIRST_VOCABULARY_ONBOARDING_TEST_BYPASS_STORAGE_KEY) === 'true'
+  );
 }
 
 export function markFirstVocabularyOnboardingDone() {
   writeStorageValue(FIRST_VOCABULARY_ONBOARDING_STORAGE_KEY, 'true');
+}
+
+export function readOnboardingPreferences(): OnboardingPreferenceAnswers {
+  const storedPreferences = readStorageValue(ONBOARDING_PREFERENCES_STORAGE_KEY);
+  if (!storedPreferences) return {};
+
+  try {
+    const parsed = JSON.parse(storedPreferences) as unknown;
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+      ? Object.fromEntries(
+        Object.entries(parsed).filter(([, value]) => (
+          typeof value === 'string'
+          || (Array.isArray(value) && value.every((item) => typeof item === 'string'))
+        )),
+      ) as OnboardingPreferenceAnswers
+      : {};
+  } catch {
+    return {};
+  }
+}
+
+export function saveOnboardingPreferences(answers: OnboardingPreferenceAnswers) {
+  writeStorageValue(ONBOARDING_PREFERENCES_STORAGE_KEY, JSON.stringify(answers));
 }
 
 export function hasVocabularyHistory(

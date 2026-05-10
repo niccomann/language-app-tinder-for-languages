@@ -59,6 +59,7 @@ async def get_library_words(
     status: Optional[str] = Query(None, description="Filter by learning status: known/unknown"),
     limit: Optional[int] = Query(100, description="Limit results"),
     offset: Optional[int] = Query(0, description="Offset for pagination"),
+    user_id: str = Query("default_user", description="User ID"),
 ):
     """
     Get flashcards with advanced filters and progress information.
@@ -79,6 +80,7 @@ async def get_library_words(
         status=status,
         limit=limit,
         offset=offset,
+        user_id=user_id,
     )
 
 

@@ -79,14 +79,20 @@ export function MascotReaction({
     if (prefersReducedMotion || state === 'idle' || frames.length < 2) return undefined;
 
     if (speaking) {
-      const frameTimer = window.setInterval(() => {
+      const frameTimers = [140, 320, 500].map((delay, index) => window.setTimeout(() => {
         setFrameSequence((current) => ({
           animationKey,
-          frameIndex: current.animationKey === animationKey ? current.frameIndex + 1 : 1,
+          frameIndex: current.animationKey === animationKey ? index + 1 : 1,
         }));
-      }, 220);
+      }, delay));
+      const settleFrame = window.setTimeout(() => {
+        setFrameSequence({ animationKey, frameIndex: 0 });
+      }, 700);
 
-      return () => window.clearInterval(frameTimer);
+      return () => {
+        frameTimers.forEach((timer) => window.clearTimeout(timer));
+        window.clearTimeout(settleFrame);
+      };
     }
 
     const showReactionFrame = window.setTimeout(() => {
@@ -119,7 +125,6 @@ export function MascotReaction({
         },
         transition: {
           duration: 0.64,
-          repeat: Infinity,
           ease: 'easeInOut',
         } satisfies Transition,
       };

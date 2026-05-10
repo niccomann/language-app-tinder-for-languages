@@ -196,7 +196,8 @@ def test_sentence_builders_share_available_nodes_hook():
     assert hook.exists()
     hook_source = hook.read_text()
     assert "export function useAvailableGrammarNodes" in hook_source
-    assert "api.getAvailableNodes()" in hook_source
+    assert "api.getAvailableNodes({" in hook_source
+    assert "learningPreferenceProfile: preferenceProfile" in hook_source
 
     assert "useAvailableGrammarNodes" in sentence_builder
     assert "useAvailableGrammarNodes" in fun_builder

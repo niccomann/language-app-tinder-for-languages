@@ -40,11 +40,13 @@ const OFFLINE_FEATURES: FeatureFlags = {
 export const APP_MODE: AppMode = (import.meta.env.VITE_APP_MODE as AppMode) || 'online';
 
 export const FEATURES: FeatureFlags = APP_MODE === 'offline' ? OFFLINE_FEATURES : ONLINE_FEATURES;
+export const SHOW_DEVELOPER_TOOLS = import.meta.env.DEV || import.meta.env.VITE_SHOW_DEVELOPER_TOOLS === 'true';
 
 // Use relative URLs in production (empty string), localhost for development
 const getApiBaseUrl = (): string => {
   if (APP_MODE === 'offline') {
-    return 'http://localhost:8500';
+    // Android offline builds route relative /api calls through OfflineBackendPlugin.
+    return (import.meta.env.VITE_OFFLINE_API_URL as string) || '';
   }
   // Check if we're running on a local dev host.
   if (

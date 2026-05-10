@@ -7,6 +7,10 @@ const featureGuideByRoute = new Map<string, FeatureGuideId>(
 );
 
 export function resolveFeatureGuideForRoute(route: RouteState): FeatureGuideId {
+  if (route.screen === 'developer') {
+    return 'learningPath';
+  }
+
   if (route.screen === 'learning' && route.mode === 'path') {
     return 'learningPath';
   }
@@ -21,6 +25,7 @@ export function resolveFeatureGuideForRoute(route: RouteState): FeatureGuideId {
 
 export function featureGuideRouteKey(route: RouteState) {
   if (route.screen === 'learning') return `learning:${route.mode}`;
+  if (route.screen === 'developer') return 'developer:charts';
   if (route.screen === 'library') {
     return `library:${route.wordId ?? 'all'}:${route.detailTab ?? 'list'}:${route.filtersOpen ? 'filters' : 'browse'}`;
   }

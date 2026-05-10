@@ -83,8 +83,10 @@ def fetch_library_flashcards(
     return session.exec(query.offset(offset).limit(limit)).all()
 
 
-def fetch_progress_map(session: Session) -> dict[str, UserProgressEntity]:
-    progress_records = session.exec(select(UserProgressEntity)).all()
+def fetch_progress_map(session: Session, user_id: str) -> dict[str, UserProgressEntity]:
+    progress_records = session.exec(
+        select(UserProgressEntity).where(UserProgressEntity.user_id == user_id)
+    ).all()
     return {record.card_id: record for record in progress_records}
 
 

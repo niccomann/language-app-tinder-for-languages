@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { api } from '../services/api';
+import { readSavedLearningPreferenceProfile } from '../learning/preferenceProfile';
 import type { AdaptiveFlashcard, AdaptiveLearningSummary, LearningFeedback, UserProgress } from '../types';
 import { reportClientError } from '../utils/clientError';
 
@@ -38,10 +39,12 @@ export const useLearningSession = () => {
         return;
       }
 
+      const preferenceProfile = readSavedLearningPreferenceProfile();
       const [cards] = await Promise.all([
         api.getAdaptiveFlashcards({
           language: 'de',
           selectedCategories,
+          learningPreferenceProfile: preferenceProfile,
           limit: SESSION_CARD_LIMIT,
         }),
         loadLearningSummary(),

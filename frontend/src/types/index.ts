@@ -11,6 +11,11 @@ export interface Flashcard {
 }
 
 export interface AdaptiveFlashcard extends Flashcard {
+  cefr_level?: string;
+  frequency_band?: string;
+  register?: string;
+  thematic_domain?: string;
+  part_of_speech?: string;
   confidence_score: number;
   knowledge_level: number;
   times_seen: number;
@@ -40,6 +45,17 @@ export interface AdaptiveLearningSummary {
   last_practiced?: string | null;
   days_since_last_practice?: number | null;
   should_reengage: boolean;
+}
+
+export interface WordStatistics {
+  word: string;
+  language: string;
+  confidence_score: number;
+  knowledge_level: number;
+  times_seen: number;
+  times_correct: number;
+  times_incorrect: number;
+  last_practiced?: string | null;
 }
 
 export interface LearningFeedback {
@@ -239,6 +255,7 @@ export interface GrammarNode {
   cefr_level?: string;
   frequency_band?: string;
   register?: string;
+  thematic_domain?: string;
   difficulty?: string;
   category?: string;
 }

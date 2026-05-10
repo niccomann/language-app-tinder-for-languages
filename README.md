@@ -5,16 +5,13 @@ Learn German vocabulary with a Tinder-style swipe interface.
 ## 🚀 Quick Start
 
 ```bash
-# 1. Start database
-docker-compose up -d
-
-# 2. Start backend
+# 1. Start backend (SQLite default, no database service required)
 cd backend && source .venv/bin/activate && python -m app.main
 
-# 3. Start frontend
+# 2. Start frontend
 cd frontend && npm install && npm run dev
 
-# 4. Open http://localhost:5173
+# 3. Open http://localhost:5173
 ```
 
 ## 🎯 Features
@@ -23,7 +20,6 @@ cd frontend && npm install && npm run dev
 - **Audio TTS** 🔊 - Listen to word pronunciation
 - **Word Statistics** 📊 - Track your confidence per word
 - **Grammar Lab** 🧪 - Interactive sentence building
-- **Video Learning** 🎬 - YouTube & AI-generated videos
 - **Session Tracking** 📝 - Track all user interactions
 - **Infographics** 🎨 - AI-generated lesson summaries (Gemini Nano Banana Pro)
 
@@ -31,7 +27,7 @@ cd frontend && npm install && npm run dev
 
 - **Frontend**: React + TypeScript + Vite + TailwindCSS
 - **Backend**: Python + FastAPI + SQLModel
-- **Database**: PostgreSQL (main) + SQLite (tracking)
+- **Database**: SQLite by default; PostgreSQL optional for the main DB; SQLite tracking DB
 - **AI**: Google Gemini (image generation), OpenAI (grammar)
 - **Mobile**: Capacitor (iOS/Android)
 

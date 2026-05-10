@@ -1,0 +1,21 @@
+# Run before each commit to block secrets from entering the repo.
+#
+# One-time setup:
+#   brew install pre-commit gitleaks
+#   pre-commit install
+#
+# Manual scan of the whole tree:
+#   pre-commit run --all-files
+
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: detect-private-key
+      - id: check-added-large-files
+        args: ["--maxkb=2048"]
