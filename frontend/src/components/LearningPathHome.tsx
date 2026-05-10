@@ -65,8 +65,8 @@ export function LearningPathHome({
           />
           <div className="flex flex-wrap gap-2">
             <GameSignalBadge icon={<Sparkles size={14} />} label="Daily Quest" tone="amber" />
-            <GameSignalBadge icon={<ShieldCheck size={14} />} label="Streak Shield" tone="sky" />
-            <GameSignalBadge icon={<Trophy size={14} />} label="XP Bank" tone="emerald" />
+            <GameSignalBadge icon={<ShieldCheck size={14} />} label="Streak Shield" tone="teal" />
+            <GameSignalBadge icon={<Trophy size={14} />} label="XP Bank" tone="success" />
           </div>
 
           {shouldReengage && (
@@ -111,10 +111,10 @@ export function LearningPathHome({
             />
 
             <div className="grid grid-cols-2 gap-3">
-              <StatCard label="Path Level" value={pathLevel} icon={<Gauge size={20} />} color="indigo" />
-              <StatCard label="Words" value={learningSummary?.total_words_practiced ?? 0} icon={<BookOpen size={20} />} color="purple" />
-              <StatCard label="Strong" value={learningSummary?.words_mastered ?? 0} icon={<Trophy size={20} />} color="green" />
-              <StatCard label="Avg Mastery" value={Number(averageMastery.toFixed(1))} icon={<Target size={20} />} color="blue" />
+              <StatCard label="Path Level" value={pathLevel} icon={<Gauge size={20} />} color="coral" />
+              <StatCard label="Words" value={learningSummary?.total_words_practiced ?? 0} icon={<BookOpen size={20} />} color="coral-strong" />
+              <StatCard label="Strong" value={learningSummary?.words_mastered ?? 0} icon={<Trophy size={20} />} color="success" />
+              <StatCard label="Avg Mastery" value={Number(averageMastery.toFixed(1))} icon={<Target size={20} />} color="teal" />
             </div>
 
           </SurfacePanel>

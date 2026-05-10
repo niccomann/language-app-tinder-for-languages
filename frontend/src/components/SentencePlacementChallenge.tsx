@@ -161,11 +161,11 @@ export function SentencePlacementChallenge() {
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <GameSignalBadge icon={<Star size={14} />} label="Quest" tone="amber" />
-              <GameSignalBadge icon={<Sparkles size={14} />} label="Combo" tone="sky" />
+              <GameSignalBadge icon={<Sparkles size={14} />} label="Combo" tone="teal" />
               <GameSignalBadge
                 icon={<Trophy size={14} />}
                 label={status === 'correct' ? 'XP unlocked' : 'XP ready'}
-                tone="emerald"
+                tone="success"
               />
             </div>
           </div>
@@ -249,8 +249,8 @@ export function SentencePlacementChallenge() {
                   Good job.
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <GameSignalBadge icon={<Trophy size={14} />} label="XP reward" tone="emerald" />
-                  <GameSignalBadge icon={<Sparkles size={14} />} label="Combo" tone="sky" />
+                  <GameSignalBadge icon={<Trophy size={14} />} label="XP reward" tone="success" />
+                  <GameSignalBadge icon={<Sparkles size={14} />} label="Combo" tone="teal" />
                 </div>
               </div>
             )}
@@ -261,7 +261,7 @@ export function SentencePlacementChallenge() {
                   Not quite. Adjust the order and try again.
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <GameSignalBadge icon={<Star size={14} />} label="Retry quest" tone="rose" />
+                  <GameSignalBadge icon={<Star size={14} />} label="Retry quest" tone="error" />
                   <GameSignalBadge icon={<Sparkles size={14} />} label="Combo saved" tone="amber" />
                 </div>
               </div>

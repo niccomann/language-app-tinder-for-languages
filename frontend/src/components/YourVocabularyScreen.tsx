@@ -142,9 +142,9 @@ export function YourVocabularyScreen({
 
           <SurfacePanel padding="lg" className="space-y-4">
             <div className="grid grid-cols-3 gap-2">
-              <VocabularyStatTile icon={<Trophy size={18} />} label={vocabularyCopy.strongStat} value={masteredCount} tone="emerald" />
+              <VocabularyStatTile icon={<Trophy size={18} />} label={vocabularyCopy.strongStat} value={masteredCount} tone="success" />
               <VocabularyStatTile icon={<Target size={18} />} label={vocabularyCopy.learningStat} value={learningCount} tone="yellow" />
-              <VocabularyStatTile icon={<CircleAlert size={18} />} label={vocabularyCopy.weakStat} value={weakCount} tone="red" />
+              <VocabularyStatTile icon={<CircleAlert size={18} />} label={vocabularyCopy.weakStat} value={weakCount} tone="error" />
             </div>
 
             <div className={`${UI_RADIUS.control} border border-indigo-100 bg-indigo-50 p-4 dark:border-indigo-800 dark:bg-indigo-950/40`}>
@@ -272,12 +272,12 @@ function VocabularyStatTile({
   icon: ReactNode;
   label: string;
   value: number;
-  tone: 'emerald' | 'yellow' | 'red';
+  tone: 'success' | 'yellow' | 'error';
 }) {
   const classes = {
-    emerald: 'border-emerald-100 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100',
+    success: 'border-emerald-100 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100',
     yellow: 'border-yellow-100 bg-yellow-50 text-yellow-800 dark:border-yellow-800 dark:bg-yellow-950/40 dark:text-yellow-100',
-    red: 'border-red-100 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950/40 dark:text-red-100',
+    error: 'border-red-100 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950/40 dark:text-red-100',
   };
 
   return (

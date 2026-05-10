@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { UI_INTERACTION } from './geometry';
 
-export type PillTabTone = 'indigo' | 'blue' | 'cyan' | 'orange' | 'pink' | 'emerald' | 'amber';
+export type PillTabTone = 'coral' | 'teal' | 'teal-soft' | 'amber' | 'success';
 
 export interface PillTabItem<T extends string> {
   value: T;

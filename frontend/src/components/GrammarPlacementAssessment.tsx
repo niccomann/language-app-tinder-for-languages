@@ -44,8 +44,8 @@ export function GrammarPlacementAssessment({
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2 sm:flex sm:shrink-0">
-              <NavButton onClick={onOpenLibrary} icon={<BookOpen size={17} />} label="Library" color="purple" size="small" />
-              <NavButton onClick={onOpenGrammarLab} icon={<FlaskConical size={17} />} label="Grammar Lab" color="blue" size="small" />
+              <NavButton onClick={onOpenLibrary} icon={<BookOpen size={17} />} label="Library" color="coral-strong" size="small" />
+              <NavButton onClick={onOpenGrammarLab} icon={<FlaskConical size={17} />} label="Grammar Lab" color="teal" size="small" />
             </div>
           </div>
         </SurfacePanel>

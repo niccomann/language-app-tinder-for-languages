@@ -83,21 +83,21 @@ export function LearningScreen({
               onClick={() => onFiltersOpenChange(true)}
               icon={<SlidersHorizontal size={17} />}
               label="Filters"
-              color="indigo"
+              color="coral"
               size="small"
             />
             <NavButton
               onClick={onOpenLibrary}
               icon={<BookOpen size={18} />}
               label="Library"
-              color="purple"
+              color="coral-strong"
               size="small"
             />
             <NavButton
               onClick={onOpenGrammarLab}
               icon={<FlaskConical size={17} />}
               label="Grammar"
-              color="blue"
+              color="teal"
               size="small"
             />
           </div>

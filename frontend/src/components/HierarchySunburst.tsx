@@ -79,7 +79,7 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
             value: criteria,
             label: config.label,
             icon: config.icon,
-            tone: 'pink' as const,
+            tone: 'coral' as const,
         };
     }), [availableCriteria]);
 

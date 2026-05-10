@@ -98,9 +98,9 @@ export function FirstVocabularyOnboarding({
         onPrimaryAction={() => advanceWithMascot('preferences')}
       >
         <div className="grid gap-3 sm:grid-cols-3">
-          <GameSignalBadge icon={<Target size={14} />} label={onboardingCopy.intro.knownSignal} tone="emerald" />
+          <GameSignalBadge icon={<Target size={14} />} label={onboardingCopy.intro.knownSignal} tone="success" />
           <GameSignalBadge icon={<Brain size={14} />} label={onboardingCopy.intro.unknownSignal} tone="amber" />
-          <GameSignalBadge icon={<Sparkles size={14} />} label={onboardingCopy.intro.wordLevelSignal} tone="indigo" />
+          <GameSignalBadge icon={<Sparkles size={14} />} label={onboardingCopy.intro.wordLevelSignal} tone="coral" />
         </div>
       </AnimatedExplanationFrame>
     );
@@ -144,8 +144,8 @@ export function FirstVocabularyOnboarding({
         onPrimaryAction={() => advanceWithMascot('science')}
       >
         <div className="grid gap-3 sm:grid-cols-3">
-          <SignalSummaryTile icon={<Target size={18} />} label={onboardingCopy.analysis.wordsSeen} value={signals.length} tone="indigo" />
-          <SignalSummaryTile icon={<Sparkles size={18} />} label={onboardingCopy.analysis.strongSignals} value={insights.knownEstimate} tone="emerald" />
+          <SignalSummaryTile icon={<Target size={18} />} label={onboardingCopy.analysis.wordsSeen} value={signals.length} tone="coral" />
+          <SignalSummaryTile icon={<Sparkles size={18} />} label={onboardingCopy.analysis.strongSignals} value={insights.knownEstimate} tone="success" />
           <SignalSummaryTile icon={<Brain size={18} />} label={onboardingCopy.analysis.toReview} value={insights.reviewEstimate} tone="amber" />
         </div>
 
@@ -176,9 +176,9 @@ export function FirstVocabularyOnboarding({
         onPrimaryAction={onComplete}
       >
         <div className="grid gap-3 sm:grid-cols-3">
-          <GameSignalBadge icon={<Brain size={14} />} label={onboardingCopy.science.memorySignals} tone="indigo" />
-          <GameSignalBadge icon={<ChartNoAxesColumnIncreasing size={14} />} label={onboardingCopy.science.progressScience} tone="sky" />
-          <GameSignalBadge icon={<Sparkles size={14} />} label={onboardingCopy.science.adaptivePath} tone="emerald" />
+          <GameSignalBadge icon={<Brain size={14} />} label={onboardingCopy.science.memorySignals} tone="coral" />
+          <GameSignalBadge icon={<ChartNoAxesColumnIncreasing size={14} />} label={onboardingCopy.science.progressScience} tone="teal" />
+          <GameSignalBadge icon={<Sparkles size={14} />} label={onboardingCopy.science.adaptivePath} tone="success" />
         </div>
       </AnimatedExplanationFrame>
     );
@@ -209,8 +209,8 @@ export function FirstVocabularyOnboarding({
             />
 
             <div className="mt-5 grid grid-cols-3 gap-2">
-              <SignalSummaryTile icon={<Target size={17} />} label={onboardingCopy.scan.scanLabel} value={signals.length} tone="indigo" compact />
-              <SignalSummaryTile icon={<Sparkles size={17} />} label={onboardingCopy.scan.knownLabel} value={insights.knownEstimate} tone="emerald" compact />
+              <SignalSummaryTile icon={<Target size={17} />} label={onboardingCopy.scan.scanLabel} value={signals.length} tone="coral" compact />
+              <SignalSummaryTile icon={<Sparkles size={17} />} label={onboardingCopy.scan.knownLabel} value={insights.knownEstimate} tone="success" compact />
               <SignalSummaryTile icon={<Brain size={17} />} label={onboardingCopy.scan.reviewLabel} value={insights.reviewEstimate} tone="amber" compact />
             </div>
 
@@ -490,14 +490,14 @@ interface SignalSummaryTileProps {
   icon: ReactNode;
   label: string;
   value: number;
-  tone: 'indigo' | 'emerald' | 'amber';
+  tone: 'coral' | 'success' | 'amber';
   compact?: boolean;
 }
 
 function SignalSummaryTile({ icon, label, value, tone, compact = false }: SignalSummaryTileProps) {
   const tones = {
-    indigo: 'border-indigo-100 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950/40 dark:text-indigo-100',
-    emerald: 'border-emerald-100 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100',
+    coral: 'border-indigo-100 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950/40 dark:text-indigo-100',
+    success: 'border-emerald-100 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100',
     amber: 'border-amber-100 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-100',
   };
 

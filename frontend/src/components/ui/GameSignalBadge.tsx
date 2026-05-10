@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { UI_RADIUS } from './geometry';
 
-export type GameSignalTone = 'amber' | 'emerald' | 'rose' | 'sky' | 'indigo' | 'purple';
+export type GameSignalTone = 'amber' | 'success' | 'error' | 'teal' | 'coral' | 'coral-strong';
 
 interface GameSignalBadgeProps {
   icon: ReactNode;
@@ -12,12 +12,12 @@ interface GameSignalBadgeProps {
 
 // Neutral tones → cream pill; highlight tones → coral/primary
 const toneClasses: Record<GameSignalTone, string> = {
-  amber:   'border-hairline bg-surface-card text-ink',
-  emerald: 'border-hairline bg-surface-card text-ink',
-  sky:     'border-hairline bg-surface-card text-ink',
-  rose:    'border-primary/30 bg-primary text-on-primary',
-  indigo:  'border-primary/30 bg-primary text-on-primary',
-  purple:  'border-primary/30 bg-primary text-on-primary',
+  amber:         'border-hairline bg-surface-card text-ink',
+  success:       'border-hairline bg-surface-card text-ink',
+  teal:          'border-hairline bg-surface-card text-ink',
+  error:         'border-primary/30 bg-primary text-on-primary',
+  coral:         'border-primary/30 bg-primary text-on-primary',
+  'coral-strong':'border-primary/30 bg-primary text-on-primary',
 };
 
 export function GameSignalBadge({

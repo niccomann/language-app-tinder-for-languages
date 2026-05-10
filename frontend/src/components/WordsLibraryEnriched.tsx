@@ -220,8 +220,8 @@ export function WordsLibraryEnriched({
         />
 
         <div className="mb-6 flex flex-wrap gap-2">
-          <GameSignalBadge icon={<Sparkles size={14} />} label="Collection Quest" tone="purple" />
-          <GameSignalBadge icon={<Trophy size={14} />} label="Mastery Loot" tone="emerald" />
+          <GameSignalBadge icon={<Sparkles size={14} />} label="Collection Quest" tone="coral-strong" />
+          <GameSignalBadge icon={<Trophy size={14} />} label="Mastery Loot" tone="success" />
           <GameSignalBadge icon={<Target size={14} />} label="Review Queue" tone="amber" />
         </div>
 
@@ -230,7 +230,7 @@ export function WordsLibraryEnriched({
             label="Total"
             value={totalWords}
             icon={<BookOpen size={20} className="text-gray-600 dark:text-gray-400" />}
-            color="gray"
+            color="muted"
             isActive={!statusFilter}
             onClick={() => setStatusFilter('')}
           />
@@ -238,7 +238,7 @@ export function WordsLibraryEnriched({
             label="Learned"
             value={knownWords.length}
             icon={<CheckCircle size={20} className="text-green-600" />}
-            color="green"
+            color="success"
             isActive={statusFilter === 'known'}
             onClick={() => setStatusFilter(statusFilter === 'known' ? '' : 'known')}
           />
@@ -246,7 +246,7 @@ export function WordsLibraryEnriched({
             label="To Review"
             value={unknownWords.length}
             icon={<XCircle size={20} className="text-red-600" />}
-            color="red"
+            color="error"
             isActive={statusFilter === 'unknown'}
             onClick={() => setStatusFilter(statusFilter === 'unknown' ? '' : 'unknown')}
           />
@@ -254,7 +254,7 @@ export function WordsLibraryEnriched({
             label="Not Viewed"
             value={notReviewedWords.length}
             icon={<Sparkles size={20} className="text-blue-600" />}
-            color="blue"
+            color="teal"
           />
         </div>
 

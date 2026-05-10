@@ -5,7 +5,7 @@ interface StatCardProps {
   label: string;
   value: number;
   icon: ReactNode;
-  color: 'gray' | 'green' | 'red' | 'blue' | 'indigo' | 'purple';
+  color: 'muted' | 'success' | 'error' | 'teal' | 'coral' | 'coral-strong';
   isActive?: boolean;
   onClick?: () => void;
 }

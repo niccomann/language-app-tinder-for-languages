@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { UI_INTERACTION } from './geometry';
 
-type ColorVariant = 'indigo' | 'purple' | 'blue' | 'green' | 'red' | 'gray';
+type ColorVariant = 'coral' | 'coral-strong' | 'teal' | 'success' | 'error' | 'muted';
 
 interface NavButtonProps {
   onClick: () => void;

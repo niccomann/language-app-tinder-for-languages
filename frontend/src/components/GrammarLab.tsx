@@ -26,12 +26,12 @@ interface GrammarLabProps {
 }
 
 const LAB_TABS: Array<PillTabItem<GrammarView>> = [
-  { value: 'graph', label: 'Sentence Graph', icon: <GitBranch size={18} />, tone: 'blue' },
-  { value: 'wordcloud', label: 'Word Cloud', icon: <Cloud size={18} />, tone: 'cyan' },
-  { value: 'builder', label: 'Build Sentence', icon: <Puzzle size={18} />, tone: 'orange' },
-  { value: 'funbuilder', label: 'Compose Sentence', icon: <Gamepad2 size={18} />, tone: 'pink' },
-  { value: 'clusters', label: 'Clusters', icon: <Magnet size={18} />, tone: 'pink' },
-  { value: 'dialects', label: 'Dialects', icon: <Globe2 size={18} />, tone: 'emerald' },
+  { value: 'graph', label: 'Sentence Graph', icon: <GitBranch size={18} />, tone: 'teal' },
+  { value: 'wordcloud', label: 'Word Cloud', icon: <Cloud size={18} />, tone: 'teal-soft' },
+  { value: 'builder', label: 'Build Sentence', icon: <Puzzle size={18} />, tone: 'amber' },
+  { value: 'funbuilder', label: 'Compose Sentence', icon: <Gamepad2 size={18} />, tone: 'coral' },
+  { value: 'clusters', label: 'Clusters', icon: <Magnet size={18} />, tone: 'coral' },
+  { value: 'dialects', label: 'Dialects', icon: <Globe2 size={18} />, tone: 'success' },
   { value: 'sunburst', label: 'Hierarchy', icon: <Layers size={18} />, tone: 'amber' },
 ];
 
@@ -183,8 +183,8 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
             ) : <div className="w-20" />}
           />
           <div className="mt-3 flex flex-wrap justify-center gap-2">
-            <GameSignalBadge icon={<Star size={14} />} label="Grammar Quest" tone="indigo" />
-            <GameSignalBadge icon={<Sparkles size={14} />} label="Combo Lab" tone="purple" />
+            <GameSignalBadge icon={<Star size={14} />} label="Grammar Quest" tone="coral" />
+            <GameSignalBadge icon={<Sparkles size={14} />} label="Combo Lab" tone="coral-strong" />
             <GameSignalBadge icon={<Trophy size={14} />} label="Syntax Loot" tone="amber" />
           </div>
         </div>

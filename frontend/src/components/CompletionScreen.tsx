@@ -71,7 +71,7 @@ export function CompletionScreen({
             onClick={onChangeCategories}
             icon={<SlidersHorizontal size={24} strokeWidth={2.5} />}
             label="Adjust Filters"
-            color="gray"
+            color="muted"
             size="large"
             className="w-full"
           />
@@ -79,7 +79,7 @@ export function CompletionScreen({
             onClick={onOpenLibrary}
             icon={<BookOpen size={24} strokeWidth={2.5} />}
             label="View Library"
-            color="purple"
+            color="coral-strong"
             size="large"
             className="w-full"
           />
@@ -87,7 +87,7 @@ export function CompletionScreen({
             onClick={onOpenGrammarLab}
             icon={<FlaskConical size={24} strokeWidth={2.5} />}
             label="Grammar Lab"
-            color="blue"
+            color="teal"
             size="large"
             className="w-full"
           />
