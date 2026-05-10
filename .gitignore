@@ -132,3 +132,4 @@ gcp-oauth-credentials/*.json
 credentials.json
 secrets.json
 service-account*.json
+.claude/worktrees/
