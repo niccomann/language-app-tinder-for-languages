@@ -56,12 +56,12 @@ export function MermaidChart({ title, chart }: MermaidChartProps) {
           },
           themeVariables: {
             background: 'transparent',
-            primaryColor: '#eef2ff',
-            primaryTextColor: '#1e1b4b',
-            primaryBorderColor: '#6366f1',
-            lineColor: '#64748b',
-            secondaryColor: '#ecfeff',
-            tertiaryColor: '#fef3c7',
+            primaryColor: '#f5f0e8',
+            primaryTextColor: '#141413',
+            primaryBorderColor: '#cc785c',
+            lineColor: '#706b63',
+            secondaryColor: '#e8f5f2',
+            tertiaryColor: '#fdf6e3',
             fontFamily: 'Inter, ui-sans-serif, system-ui, sans-serif',
           },
         });
@@ -92,12 +92,12 @@ export function MermaidChart({ title, chart }: MermaidChartProps) {
   return (
     <SurfacePanel padding="lg" className="space-y-4 overflow-hidden">
       <div>
-        <h2 className="text-xl font-black text-slate-950 dark:text-white">{title}</h2>
+        <h2 className="text-xl font-black text-ink">{title}</h2>
       </div>
 
-      <div className="min-h-[260px] overflow-x-auto rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-950">
+      <div className="min-h-[260px] overflow-x-auto rounded-lg border border-hairline bg-canvas p-4">
         {state.status === 'loading' ? (
-          <div className="flex min-h-[228px] items-center justify-center text-sm font-black text-slate-500 dark:text-slate-300">
+          <div className="flex min-h-[228px] items-center justify-center text-sm font-black text-muted">
             Loading chart...
           </div>
         ) : state.status === 'ready' ? (
@@ -108,10 +108,10 @@ export function MermaidChart({ title, chart }: MermaidChartProps) {
           />
         ) : (
           <div className="space-y-3">
-            <p className="text-sm font-bold text-rose-700 dark:text-rose-200">{state.error}</p>
+            <p className="text-sm font-bold text-error">{state.error}</p>
             <pre
               aria-label="Mermaid source fallback"
-              className="overflow-x-auto rounded-lg bg-slate-100 p-4 text-xs font-semibold leading-6 text-slate-700 dark:bg-slate-900 dark:text-slate-200"
+              className="overflow-x-auto rounded-lg bg-surface-soft p-4 text-xs font-semibold leading-6 text-body"
             >
               {chart}
             </pre>

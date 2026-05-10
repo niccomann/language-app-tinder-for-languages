@@ -42,7 +42,7 @@ const REGION_COLORS: Record<string, string> = {
 };
 
 const getRegionColor = (regionId: string): string => {
-  return REGION_COLORS[regionId] || '#64748B';
+  return REGION_COLORS[regionId] || '#706b63';
 };
 
 export function DialectMap({ initialWord }: DialectMapProps) {
@@ -121,10 +121,10 @@ export function DialectMap({ initialWord }: DialectMapProps) {
 
   if (loading || geoLoading) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="w-full h-full flex items-center justify-center bg-surface-dark">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
-          <span className="text-slate-400">Loading dialects...</span>
+          <Loader2 className="w-8 h-8 text-accent-teal animate-spin" />
+          <span className="text-on-dark-soft">Loading dialects...</span>
         </div>
       </div>
     );
@@ -132,33 +132,33 @@ export function DialectMap({ initialWord }: DialectMapProps) {
 
   if (dialectWords.length === 0 || !geoJson) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="w-full h-full flex items-center justify-center bg-surface-dark">
         <div className="flex flex-col items-center gap-3 text-center p-8">
-          <Globe2 className="w-12 h-12 text-slate-500" />
-          <h3 className="text-lg font-semibold text-white">No dialect data available</h3>
-          <p className="text-slate-400 text-sm">Regional dialect data needs to be populated in the database.</p>
+          <Globe2 className="w-12 h-12 text-on-dark-soft" />
+          <h3 className="text-lg font-semibold text-on-dark">No dialect data available</h3>
+          <p className="text-on-dark-soft text-sm">Regional dialect data needs to be populated in the database.</p>
         </div>
       </div>
     );
   }
 
   const content = (
-    <div className="w-full h-full flex flex-col bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4 overflow-hidden">
+    <div className="w-full h-full flex flex-col bg-surface-dark p-4 overflow-hidden">
       <div className="flex items-center justify-between mb-3 flex-shrink-0">
         <div className="flex items-center gap-3">
-          <div className={`p-2 bg-gradient-to-br from-emerald-500 to-teal-600 ${UI_RADIUS.control}`}>
-            <Globe2 className="w-5 h-5 text-white" />
+          <div className={`p-2 bg-accent-teal ${UI_RADIUS.control}`}>
+            <Globe2 className="w-5 h-5 text-on-primary" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-white">Dialect Map</h2>
-            <p className="text-xs text-slate-400">Explore German regional variants</p>
+            <h2 className="text-lg font-bold text-on-dark">Dialect Map</h2>
+            <p className="text-xs text-on-dark-soft">Explore German regional variants</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={toggleExpanded}
-            className={`p-2 ${UI_RADIUS.control} transition-all hover:scale-[1.04] hover:bg-slate-700 ${isExpanded ? 'text-purple-400' : 'text-slate-300'}`}
+            className={`p-2 ${UI_RADIUS.control} transition-all hover:scale-[1.04] hover:bg-surface-dark-elevated ${isExpanded ? 'text-primary' : 'text-on-dark-soft'}`}
             title={isExpanded ? "Exit fullscreen" : "Expand to fullscreen"}
           >
             {isExpanded ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
@@ -167,14 +167,14 @@ export function DialectMap({ initialWord }: DialectMapProps) {
           <div className="relative">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className={`flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 ${UI_RADIUS.control} text-white transition-colors`}
+              className={`flex items-center gap-2 px-4 py-2 bg-surface-dark-elevated hover:bg-surface-dark-elevated/80 ${UI_RADIUS.control} text-on-dark transition-colors`}
             >
               <span className="font-medium">{selectedWord || 'Select word'}</span>
               <ChevronDown className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
-          
+
             {isDropdownOpen && (
-              <div className={`absolute right-0 mt-2 w-48 bg-slate-700 ${UI_RADIUS.control} shadow-xl border border-slate-600 z-50 max-h-64 overflow-y-auto`}>
+              <div className={`absolute right-0 mt-2 w-48 bg-surface-dark-elevated ${UI_RADIUS.control} border border-hairline z-50 max-h-64 overflow-y-auto`}>
                 {availableWords.map((word) => (
                   <button
                     key={word}
@@ -182,8 +182,8 @@ export function DialectMap({ initialWord }: DialectMapProps) {
                       setSelectedWord(word);
                       setIsDropdownOpen(false);
                     }}
-                    className={`w-full px-4 py-2 text-left hover:bg-slate-600 transition-colors ${
-                      word === selectedWord ? 'bg-slate-600 text-emerald-400' : 'text-white'
+                    className={`w-full px-4 py-2 text-left hover:bg-surface-dark/60 transition-colors ${
+                      word === selectedWord ? 'bg-surface-dark/60 text-accent-teal' : 'text-on-dark'
                     }`}
                   >
                     {word}
@@ -196,19 +196,19 @@ export function DialectMap({ initialWord }: DialectMapProps) {
       </div>
 
       {wordData && (
-        <div className={`mb-3 p-3 bg-slate-800/50 ${UI_RADIUS.surface} border border-slate-700 flex-shrink-0`}>
+        <div className={`mb-3 p-3 bg-surface-dark-elevated ${UI_RADIUS.surface} border border-hairline flex-shrink-0`}>
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xl font-bold text-white">{wordData.standardGerman}</span>
-              <span className="text-slate-400 ml-3">({wordData.translation})</span>
+              <span className="text-xl font-bold text-on-dark">{wordData.standardGerman}</span>
+              <span className="text-on-dark-soft ml-3">({wordData.translation})</span>
             </div>
-            <span className="text-sm text-slate-500">Hochdeutsch</span>
+            <span className="text-sm text-on-dark-soft">Hochdeutsch</span>
           </div>
         </div>
       )}
 
       <div className="flex-1 flex gap-4 min-h-0">
-        <div className={`flex-1 relative bg-slate-800/30 ${UI_RADIUS.surface} border border-slate-700 p-2 overflow-hidden flex items-center justify-center`}>
+        <div className={`flex-1 relative bg-surface-dark-elevated ${UI_RADIUS.surface} border border-hairline p-2 overflow-hidden flex items-center justify-center`}>
           <ComposableMap
             projection="geoMercator"
             projectionConfig={{
@@ -223,7 +223,7 @@ export function DialectMap({ initialWord }: DialectMapProps) {
                   geographies.map((geo: any) => {
                     const stateName = geo.properties.name;
                     const dialectRegionId = STATE_TO_DIALECT_REGION[stateName];
-                    
+
                     return (
                       <Geography
                         key={geo.rsmKey}
@@ -236,24 +236,24 @@ export function DialectMap({ initialWord }: DialectMapProps) {
                         onMouseLeave={() => handleRegionHover(null)}
                         style={{
                           default: {
-                            fill: dialectRegionId ? getRegionColor(dialectRegionId) : '#475569',
+                            fill: dialectRegionId ? getRegionColor(dialectRegionId) : '#706b63',
                             fillOpacity: 0.7,
-                            stroke: '#1e293b',
+                            stroke: '#1e1d1b',
                             strokeWidth: 0.5,
                             outline: 'none',
                           },
                           hover: {
-                            fill: dialectRegionId ? getRegionColor(dialectRegionId) : '#475569',
+                            fill: dialectRegionId ? getRegionColor(dialectRegionId) : '#706b63',
                             fillOpacity: 0.95,
-                            stroke: '#fff',
+                            stroke: '#faf9f5',
                             strokeWidth: 1.5,
                             outline: 'none',
                             cursor: 'pointer',
                           },
                           pressed: {
-                            fill: dialectRegionId ? getRegionColor(dialectRegionId) : '#475569',
+                            fill: dialectRegionId ? getRegionColor(dialectRegionId) : '#706b63',
                             fillOpacity: 1,
-                            stroke: '#fff',
+                            stroke: '#faf9f5',
                             strokeWidth: 2,
                             outline: 'none',
                           },
@@ -267,12 +267,12 @@ export function DialectMap({ initialWord }: DialectMapProps) {
           </ComposableMap>
 
           {hoveredVariant && (
-            <div 
-              className={`absolute top-3 left-3 bg-slate-900/95 backdrop-blur-sm ${UI_RADIUS.surface} p-3 border border-slate-600 shadow-2xl min-w-[180px]`}
+            <div
+              className={`absolute top-3 left-3 bg-surface-dark ${UI_RADIUS.surface} p-3 border border-hairline min-w-[180px]`}
             >
-              <div className="text-xs text-slate-400 mb-1">{hoveredVariant.dialect}</div>
-              <div className="text-xl font-bold text-yellow-300 mb-1">{hoveredVariant.variant}</div>
-              <div className="flex items-center gap-2 text-slate-400 text-xs">
+              <div className="text-xs text-on-dark-soft mb-1">{hoveredVariant.dialect}</div>
+              <div className="text-xl font-bold text-accent-amber mb-1">{hoveredVariant.variant}</div>
+              <div className="flex items-center gap-2 text-on-dark-soft text-xs">
                 <Map className="w-3 h-3" />
                 <span>{hoveredVariant.region}</span>
               </div>
@@ -280,35 +280,35 @@ export function DialectMap({ initialWord }: DialectMapProps) {
           )}
         </div>
 
-        <div className={`w-72 bg-slate-800/50 ${UI_RADIUS.surface} border border-slate-700 p-3 overflow-y-auto flex-shrink-0`}>
-          <h3 className="text-base font-semibold text-white mb-3 flex items-center gap-2">
-            <Map className="w-4 h-4 text-emerald-400" />
+        <div className={`w-72 bg-surface-dark-elevated ${UI_RADIUS.surface} border border-hairline p-3 overflow-y-auto flex-shrink-0`}>
+          <h3 className="text-base font-semibold text-on-dark mb-3 flex items-center gap-2">
+            <Map className="w-4 h-4 text-accent-teal" />
             Tutte le Varianti
           </h3>
-          
+
           <div className="space-y-2">
             {wordData?.variants.map((variant) => (
-              <div 
+              <div
                 key={variant.regionId}
                 className={`p-2.5 ${UI_RADIUS.control} border transition-all duration-200 cursor-pointer ${
-                  hoveredRegion === variant.regionId 
-                    ? 'bg-slate-700 border-slate-500' 
-                    : 'bg-slate-800/50 border-slate-700 hover:bg-slate-700/50'
+                  hoveredRegion === variant.regionId
+                    ? 'bg-surface-dark border-hairline'
+                    : 'bg-surface-dark-elevated border-hairline hover:bg-surface-dark/60'
                 }`}
                 onMouseEnter={() => handleRegionHover(variant.regionId)}
                 onMouseLeave={() => handleRegionHover(null)}
               >
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
-                    <div 
+                    <div
                       className={`w-2.5 h-2.5 ${UI_RADIUS.pill}`}
                       style={{ backgroundColor: getRegionColor(variant.regionId) }}
                     />
-                    <span className="text-xs text-slate-400">{variant.dialect}</span>
+                    <span className="text-xs text-on-dark-soft">{variant.dialect}</span>
                   </div>
-                  <span className="text-xs text-slate-500">{variant.region}</span>
+                  <span className="text-xs text-on-dark-soft">{variant.region}</span>
                 </div>
-                <div className={`text-base font-semibold ${hoveredRegion === variant.regionId ? 'text-yellow-300' : 'text-white'}`}>
+                <div className={`text-base font-semibold ${hoveredRegion === variant.regionId ? 'text-accent-amber' : 'text-on-dark'}`}>
                   {variant.variant}
                 </div>
               </div>
@@ -320,21 +320,21 @@ export function DialectMap({ initialWord }: DialectMapProps) {
       {wordData && wordData.variants.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-2 flex-shrink-0">
           {wordData.variants.map((variant) => (
-            <div 
+            <div
               key={variant.regionId}
               className={`flex items-center gap-1.5 px-2.5 py-1 ${UI_RADIUS.pill} border transition-all cursor-pointer ${
-                hoveredRegion === variant.regionId 
-                  ? 'bg-slate-700 border-slate-500' 
-                  : 'bg-slate-800/50 border-slate-700 hover:bg-slate-700/50'
+                hoveredRegion === variant.regionId
+                  ? 'bg-surface-dark border-hairline'
+                  : 'bg-surface-dark-elevated border-hairline hover:bg-surface-dark/60'
               }`}
               onMouseEnter={() => handleRegionHover(variant.regionId)}
               onMouseLeave={() => handleRegionHover(null)}
             >
-              <div 
+              <div
                 className={`w-2 h-2 ${UI_RADIUS.pill}`}
                 style={{ backgroundColor: getRegionColor(variant.regionId) }}
               />
-              <span className="text-xs text-slate-400">{variant.dialect}</span>
+              <span className="text-xs text-on-dark-soft">{variant.dialect}</span>
             </div>
           ))}
         </div>

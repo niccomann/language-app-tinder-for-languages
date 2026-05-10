@@ -124,7 +124,7 @@ export function EmbeddedWordCloud({ words, onWordClick }: EmbeddedWordCloudProps
   }, [words, dimensions, onWordClick, isExpanded]);
 
   const content = (
-    <div ref={containerRef} className="w-full h-full relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div ref={containerRef} className="w-full h-full relative bg-surface-dark">
       <svg ref={svgRef} className="w-full h-full" style={{ cursor: 'grab' }} />
       
       <ZoomControlBar
@@ -138,8 +138,8 @@ export function EmbeddedWordCloud({ words, onWordClick }: EmbeddedWordCloudProps
       />
 
       {hoveredWord && (
-        <div className={`absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white/10 backdrop-blur-md px-6 py-3 ${UI_RADIUS.pill} border border-white/20`}>
-          <span className="text-white font-bold text-lg">{hoveredWord}</span>
+        <div className={`absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-canvas border border-hairline px-6 py-3 ${UI_RADIUS.pill}`}>
+          <span className="text-ink font-bold text-lg">{hoveredWord}</span>
         </div>
       )}
     </div>

@@ -8,7 +8,6 @@ import {
   getForceConfig
 } from '../utils/clusteringAlgorithms';
 import { getGroupColor } from '../utils/clusterColors';
-import { useTheme } from '../contexts/useTheme';
 import { useLinguisticFilters } from '../hooks/useLinguisticFilters';
 import { useZoomControls } from '../hooks/useZoomControls';
 import { LinguisticFilterBar } from './LinguisticFilterBar';
@@ -42,7 +41,6 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
   const [hoveredNode, setHoveredNode] = useState<SimulationNode | null>(null);
   const [groups, setGroups] = useState<string[]>([]);
   const [showImages, setShowImages] = useState(true);
-  const { isDark } = useTheme();
 
   const {
     activeCriteria,
@@ -251,11 +249,11 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
       .attr('y', node => showImages && hasWordImage(node.wordData) ? node.radius + 15 : 0)
-      .attr('fill', node => showImages && hasWordImage(node.wordData) ? (isDark ? '#E2E8F0' : '#0F172A') : '#fff')
+      .attr('fill', node => showImages && hasWordImage(node.wordData) ? '#141413' : '#faf9f5')
       .attr('font-size', node => Math.max(10, node.radius / 3))
       .attr('font-weight', '600')
       .attr('paint-order', 'stroke')
-      .attr('stroke', node => showImages && hasWordImage(node.wordData) ? (isDark ? '#0F172A' : '#FFFFFF') : 'transparent')
+      .attr('stroke', node => showImages && hasWordImage(node.wordData) ? '#faf9f5' : 'transparent')
       .attr('stroke-width', node => showImages && hasWordImage(node.wordData) ? 4 : 0)
       .attr('opacity', node => showImages && hasWordImage(node.wordData) ? 0 : 1)
       .attr('pointer-events', 'none');
@@ -322,13 +320,13 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
     return () => {
       simulation.stop();
     };
-  }, [words, dimensions, activeCriteria, getGroupFunction, onWordClick, showImages, forceConfig, initializeZoom, isExpanded, isDark, zoomRef]);
+  }, [words, dimensions, activeCriteria, getGroupFunction, onWordClick, showImages, forceConfig, initializeZoom, isExpanded, zoomRef]);
 
   const content = (
-    <div ref={containerRef} className={`w-full h-full flex flex-col transition-colors duration-300 ${isDark ? 'bg-slate-900' : 'bg-white'}`}>
+    <div ref={containerRef} className="w-full h-full flex flex-col transition-colors duration-300 bg-canvas">
       {/* Cluster Buttons - Using reusable LinguisticFilterBar */}
       {!isExpanded && (
-        <div className={`flex flex-wrap justify-center items-center gap-2 p-3 border-b transition-colors duration-300 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-gray-100 border-gray-200'}`}>
+        <div className="flex flex-wrap justify-center items-center gap-2 p-3 border-b border-hairline transition-colors duration-300 bg-surface-soft">
           <LinguisticFilterBar
             configs={availableConfigs}
             activeCriteria={activeCriteria}
@@ -337,14 +335,14 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
             showIcons={true}
           />
           
-          <div className={`w-px h-8 mx-2 ${isDark ? 'bg-slate-600' : 'bg-gray-300'}`} />
+          <div className="w-px h-8 mx-2 bg-hairline" />
           
           <button
             onClick={() => setShowImages(!showImages)}
             className={`flex items-center gap-2 px-6 py-2.5 ${UI_RADIUS.pill} font-medium transition-all duration-300 whitespace-nowrap min-w-fit ${
               showImages
-                ? `bg-gradient-to-r from-emerald-500 to-teal-500 text-white ${UI_ELEVATION.floating}`
-                : isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:text-gray-900'
+                ? `bg-success text-on-primary ${UI_ELEVATION.floating}`
+                : 'bg-surface-card text-body hover:bg-surface-cream-strong'
             }`}
             title={showImages ? 'Hide images' : 'Show images'}
           >
@@ -371,19 +369,19 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
         />
         
         {/* Legend */}
-        <div className={`absolute ${isExpanded ? 'bottom-4 right-4' : 'bottom-20 left-4'} ${UI_RADIUS.control} p-3 border shadow-lg z-10 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
-          <div className={`text-xs font-medium mb-3 flex items-center gap-1 ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+        <div className={`absolute ${isExpanded ? 'bottom-4 right-4' : 'bottom-20 left-4'} ${UI_RADIUS.control} p-3 border border-hairline bg-canvas z-10`}>
+          <div className="text-xs font-medium mb-3 flex items-center gap-1 text-muted">
             <Sparkles size={12} />
             Gruppi attivi ({groups.length})
           </div>
           <div className="space-y-1.5 max-h-32 overflow-y-auto">
             {groups.map((group) => (
-              <div key={group} className={`flex items-center gap-2 px-2 py-1.5 ${UI_RADIUS.control} ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
-                <div 
-                  className={`w-3 h-3 ${UI_RADIUS.pill}`} 
+              <div key={group} className={`flex items-center gap-2 px-2 py-1.5 ${UI_RADIUS.control} bg-surface-soft`}>
+                <div
+                  className={`w-3 h-3 ${UI_RADIUS.pill}`}
                   style={{ backgroundColor: getGroupColor(group) }}
                 />
-                <span className={`text-xs font-medium ${isDark ? 'text-white' : 'text-gray-800'}`}>{group}</span>
+                <span className="text-xs font-medium text-ink">{group}</span>
               </div>
             ))}
           </div>
@@ -391,20 +389,20 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
 
         {/* Hovered Node Info */}
         {hoveredNode && (
-          <div className={`absolute ${isExpanded ? 'top-20' : 'top-4'} ${isExpanded ? 'left-4' : 'right-4'} backdrop-blur-sm ${UI_RADIUS.surface} p-4 border shadow-xl min-w-[200px] transition-colors duration-300 z-10 ${isDark ? 'bg-slate-800/95 border-slate-700' : 'bg-white/95 border-gray-200'}`}>
-            <div className={`text-lg font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{hoveredNode.text}</div>
+          <div className={`absolute ${isExpanded ? 'top-20' : 'top-4'} ${isExpanded ? 'left-4' : 'right-4'} ${UI_RADIUS.surface} p-4 border border-hairline bg-canvas min-w-[200px] transition-colors duration-300 z-10`}>
+            <div className="text-lg font-bold mb-1 text-ink">{hoveredNode.text}</div>
             {hoveredNode.wordData.translation && (
-              <div className={`text-sm mb-2 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>{hoveredNode.wordData.translation}</div>
+              <div className="text-sm mb-2 text-muted">{hoveredNode.wordData.translation}</div>
             )}
             <div className="flex items-center gap-2">
-              <div 
-                className={`w-3 h-3 ${UI_RADIUS.pill}`} 
+              <div
+                className={`w-3 h-3 ${UI_RADIUS.pill}`}
                 style={{ backgroundColor: getGroupColor(hoveredNode.group) }}
               />
-              <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{hoveredNode.group}</span>
+              <span className="text-xs text-body">{hoveredNode.group}</span>
             </div>
             {hoveredNode.wordData.review_count !== undefined && (
-              <div className={`text-xs mt-2 ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
+              <div className="text-xs mt-2 text-muted">
                 Reviewed: {hoveredNode.wordData.review_count} times
               </div>
             )}

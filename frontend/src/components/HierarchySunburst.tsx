@@ -10,7 +10,6 @@ import {
     type HierarchyNode,
     type HierarchyCriteria 
 } from '../utils/hierarchyBuilder';
-import { useTheme } from '../contexts/useTheme';
 import { ExpandedViewWrapper, PillTabs, UI_RADIUS, ZoomControlBar } from './ui';
 
 interface HierarchySunburstProps {
@@ -42,8 +41,6 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
     const [isExpanded, setIsExpanded] = useState(false);
     const [currentZoom, setCurrentZoom] = useState(1);
     const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
-    const { isDark } = useTheme();
-
     const toggleExpanded = useCallback(() => {
         setIsExpanded(prev => !prev);
     }, []);
@@ -213,7 +210,7 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
             .attr('dy', '0.35em')
             .attr('fill-opacity', d => +labelVisible(d.current!))
             .attr('transform', d => labelTransform(d.current!))
-            .attr('fill', isDark ? '#fff' : '#1e293b')
+            .attr('fill', '#141413')
             .attr('font-weight', '600')
             .attr('font-size', d => Math.max(10, 14 - d.depth) + 'px')
             .text(d => d.data.name.length > 12 ? d.data.name.slice(0, 10) + '…' : d.data.name);
@@ -288,10 +285,10 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
             return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`;
         }
 
-    }, [rootData, dimensions, isDark, onWordClick, isExpanded]);
+    }, [rootData, dimensions, onWordClick, isExpanded]);
 
     const content = (
-        <div ref={containerRef} className={`w-full h-full flex flex-col items-center justify-center relative transition-colors duration-300 ${isDark ? 'bg-slate-900' : 'bg-white'}`}>
+        <div ref={containerRef} className="w-full h-full flex flex-col items-center justify-center relative transition-colors duration-300 bg-canvas">
 
             <ZoomControlBar
                 currentZoom={currentZoom}
@@ -303,7 +300,7 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
                 showFitToView={false}
             />
 
-            <div className={`absolute ${isExpanded ? 'top-4 right-4' : 'top-4 left-1/2 -translate-x-1/2'} z-20 max-w-[calc(100%-2rem)] p-1 ${UI_RADIUS.surface} backdrop-blur-sm shadow-lg ${isDark ? 'bg-slate-800/90' : 'bg-white/90'}`}>
+            <div className={`absolute ${isExpanded ? 'top-4 right-4' : 'top-4 left-1/2 -translate-x-1/2'} z-20 max-w-[calc(100%-2rem)] p-1 ${UI_RADIUS.surface} bg-canvas border border-hairline`}>
                 <PillTabs
                     items={criteriaTabs}
                     value={activeCriteria}
@@ -318,7 +315,7 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
                 {currentNodePath.map((node, i) => (
                     <span key={i} className="flex items-center">
                         {i > 0 && <span className="mx-1">/</span>}
-                        <span className={i === currentNodePath.length - 1 ? 'text-indigo-500 font-bold' : ''}>
+                        <span className={i === currentNodePath.length - 1 ? 'text-primary font-bold' : ''}>
                             {node}
                         </span>
                     </span>
@@ -336,23 +333,23 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
 
             {/* Active Groups Legend */}
             {rootData.children && rootData.children.length > 0 && (
-                <div className={`absolute ${isExpanded ? 'bottom-4 right-4' : 'bottom-20 right-4'} ${UI_RADIUS.control} p-3 border shadow-lg z-10 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
-                    <div className={`text-xs font-medium mb-3 flex items-center gap-1 ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                <div className={`absolute ${isExpanded ? 'bottom-4 right-4' : 'bottom-20 right-4'} ${UI_RADIUS.control} p-3 border border-hairline bg-canvas z-10`}>
+                    <div className="text-xs font-medium mb-3 flex items-center gap-1 text-muted">
                         <Sparkles size={12} />
                         Gruppi attivi ({rootData.children.length})
                     </div>
                     <div className="space-y-1.5 max-h-32 overflow-y-auto">
                         {rootData.children.map((group) => (
-                            <div key={group.name} className={`flex items-center gap-2 px-2 py-1.5 ${UI_RADIUS.control} ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
-                                <div 
-                                    className={`w-3 h-3 ${UI_RADIUS.pill}`} 
+                            <div key={group.name} className={`flex items-center gap-2 px-2 py-1.5 ${UI_RADIUS.control} bg-surface-soft`}>
+                                <div
+                                    className={`w-3 h-3 ${UI_RADIUS.pill}`}
                                     style={{ backgroundColor: getCategoryColor(group.name) }}
                                 />
-                                <span className={`text-xs font-medium ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                                <span className="text-xs font-medium text-ink">
                                     {group.name}
                                 </span>
                                 {group.children && (
-                                    <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                    <span className="text-xs text-muted">
                                         ({group.children.length})
                                     </span>
                                 )}
@@ -364,13 +361,13 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
 
             {/* Hover Info Card */}
             {hoveredNode && (
-                <div className={`absolute ${isExpanded ? 'top-20 left-4' : 'top-4 right-4'} backdrop-blur-sm ${UI_RADIUS.surface} p-4 border shadow-xl min-w-[200px] transition-colors duration-300 pointer-events-none z-20 ${isDark ? 'bg-slate-800/95 border-slate-700' : 'bg-white/95 border-gray-200'}`}>
-                    <div className={`text-lg font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                <div className={`absolute ${isExpanded ? 'top-20 left-4' : 'top-4 right-4'} ${UI_RADIUS.surface} p-4 border border-hairline bg-canvas min-w-[200px] transition-colors duration-300 pointer-events-none z-20`}>
+                    <div className="text-lg font-bold mb-1 text-ink">
                         {hoveredNode.name}
                     </div>
 
                     {hoveredNode.translation && (
-                        <div className={`text-sm mb-2 italic ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                        <div className="text-sm mb-2 italic text-muted">
                             {hoveredNode.translation}
                         </div>
                     )}
@@ -380,7 +377,7 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
                             className={`w-3 h-3 ${UI_RADIUS.pill}`}
                             style={{ backgroundColor: getCategoryColor(hoveredNode.name) }}
                         />
-                        <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                        <span className="text-xs text-body">
                             {hoveredNode.children ? `${hoveredNode.children.length} items` : 'Word'}
                         </span>
                     </div>
