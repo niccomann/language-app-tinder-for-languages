@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { CardStack } from './components/CardStack';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ThemeToggle } from './components/ui/ThemeToggle';
+import { LanguageProvider } from './contexts/LanguageContext';
+import { LanguageSelector } from './components/LanguageSelector';
 
 function App() {
   useEffect(() => {
@@ -35,12 +37,17 @@ function App() {
 
   return (
     <ThemeProvider>
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-colors duration-300">
-        <div className="fixed bottom-4 right-4 z-[9999]">
-          <ThemeToggle />
+      <LanguageProvider>
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-colors duration-300">
+          <div className="fixed bottom-4 right-4 z-[9999]">
+            <div className="flex items-center gap-2">
+              <LanguageSelector />
+              <ThemeToggle />
+            </div>
+          </div>
+          <CardStack />
         </div>
-        <CardStack />
-      </div>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }
