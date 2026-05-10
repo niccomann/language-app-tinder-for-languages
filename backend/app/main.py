@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from app.routes import cards, videos, sora, grammar, tts, library, statistics, infographics, tracking
+from app.routes import cards, videos, sora, grammar, tts, library, statistics, infographics, tracking, languages
 import os
 import logging
 from dotenv import load_dotenv
@@ -79,6 +79,7 @@ app.include_router(library.router)
 app.include_router(statistics.router)
 app.include_router(infographics.router)
 app.include_router(tracking.router)
+app.include_router(languages.router)
 
 
 @app.get("/")

@@ -145,7 +145,7 @@ async def reset_progress(session: SessionDependency):
 async def get_words_library(
     session: SessionDependency,
     status: Optional[str] = Query(None, description="Filter by status: 'known', 'unknown', or 'all'"),
-    language: Optional[str] = Query("de", description="Filter by language code"),
+    language: Optional[str] = Query(None, description="Language code (required)"),
     category: Optional[str] = Query(None, description="Filter by category"),
     search: Optional[str] = Query(None, description="Search by word or translation")
 ):
