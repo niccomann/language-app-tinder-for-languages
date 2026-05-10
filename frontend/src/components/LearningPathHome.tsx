@@ -50,8 +50,8 @@ export function LearningPathHome({
   const handleOpenMission = (mission: FeatureFlowItem) => onNavigateToFeature(mission.route);
 
   return (
-    <AppScreen width="wide" contentClassName="min-h-dvh px-4 pb-4 pt-24 md:pt-20">
-      <main className="mx-auto grid w-full max-w-7xl gap-4 lg:grid-cols-[minmax(460px,560px)_minmax(420px,1fr)]">
+    <AppScreen width="compact" contentClassName="min-h-dvh px-4 pb-4 pt-24 md:pt-20">
+      <main className="mx-auto flex w-full max-w-3xl flex-col gap-6">
         <section className="space-y-3">
           <ScreenHeader
             title="German Learning Path"
