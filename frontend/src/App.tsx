@@ -4,6 +4,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { ThemeToggle } from './components/ui/ThemeToggle';
 import { UI_INTERACTION, UI_RADIUS } from './components/ui';
 import { GameGuideOverlay } from './components/GameGuideOverlay';
+import { FeedbackButton } from './components/FeedbackButton';
 import { grammarPath, libraryWordPath, parseAppRoute, type RouteState } from './routes/appRoutes';
 import { featureGuideRouteKey, resolveFeatureGuideForRoute } from './gamification/featureGuideResolver';
 import { APP_MODE, SHOW_DEVELOPER_TOOLS } from './config/appMode';
@@ -178,6 +179,7 @@ function AppChrome({ route, navigateTo, productNavigationHidden }: AppChromeProp
       )}
 
       <div className="fixed right-3 top-3 z-[70] flex items-center gap-2 sm:right-4 sm:top-4">
+        <FeedbackButton />
         {SHOW_DEVELOPER_TOOLS && (
           <button
             type="button"

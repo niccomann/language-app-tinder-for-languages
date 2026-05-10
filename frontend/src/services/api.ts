@@ -485,4 +485,22 @@ export const api = {
     return response.json();
   },
 
+  async submitFeedback(payload: {
+    message: string;
+    sentiment?: 'like' | 'dislike' | 'neutral';
+    source_url?: string;
+    app_version?: string;
+  }): Promise<{ id: string; created_at: number }> {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      const detail = await response.text().catch(() => '');
+      throw new Error(`Failed to submit feedback (${response.status}) ${detail}`);
+    }
+    return response.json();
+  },
+
 };
