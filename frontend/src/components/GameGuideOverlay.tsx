@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, Play, RotateCcw, X } from 'lucide-react';
 import { motion, useReducedMotion, type Transition } from 'framer-motion';
 import { featureGuides, type FeatureGuideId, type FeatureGuideTone } from '../gamification/featureGuideManifest';
-import { hasSeenFeatureGuide, markFeatureGuideSeen, shouldDeferGuideUntilVocabularyScan } from '../gamification/featureGuideStorage';
+import { hasSeenFeatureGuide, markAllFeatureGuidesDismissed, markFeatureGuideSeen, shouldDeferGuideUntilVocabularyScan } from '../gamification/featureGuideStorage';
 import { copy } from '../i18n/staticCopy';
 import { UI_INTERACTION, UI_RADIUS } from './ui';
 import { StreamingSpeechBubble } from './StreamingSpeechBubble';
@@ -163,6 +163,11 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
     setDismissed(true);
   };
 
+  const dismissAllGuides = () => {
+    markAllFeatureGuidesDismissed();
+    setDismissed(true);
+  };
+
   if (dismissed || shouldDeferGuideUntilVocabularyScan()) {
     return null;
   }
@@ -225,6 +230,14 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
                 {overlayCopy.continueAction}
                 <ArrowRight size={17} aria-hidden="true" />
               </button>
+
+              <button
+                type="button"
+                onClick={dismissAllGuides}
+                className={`inline-flex items-center text-caption font-medium text-muted underline-offset-2 hover:text-ink hover:underline ${UI_INTERACTION.fastTransition}`}
+              >
+                {overlayCopy.dismissAllAction}
+              </button>
             </>
           ) : (
             <StreamingSpeechBubble
@@ -260,6 +273,14 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
                   {overlayCopy.replayAction}
                 </button>
               </div>
+
+              <button
+                type="button"
+                onClick={dismissAllGuides}
+                className={`mt-4 inline-flex items-center text-caption font-medium text-muted underline-offset-2 hover:text-ink hover:underline ${UI_INTERACTION.fastTransition}`}
+              >
+                {overlayCopy.dismissAllAction}
+              </button>
             </StreamingSpeechBubble>
           )}
         </div>

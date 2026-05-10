@@ -473,7 +473,8 @@
     "closeLabel": "Fermer l'introduction",
     "eyebrow": "Briefing de mission",
     "continueAction": "Continuer",
-    "replayAction": "Revoir l'animation"
+    "replayAction": "Revoir l'animation",
+    "dismissAllAction": "Ne plus me montrer ces explications"
   },
   "featureFlow": {
     "vocabularyReview": {
