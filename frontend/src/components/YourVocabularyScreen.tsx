@@ -129,8 +129,8 @@ export function YourVocabularyScreen({
   }
 
   return (
-    <AppScreen width="wide" contentClassName="min-h-dvh px-4 py-4">
-      <main className="mx-auto grid w-full max-w-6xl gap-4 lg:grid-cols-[minmax(280px,360px)_minmax(420px,1fr)]">
+    <AppScreen width="compact" contentClassName="min-h-dvh px-4 py-4">
+      <main className="mx-auto flex w-full max-w-3xl flex-col gap-6">
         <section className="space-y-3">
           <ScreenHeader
             title={vocabularyCopy.title}

@@ -64,8 +64,8 @@ export function LearningScreen({
   };
 
   return (
-    <AppScreen width="wide" contentClassName="min-h-dvh bg-canvas px-4 py-4">
-      <main className="mx-auto grid w-full max-w-6xl gap-4 lg:min-h-[calc(100dvh-2rem)] lg:grid-cols-[minmax(320px,380px)_minmax(360px,440px)] lg:items-start lg:justify-center">
+    <AppScreen width="compact" contentClassName="min-h-dvh bg-canvas px-4 py-4">
+      <main className="mx-auto flex w-full max-w-2xl flex-col gap-4">
         <header className="w-full space-y-3">
           <ScreenHeader
             title="Learn German"
