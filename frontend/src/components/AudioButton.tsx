@@ -38,15 +38,15 @@ export function AudioButton({
   };
   
   const variantClasses = {
-    default: isActive 
-      ? 'bg-indigo-500 text-white' 
-      : 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200',
+    default: isActive
+      ? 'bg-primary text-on-primary'
+      : 'bg-canvas border border-hairline text-ink hover:bg-surface-card',
     ghost: isActive
-      ? 'bg-white/30 text-white'
-      : 'bg-white/20 text-white hover:bg-white/30',
+      ? 'bg-canvas/30 text-ink'
+      : 'bg-canvas/20 text-ink hover:bg-canvas/30',
     accent: isActive
-      ? 'bg-purple-500 text-white animate-pulse'
-      : 'bg-purple-100 text-purple-600 hover:bg-purple-200',
+      ? 'bg-primary text-on-primary'
+      : 'bg-surface-card text-ink hover:bg-surface-cream-strong',
   };
 
   const handleClick = (e: React.MouseEvent) => {
@@ -65,7 +65,7 @@ export function AudioButton({
       {isLoadingText(text) ? (
         <Loader2 size={iconSizes[size]} className="animate-spin" />
       ) : (
-        <Volume2 size={iconSizes[size]} className={isPlayingText(text) ? 'animate-pulse' : ''} />
+        <Volume2 size={iconSizes[size]} />
       )}
     </button>
   );

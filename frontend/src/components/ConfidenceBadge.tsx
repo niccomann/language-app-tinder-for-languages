@@ -53,31 +53,31 @@ export function ConfidenceBadge({
 
   if (loading) {
     return (
-      <span className={`inline-flex items-center gap-1 ${UI_RADIUS.pill} border bg-gray-100 text-gray-400 border-gray-200 ${sizeClasses[size]} ${className} animate-pulse`}>
+      <span className={`inline-flex items-center gap-1 ${UI_RADIUS.pill} border bg-surface-card text-muted-soft border-hairline ${sizeClasses[size]} ${className}`}>
         <Sparkles size={iconSizes[size]} />
-        <span className="font-semibold">-</span>
+        <span className="font-medium">-</span>
       </span>
     );
   }
 
   const getConfig = (score: number) => {
-    if (score >= 10) return { 
-      color: 'bg-green-100 text-green-700 border-green-200', 
+    if (score >= 10) return {
+      color: 'bg-success text-on-primary border-transparent',
       label: 'Mastered',
       icon: Star,
     };
-    if (score >= 5) return { 
-      color: 'bg-yellow-100 text-yellow-700 border-yellow-200', 
+    if (score >= 5) return {
+      color: 'bg-accent-amber text-ink border-hairline',
       label: 'Learning',
       icon: TrendingUp,
     };
-    if (score >= 1) return { 
-      color: 'bg-orange-100 text-orange-700 border-orange-200', 
+    if (score >= 1) return {
+      color: 'bg-surface-card text-body-strong border-hairline',
       label: 'Practicing',
       icon: Zap,
     };
-    return { 
-      color: 'bg-gray-100 text-gray-500 border-gray-200', 
+    return {
+      color: 'bg-surface-card text-muted border-hairline',
       label: 'New',
       icon: Sparkles,
     };
@@ -89,7 +89,7 @@ export function ConfidenceBadge({
   return (
     <span className={`inline-flex items-center gap-1 ${UI_RADIUS.pill} border ${config.color} ${sizeClasses[size]} ${className}`}>
       <Icon size={iconSizes[size]} />
-      <span className="font-semibold">{score}</span>
+      <span className="font-medium">{score}</span>
       {showLabel && <span className="opacity-75">· {config.label}</span>}
     </span>
   );
