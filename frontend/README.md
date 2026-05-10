@@ -1,3 +1,5 @@
+> Last updated: 2026-05-10 00:00
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
@@ -71,3 +73,27 @@ export default defineConfig([
   },
 ])
 ```
+
+## Design System
+
+The frontend follows the **Claude warm-editorial design system**. Spec:
+[`docs/superpowers/specs/2026-05-10-claude-design-system-restyle-design.md`](../docs/superpowers/specs/2026-05-10-claude-design-system-restyle-design.md).
+
+- **Tokens** live in `src/styles/tokens.css` as CSS custom properties
+  (`:root` for light, `.dark` for dark) and are exposed to Tailwind v4
+  via `@theme` in `src/index.css`.
+- **Fonts**: Fraunces (display, peso 400 + opsz axis) for headings,
+  Inter (400/500/600) for body and UI. Loaded from Google Fonts
+  with `display=swap` and preconnect.
+- **Primitives** in `src/components/ui/`: `Button`, `Badge`, `CalloutCard`,
+  `SurfacePanel`, `PageHeader`, `ScreenHeader`, `PillTabs`, `NavButton`,
+  `StatCard`, `FilterSelect`, plus state primitives.
+- **Palette**: `bg-canvas` (#faf9f5) + `bg-primary` (coral, #cc785c) +
+  `bg-surface-dark` (navy, #181715) form the trinity. Coral is reserved
+  for primary CTAs, `Badge variant="coral"`, and `CalloutCard` (max one
+  per page).
+- **Out of scope**: gradient surfaces, indigo/purple/blue palettes,
+  dramatic shadows, serif weights >400, glassmorphism, hover effects
+  beyond background darkening on the primary button.
+
+Last updated: 2026-05-10
