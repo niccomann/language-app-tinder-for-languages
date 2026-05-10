@@ -472,6 +472,7 @@
     "ariaLabel": "Feature introduction",
     "closeLabel": "Close introduction",
     "eyebrow": "Mission briefing",
+    "continueAction": "Continue",
     "replayAction": "Replay animation"
   },
   "featureFlow": {

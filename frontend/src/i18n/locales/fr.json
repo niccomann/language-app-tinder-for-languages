@@ -472,6 +472,7 @@
     "ariaLabel": "Introduction de la fonctionnalité",
     "closeLabel": "Fermer l'introduction",
     "eyebrow": "Briefing de mission",
+    "continueAction": "Continuer",
     "replayAction": "Revoir l'animation"
   },
   "featureFlow": {

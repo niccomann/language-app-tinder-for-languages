@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Play, RotateCcw, X } from 'lucide-react';
+import { ArrowRight, Play, RotateCcw, X } from 'lucide-react';
 import { motion, useReducedMotion, type Transition } from 'framer-motion';
 import { featureGuides, type FeatureGuideId, type FeatureGuideTone } from '../gamification/featureGuideManifest';
 import { hasSeenFeatureGuide, markFeatureGuideSeen, shouldDeferGuideUntilVocabularyScan } from '../gamification/featureGuideStorage';
@@ -69,6 +69,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
   const [frameIndex, setFrameIndex] = useState(0);
   const [framesReady, setFramesReady] = useState(false);
   const [speechState, setSpeechState] = useState({ stepIndex: 0, isTyping: true });
+  const [step, setStep] = useState<'watch' | 'briefing'>('watch');
   const activeFrame = guide.frames[frameIndex % guide.frames.length];
   const styles = toneStyles[guide.tone];
   const overlayCopy = copy.featureGuideOverlay;
@@ -150,6 +151,11 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
   const replayGuide = () => {
     setEventKey((current) => current + 1);
     setFrameIndex(0);
+    setStep('watch');
+  };
+
+  const goToBriefing = () => {
+    setStep('briefing');
   };
 
   const enterFeature = () => {
@@ -182,63 +188,80 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
           <X size={20} aria-hidden="true" />
         </button>
 
-        <div className="mx-auto grid min-h-[calc(100dvh-2.5rem)] w-full max-w-7xl flex-1 items-center gap-8 py-10 lg:grid-cols-[minmax(0,1.02fr)_minmax(390px,0.78fr)] lg:gap-12">
-          <motion.div
-            key={`${guide.id}-${eventKey}`}
-            data-testid="guide-animated-character"
-            data-speaking={speechState.isTyping ? 'true' : 'false'}
-            className="flex min-h-[42dvh] items-center justify-center lg:min-h-[72dvh]"
-            {...motionProps}
-          >
-            <div
-              data-asset-rendering="transparent-cutout"
-              className="relative aspect-square w-[min(78vw,520px)] bg-transparent sm:w-[min(62vw,590px)] lg:w-[min(46vw,650px)]"
+        <div className="mx-auto flex min-h-[calc(100dvh-2.5rem)] w-full max-w-2xl flex-1 flex-col items-center justify-center gap-8 py-10">
+          {step === 'watch' ? (
+            <>
+              <motion.div
+                key={`${guide.id}-${eventKey}`}
+                data-testid="guide-animated-character"
+                data-speaking={speechState.isTyping ? 'true' : 'false'}
+                className="flex w-full items-center justify-center"
+                {...motionProps}
+              >
+                <div
+                  data-asset-rendering="transparent-cutout"
+                  className="relative aspect-square w-[min(78vw,460px)] bg-transparent"
+                >
+                  <img
+                    key={activeFrame.key}
+                    src={activeFrame.src}
+                    alt=""
+                    className="h-full w-full object-contain"
+                    style={{ filter: 'drop-shadow(0 25px 25px rgba(0,0,0,0.15))' }}
+                    draggable={false}
+                  />
+                </div>
+              </motion.div>
+
+              <p className={`text-caption-uppercase tracking-[1.5px] font-medium uppercase ${styles.accent}`}>
+                {overlayCopy.eyebrow}
+              </p>
+
+              <button
+                type="button"
+                onClick={goToBriefing}
+                className={`inline-flex min-h-12 items-center justify-center gap-2 ${UI_RADIUS.control} bg-primary px-6 py-3 text-button font-semibold text-on-primary ${UI_INTERACTION.fastTransition} hover:bg-primary-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2`}
+              >
+                {overlayCopy.continueAction}
+                <ArrowRight size={17} aria-hidden="true" />
+              </button>
+            </>
+          ) : (
+            <StreamingSpeechBubble
+              key={eventKey}
+              steps={[{ eyebrow: overlayCopy.eyebrow, title: guide.title, body: guide.body }]}
+              playbackKey={eventKey}
+              showStepIndicator={false}
+              contentClassName="min-h-[255px] sm:min-h-[300px]"
+              className={`w-full border ${styles.panel}`}
+              onStepChange={(stepIndex) => setSpeechState((current) => (
+                current.stepIndex === stepIndex ? current : { ...current, stepIndex }
+              ))}
+              onTypingChange={(isTyping) => setSpeechState((current) => (
+                current.isTyping === isTyping ? current : { ...current, isTyping }
+              ))}
             >
-              <img
-                key={activeFrame.key}
-                src={activeFrame.src}
-                alt=""
-                className="h-full w-full object-contain"
-                style={{ filter: 'drop-shadow(0 25px 25px rgba(0,0,0,0.15))' }}
-                draggable={false}
-              />
-            </div>
-          </motion.div>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={enterFeature}
+                  className={`inline-flex min-h-12 items-center justify-center gap-2 ${UI_RADIUS.control} px-5 py-3 text-base font-semibold ${UI_INTERACTION.fastTransition} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${styles.action}`}
+                >
+                  <Play size={18} aria-hidden="true" />
+                  {guide.actionLabel}
+                </button>
 
-          <StreamingSpeechBubble
-            key={eventKey}
-            steps={[{ eyebrow: overlayCopy.eyebrow, title: guide.title, body: guide.body }]}
-            playbackKey={eventKey}
-            showStepIndicator={false}
-            contentClassName="min-h-[255px] sm:min-h-[300px]"
-            className={`border ${styles.panel}`}
-            onStepChange={(stepIndex) => setSpeechState((current) => (
-              current.stepIndex === stepIndex ? current : { ...current, stepIndex }
-            ))}
-            onTypingChange={(isTyping) => setSpeechState((current) => (
-              current.isTyping === isTyping ? current : { ...current, isTyping }
-            ))}
-          >
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={enterFeature}
-                className={`inline-flex min-h-12 items-center justify-center gap-2 ${UI_RADIUS.control} px-5 py-3 text-base font-semibold ${UI_INTERACTION.fastTransition} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${styles.action}`}
-              >
-                <Play size={18} aria-hidden="true" />
-                {guide.actionLabel}
-              </button>
-
-              <button
-                type="button"
-                onClick={replayGuide}
-                className={`inline-flex min-h-12 items-center justify-center gap-2 ${UI_RADIUS.control} border border-hairline bg-canvas px-5 py-3 text-base font-semibold text-body ${UI_INTERACTION.fastTransition} hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
-              >
-                <RotateCcw size={18} aria-hidden="true" />
-                {overlayCopy.replayAction}
-              </button>
-            </div>
-          </StreamingSpeechBubble>
+                <button
+                  type="button"
+                  onClick={replayGuide}
+                  className={`inline-flex min-h-12 items-center justify-center gap-2 ${UI_RADIUS.control} border border-hairline bg-canvas px-5 py-3 text-base font-semibold text-body ${UI_INTERACTION.fastTransition} hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
+                >
+                  <RotateCcw size={18} aria-hidden="true" />
+                  {overlayCopy.replayAction}
+                </button>
+              </div>
+            </StreamingSpeechBubble>
+          )}
         </div>
       </div>
     </section>
