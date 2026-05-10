@@ -163,7 +163,7 @@ function AppChrome({ route, navigateTo, productNavigationHidden }: AppChromeProp
                 type="button"
                 onClick={() => navigateTo(item.path)}
                 aria-current={item.active ? 'page' : undefined}
-                className={`flex min-h-14 min-w-0 flex-col items-center justify-center gap-1 px-1.5 py-2 text-[11px] font-medium leading-none md:min-h-11 md:flex-row md:px-3 md:text-nav-link ${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} ${UI_INTERACTION.press} ${
+                className={`flex min-h-14 min-w-0 flex-col items-center justify-center gap-1 px-1.5 py-2 text-[11px] font-medium leading-none md:min-h-11 md:flex-row md:px-3 md:text-nav-link ${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} ${
                   item.active
                     ? 'bg-ink text-canvas'
                     : 'text-muted hover:bg-surface-card hover:text-ink'
@@ -182,7 +182,7 @@ function AppChrome({ route, navigateTo, productNavigationHidden }: AppChromeProp
           <button
             type="button"
             onClick={() => navigateTo('/developer')}
-            className={`flex min-h-10 items-center gap-2 px-3 py-2 ${UI_RADIUS.control} font-medium ${UI_INTERACTION.transition} ${UI_INTERACTION.iconLift} ${UI_INTERACTION.press} ${
+            className={`flex min-h-10 items-center gap-2 px-3 py-2 ${UI_RADIUS.control} font-medium ${UI_INTERACTION.transition} ${
               developerButtonActive
                 ? 'bg-ink text-canvas hover:bg-body-strong'
                 : 'bg-canvas text-ink border border-hairline hover:bg-surface-card'

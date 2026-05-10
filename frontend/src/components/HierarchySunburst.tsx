@@ -315,7 +315,7 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
                 {currentNodePath.map((node, i) => (
                     <span key={i} className="flex items-center">
                         {i > 0 && <span className="mx-1">/</span>}
-                        <span className={i === currentNodePath.length - 1 ? 'text-primary font-bold' : ''}>
+                        <span className={i === currentNodePath.length - 1 ? 'text-primary font-semibold' : ''}>
                             {node}
                         </span>
                     </span>
@@ -362,7 +362,7 @@ export function HierarchySunburst({ words, onWordClick }: HierarchySunburstProps
             {/* Hover Info Card */}
             {hoveredNode && (
                 <div className={`absolute ${isExpanded ? 'top-20 left-4' : 'top-4 right-4'} ${UI_RADIUS.surface} p-4 border border-hairline bg-canvas min-w-[200px] transition-colors duration-300 pointer-events-none z-20`}>
-                    <div className="text-lg font-bold mb-1 text-ink">
+                    <div className="text-lg font-semibold mb-1 text-ink">
                         {hoveredNode.name}
                     </div>
 

@@ -59,7 +59,7 @@ export function AudioButton({
     <button
       onClick={handleClick}
       disabled={isActive}
-      className={`${UI_RADIUS.touchIcon} ${UI_INTERACTION.fastTransition} ${UI_INTERACTION.iconLift} ${UI_INTERACTION.press} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
+      className={`${UI_RADIUS.touchIcon} ${UI_INTERACTION.fastTransition} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
       title={`Play "${text}"`}
     >
       {isLoadingText(text) ? (

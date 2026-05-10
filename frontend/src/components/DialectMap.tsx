@@ -150,7 +150,7 @@ export function DialectMap({ initialWord }: DialectMapProps) {
             <Globe2 className="w-5 h-5 text-on-primary" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-on-dark">Dialect Map</h2>
+            <h2 className="text-lg font-semibold text-on-dark">Dialect Map</h2>
             <p className="text-xs text-on-dark-soft">Explore German regional variants</p>
           </div>
         </div>
@@ -158,7 +158,7 @@ export function DialectMap({ initialWord }: DialectMapProps) {
         <div className="flex items-center gap-2">
           <button
             onClick={toggleExpanded}
-            className={`p-2 ${UI_RADIUS.control} transition-all hover:scale-[1.04] hover:bg-surface-dark-elevated ${isExpanded ? 'text-primary' : 'text-on-dark-soft'}`}
+            className={`p-2 ${UI_RADIUS.control} transition-colors hover:bg-surface-dark-elevated ${isExpanded ? 'text-primary' : 'text-on-dark-soft'}`}
             title={isExpanded ? "Exit fullscreen" : "Expand to fullscreen"}
           >
             {isExpanded ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
@@ -199,7 +199,7 @@ export function DialectMap({ initialWord }: DialectMapProps) {
         <div className={`mb-3 p-3 bg-surface-dark-elevated ${UI_RADIUS.surface} border border-hairline flex-shrink-0`}>
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xl font-bold text-on-dark">{wordData.standardGerman}</span>
+              <span className="text-xl font-semibold text-on-dark">{wordData.standardGerman}</span>
               <span className="text-on-dark-soft ml-3">({wordData.translation})</span>
             </div>
             <span className="text-sm text-on-dark-soft">Hochdeutsch</span>
@@ -271,7 +271,7 @@ export function DialectMap({ initialWord }: DialectMapProps) {
               className={`absolute top-3 left-3 bg-surface-dark ${UI_RADIUS.surface} p-3 border border-hairline min-w-[180px]`}
             >
               <div className="text-xs text-on-dark-soft mb-1">{hoveredVariant.dialect}</div>
-              <div className="text-xl font-bold text-accent-amber mb-1">{hoveredVariant.variant}</div>
+              <div className="text-xl font-semibold text-accent-amber mb-1">{hoveredVariant.variant}</div>
               <div className="flex items-center gap-2 text-on-dark-soft text-xs">
                 <Map className="w-3 h-3" />
                 <span>{hoveredVariant.region}</span>

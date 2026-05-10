@@ -148,7 +148,7 @@ export function YourVocabularyScreen({
             </div>
 
             <div className={`${UI_RADIUS.control} border border-hairline bg-surface-soft p-4`}>
-              <p className="text-xs font-extrabold uppercase tracking-wide text-primary">
+              <p className="text-xs font-semibold uppercase tracking-wide text-primary">
                 {vocabularyCopy.logicEyebrow}
               </p>
               <p className="mt-2 text-sm font-semibold leading-6 text-body">
@@ -159,7 +159,7 @@ export function YourVocabularyScreen({
             <button
               type="button"
               onClick={onStartLearning}
-              className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-12 w-full items-center justify-center gap-2 bg-primary px-5 py-3 text-sm font-extrabold text-on-primary hover:bg-primary-active`}
+              className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} flex min-h-12 w-full items-center justify-center gap-2 bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-active`}
             >
               <ArrowDownAZ size={17} />
               {vocabularyCopy.continueAction}
@@ -171,14 +171,14 @@ export function YourVocabularyScreen({
           {sortedWords.length === 0 ? (
             <SurfacePanel padding="lg" className="text-center">
               <BookOpenCheck size={34} className="mx-auto text-muted" />
-              <h2 className="mt-3 text-2xl font-extrabold text-ink">{vocabularyCopy.emptyTitle}</h2>
+              <h2 className="mt-3 text-2xl font-semibold text-ink">{vocabularyCopy.emptyTitle}</h2>
               <p className="mx-auto mt-2 max-w-md text-sm font-semibold leading-6 text-muted">
                 {vocabularyCopy.emptyBody}
               </p>
               <button
                 type="button"
                 onClick={onStartLearning}
-                className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} mt-5 inline-flex min-h-12 items-center justify-center gap-2 bg-primary px-5 py-3 text-sm font-extrabold text-on-primary hover:bg-primary-active`}
+                className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} mt-5 inline-flex min-h-12 items-center justify-center gap-2 bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-active`}
               >
                 {vocabularyCopy.emptyAction}
               </button>
@@ -214,14 +214,14 @@ function VocabularyRow({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span className={`${UI_RADIUS.pill} bg-canvas border border-hairline px-2.5 py-1 text-xs font-extrabold text-muted`}>
+            <span className={`${UI_RADIUS.pill} bg-canvas border border-hairline px-2.5 py-1 text-xs font-semibold text-muted`}>
               #{rank}
             </span>
-            <span className={`${UI_RADIUS.pill} px-2.5 py-1 text-xs font-extrabold ${tone.badge}`}>
+            <span className={`${UI_RADIUS.pill} px-2.5 py-1 text-xs font-semibold ${tone.badge}`}>
               {tone.label}
             </span>
           </div>
-          <h2 className={`mt-3 text-2xl font-extrabold ${tone.text}`}>{word.word}</h2>
+          <h2 className={`mt-3 text-2xl font-semibold ${tone.text}`}>{word.word}</h2>
           <p className="mt-1 flex flex-wrap items-center gap-2 text-sm font-semibold text-muted">
             <Clock3 size={15} />
             {word.times_seen} reviews · {accuracy}% correct
@@ -230,7 +230,7 @@ function VocabularyRow({
 
         <div className="text-right">
           <MasteryStars value={stars} />
-          <p className="mt-2 text-xs font-extrabold uppercase tracking-wide text-muted">
+          <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-muted">
             {copy.yourVocabulary.levelLabel} {word.knowledge_level}/10
           </p>
         </div>
@@ -282,11 +282,11 @@ function VocabularyStatTile({
 
   return (
     <div className={`${UI_RADIUS.control} border p-3 ${classes[tone]}`}>
-      <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wide opacity-80">
+      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide opacity-80">
         {icon}
         {label}
       </div>
-      <p className="mt-2 text-3xl font-extrabold">{value}</p>
+      <p className="mt-2 text-3xl font-semibold">{value}</p>
     </div>
   );
 }

@@ -130,7 +130,7 @@ export function SentencePlacementChallenge() {
   if (!challenge) {
     return (
       <SurfacePanel padding="lg" className="mx-auto max-w-3xl text-center">
-        <h2 className="text-2xl font-extrabold text-ink">
+        <h2 className="text-2xl font-semibold text-ink">
           No sentence challenges yet
         </h2>
         <p className="mt-2 text-sm font-semibold text-muted">
@@ -148,10 +148,10 @@ export function SentencePlacementChallenge() {
       <SurfacePanel padding="lg" className="border-hairline bg-canvas">
         <div className="flex flex-col gap-6">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-wide text-error">
+            <p className="text-xs font-semibold uppercase tracking-wide text-error">
               Sentence placement
             </p>
-            <h2 className="mt-2 text-3xl font-extrabold leading-tight text-ink">
+            <h2 className="mt-2 text-3xl font-semibold leading-tight text-ink">
               Translate this sentence
             </h2>
             <p className="mt-2 text-sm font-semibold text-muted">
@@ -181,7 +181,7 @@ export function SentencePlacementChallenge() {
               mascotClassName="mx-auto lg:mx-0"
               bubbleClassName="rounded-[1.75rem] border-hairline bg-surface-card p-4 ring-0"
               bubbleContentClassName="min-h-[156px]"
-              titleClassName="mt-2 min-h-[4.2rem] text-2xl font-extrabold leading-snug text-ink"
+              titleClassName="mt-2 min-h-[4.2rem] text-2xl font-semibold leading-snug text-ink"
               bodyClassName="mt-2 min-h-[3.2rem] text-sm font-semibold leading-6 text-muted"
             />
 
@@ -197,7 +197,7 @@ export function SentencePlacementChallenge() {
                       key={option.id}
                       type="button"
                       onClick={() => handleRemoveSelected(option.id)}
-                      className={`${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} ${UI_INTERACTION.press} min-h-11 border border-hairline bg-canvas px-4 py-2 text-base font-bold text-ink hover:border-primary hover:bg-surface-soft`}
+                      className={`${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} min-h-11 border border-hairline bg-canvas px-4 py-2 text-base font-semibold text-ink hover:border-primary hover:bg-surface-soft`}
                     >
                       {option.label}
                     </button>
@@ -219,10 +219,10 @@ export function SentencePlacementChallenge() {
               data-testid="placement-word-option"
               onClick={() => handleSelectOption(option)}
               disabled={isSelected || status === 'correct'}
-              className={`${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} min-h-12 border px-4 py-2 text-base font-extrabold ${
+              className={`${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} min-h-12 border px-4 py-2 text-base font-semibold ${
                 isSelected
                   ? 'border-hairline bg-surface-soft text-muted'
-                  : 'border-hairline bg-canvas text-ink hover:-translate-y-0.5 hover:border-primary hover:bg-surface-soft'
+                  : 'border-hairline bg-canvas text-ink hover:border-primary hover:bg-surface-soft'
               }`}
             >
               {option.label}
@@ -242,7 +242,7 @@ export function SentencePlacementChallenge() {
           <div className="min-h-8">
             {status === 'correct' && (
               <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2 text-lg font-extrabold text-success">
+                <div className="flex items-center gap-2 text-lg font-semibold text-success">
                   <CheckCircle2 size={24} />
                   Good job.
                 </div>
@@ -254,7 +254,7 @@ export function SentencePlacementChallenge() {
             )}
             {status === 'wrong' && (
               <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2 text-lg font-extrabold text-error">
+                <div className="flex items-center gap-2 text-lg font-semibold text-error">
                   <AlertCircle size={24} />
                   Not quite. Adjust the order and try again.
                 </div>
@@ -276,7 +276,7 @@ export function SentencePlacementChallenge() {
               <button
                 type="button"
                 onClick={handleReset}
-                className={`${UI_RADIUS.control} ${UI_INTERACTION.press} flex min-h-12 items-center gap-2 border border-hairline bg-canvas px-4 py-2 text-sm font-extrabold text-body hover:bg-surface-soft`}
+                className={`${UI_RADIUS.control} flex min-h-12 items-center gap-2 border border-hairline bg-canvas px-4 py-2 text-sm font-semibold text-body hover:bg-surface-soft`}
               >
                 <RotateCcw size={17} />
                 Reset
@@ -286,7 +286,7 @@ export function SentencePlacementChallenge() {
               type="button"
               onClick={status === 'correct' ? handleContinue : handleCheck}
               disabled={!canCheck}
-              className={`${UI_RADIUS.control} ${UI_INTERACTION.press} min-h-12 min-w-36 px-6 py-2 text-sm font-extrabold text-on-primary ${
+              className={`${UI_RADIUS.control} min-h-12 min-w-36 px-6 py-2 text-sm font-semibold text-on-primary ${
                 !canCheck
                   ? 'cursor-not-allowed bg-primary-disabled'
                   : status === 'correct'

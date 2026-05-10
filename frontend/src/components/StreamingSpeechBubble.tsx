@@ -33,8 +33,8 @@ export function StreamingSpeechBubble({
   children,
   className = '',
   contentClassName = 'min-h-[250px] sm:min-h-[220px]',
-  eyebrowClassName = 'text-xs font-extrabold uppercase tracking-wide text-primary',
-  titleClassName = 'mt-2 min-h-[5.8rem] text-4xl font-extrabold leading-tight text-ink',
+  eyebrowClassName = 'text-xs font-semibold uppercase tracking-wide text-primary',
+  titleClassName = 'mt-2 min-h-[5.8rem] text-4xl font-semibold leading-tight text-ink',
   bodyClassName = 'mt-3 min-h-[6.75rem] text-base font-semibold leading-7 text-muted',
   playbackKey = 0,
   showStepIndicator,
@@ -160,7 +160,7 @@ export function StreamingSpeechBubble({
               <button
                 type="button"
                 onClick={skipSpeech}
-                className="min-h-9 rounded-full border border-hairline bg-canvas px-3 py-1 text-xs font-extrabold text-body transition hover:border-primary hover:bg-surface-soft"
+                className="min-h-9 rounded-full border border-hairline bg-canvas px-3 py-1 text-xs font-semibold text-body transition hover:border-primary hover:bg-surface-soft"
               >
                 {skipSpeechLabel}
               </button>
@@ -168,7 +168,7 @@ export function StreamingSpeechBubble({
             {shouldShowStepIndicator && (
               <p
                 data-testid="speech-step-indicator"
-                className="rounded-full border border-hairline bg-surface-soft px-3 py-1 text-xs font-extrabold text-primary"
+                className="rounded-full border border-hairline bg-surface-soft px-3 py-1 text-xs font-semibold text-primary"
               >
                 {activeStepIndex + 1} / {normalizedSteps.length}
               </p>
@@ -193,7 +193,7 @@ export function StreamingSpeechBubble({
         <button
           type="button"
           onClick={goToNextStep}
-          className="flex min-h-12 w-full items-center justify-center rounded-2xl border border-hairline bg-surface-soft px-5 py-3 text-sm font-extrabold text-primary transition hover:bg-surface-cream-strong"
+          className="flex min-h-12 w-full items-center justify-center rounded-2xl border border-hairline bg-surface-soft px-5 py-3 text-sm font-semibold text-primary transition hover:bg-surface-cream-strong"
         >
           {nextStepLabel}
         </button>

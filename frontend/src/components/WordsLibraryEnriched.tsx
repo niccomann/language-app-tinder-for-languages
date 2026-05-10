@@ -282,7 +282,7 @@ export function WordsLibraryEnriched({
               <Filter size={18} />
               Filters
               {activeFilterCount > 0 && (
-                <span className={`bg-canvas text-primary text-xs font-bold px-2 py-0.5 ${UI_RADIUS.pill}`}>
+                <span className={`bg-canvas text-primary text-xs font-semibold px-2 py-0.5 ${UI_RADIUS.pill}`}>
                   {activeFilterCount}
                 </span>
               )}
@@ -387,8 +387,8 @@ export function WordsLibraryEnriched({
 
         <div className="mb-4">
           <p className="text-muted font-medium">
-            Showing <span className="font-bold text-primary">{visibleWords.length}</span>
-            {' '}of <span className="font-bold text-primary">{totalWords}</span> words
+            Showing <span className="font-semibold text-primary">{visibleWords.length}</span>
+            {' '}of <span className="font-semibold text-primary">{totalWords}</span> words
             {loading && <span className="ml-2 text-sm text-muted">(loading...)</span>}
           </p>
         </div>
@@ -396,7 +396,7 @@ export function WordsLibraryEnriched({
         {visibleWords.length === 0 ? (
           <div className="text-center py-16">
             <BookOpen size={56} className="mx-auto mb-4 text-muted" />
-            <h3 className="text-xl font-bold text-ink mb-2">No words found</h3>
+            <h3 className="text-xl font-semibold text-ink mb-2">No words found</h3>
             <p className="text-muted">Try modifying your search filters</p>
           </div>
         ) : (
@@ -405,7 +405,7 @@ export function WordsLibraryEnriched({
               <div
                 key={word.id}
                 onClick={() => handleWordClick(word)}
-                className={`bg-canvas ${UI_RADIUS.surface} overflow-hidden hover:scale-[1.02] transition-all duration-300 border border-hairline cursor-pointer`}
+                className={`bg-canvas ${UI_RADIUS.surface} overflow-hidden transition-colors duration-200 border border-hairline cursor-pointer hover:bg-surface-soft`}
               >
                 <div className="relative h-40 bg-surface-soft overflow-hidden">
                   {word.image_base64 ? (
@@ -416,18 +416,18 @@ export function WordsLibraryEnriched({
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-surface-card">
-                      <span className="text-4xl font-bold text-muted">{word.word.charAt(0)}</span>
+                      <span className="text-4xl font-semibold text-muted">{word.word.charAt(0)}</span>
                     </div>
                   )}
 
                   <div className="absolute top-2 left-2 flex gap-1.5">
                     {word.cefr_level && (
-                      <span className={`px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-bold ${CEFR_COLORS[word.cefr_level] || 'bg-surface-card text-body'}`}>
+                      <span className={`px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-semibold ${CEFR_COLORS[word.cefr_level] || 'bg-surface-card text-body'}`}>
                         {word.cefr_level}
                       </span>
                     )}
                     {word.gender && GENDER_LABELS[word.gender] && (
-                      <span className={`${GENDER_LABELS[word.gender].color} text-on-primary px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-bold`}>
+                      <span className={`${GENDER_LABELS[word.gender].color} text-on-primary px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-semibold`}>
                         {GENDER_LABELS[word.gender].article}
                       </span>
                     )}
@@ -436,7 +436,7 @@ export function WordsLibraryEnriched({
                   <div className="absolute top-2 right-2">
                     <button
                       onClick={(e) => handleToggleStatus(word, e)}
-                      className={`px-2.5 py-1 ${UI_RADIUS.pill} text-xs font-bold flex items-center gap-1 transition-colors ${
+                      className={`px-2.5 py-1 ${UI_RADIUS.pill} text-xs font-semibold flex items-center gap-1 transition-colors ${
                         word.known === true
                           ? 'bg-success text-on-primary hover:opacity-90'
                           : word.known === false
@@ -467,7 +467,7 @@ export function WordsLibraryEnriched({
                 </div>
 
                 <div className="p-4">
-                  <h3 className="text-xl font-bold text-ink mb-0.5">
+                  <h3 className="text-xl font-semibold text-ink mb-0.5">
                     {word.gender && GENDER_LABELS[word.gender] && (
                       <span className="text-muted font-normal">
                         {GENDER_LABELS[word.gender].article}{' '}
@@ -513,7 +513,7 @@ export function WordsLibraryEnriched({
               type="button"
               onClick={loadMoreWords}
               disabled={loadingMore}
-              className={`${UI_RADIUS.control} min-h-12 border border-hairline bg-primary px-6 py-2 text-sm font-extrabold text-on-primary transition-colors hover:bg-primary-active disabled:cursor-not-allowed disabled:bg-primary-disabled`}
+              className={`${UI_RADIUS.control} min-h-12 border border-hairline bg-primary px-6 py-2 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-active disabled:cursor-not-allowed disabled:bg-primary-disabled`}
             >
               {loadingMore ? 'Loading more...' : 'Load more words'}
             </button>

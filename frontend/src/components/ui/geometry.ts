@@ -18,7 +18,7 @@ export const UI_ELEVATION = {
   surface: '',
   raised: '',
   floating: '',
-  hoverSoft: 'hover:shadow-[0_1px_3px_rgba(20,20,19,0.08)]',
+  hoverSoft: '',
 } as const;
 
 export const UI_INTERACTION = {

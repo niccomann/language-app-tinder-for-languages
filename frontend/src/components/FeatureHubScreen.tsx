@@ -74,7 +74,7 @@ export function FeatureHubScreen({
             <button
               type="button"
               onClick={onBack}
-              className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-10 items-center gap-2 border border-hairline bg-canvas px-3 py-2 text-body-sm font-medium text-ink hover:bg-surface-card`}
+              className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} flex min-h-10 items-center gap-2 border border-hairline bg-canvas px-3 py-2 text-body-sm font-medium text-ink hover:bg-surface-card`}
             >
               <ArrowLeft size={17} />
               Path
@@ -127,7 +127,7 @@ function HubFeatureButton({
       type="button"
       aria-label={`Open ${item.title}`}
       onClick={onOpen}
-      className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.subtlePress} flex min-h-24 w-full items-start gap-3 border p-4 text-left hover:bg-surface-cream-strong ${tone.surface}`}
+      className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} flex min-h-24 w-full items-start gap-3 border p-4 text-left hover:bg-surface-cream-strong ${tone.surface}`}
     >
       <span className={`${UI_RADIUS.touchIcon} flex h-11 w-11 shrink-0 items-center justify-center ${tone.icon}`}>
         {icon}
@@ -148,7 +148,7 @@ const hubToneClasses: Record<FeatureFlowTone, {
   icon: string;
   badge: string;
 }> = {
-  indigo: {
+  coral: {
     surface: 'border-hairline bg-surface-card',
     icon: 'bg-primary text-on-primary',
     badge: 'bg-surface-card text-primary border border-hairline',
@@ -158,27 +158,17 @@ const hubToneClasses: Record<FeatureFlowTone, {
     icon: 'bg-accent-teal text-on-primary',
     badge: 'bg-surface-card text-accent-teal border border-hairline',
   },
-  purple: {
-    surface: 'border-hairline bg-surface-card',
-    icon: 'bg-primary text-on-primary',
-    badge: 'bg-surface-card text-primary border border-hairline',
-  },
   amber: {
     surface: 'border-hairline bg-surface-card',
     icon: 'bg-accent-amber text-ink',
     badge: 'bg-surface-card text-accent-amber border border-hairline',
   },
-  blue: {
-    surface: 'border-hairline bg-surface-card',
-    icon: 'bg-primary text-on-primary',
-    badge: 'bg-surface-card text-primary border border-hairline',
-  },
-  emerald: {
+  success: {
     surface: 'border-hairline bg-surface-card',
     icon: 'bg-success text-on-primary',
     badge: 'bg-surface-card text-success border border-hairline',
   },
-  slate: {
+  muted: {
     surface: 'border-hairline bg-surface-card',
     icon: 'bg-ink text-canvas',
     badge: 'bg-surface-card text-muted border border-hairline',

@@ -22,7 +22,7 @@ export function GrammarPlacementAssessment({
           onBack={onBack}
           density="compact"
           actions={(
-            <div className={`${UI_RADIUS.pill} bg-canvas px-3 py-2 text-sm font-extrabold text-accent-teal border border-hairline`}>
+            <div className={`${UI_RADIUS.pill} bg-canvas px-3 py-2 text-sm font-semibold text-accent-teal border border-hairline`}>
               Sentence task
             </div>
           )}
@@ -35,7 +35,7 @@ export function GrammarPlacementAssessment({
                 <Puzzle size={20} />
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-extrabold text-ink">
+                <p className="text-sm font-semibold text-ink">
                   Sentence-based level check
                 </p>
                 <p className="mt-1 text-sm font-semibold leading-6 text-body">

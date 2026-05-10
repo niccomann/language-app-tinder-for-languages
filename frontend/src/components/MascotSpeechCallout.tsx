@@ -36,7 +36,7 @@ export function MascotSpeechCallout({
   mascotClassName = '',
   bubbleClassName = '',
   bubbleContentClassName = 'min-h-[150px]',
-  titleClassName = 'mt-2 min-h-[3.2rem] text-2xl font-extrabold leading-tight text-ink',
+  titleClassName = 'mt-2 min-h-[3.2rem] text-2xl font-semibold leading-tight text-ink',
   bodyClassName = 'mt-2 min-h-[3.2rem] text-sm font-semibold leading-6 text-muted',
   showStepIndicator = false,
   stream = true,

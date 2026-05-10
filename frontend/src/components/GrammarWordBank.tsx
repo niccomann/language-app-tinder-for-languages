@@ -178,7 +178,7 @@ export function GrammarWordBank({
           <div key={group.id} className={`${UI_RADIUS.control} border p-2 ${group.panelClass}`}>
             <div className="mb-1.5 flex items-center justify-between gap-2">
               <h3 className={`text-sm font-semibold ${group.titleClass}`}>{group.title}</h3>
-              <span className={`bg-canvas px-2 py-0.5 text-xs font-bold ${UI_RADIUS.pill} ${group.countClass}`}>
+              <span className={`bg-canvas px-2 py-0.5 text-xs font-semibold ${UI_RADIUS.pill} ${group.countClass}`}>
                 {group.nodes.length}
               </span>
             </div>

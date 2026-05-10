@@ -242,7 +242,7 @@ function PathFocusFlow({
           type="button"
           onClick={() => onOpenMission(primaryMission)}
           aria-label={primaryMission.ctaLabel}
-          className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-24 w-full flex-col items-start justify-between gap-4 bg-primary px-5 py-4 text-left text-on-primary`}
+          className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} flex min-h-24 w-full flex-col items-start justify-between gap-4 bg-primary px-5 py-4 text-left text-on-primary`}
         >
           <span className="flex min-w-0 items-center gap-3">
             <span className={`${UI_RADIUS.touchIcon} flex h-11 w-11 shrink-0 items-center justify-center bg-canvas/15`}>
@@ -264,7 +264,7 @@ function PathFocusFlow({
             type="button"
             onClick={() => onOpenMission(nextMission)}
             aria-label={nextMission.ctaLabel}
-            className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-24 w-full items-start gap-3 border border-hairline bg-surface-card p-4 text-left hover:bg-surface-cream-strong`}
+            className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} flex min-h-24 w-full items-start gap-3 border border-hairline bg-surface-card p-4 text-left hover:bg-surface-cream-strong`}
           >
             <span className={`${UI_RADIUS.touchIcon} flex h-10 w-10 shrink-0 items-center justify-center bg-accent-teal text-on-primary`}>
               <Puzzle size={18} />
@@ -313,7 +313,7 @@ function PathToolButton({
     <button
       type="button"
       onClick={onOpen}
-      className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-20 w-full items-center gap-3 border border-hairline bg-canvas p-3 text-left hover:bg-surface-card`}
+      className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} flex min-h-20 w-full items-center gap-3 border border-hairline bg-canvas p-3 text-left hover:bg-surface-card`}
     >
       <span className={`${UI_RADIUS.touchIcon} flex h-10 w-10 shrink-0 items-center justify-center bg-ink text-canvas`}>
         {icon}

@@ -148,7 +148,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
           <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center ${UI_RADIUS.touchIcon} bg-error/10 text-error`}>
             <AlertTriangle size={24} />
           </div>
-          <h3 className="text-xl font-bold text-ink mb-2">Error</h3>
+          <h3 className="text-xl font-semibold text-ink mb-2">Error</h3>
           <p className="text-muted mb-4">{error}</p>
           <button
             onClick={onClose}
@@ -174,7 +174,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <span className="text-6xl font-bold text-on-dark/30">{word.word.charAt(0)}</span>
+                <span className="text-6xl font-semibold text-on-dark/30">{word.word.charAt(0)}</span>
               </div>
             )}
             <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.6), transparent)' }} />
@@ -189,17 +189,17 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
             <div className="absolute bottom-4 left-6 right-6">
               <div className="flex items-center gap-3 mb-2">
                 {word.cefr_level && (
-                  <span className={`px-3 py-1 ${UI_RADIUS.pill} text-sm font-bold ${CEFR_COLORS[word.cefr_level]}`}>
+                  <span className={`px-3 py-1 ${UI_RADIUS.pill} text-sm font-semibold ${CEFR_COLORS[word.cefr_level]}`}>
                     {word.cefr_level}
                   </span>
                 )}
                 {word.gender && GENDER_LABELS[word.gender] && (
-                  <span className={`${GENDER_LABELS[word.gender].color} text-on-primary px-3 py-1 ${UI_RADIUS.pill} text-sm font-bold`}>
+                  <span className={`${GENDER_LABELS[word.gender].color} text-on-primary px-3 py-1 ${UI_RADIUS.pill} text-sm font-semibold`}>
                     {GENDER_LABELS[word.gender].article}
                   </span>
                 )}
                 {word.is_compound && (
-                  <span className={`bg-accent-teal text-on-primary px-3 py-1 ${UI_RADIUS.pill} text-sm font-bold`}>
+                  <span className={`bg-accent-teal text-on-primary px-3 py-1 ${UI_RADIUS.pill} text-sm font-semibold`}>
                     Compound
                   </span>
                 )}
@@ -211,7 +211,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
               </div>
 
               <div className="flex items-center gap-3">
-                <h2 className="text-4xl font-bold text-on-dark">
+                <h2 className="text-4xl font-semibold text-on-dark">
                   {word.gender && GENDER_LABELS[word.gender] && (
                     <span className="opacity-70">{GENDER_LABELS[word.gender].article} </span>
                   )}
@@ -299,7 +299,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
 
               {word.examples.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-bold text-ink mb-3 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-ink mb-3 flex items-center gap-2">
                     <MessageCircle size={20} className="text-primary" />
                     Example Sentences
                   </h3>
@@ -318,7 +318,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
 
               {word.false_friends.length > 0 && (
                 <div className={`bg-accent-amber/10 ${UI_RADIUS.control} p-4`}>
-                  <h3 className="text-lg font-bold text-accent-amber mb-2 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-accent-amber mb-2 flex items-center gap-2">
                     <AlertTriangle size={20} />
                     Watch out! False Friend
                   </h3>
@@ -408,7 +408,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                 <div key={index} className={`bg-accent-amber/10 border-l-4 border-accent-amber ${UI_RADIUS.control} p-5`}>
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="text-xl font-bold text-ink mb-1">
+                      <p className="text-xl font-semibold text-ink mb-1">
                         "{ff.similar_word}" <span className="text-sm font-normal text-muted">({ff.target_language.toUpperCase()})</span>
                       </p>
                       {ff.similar_word_meaning && (
@@ -416,7 +416,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                       )}
                     </div>
                     {ff.confusion_level && (
-                      <span className={`px-3 py-1 ${UI_RADIUS.pill} text-xs font-bold ${CONFUSION_COLORS[ff.confusion_level] || 'bg-surface-card text-body'}`}>
+                      <span className={`px-3 py-1 ${UI_RADIUS.pill} text-xs font-semibold ${CONFUSION_COLORS[ff.confusion_level] || 'bg-surface-card text-body'}`}>
                         {ff.confusion_level} risk
                       </span>
                     )}
@@ -495,7 +495,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                 <div key={index} className={`bg-surface-soft ${UI_RADIUS.control} p-5`}>
                   <div className="flex items-center gap-3 mb-2">
                     <MapPin size={20} className="text-primary" />
-                    <span className="font-bold text-ink">{dialect.region}</span>
+                    <span className="font-semibold text-ink">{dialect.region}</span>
                     {dialect.dialect_name && (
                       <span className="text-sm text-muted">({dialect.dialect_name})</span>
                     )}
@@ -539,7 +539,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                   <section>
                     <div className="flex items-center gap-2 mb-3">
                       <Database size={18} className="text-primary" />
-                      <h3 className="text-lg font-bold text-ink">words</h3>
+                      <h3 className="text-lg font-semibold text-ink">words</h3>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {Object.entries(dbRow.word).map(([key, value]) => (
@@ -549,7 +549,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                   </section>
 
                   <section>
-                    <h3 className="text-lg font-bold text-ink mb-3">media</h3>
+                    <h3 className="text-lg font-semibold text-ink mb-3">media</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {Object.entries(dbRow.media).map(([key, value]) => (
                         <DbField key={key} name={key} value={value} />
@@ -558,7 +558,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                   </section>
 
                   <section>
-                    <h3 className="text-lg font-bold text-ink mb-3">related tables</h3>
+                    <h3 className="text-lg font-semibold text-ink mb-3">related tables</h3>
                     <div className="space-y-3">
                       {Object.entries(dbRow.related).map(([tableName, rows]) => (
                         <details

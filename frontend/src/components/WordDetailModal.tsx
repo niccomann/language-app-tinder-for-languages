@@ -37,7 +37,7 @@ export function WordDetailModal({ word, onClose }: WordDetailModalProps) {
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <h2 className="text-3xl font-bold text-ink">{word.text}</h2>
+              <h2 className="text-3xl font-semibold text-ink">{word.text}</h2>
               <AudioButton text={word.text} size="md" />
             </div>
             {word.category && (
@@ -58,19 +58,19 @@ export function WordDetailModal({ word, onClose }: WordDetailModalProps) {
 
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div className={`bg-success/10 ${UI_RADIUS.control} p-4 text-center`}>
-              <div className="text-2xl font-bold text-success">
+              <div className="text-2xl font-semibold text-success">
                 {word.swipe_right_count || 0}
               </div>
               <div className="text-xs text-success">Times known</div>
             </div>
             <div className={`bg-error/10 ${UI_RADIUS.control} p-4 text-center`}>
-              <div className="text-2xl font-bold text-error">
+              <div className="text-2xl font-semibold text-error">
                 {word.swipe_left_count || 0}
               </div>
               <div className="text-xs text-error">Times not known</div>
             </div>
             <div className={`bg-surface-soft ${UI_RADIUS.control} p-4 text-center`}>
-              <div className="text-2xl font-bold text-primary">
+              <div className="text-2xl font-semibold text-primary">
                 {word.review_count || 0}
               </div>
               <div className="text-xs text-muted">Total reviews</div>

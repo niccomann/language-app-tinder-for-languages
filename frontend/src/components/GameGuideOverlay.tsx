@@ -223,7 +223,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
               <button
                 type="button"
                 onClick={enterFeature}
-                className={`inline-flex min-h-12 items-center justify-center gap-2 ${UI_RADIUS.control} px-5 py-3 text-base font-extrabold ${UI_INTERACTION.fastTransition} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${styles.action}`}
+                className={`inline-flex min-h-12 items-center justify-center gap-2 ${UI_RADIUS.control} px-5 py-3 text-base font-semibold ${UI_INTERACTION.fastTransition} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${styles.action}`}
               >
                 <Play size={18} aria-hidden="true" />
                 {guide.actionLabel}
@@ -232,7 +232,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
               <button
                 type="button"
                 onClick={replayGuide}
-                className={`inline-flex min-h-12 items-center justify-center gap-2 ${UI_RADIUS.control} border border-hairline bg-canvas px-5 py-3 text-base font-bold text-body ${UI_INTERACTION.fastTransition} hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
+                className={`inline-flex min-h-12 items-center justify-center gap-2 ${UI_RADIUS.control} border border-hairline bg-canvas px-5 py-3 text-base font-semibold text-body ${UI_INTERACTION.fastTransition} hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
               >
                 <RotateCcw size={18} aria-hidden="true" />
                 {overlayCopy.replayAction}

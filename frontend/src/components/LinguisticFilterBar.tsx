@@ -125,7 +125,7 @@ export function LinguisticFilterBar({
               transition-all duration-200 whitespace-nowrap
               ${isActive
                 ? 'bg-primary text-on-primary'
-                : 'bg-surface-card text-body hover:bg-surface-cream-strong hover:scale-[1.02]'
+                : 'bg-surface-card text-body hover:bg-surface-cream-strong'
               }
             `}
           >
@@ -169,8 +169,8 @@ export function GroupLegend({
               flex items-center gap-2 px-3 py-1.5 ${UI_RADIUS.pill} text-sm font-medium
               transition-all duration-200
               ${isSelected
-                ? 'ring-2 ring-offset-2 ring-primary scale-[1.02]'
-                : 'hover:scale-[1.02]'
+                ? 'ring-2 ring-offset-2 ring-primary'
+                : ''
               }
               bg-canvas border border-hairline
             `}

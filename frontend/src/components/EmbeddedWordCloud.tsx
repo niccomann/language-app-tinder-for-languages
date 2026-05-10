@@ -139,7 +139,7 @@ export function EmbeddedWordCloud({ words, onWordClick }: EmbeddedWordCloudProps
 
       {hoveredWord && (
         <div className={`absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-canvas border border-hairline px-6 py-3 ${UI_RADIUS.pill}`}>
-          <span className="text-ink font-bold text-lg">{hoveredWord}</span>
+          <span className="text-ink font-semibold text-lg">{hoveredWord}</span>
         </div>
       )}
     </div>

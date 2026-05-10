@@ -4,13 +4,11 @@ import type { FeatureGuideId } from './featureGuideIds';
 export type FeatureFlowPhase = 'primary' | 'upcoming' | 'collection' | 'advanced';
 
 export type FeatureFlowTone =
-  | 'indigo'
+  | 'coral'
   | 'teal'
-  | 'purple'
   | 'amber'
-  | 'blue'
-  | 'emerald'
-  | 'slate';
+  | 'success'
+  | 'muted';
 
 export interface FeatureFlowItem {
   id: string;
@@ -34,7 +32,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     route: '/learn',
     guideId: 'vocabularyScan',
     phase: 'primary',
-    tone: 'indigo',
+    tone: 'coral',
     order: 10,
     ctaLabel: copy.featureFlow.vocabularyReview.ctaLabel,
   },
@@ -58,7 +56,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     route: '/grammar/graph',
     guideId: 'grammarGraph',
     phase: 'upcoming',
-    tone: 'blue',
+    tone: 'coral',
     order: 30,
     ctaLabel: copy.featureFlow.grammarLab.ctaLabel,
   },
@@ -82,7 +80,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     route: '/vocabulary',
     guideId: 'vocabularyScan',
     phase: 'collection',
-    tone: 'emerald',
+    tone: 'success',
     order: 45,
     ctaLabel: copy.featureFlow.yourVocabulary.ctaLabel,
   },
@@ -94,7 +92,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     route: '/library',
     guideId: 'library',
     phase: 'collection',
-    tone: 'purple',
+    tone: 'coral',
     order: 50,
     ctaLabel: copy.featureFlow.wordLibrary.ctaLabel,
   },
@@ -106,7 +104,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     route: '/learn/system',
     guideId: 'learningSystem',
     phase: 'collection',
-    tone: 'emerald',
+    tone: 'success',
     order: 60,
     ctaLabel: copy.featureFlow.learningSystem.ctaLabel,
   },
@@ -118,7 +116,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     route: '/grammar/word-cloud',
     guideId: 'wordCloud',
     phase: 'advanced',
-    tone: 'blue',
+    tone: 'coral',
     order: 70,
     ctaLabel: copy.featureFlow.wordCloud.ctaLabel,
   },
@@ -142,7 +140,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     route: '/grammar/compose-sentence',
     guideId: 'sentenceComposer',
     phase: 'advanced',
-    tone: 'indigo',
+    tone: 'coral',
     order: 90,
     ctaLabel: copy.featureFlow.composeSentence.ctaLabel,
   },
@@ -154,7 +152,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     route: '/grammar/clusters',
     guideId: 'clusters',
     phase: 'advanced',
-    tone: 'purple',
+    tone: 'coral',
     order: 100,
     ctaLabel: copy.featureFlow.clusters.ctaLabel,
   },
@@ -178,7 +176,7 @@ export const featureFlowItems: FeatureFlowItem[] = [
     route: '/grammar/hierarchy',
     guideId: 'hierarchy',
     phase: 'advanced',
-    tone: 'slate',
+    tone: 'muted',
     order: 120,
     ctaLabel: copy.featureFlow.hierarchy.ctaLabel,
   },

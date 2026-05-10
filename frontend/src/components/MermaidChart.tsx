@@ -92,12 +92,12 @@ export function MermaidChart({ title, chart }: MermaidChartProps) {
   return (
     <SurfacePanel padding="lg" className="space-y-4 overflow-hidden">
       <div>
-        <h2 className="text-xl font-black text-ink">{title}</h2>
+        <h2 className="text-xl font-semibold text-ink">{title}</h2>
       </div>
 
       <div className="min-h-[260px] overflow-x-auto rounded-lg border border-hairline bg-canvas p-4">
         {state.status === 'loading' ? (
-          <div className="flex min-h-[228px] items-center justify-center text-sm font-black text-muted">
+          <div className="flex min-h-[228px] items-center justify-center text-sm font-semibold text-muted">
             Loading chart...
           </div>
         ) : state.status === 'ready' ? (
@@ -108,7 +108,7 @@ export function MermaidChart({ title, chart }: MermaidChartProps) {
           />
         ) : (
           <div className="space-y-3">
-            <p className="text-sm font-bold text-error">{state.error}</p>
+            <p className="text-sm font-semibold text-error">{state.error}</p>
             <pre
               aria-label="Mermaid source fallback"
               className="overflow-x-auto rounded-lg bg-surface-soft p-4 text-xs font-semibold leading-6 text-body"

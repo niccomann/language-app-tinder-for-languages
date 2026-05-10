@@ -390,7 +390,7 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
         {/* Hovered Node Info */}
         {hoveredNode && (
           <div className={`absolute ${isExpanded ? 'top-20' : 'top-4'} ${isExpanded ? 'left-4' : 'right-4'} ${UI_RADIUS.surface} p-4 border border-hairline bg-canvas min-w-[200px] transition-colors duration-300 z-10`}>
-            <div className="text-lg font-bold mb-1 text-ink">{hoveredNode.text}</div>
+            <div className="text-lg font-semibold mb-1 text-ink">{hoveredNode.text}</div>
             {hoveredNode.wordData.translation && (
               <div className="text-sm mb-2 text-muted">{hoveredNode.wordData.translation}</div>
             )}

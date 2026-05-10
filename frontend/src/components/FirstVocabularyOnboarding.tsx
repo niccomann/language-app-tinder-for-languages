@@ -151,12 +151,12 @@ export function FirstVocabularyOnboarding({
 
         <div className="grid gap-3 sm:grid-cols-2">
           <SurfacePanel padding="md" className="border-success/20 bg-success/10">
-            <p className="text-xs font-extrabold uppercase tracking-wide text-success">{onboardingCopy.analysis.strongestOn}</p>
-            <p className="mt-2 text-xl font-extrabold text-ink">{insights.strongCategory}</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-success">{onboardingCopy.analysis.strongestOn}</p>
+            <p className="mt-2 text-xl font-semibold text-ink">{insights.strongCategory}</p>
           </SurfacePanel>
           <SurfacePanel padding="md" className="border-accent-amber/20 bg-accent-amber/10">
-            <p className="text-xs font-extrabold uppercase tracking-wide text-accent-amber">{onboardingCopy.analysis.needsReinforcement}</p>
-            <p className="mt-2 text-xl font-extrabold text-ink">{insights.weakCategory}</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-accent-amber">{onboardingCopy.analysis.needsReinforcement}</p>
+            <p className="mt-2 text-xl font-semibold text-ink">{insights.weakCategory}</p>
           </SurfacePanel>
         </div>
       </AnimatedExplanationFrame>
@@ -204,7 +204,7 @@ export function FirstVocabularyOnboarding({
               mascotClassName="shrink-0"
               bubbleClassName="rounded-[1.75rem] border-hairline bg-canvas p-4 ring-0"
               bubbleContentClassName="min-h-[148px]"
-              titleClassName="mt-2 min-h-[4.6rem] text-3xl font-extrabold leading-tight text-ink"
+              titleClassName="mt-2 min-h-[4.6rem] text-3xl font-semibold leading-tight text-ink"
               bodyClassName="mt-2 min-h-[4.5rem] text-sm font-semibold leading-6 text-muted"
             />
 
@@ -215,7 +215,7 @@ export function FirstVocabularyOnboarding({
             </div>
 
             <div className={`${UI_RADIUS.control} mt-5 border border-hairline bg-surface-soft p-4`}>
-              <p className="text-sm font-extrabold text-ink">
+              <p className="text-sm font-semibold text-ink">
                 {canPersonalize
                   ? onboardingCopy.scan.readyMessage
                   : formatCopy(onboardingCopy.scan.remainingMessage, { remaining: remainingToMinimum })}
@@ -229,7 +229,7 @@ export function FirstVocabularyOnboarding({
               <button
                 type="button"
                 onClick={() => advanceWithMascot('analysis')}
-                className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} mt-5 flex min-h-12 w-full items-center justify-center gap-2 bg-primary px-5 py-3 text-sm font-extrabold text-on-primary hover:bg-primary-active`}
+                className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} mt-5 flex min-h-12 w-full items-center justify-center gap-2 bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-active`}
               >
                 {onboardingCopy.scan.personalizeAction}
                 <ArrowRight size={17} />
@@ -257,14 +257,14 @@ export function FirstVocabularyOnboarding({
               />
             ) : (
               <SurfacePanel className="w-full border-dashed border-hairline bg-canvas text-center" padding="lg">
-                <h2 className="text-2xl font-extrabold text-ink">{onboardingCopy.scan.emptyTitle}</h2>
+                <h2 className="text-2xl font-semibold text-ink">{onboardingCopy.scan.emptyTitle}</h2>
                 <p className="mt-2 text-sm font-medium text-muted">
                   {onboardingCopy.scan.emptyBody}
                 </p>
                 <button
                   type="button"
                   onClick={onComplete}
-                  className={`${UI_RADIUS.control} mt-5 bg-primary px-5 py-3 text-sm font-extrabold text-on-primary`}
+                  className={`${UI_RADIUS.control} mt-5 bg-primary px-5 py-3 text-sm font-semibold text-on-primary`}
                 >
                   {onboardingCopy.scan.emptyAction}
                 </button>
@@ -346,7 +346,7 @@ function AnimatedExplanationFrame({
               <button
                 type="button"
                 onClick={onPrimaryAction}
-                className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-14 w-full items-center justify-center gap-3 bg-primary px-5 py-4 text-sm font-extrabold text-on-primary hover:bg-primary-active`}
+                className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} flex min-h-14 w-full items-center justify-center gap-3 bg-primary px-5 py-4 text-sm font-semibold text-on-primary hover:bg-primary-active`}
               >
                 {primaryActionLabel}
                 <ArrowRight size={18} />
@@ -406,7 +406,7 @@ function PreferenceQuestionnaire({
   return (
     <section className="space-y-5" data-testid="onboarding-preference-questionnaire">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs font-extrabold uppercase tracking-wide text-primary">
+        <p className="text-xs font-semibold uppercase tracking-wide text-primary">
           {formatCopy(preferencesCopy.progressLabel, { current: questionIndex + 1, total: questions.length })}
         </p>
         <div className={`${UI_RADIUS.control} h-2 min-w-28 flex-1 overflow-hidden bg-surface-soft`}>
@@ -418,10 +418,10 @@ function PreferenceQuestionnaire({
       </div>
 
       <SurfacePanel padding="md" className="border-hairline bg-surface-soft">
-        <p className="text-xs font-extrabold uppercase tracking-wide text-primary">
+        <p className="text-xs font-semibold uppercase tracking-wide text-primary">
           {currentQuestion.eyebrow}
         </p>
-        <h2 className="mt-2 text-2xl font-extrabold leading-tight text-ink">
+        <h2 className="mt-2 text-2xl font-semibold leading-tight text-ink">
           {currentQuestion.title}
         </h2>
         <p className="mt-2 text-sm font-semibold leading-6 text-body">
@@ -438,7 +438,7 @@ function PreferenceQuestionnaire({
               type="button"
               aria-pressed={selected}
               onClick={() => selectOption(option.id)}
-              className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} border px-4 py-3 text-left ${
+              className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} border px-4 py-3 text-left ${
                 selected
                   ? 'border-primary bg-primary text-on-primary'
                   : 'border-hairline bg-canvas text-ink hover:border-primary hover:bg-surface-soft'
@@ -446,13 +446,13 @@ function PreferenceQuestionnaire({
             >
               <span className="flex items-start justify-between gap-3">
                 <span>
-                  <span className="block text-sm font-extrabold">{option.label}</span>
+                  <span className="block text-sm font-semibold">{option.label}</span>
                   <span className={`mt-1 block text-sm font-semibold leading-5 ${selected ? 'text-on-primary/80' : 'text-muted'}`}>
                     {option.description}
                   </span>
                 </span>
                 {selected && (
-                  <span className="flex shrink-0 items-center gap-1 text-xs font-extrabold uppercase tracking-wide text-on-primary">
+                  <span className="flex shrink-0 items-center gap-1 text-xs font-semibold uppercase tracking-wide text-on-primary">
                     <CheckCircle2 size={17} />
                     {preferencesCopy.selectedLabel}
                   </span>
@@ -467,7 +467,7 @@ function PreferenceQuestionnaire({
         <button
           type="button"
           onClick={goBack}
-          className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-12 items-center justify-center gap-2 border border-hairline bg-canvas px-4 py-3 text-sm font-extrabold text-body hover:bg-surface-soft`}
+          className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} flex min-h-12 items-center justify-center gap-2 border border-hairline bg-canvas px-4 py-3 text-sm font-semibold text-body hover:bg-surface-soft`}
         >
           <ArrowLeft size={17} />
           {preferencesCopy.backAction}
@@ -476,7 +476,7 @@ function PreferenceQuestionnaire({
           type="button"
           onClick={goNext}
           disabled={!hasSelection}
-          className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-12 items-center justify-center gap-2 bg-primary px-5 py-3 text-sm font-extrabold text-on-primary hover:bg-primary-active disabled:cursor-not-allowed disabled:bg-primary-disabled`}
+          className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} flex min-h-12 items-center justify-center gap-2 bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-active disabled:cursor-not-allowed disabled:bg-primary-disabled`}
         >
           {isLastQuestion ? preferencesCopy.finishAction : preferencesCopy.nextAction}
           <ArrowRight size={17} />
@@ -503,11 +503,11 @@ function SignalSummaryTile({ icon, label, value, tone, compact = false }: Signal
 
   return (
     <div className={`${UI_RADIUS.control} border ${tones[tone]} ${compact ? 'px-3 py-2' : 'p-4'}`}>
-      <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wide opacity-80">
+      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide opacity-80">
         {icon}
         {label}
       </div>
-      <p className={`${compact ? 'mt-1 text-2xl' : 'mt-3 text-4xl'} font-extrabold`}>{value}</p>
+      <p className={`${compact ? 'mt-1 text-2xl' : 'mt-3 text-4xl'} font-semibold`}>{value}</p>
     </div>
   );
 }
