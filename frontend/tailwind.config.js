@@ -5,14 +5,6 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  theme: {
-    extend: {
-      colors: {
-        primary: '#6366F1',
-        success: '#10B981',
-        error: '#EF4444',
-      },
-    },
-  },
+  theme: {},
   plugins: [],
 }
