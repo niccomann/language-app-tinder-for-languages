@@ -1,11 +1,10 @@
 /**
  * GrammarNodeFilterBar - Barra filtri per nodi grammaticali
- * 
+ *
  * Componente UI per filtrare i nodi grammaticali per CEFR, gender, frequency, etc.
  * Da usare in FunSentenceBuilder e SentenceBuilder.
  */
 import { X } from 'lucide-react';
-import { useTheme } from '../contexts/useTheme';
 import type { GrammarFilterCriteria, GrammarFilterConfig } from '../hooks/useGrammarNodeFilters';
 import { formatFilterLabel } from '../hooks/useGrammarNodeFilters';
 import { FilterSelect, UI_RADIUS } from './ui';
@@ -37,8 +36,6 @@ export function GrammarNodeFilterBar({
   totalCount,
   compact = false,
 }: GrammarNodeFilterBarProps) {
-  const { isDark } = useTheme();
-
   if (compact) {
     return (
       <div className="flex items-center gap-2 flex-wrap">
@@ -74,17 +71,14 @@ export function GrammarNodeFilterBar({
         {hasActiveFilter && (
           <button
             onClick={onClearFilters}
-            className={`
-              p-1 ${UI_RADIUS.control} transition-all
-              ${isDark ? 'hover:bg-slate-600 text-slate-400' : 'hover:bg-gray-200 text-gray-500'}
-            `}
+            className={`p-1 ${UI_RADIUS.control} transition-all hover:bg-surface-card text-muted`}
             title="Rimuovi filtro"
           >
             <X size={14} />
           </button>
         )}
 
-        <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+        <span className="text-xs text-muted">
           {filteredCount}/{totalCount}
         </span>
       </div>
@@ -92,16 +86,16 @@ export function GrammarNodeFilterBar({
   }
 
   return (
-    <div className={`flex flex-col gap-2 p-2 ${UI_RADIUS.control} ${isDark ? 'bg-slate-800/50' : 'bg-gray-100/50'}`}>
+    <div className={`flex flex-col gap-2 p-2 ${UI_RADIUS.control} bg-surface-soft`}>
       <div className="flex items-center gap-2 flex-wrap">
-        <span className={`text-xs font-semibold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+        <span className="text-xs font-semibold text-muted">
           Filtra per:
         </span>
-        
+
         {configs.map((config) => {
           const Icon = config.icon;
           const isActive = activeCriteria === config.id;
-          
+
           return (
             <button
               key={config.id}
@@ -111,10 +105,8 @@ export function GrammarNodeFilterBar({
                 flex items-center gap-1.5 px-2.5 py-1 ${UI_RADIUS.pill} text-xs font-medium
                 transition-all duration-200
                 ${isActive
-                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md'
-                  : isDark
-                    ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                    : 'bg-white text-gray-600 hover:bg-gray-200 shadow-sm'
+                  ? 'bg-primary text-on-primary'
+                  : 'bg-surface-card text-body hover:bg-surface-cream-strong'
                 }
               `}
             >
@@ -127,13 +119,13 @@ export function GrammarNodeFilterBar({
 
       {activeCriteria !== 'all' && availableOptions.length > 0 && (
         <div className="flex items-center gap-2 flex-wrap">
-          <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+          <span className="text-xs text-muted">
             Valore:
           </span>
-          
+
           {availableOptions.map((option) => {
             const isSelected = activeFilterValue === option;
-            
+
             return (
               <button
                 key={option}
@@ -141,10 +133,8 @@ export function GrammarNodeFilterBar({
                 className={`
                   px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-medium transition-all
                   ${isSelected
-                    ? 'bg-purple-500 text-white'
-                    : isDark
-                      ? 'bg-slate-600 text-slate-300 hover:bg-slate-500'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? 'bg-primary text-on-primary'
+                    : 'bg-surface-card text-body hover:bg-surface-cream-strong'
                   }
                 `}
               >
@@ -157,14 +147,14 @@ export function GrammarNodeFilterBar({
 
       {hasActiveFilter && (
         <div className="flex items-center justify-between">
-          <span className={`text-xs ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>
+          <span className="text-xs text-primary">
             Mostrando {filteredCount} di {totalCount} nodi
           </span>
           <button
             onClick={onClearFilters}
             className={`
               flex items-center gap-1 px-2 py-0.5 ${UI_RADIUS.control} text-xs transition-all
-              ${isDark ? 'text-slate-400 hover:text-white hover:bg-slate-600' : 'text-gray-500 hover:text-gray-800 hover:bg-gray-200'}
+              text-muted hover:text-ink hover:bg-surface-card
             `}
           >
             <X size={12} />

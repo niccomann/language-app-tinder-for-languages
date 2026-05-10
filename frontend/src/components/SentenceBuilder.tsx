@@ -15,7 +15,6 @@ import { LoadingSpinner, SurfacePanel, UI_RADIUS } from './ui';
 import { GrammarBuilderFrame } from './GrammarBuilderFrame';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
 import { buildOrderedSentence } from '../utils/sentenceBuilderOrder';
-import { useTheme } from '../contexts/useTheme';
 import { useAvailableGrammarNodes } from '../hooks/useAvailableGrammarNodes';
 import { reportClientError } from '../utils/clientError';
 
@@ -36,7 +35,6 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
   const [validating, setValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<ValidateSentenceResponse | null>(null);
   const [playingAudio, setPlayingAudio] = useState(false);
-  const { isDark } = useTheme();
 
   const handleNodeClick = (node: GrammarNode) => {
     const isAlreadySelected = selectedNodes.some(selectedNode => selectedNode.id === node.id);
@@ -139,18 +137,18 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
 
   const getStatusColor = (status: ValidationStatus): string => {
     switch (status) {
-      case 'green': return 'bg-green-100 border-green-500 text-green-800';
-      case 'yellow': return 'bg-yellow-100 border-yellow-500 text-yellow-800';
-      case 'red': return 'bg-red-100 border-red-500 text-red-800';
-      default: return 'bg-gray-100 border-gray-500 text-gray-800';
+      case 'green': return 'bg-success/10 border-success text-success';
+      case 'yellow': return 'bg-accent-amber/10 border-accent-amber text-accent-amber';
+      case 'red': return 'bg-error/10 border-error text-error';
+      default: return 'bg-surface-card border-hairline text-ink';
     }
   };
 
   const getStatusIcon = (status: ValidationStatus) => {
     switch (status) {
-      case 'green': return <Check className="text-green-600" size={24} />;
-      case 'yellow': return <AlertTriangle className="text-yellow-600" size={24} />;
-      case 'red': return <X className="text-red-600" size={24} />;
+      case 'green': return <Check className="text-success" size={24} />;
+      case 'yellow': return <AlertTriangle className="text-accent-amber" size={24} />;
+      case 'red': return <X className="text-error" size={24} />;
       default: return null;
     }
   };
@@ -177,19 +175,19 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
       contentClassName="flex flex-col gap-3"
       layout={layout}
     >
-          <SurfacePanel className={`min-h-[220px] border-2 transition-colors duration-300 ${
-            validationResult 
-              ? validationResult.status === 'green' 
-                ? 'border-green-400' 
-                : validationResult.status === 'yellow' 
-                  ? 'border-yellow-400' 
-                  : 'border-red-400'
-              : isDark ? 'border-slate-600' : 'border-gray-200'
+          <SurfacePanel className={`min-h-[220px] border transition-colors duration-300 ${
+            validationResult
+              ? validationResult.status === 'green'
+                ? 'border-success'
+                : validationResult.status === 'yellow'
+                  ? 'border-accent-amber'
+                  : 'border-error'
+              : 'border-hairline'
           }`} padding="md">
-            <h2 className={`text-lg font-semibold mb-3 flex items-center gap-2 ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>
+            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2 text-body-strong">
               Build Area
               {connectingFrom && (
-                <span className="text-sm font-normal text-purple-600 animate-pulse flex items-center gap-1">
+                <span className="text-sm font-normal text-primary animate-pulse flex items-center gap-1">
                   <Link size={14} />
                   Click another node to connect
                 </span>
@@ -197,7 +195,7 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
             </h2>
             
             {selectedNodes.length === 0 ? (
-              <div className={`text-center py-8 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+              <div className="text-center py-8 text-muted-soft">
                 <p className="text-lg">Select nodes from above to start building</p>
                 <p className="text-sm mt-2">Click nodes to add them, then connect them in order</p>
               </div>
@@ -208,25 +206,25 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
                     <div key={node.id} className="flex items-center gap-2">
                       <button
                         onClick={() => handleBuildAreaNodeClick(node.id)}
-                        className={`relative px-4 py-3 ${UI_RADIUS.control} border-2 transition-all flex flex-col items-center gap-2 min-w-[100px] ${
+                        className={`relative px-4 py-3 ${UI_RADIUS.control} border transition-all flex flex-col items-center gap-2 min-w-[100px] ${
                           connectingFrom === node.id
-                            ? 'border-purple-500 bg-purple-50 ring-2 ring-purple-300 scale-[1.02]'
+                            ? 'border-primary bg-surface-card'
                             : validationResult
                               ? validationResult.status === 'green'
-                                ? 'border-green-400 bg-green-50'
+                                ? 'border-success bg-success/10'
                                 : validationResult.status === 'yellow'
-                                  ? 'border-yellow-400 bg-yellow-50'
-                                  : 'border-red-400 bg-red-50'
-                              : 'border-gray-300 hover:border-purple-300 hover:bg-purple-50'
+                                  ? 'border-accent-amber bg-accent-amber/10'
+                                  : 'border-error bg-error/10'
+                              : 'border-hairline'
                         }`}
                         style={{ borderColor: connectingFrom === node.id ? undefined : getNodeColor(node.type) }}
                       >
                         {node.image_base64 && (
                           <img src={`data:image/jpeg;base64,${node.image_base64}`} alt="" className={`w-12 h-12 ${UI_RADIUS.pill} object-cover`} />
                         )}
-                        <span className="font-semibold text-gray-800">{node.label}</span>
-                        <span 
-                          className={`text-xs px-2 py-0.5 ${UI_RADIUS.pill} text-white`}
+                        <span className="font-semibold text-ink">{node.label}</span>
+                        <span
+                          className={`text-xs px-2 py-0.5 ${UI_RADIUS.pill} text-on-primary`}
                           style={{ backgroundColor: getNodeColor(node.type) }}
                         >
                           {getNodeLabel(node.type)}
@@ -236,7 +234,7 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
                             e.stopPropagation();
                             handleNodeClick(node);
                           }}
-                          className={`absolute -top-2 -right-2 bg-red-500 text-white ${UI_RADIUS.touchIcon} p-1 hover:bg-red-600`}
+                          className={`absolute -top-2 -right-2 bg-error text-on-primary ${UI_RADIUS.touchIcon} p-1 hover:opacity-90`}
                         >
                           <X size={12} />
                         </button>
@@ -245,7 +243,7 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
                       {index < selectedNodes.length - 1 && connections.some(
                         connection => connection.fromId === node.id
                       ) && (
-                        <div className="text-purple-500 font-bold text-xl">→</div>
+                        <div className="text-primary font-semibold text-xl">→</div>
                       )}
                     </div>
                   ))}
@@ -253,7 +251,7 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
                 
                 {connections.length > 0 && (
                   <div className="border-t pt-3">
-                    <h4 className="text-sm font-medium text-gray-500 mb-2">Connections:</h4>
+                    <h4 className="text-sm font-medium text-muted mb-2">Connections:</h4>
                     <div className="flex flex-wrap gap-2">
                       {connections.map((connection, index) => {
                         const fromNode = selectedNodes.find(node => node.id === connection.fromId);
@@ -261,14 +259,14 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
                         return (
                           <div 
                             key={index}
-                            className={`flex items-center gap-1 bg-purple-100 text-purple-700 px-2 py-1 ${UI_RADIUS.pill} text-sm`}
+                            className={`flex items-center gap-1 bg-surface-card text-ink px-2 py-1 ${UI_RADIUS.pill} text-sm`}
                           >
                             <span>{fromNode?.label}</span>
                             <span>→</span>
                             <span>{toNode?.label}</span>
                             <button
                               onClick={() => removeConnection(connection.fromId, connection.toId)}
-                              className="ml-1 hover:text-red-600"
+                              className="ml-1 hover:text-error"
                             >
                               <Unlink size={12} />
                             </button>
@@ -280,8 +278,8 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
                 )}
                 
                 <div className="text-center pt-2 border-t">
-                  <p className="text-lg font-medium text-gray-700">
-                    Sentence: <span className="text-purple-600">"{buildOrderedSentence(selectedNodes, connections)}"</span>
+                  <p className="text-lg font-medium text-body-strong">
+                    Sentence: <span className="text-primary">"{buildOrderedSentence(selectedNodes, connections)}"</span>
                   </p>
                 </div>
               </div>
@@ -289,26 +287,26 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
           </SurfacePanel>
 
           {validationResult && (
-            <div className={`${UI_RADIUS.surface} shadow-md p-4 border-2 ${getStatusColor(validationResult.status)}`}>
+            <div className={`${UI_RADIUS.surface} p-4 border ${getStatusColor(validationResult.status)}`}>
               <div className="flex items-start gap-4">
-                <div className={`p-2 ${UI_RADIUS.touchIcon} bg-white shadow`}>
+                <div className={`p-2 ${UI_RADIUS.touchIcon} bg-canvas`}>
                   {getStatusIcon(validationResult.status)}
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold flex items-center gap-2">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
                     {getStatusLabel(validationResult.status)}
                     {validationResult.grammar_correct && (
-                      <span className={`text-xs bg-green-200 text-green-800 px-2 py-0.5 ${UI_RADIUS.pill}`}>
+                      <span className={`text-xs bg-success/20 text-success px-2 py-0.5 ${UI_RADIUS.pill}`}>
                         ✓ Grammar
                       </span>
                     )}
                     {validationResult.semantic_correct && (
-                      <span className={`text-xs bg-green-200 text-green-800 px-2 py-0.5 ${UI_RADIUS.pill}`}>
+                      <span className={`text-xs bg-success/20 text-success px-2 py-0.5 ${UI_RADIUS.pill}`}>
                         ✓ Semantic
                       </span>
                     )}
                   </h3>
-                  <p className="mt-2 text-gray-700">{validationResult.explanation}</p>
+                  <p className="mt-2 text-body-strong">{validationResult.explanation}</p>
                   {validationResult.suggestion && (
                     <p className="mt-2 text-sm">
                       <span className="font-medium">Suggestion:</span> {validationResult.suggestion}
@@ -319,9 +317,9 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
                   onClick={handlePlayAudio}
                   disabled={playingAudio}
                   className={`p-3 ${UI_RADIUS.touchIcon} transition-all ${
-                    playingAudio 
-                      ? 'bg-blue-500 text-white animate-pulse' 
-                      : 'bg-white hover:bg-gray-100 text-gray-700'
+                    playingAudio
+                      ? 'bg-primary text-on-primary animate-pulse'
+                      : 'bg-canvas text-body-strong'
                   }`}
                 >
                   {playingAudio ? (
@@ -337,7 +335,7 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
           <div className="flex justify-center gap-4">
             <button
               onClick={handleReset}
-              className={`px-6 py-3 bg-gray-200 text-gray-700 ${UI_RADIUS.control} font-medium hover:bg-gray-300 transition-colors flex items-center gap-2 whitespace-nowrap min-w-fit`}
+              className={`px-6 py-3 bg-surface-cream-strong text-body-strong ${UI_RADIUS.control} font-medium transition-colors flex items-center gap-2 whitespace-nowrap min-w-fit`}
             >
               <RotateCcw size={18} />
               Reset
@@ -347,8 +345,8 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
               disabled={selectedNodes.length < 2 || validating}
               className={`px-8 py-3 ${UI_RADIUS.control} font-medium transition-all flex items-center gap-2 whitespace-nowrap min-w-fit ${
                 selectedNodes.length < 2
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-purple-600 text-white hover:bg-purple-700 shadow-lg hover:shadow-xl'
+                  ? 'bg-surface-cream-strong text-muted cursor-not-allowed'
+                  : 'bg-primary text-on-primary'
               }`}
             >
               {validating ? (

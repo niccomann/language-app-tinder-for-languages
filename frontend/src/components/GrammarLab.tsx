@@ -5,7 +5,6 @@ import type { GrammarSentence, GrammarNode, FlashcardWithProgress, WordCloudItem
 import { AppScreen, GameSignalBadge, PillTabs, ScreenHeader, SurfacePanel, UI_RADIUS } from './ui';
 import type { PillTabItem } from './ui';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
-import { useTheme } from '../contexts/useTheme';
 import type { GrammarView } from '../routes/appRoutes';
 import { reportClientError } from '../utils/clientError';
 import { CATEGORY_COLORS } from '../utils/wordDisplayMeta';
@@ -42,7 +41,6 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
   const [loading, setLoading] = useState(true);
   const [selectedNode, setSelectedNode] = useState<GrammarNode | null>(null);
   const [selectedWord, setSelectedWord] = useState<WordCloudItem | null>(null);
-  const { isDark } = useTheme();
 
   const [audioCache, setAudioCache] = useState<Record<string, boolean>>({});
   const [loadingAudio, setLoadingAudio] = useState<string | null>(null);
@@ -166,7 +164,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
 
   return (
     <AppScreen mode="overlay" width="full" scroll="none" contentClassName="flex h-full flex-col">
-      <SurfacePanel className="rounded-none border-x-0 border-t-0 shadow-sm" padding="none">
+      <SurfacePanel className="rounded-none border-x-0 border-t-0" padding="none">
         <div className="px-4 py-3">
           <ScreenHeader
             title="Grammar Lab"
@@ -176,7 +174,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
             actions={activeView === 'graph' && currentSentence ? (
               <button
                 onClick={handleNextSentence}
-                className={`flex min-h-11 items-center gap-2 ${UI_RADIUS.pill} bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.02] active:scale-95`}
+                className={`flex min-h-11 items-center gap-2 ${UI_RADIUS.pill} bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition-all`}
               >
                 Next <Play size={16} />
               </button>
@@ -199,17 +197,17 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
 
       {/* Sentence Display (only for graph view) */}
       {activeView === 'graph' && currentSentence && (
-        <div className={`text-center py-4 border-b transition-colors duration-300 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100'}`}>
+        <div className="text-center py-4 border-b border-hairline bg-canvas">
           <div className="flex items-center justify-center gap-3">
-            <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>{currentSentence.german}</h1>
+            <h1 className="text-2xl font-semibold text-ink">{currentSentence.german}</h1>
             <button
               onClick={() => playAudio(currentSentence.german)}
               disabled={loadingAudio === currentSentence.german}
               className={`p-2 ${UI_RADIUS.touchIcon} transition-all ${playingAudio === currentSentence.german
-                ? 'bg-blue-500 text-white animate-pulse'
+                ? 'bg-primary text-on-primary animate-pulse'
                 : audioCache[currentSentence.german]
-                  ? 'bg-green-100 text-green-600 hover:bg-green-200'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-success/20 text-success'
+                  : 'bg-surface-card text-muted'
                 }`}
               title={audioCache[currentSentence.german] ? 'Play (cached)' : 'Generate & Play'}
             >
@@ -220,7 +218,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
               )}
             </button>
           </div>
-          <p className={`text-base ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>{currentSentence.english}</p>
+          <p className="text-base text-muted">{currentSentence.english}</p>
         </div>
       )}
 
@@ -233,17 +231,17 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
           {activeView === 'graph' && !loading && !currentSentence && (
             <div className="flex h-full items-center justify-center p-6">
               <SurfacePanel className="max-w-md text-center" padding="lg">
-                <Puzzle size={44} className="mx-auto mb-4 text-indigo-500" />
-                <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">
+                <Puzzle size={44} className="mx-auto mb-4 text-primary" />
+                <h2 className="text-2xl font-semibold text-ink">
                   No grammar sentences yet
                 </h2>
-                <p className="mt-2 text-sm font-semibold leading-6 text-slate-500 dark:text-slate-300">
+                <p className="mt-2 text-sm font-semibold leading-6 text-muted">
                   The lab can still use the builder, clusters, dialect map, hierarchy, and word cloud while sentence data is empty.
                 </p>
                 <button
                   type="button"
                   onClick={() => onViewChange('builder')}
-                  className={`mt-5 inline-flex min-h-11 items-center gap-2 ${UI_RADIUS.pill} bg-gradient-to-r from-indigo-600 to-purple-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg transition hover:scale-[1.02] active:scale-95`}
+                  className={`mt-5 inline-flex min-h-11 items-center gap-2 ${UI_RADIUS.pill} bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary transition`}
                 >
                   <Puzzle size={17} />
                   Build Sentence
@@ -289,16 +287,16 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
 
       {/* Node Info Panel (for graph view) */}
       {activeView === 'graph' && selectedNode && (
-        <div className="bg-white border-t border-gray-200 p-4 shadow-lg">
+        <div className="bg-canvas border-t border-hairline p-4">
           <div className="max-w-2xl mx-auto flex items-start gap-4">
             <div
-              className={`p-3 ${UI_RADIUS.control} border-2`}
+              className={`p-3 ${UI_RADIUS.control} border`}
               style={{ borderColor: getNodeColor(selectedNode.type), backgroundColor: `${getNodeColor(selectedNode.type)}10` }}
             >
               <Info size={24} style={{ color: getNodeColor(selectedNode.type) }} />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-ink flex items-center gap-2">
                 {selectedNode.label}
                 <button
                   onClick={(e) => {
@@ -307,10 +305,10 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
                   }}
                   disabled={loadingAudio === selectedNode.label}
                   className={`p-1.5 ${UI_RADIUS.touchIcon} transition-all ${playingAudio === selectedNode.label
-                    ? 'bg-blue-500 text-white animate-pulse'
+                    ? 'bg-primary text-on-primary animate-pulse'
                     : audioCache[selectedNode.label]
-                      ? 'bg-green-100 text-green-600 hover:bg-green-200'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-success/20 text-success'
+                      : 'bg-surface-card text-muted'
                     }`}
                   title={audioCache[selectedNode.label] ? 'Play (cached)' : 'Generate & Play'}
                 >
@@ -321,21 +319,21 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
                   )}
                 </button>
                 <span
-                  className={`text-xs px-2 py-0.5 ${UI_RADIUS.pill} text-white`}
+                  className={`text-xs px-2 py-0.5 ${UI_RADIUS.pill} text-on-primary`}
                   style={{ backgroundColor: getNodeColor(selectedNode.type) }}
                 >
                   {getNodeLabel(selectedNode.type)}
                 </span>
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-1 text-sm text-gray-600 mt-2">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-1 text-sm text-muted mt-2">
                 {selectedNode.meta?.case && (
-                  <p><span className="text-gray-400">Case:</span> <strong>{selectedNode.meta.case}</strong></p>
+                  <p><span className="text-muted-soft">Case:</span> <strong>{selectedNode.meta.case}</strong></p>
                 )}
                 {selectedNode.meta?.gender && (
-                  <p><span className="text-gray-400">Gender:</span> <strong>{selectedNode.meta.gender}</strong></p>
+                  <p><span className="text-muted-soft">Gender:</span> <strong>{selectedNode.meta.gender}</strong></p>
                 )}
                 {selectedNode.meta?.tense && (
-                  <p><span className="text-gray-400">Tense:</span> <strong>{selectedNode.meta.tense}</strong></p>
+                  <p><span className="text-muted-soft">Tense:</span> <strong>{selectedNode.meta.tense}</strong></p>
                 )}
               </div>
             </div>
@@ -345,12 +343,12 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
 
       {/* Word Cloud Legend */}
       {activeView === 'wordcloud' && (
-        <div className={`p-4 border-t transition-colors duration-300 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
+        <div className="p-4 border-t border-hairline bg-canvas">
           <div className="flex flex-wrap justify-center gap-3">
             {Object.entries(CATEGORY_COLORS).slice(0, 5).map(([category, color]) => (
-              <div key={category} className={`flex items-center gap-2 px-3 py-1.5 ${UI_RADIUS.pill} ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
+              <div key={category} className={`flex items-center gap-2 px-3 py-1.5 ${UI_RADIUS.pill} bg-surface-card`}>
                 <div className={`w-3 h-3 ${UI_RADIUS.pill} flex-shrink-0`} style={{ backgroundColor: color }} />
-                <span className={`text-xs capitalize ${isDark ? 'text-white' : 'text-gray-800'}`}>{category}</span>
+                <span className="text-xs capitalize text-ink">{category}</span>
               </div>
             ))}
           </div>
@@ -369,7 +367,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
 
 function GrammarViewFallback() {
   return (
-    <div className="w-full h-full flex items-center justify-center text-sm font-semibold text-slate-500 dark:text-slate-300">
+    <div className="w-full h-full flex items-center justify-center text-sm font-semibold text-muted">
       Loading view...
     </div>
   );
@@ -378,8 +376,8 @@ function GrammarViewFallback() {
 function GrammarDataLoadingPanel({ message }: { message: string }) {
   return (
     <div className="flex h-full items-center justify-center p-6">
-      <SurfacePanel className="flex items-center gap-3 text-sm font-semibold text-slate-500 dark:text-slate-300" padding="md">
-        <Loader2 size={18} className="animate-spin text-indigo-500" />
+      <SurfacePanel className="flex items-center gap-3 text-sm font-semibold text-muted" padding="md">
+        <Loader2 size={18} className="animate-spin text-primary" />
         {message}
       </SurfacePanel>
     </div>

@@ -4,7 +4,6 @@ import { api } from '../services/api';
 import { readSavedLearningPreferenceProfile } from '../learning/preferenceProfile';
 import type { SentenceChallenge } from '../types';
 import { GameSignalBadge, LoadingSpinner, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
-import { useTheme } from '../contexts/useTheme';
 import type { MascotReactionState } from '../gamification/mascotManifest';
 import { reportClientError } from '../utils/clientError';
 import { MascotSpeechCallout } from './MascotSpeechCallout';
@@ -24,7 +23,6 @@ export function SentencePlacementChallenge() {
   const [selectedOptionIds, setSelectedOptionIds] = useState<string[]>([]);
   const [status, setStatus] = useState<AnswerStatus>('idle');
   const [reactionEventId, setReactionEventId] = useState(0);
-  const { isDark } = useTheme();
 
   useEffect(() => {
     const loadChallenges = async () => {
@@ -132,10 +130,10 @@ export function SentencePlacementChallenge() {
   if (!challenge) {
     return (
       <SurfacePanel padding="lg" className="mx-auto max-w-3xl text-center">
-        <h2 className="text-2xl font-extrabold text-slate-950 dark:text-white">
+        <h2 className="text-2xl font-extrabold text-ink">
           No sentence challenges yet
         </h2>
-        <p className="mt-2 text-sm font-semibold text-slate-500 dark:text-slate-300">
+        <p className="mt-2 text-sm font-semibold text-muted">
           Add ground-truth challenges to the database to enable instant sentence placement.
         </p>
       </SurfacePanel>
@@ -147,16 +145,16 @@ export function SentencePlacementChallenge() {
       data-testid="sentence-placement-challenge"
       className="mx-auto flex min-h-[680px] w-full max-w-5xl flex-col gap-4 px-1 py-2 sm:px-4"
     >
-      <SurfacePanel padding="lg" className="border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+      <SurfacePanel padding="lg" className="border-hairline bg-canvas">
         <div className="flex flex-col gap-6">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-wide text-red-500">
+            <p className="text-xs font-extrabold uppercase tracking-wide text-error">
               Sentence placement
             </p>
-            <h2 className="mt-2 text-3xl font-extrabold leading-tight text-slate-950 dark:text-white">
+            <h2 className="mt-2 text-3xl font-extrabold leading-tight text-ink">
               Translate this sentence
             </h2>
-            <p className="mt-2 text-sm font-semibold text-slate-500 dark:text-slate-300">
+            <p className="mt-2 text-sm font-semibold text-muted">
               Tap the words in the right order.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
@@ -181,16 +179,16 @@ export function SentencePlacementChallenge() {
               playbackKey={`${challenge.id}-${status}-${reactionEventId}`}
               className="lg:grid-cols-[minmax(110px,160px)_minmax(0,1fr)]"
               mascotClassName="mx-auto lg:mx-0"
-              bubbleClassName="rounded-[1.75rem] border-slate-200 bg-slate-50 p-4 shadow-sm ring-0 dark:border-slate-700 dark:bg-slate-800/70"
+              bubbleClassName="rounded-[1.75rem] border-hairline bg-surface-card p-4 ring-0"
               bubbleContentClassName="min-h-[156px]"
-              titleClassName="mt-2 min-h-[4.2rem] text-2xl font-extrabold leading-snug text-slate-950 dark:text-white"
-              bodyClassName="mt-2 min-h-[3.2rem] text-sm font-semibold leading-6 text-slate-500 dark:text-slate-300"
+              titleClassName="mt-2 min-h-[4.2rem] text-2xl font-extrabold leading-snug text-ink"
+              bodyClassName="mt-2 min-h-[3.2rem] text-sm font-semibold leading-6 text-muted"
             />
 
-            <div className={`${UI_RADIUS.surface} min-h-36 border-2 border-dashed border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-950/40`}>
+            <div className={`${UI_RADIUS.surface} min-h-36 border border-dashed border-hairline bg-canvas p-4`}>
               <div className="flex min-h-24 flex-wrap items-start gap-2">
                 {selectedOptions.length === 0 ? (
-                  <div className="flex min-h-20 w-full items-center justify-center text-sm font-semibold text-slate-400 dark:text-slate-500">
+                  <div className="flex min-h-20 w-full items-center justify-center text-sm font-semibold text-muted">
                     Your answer appears here
                   </div>
                 ) : (
@@ -199,7 +197,7 @@ export function SentencePlacementChallenge() {
                       key={option.id}
                       type="button"
                       onClick={() => handleRemoveSelected(option.id)}
-                      className={`${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} ${UI_INTERACTION.press} min-h-11 border border-slate-200 bg-white px-4 py-2 text-base font-bold text-slate-800 shadow-sm hover:border-indigo-300 hover:bg-indigo-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700`}
+                      className={`${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} ${UI_INTERACTION.press} min-h-11 border border-hairline bg-canvas px-4 py-2 text-base font-bold text-ink hover:border-primary hover:bg-surface-soft`}
                     >
                       {option.label}
                     </button>
@@ -211,7 +209,7 @@ export function SentencePlacementChallenge() {
         </div>
       </SurfacePanel>
 
-      <div className="flex flex-wrap justify-center gap-2 border-y border-slate-200 py-4 dark:border-slate-700">
+      <div className="flex flex-wrap justify-center gap-2 border-y border-hairline py-4">
         {placementOptions.map((option) => {
           const isSelected = selectedOptionIds.includes(option.id);
           return (
@@ -221,10 +219,10 @@ export function SentencePlacementChallenge() {
               data-testid="placement-word-option"
               onClick={() => handleSelectOption(option)}
               disabled={isSelected || status === 'correct'}
-              className={`${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} min-h-12 border px-4 py-2 text-base font-extrabold shadow-sm ${
+              className={`${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} min-h-12 border px-4 py-2 text-base font-extrabold ${
                 isSelected
-                  ? 'border-slate-200 bg-slate-100 text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500'
-                  : 'border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700'
+                  ? 'border-hairline bg-surface-soft text-muted'
+                  : 'border-hairline bg-canvas text-ink hover:-translate-y-0.5 hover:border-primary hover:bg-surface-soft'
               }`}
             >
               {option.label}
@@ -235,16 +233,16 @@ export function SentencePlacementChallenge() {
 
       <div className={`sticky bottom-0 -mx-1 border-t p-4 sm:-mx-4 ${
         status === 'correct'
-          ? 'border-emerald-200 bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950'
+          ? 'border-success/30 bg-success/10'
           : status === 'wrong'
-            ? 'border-rose-200 bg-rose-50 dark:border-rose-800 dark:bg-rose-950'
-            : 'border-slate-200 bg-white/95 dark:border-slate-700 dark:bg-slate-900/95'
+            ? 'border-error/30 bg-error/10'
+            : 'border-hairline bg-canvas'
       }`}>
         <div className="mx-auto flex max-w-5xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-h-8">
             {status === 'correct' && (
               <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2 text-lg font-extrabold text-emerald-700 dark:text-emerald-200">
+                <div className="flex items-center gap-2 text-lg font-extrabold text-success">
                   <CheckCircle2 size={24} />
                   Good job.
                 </div>
@@ -256,7 +254,7 @@ export function SentencePlacementChallenge() {
             )}
             {status === 'wrong' && (
               <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2 text-lg font-extrabold text-rose-700 dark:text-rose-200">
+                <div className="flex items-center gap-2 text-lg font-extrabold text-error">
                   <AlertCircle size={24} />
                   Not quite. Adjust the order and try again.
                 </div>
@@ -267,7 +265,7 @@ export function SentencePlacementChallenge() {
               </div>
             )}
             {status === 'idle' && (
-              <p className={`text-sm font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              <p className="text-sm font-semibold text-muted">
                 Choose from a small set of useful and distracting words.
               </p>
             )}
@@ -278,7 +276,7 @@ export function SentencePlacementChallenge() {
               <button
                 type="button"
                 onClick={handleReset}
-                className={`${UI_RADIUS.control} ${UI_INTERACTION.press} flex min-h-12 items-center gap-2 border border-slate-200 bg-white px-4 py-2 text-sm font-extrabold text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700`}
+                className={`${UI_RADIUS.control} ${UI_INTERACTION.press} flex min-h-12 items-center gap-2 border border-hairline bg-canvas px-4 py-2 text-sm font-extrabold text-body hover:bg-surface-soft`}
               >
                 <RotateCcw size={17} />
                 Reset
@@ -288,12 +286,12 @@ export function SentencePlacementChallenge() {
               type="button"
               onClick={status === 'correct' ? handleContinue : handleCheck}
               disabled={!canCheck}
-              className={`${UI_RADIUS.control} ${UI_INTERACTION.press} min-h-12 min-w-36 px-6 py-2 text-sm font-extrabold text-white shadow-lg ${
+              className={`${UI_RADIUS.control} ${UI_INTERACTION.press} min-h-12 min-w-36 px-6 py-2 text-sm font-extrabold text-on-primary ${
                 !canCheck
-                  ? 'cursor-not-allowed bg-slate-300 dark:bg-slate-700'
+                  ? 'cursor-not-allowed bg-primary-disabled'
                   : status === 'correct'
-                    ? 'bg-emerald-600 hover:bg-emerald-700'
-                    : 'bg-green-600 hover:bg-green-700'
+                    ? 'bg-success hover:opacity-90'
+                    : 'bg-primary hover:bg-primary-active'
               }`}
             >
               <span className="inline-flex items-center justify-center gap-2">

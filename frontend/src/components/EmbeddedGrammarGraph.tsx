@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import * as d3 from 'd3';
 import type { GrammarSentence, GrammarNode } from '../types';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
-import { useTheme } from '../contexts/useTheme';
 import { ExpandedViewWrapper, ZoomControlBar } from './ui';
 
 interface EmbeddedGrammarGraphProps {
@@ -25,7 +24,6 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
   const [isExpanded, setIsExpanded] = useState(false);
   const [currentZoom, setCurrentZoom] = useState(1);
   const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
-  const { isDark } = useTheme();
 
   const toggleExpanded = useCallback(() => setIsExpanded(prev => !prev), []);
 
@@ -109,13 +107,13 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
       .attr('markerHeight', 8)
       .append('path')
       .attr('d', 'M 0,-5 L 10,0 L 0,5')
-      .attr('fill', '#94A3B8');
+      .attr('fill', '#cc785c');
 
     const link = container.append('g')
       .selectAll('line')
       .data(links)
       .join('line')
-      .attr('stroke', '#CBD5E1')
+      .attr('stroke', '#cc785c')
       .attr('stroke-width', 2.5)
       .attr('marker-end', 'url(#arrowhead-embedded)');
 
@@ -125,7 +123,7 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
       .join('text')
       .attr('font-size', '13px')
       .attr('font-weight', '600')
-      .attr('fill', '#64748B')
+      .attr('fill', '#706b63')
       .attr('text-anchor', 'middle')
       .attr('dy', -8)
       .text((d: any) => d.label);
@@ -155,7 +153,7 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
 
     node.append('circle')
       .attr('r', nodeRadius + 4)
-      .attr('fill', 'white')
+      .attr('fill', '#faf9f5')
       .attr('stroke', (d) => getNodeColor(d.type))
       .attr('stroke-width', 4)
       .attr('filter', 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))');
@@ -195,7 +193,7 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
       .attr('text-anchor', 'middle')
       .attr('font-size', '14px')
       .attr('font-weight', '700')
-      .attr('fill', '#1E293B')
+      .attr('fill', '#141413')
       .text((d) => d.label);
 
     node.on('click', (event, d) => {
@@ -255,7 +253,7 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
 
   const content = (
     <div ref={containerRef} className="w-full h-full relative">
-      <svg ref={svgRef} width="100%" height="100%" style={{ cursor: 'grab' }} className={`transition-colors duration-300 ${isDark ? 'bg-gradient-to-br from-slate-800 to-slate-900' : 'bg-gradient-to-br from-gray-50 to-slate-100'}`} />
+      <svg ref={svgRef} width="100%" height="100%" style={{ cursor: 'grab' }} className="transition-colors duration-300 bg-surface-soft" />
       
       <ZoomControlBar
         currentZoom={currentZoom}

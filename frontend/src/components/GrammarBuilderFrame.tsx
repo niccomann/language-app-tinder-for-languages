@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import type { GrammarNode } from '../types';
-import { useTheme } from '../contexts/useTheme';
 import { GrammarWordBank } from './GrammarWordBank';
 
 interface GrammarBuilderFrameProps {
@@ -22,7 +21,6 @@ export function GrammarBuilderFrame({
   contentClassName = '',
   layout = 'contained',
 }: GrammarBuilderFrameProps) {
-  const { isDark } = useTheme();
   const isFullLayout = layout === 'full';
 
   return (
@@ -30,7 +28,7 @@ export function GrammarBuilderFrame({
       data-testid="grammar-builder-frame"
       className={`h-full min-h-0 overflow-y-auto transition-colors duration-300 ${
         isFullLayout ? 'px-0 py-2 sm:px-1' : 'p-3 sm:p-4'
-      } ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}
+      } bg-canvas`}
     >
       <div className={`mx-auto flex min-h-0 flex-col gap-4 ${isFullLayout ? 'w-full max-w-none' : 'max-w-7xl'}`}>
         <GrammarWordBank

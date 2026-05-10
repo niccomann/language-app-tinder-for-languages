@@ -23,7 +23,6 @@ import type { GrammarNode, ValidateSentenceResponse, ConnectionInfo } from '../t
 import { LoadingSpinner, UI_RADIUS, ZoomControlBar } from './ui';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
 import { buildOrderedSentence } from '../utils/sentenceBuilderOrder';
-import { useTheme } from '../contexts/useTheme';
 import { GrammarBuilderFrame } from './GrammarBuilderFrame';
 import { useAvailableGrammarNodes } from '../hooks/useAvailableGrammarNodes';
 import { reportClientError } from '../utils/clientError';
@@ -75,7 +74,6 @@ export function FunSentenceBuilder() {
   const [currentZoom, setCurrentZoom] = useState(1);
   const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   
-  const { isDark } = useTheme();
 
   // ==========================================================================
   // Dimension Tracking
@@ -236,7 +234,7 @@ export function FunSentenceBuilder() {
       .attr('markerHeight', 10)
       .append('path')
       .attr('d', 'M 0,-5 L 10,0 L 0,5')
-      .attr('fill', isDark ? '#a78bfa' : '#8b5cf6');
+      .attr('fill', '#cc785c');
 
     defs.append('marker')
       .attr('id', 'arrowhead-preview')
@@ -248,7 +246,7 @@ export function FunSentenceBuilder() {
       .attr('markerHeight', 15)
       .append('path')
       .attr('d', 'M 0,-5 L 10,0 L 0,5')
-      .attr('fill', '#ec4899');
+      .attr('fill', '#e8a55a');
 
     nodes.forEach(node => {
       if (node.image_base64) {
@@ -289,15 +287,15 @@ export function FunSentenceBuilder() {
 
     linkElements
       .append('line')
-      .attr('stroke', isDark ? '#a78bfa' : '#8b5cf6')
+      .attr('stroke', '#cc785c')
       .attr('stroke-width', 3)
       .attr('marker-end', 'url(#arrowhead-fun)');
 
     linkElements
       .append('circle')
       .attr('r', 12)
-      .attr('fill', isDark ? '#1e293b' : 'white')
-      .attr('stroke', isDark ? '#ef4444' : '#dc2626')
+      .attr('fill', '#faf9f5')
+      .attr('stroke', '#cc785c')
       .attr('stroke-width', 2)
       .attr('cursor', 'pointer')
       .on('click', function(event, d) {
@@ -318,7 +316,7 @@ export function FunSentenceBuilder() {
       .attr('dominant-baseline', 'middle')
       .attr('font-size', '14px')
       .attr('font-weight', 'bold')
-      .attr('fill', isDark ? '#ef4444' : '#dc2626')
+      .attr('fill', '#cc785c')
       .attr('cursor', 'pointer')
       .text('×')
       .on('click', function(event, d) {
@@ -401,7 +399,7 @@ export function FunSentenceBuilder() {
               .attr('y1', sourceY)
               .attr('x2', targetX)
               .attr('y2', targetY)
-              .attr('stroke', `rgba(236, 72, 153, ${baseOpacity})`)
+              .attr('stroke', `rgba(204, 120, 92, ${baseOpacity})`)
               .attr('stroke-width', strokeWidth)
               .attr('stroke-linecap', 'round')
               .attr('filter', 'url(#glow-preview)')
@@ -414,7 +412,7 @@ export function FunSentenceBuilder() {
               .attr('cy', targetY)
               .attr('r', NODE_RADIUS + 15 + connectionProgress * 15)
               .attr('fill', 'none')
-              .attr('stroke', connectionProgress > 0 ? '#ec4899' : '#a855f7')
+              .attr('stroke', connectionProgress > 0 ? '#cc785c' : '#5db8a6')
               .attr('stroke-width', 2 + connectionProgress * 2)
               .attr('stroke-dasharray', connectionProgress > 0 ? '8,4' : '4,8')
               .attr('opacity', 0.2 + previewProgress * 0.3 + connectionProgress * 0.5);
@@ -425,7 +423,7 @@ export function FunSentenceBuilder() {
               .attr('cx', sourceX)
               .attr('cy', sourceY)
               .attr('r', 6 + connectionProgress * 4)
-              .attr('fill', connectionProgress > 0 ? '#ec4899' : '#a855f7')
+              .attr('fill', connectionProgress > 0 ? '#cc785c' : '#5db8a6')
               .attr('opacity', 0.5 + connectionProgress * 0.4);
             
             // "Ready to connect" indicator when within connection threshold
@@ -437,7 +435,7 @@ export function FunSentenceBuilder() {
                 .attr('text-anchor', 'middle')
                 .attr('font-size', '12px')
                 .attr('font-weight', 'bold')
-                .attr('fill', '#ec4899')
+                .attr('fill', '#cc785c')
                 .attr('opacity', connectionProgress)
                 .text('Release to connect.');
             }
@@ -469,7 +467,7 @@ export function FunSentenceBuilder() {
                 const newLink = linkGroup.append('g').attr('class', 'link');
                 
                 newLink.append('line')
-                  .attr('stroke', isDark ? '#a78bfa' : '#8b5cf6')
+                  .attr('stroke', '#cc785c')
                   .attr('stroke-width', 3)
                   .attr('marker-end', 'url(#arrowhead-fun)')
                   .attr('x1', sourceNode.x || 0)
@@ -493,8 +491,8 @@ export function FunSentenceBuilder() {
                 
                 newLink.append('circle')
                   .attr('r', 12)
-                  .attr('fill', isDark ? '#1e293b' : 'white')
-                  .attr('stroke', isDark ? '#ef4444' : '#dc2626')
+                  .attr('fill', '#faf9f5')
+                  .attr('stroke', '#cc785c')
                   .attr('stroke-width', 2)
                   .attr('cursor', 'pointer')
                   .attr('cx', midX)
@@ -506,7 +504,7 @@ export function FunSentenceBuilder() {
                   .attr('dominant-baseline', 'middle')
                   .attr('font-size', '14px')
                   .attr('font-weight', 'bold')
-                  .attr('fill', isDark ? '#ef4444' : '#dc2626')
+                  .attr('fill', '#cc785c')
                   .attr('cursor', 'pointer')
                   .attr('x', midX)
                   .attr('y', midY + 1)
@@ -548,7 +546,7 @@ export function FunSentenceBuilder() {
       .attr('class', 'highlight-ring')
       .attr('r', NODE_RADIUS + 12)
       .attr('fill', 'none')
-      .attr('stroke', '#ec4899')
+      .attr('stroke', '#cc785c')
       .attr('stroke-width', 3)
       .attr('stroke-dasharray', '8,4')
       .attr('opacity', 0);
@@ -577,7 +575,7 @@ export function FunSentenceBuilder() {
       .attr('text-anchor', 'middle')
       .attr('font-size', '13px')
       .attr('font-weight', '700')
-      .attr('fill', isDark ? '#e2e8f0' : '#1e293b')
+      .attr('fill', '#141413')
       .text(d => d.label.length > 12 ? d.label.slice(0, 11) + '…' : d.label);
 
     const deleteButtons = nodeElements
@@ -594,8 +592,8 @@ export function FunSentenceBuilder() {
     deleteButtons
       .append('circle')
       .attr('r', 14)
-      .attr('fill', '#ef4444')
-      .attr('stroke', 'white')
+      .attr('fill', '#cc785c')
+      .attr('stroke', '#faf9f5')
       .attr('stroke-width', 2);
 
     deleteButtons
@@ -670,7 +668,7 @@ export function FunSentenceBuilder() {
       }
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canvasNodes.length, dimensions.width, dimensions.height, isDark, isExpanded]);
+  }, [canvasNodes.length, dimensions.width, dimensions.height, isExpanded]);
 
   const handleValidate = async () => {
     if (canvasNodes.length < 2) return;
@@ -729,18 +727,18 @@ export function FunSentenceBuilder() {
 
   const getStatusColor = (status: string): string => {
     switch (status) {
-      case 'green': return 'bg-green-100 border-green-500 text-green-800';
-      case 'yellow': return 'bg-yellow-100 border-yellow-500 text-yellow-800';
-      case 'red': return 'bg-red-100 border-red-500 text-red-800';
-      default: return 'bg-gray-100 border-gray-500 text-gray-800';
+      case 'green': return 'bg-success/10 border-success text-success';
+      case 'yellow': return 'bg-accent-amber/10 border-accent-amber text-accent-amber';
+      case 'red': return 'bg-error/10 border-error text-error';
+      default: return 'bg-surface-card border-hairline text-ink';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'green': return <Check className="text-green-600" size={24} />;
-      case 'yellow': return <AlertTriangle className="text-yellow-600" size={24} />;
-      case 'red': return <X className="text-red-600" size={24} />;
+      case 'green': return <Check className="text-success" size={24} />;
+      case 'yellow': return <AlertTriangle className="text-accent-amber" size={24} />;
+      case 'red': return <X className="text-error" size={24} />;
       default: return null;
     }
   };
@@ -774,7 +772,7 @@ export function FunSentenceBuilder() {
       <div className={`flex justify-center ${compact ? 'gap-3' : 'gap-4'}`}>
         <button
           onClick={handleReset}
-          className={`${resetSize} ${UI_RADIUS.control} font-medium transition-all flex items-center gap-2 ${isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+          className={`${resetSize} ${UI_RADIUS.control} font-medium transition-all flex items-center gap-2 bg-surface-cream-strong text-body-strong`}
         >
           <RotateCcw size={iconSize} />
           Reset
@@ -784,8 +782,8 @@ export function FunSentenceBuilder() {
           disabled={canvasNodes.length < 2 || validating}
           className={`${validateSize} ${UI_RADIUS.control} font-semibold transition-all flex items-center gap-2 ${
             canvasNodes.length < 2
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : `bg-gradient-to-r from-pink-500 to-orange-500 text-white hover:shadow-lg ${compact ? '' : 'hover:scale-[1.02]'}`
+              ? 'bg-surface-cream-strong text-muted cursor-not-allowed'
+              : 'bg-primary text-on-primary'
           }`}
         >
           {validating ? (
@@ -803,7 +801,7 @@ export function FunSentenceBuilder() {
         {showClose && (
           <button
             onClick={() => setIsExpanded(false)}
-            className={`${resetSize} ${UI_RADIUS.control} font-medium transition-all flex items-center gap-2 ${isDark ? 'bg-slate-600 text-white hover:bg-slate-500' : 'bg-gray-600 text-white hover:bg-gray-500'}`}
+            className={`${resetSize} ${UI_RADIUS.control} font-medium transition-all flex items-center gap-2 bg-surface-dark text-on-dark`}
           >
             <Minimize2 size={iconSize} />
             Close
@@ -822,29 +820,29 @@ export function FunSentenceBuilder() {
       <div
         className={
           isFloating
-            ? `absolute top-4 right-4 max-w-md ${UI_RADIUS.surface} p-4 border-2 ${getStatusColor(validationResult.status)} shadow-xl`
-            : `${UI_RADIUS.surface} p-4 border-2 mb-4 ${getStatusColor(validationResult.status)}`
+            ? `absolute top-4 right-4 max-w-md ${UI_RADIUS.surface} p-4 border ${getStatusColor(validationResult.status)}`
+            : `${UI_RADIUS.surface} p-4 border mb-4 ${getStatusColor(validationResult.status)}`
         }
       >
         <div className={`flex items-start ${isFloating ? 'gap-3' : 'gap-4'}`}>
-          <div className={`p-2 ${UI_RADIUS.touchIcon} bg-white shadow`}>
+          <div className={`p-2 ${UI_RADIUS.touchIcon} bg-canvas`}>
             {getStatusIcon(validationResult.status)}
           </div>
           <div className="flex-1">
-            <h3 className={isFloating ? 'font-bold' : 'text-lg font-bold flex items-center gap-2'}>
+            <h3 className={isFloating ? 'font-semibold' : 'text-lg font-semibold flex items-center gap-2'}>
               {getStatusLabel(validationResult.status)}
               {!isFloating && validationResult.grammar_correct && (
-                <span className={`text-xs bg-green-200 text-green-800 px-2 py-0.5 ${UI_RADIUS.pill}`}>
+                <span className={`text-xs bg-success/20 text-success px-2 py-0.5 ${UI_RADIUS.pill}`}>
                   ✓ Grammar
                 </span>
               )}
               {!isFloating && validationResult.semantic_correct && (
-                <span className={`text-xs bg-green-200 text-green-800 px-2 py-0.5 ${UI_RADIUS.pill}`}>
+                <span className={`text-xs bg-success/20 text-success px-2 py-0.5 ${UI_RADIUS.pill}`}>
                   ✓ Semantics
                 </span>
               )}
             </h3>
-            <p className={isFloating ? 'text-sm mt-1' : 'mt-2 text-gray-700'}>{validationResult.explanation}</p>
+            <p className={isFloating ? 'text-sm mt-1' : 'mt-2 text-body-strong'}>{validationResult.explanation}</p>
             {!isFloating && validationResult.suggestion && (
               <p className="mt-2 text-sm">
                 <span className="font-medium">Suggestion:</span> {validationResult.suggestion}
@@ -857,8 +855,8 @@ export function FunSentenceBuilder() {
               disabled={playingAudio}
               className={`p-3 ${UI_RADIUS.touchIcon} transition-all ${
                 playingAudio
-                  ? 'bg-blue-500 text-white animate-pulse'
-                  : 'bg-white hover:bg-gray-100 text-gray-700'
+                  ? 'bg-primary text-on-primary animate-pulse'
+                  : 'bg-canvas text-body-strong'
               }`}
             >
               {playingAudio ? (
@@ -881,7 +879,7 @@ export function FunSentenceBuilder() {
     return (
       <div 
         ref={containerRef}
-        className={`fixed inset-0 z-50 ${isDark ? 'bg-gradient-to-br from-slate-800 to-slate-900' : 'bg-gradient-to-br from-gray-50 to-slate-100'}`}
+        className="fixed inset-0 z-50 bg-surface-dark"
       >
         <svg ref={svgRef} width="100%" height="100%" style={{ cursor: 'grab' }} />
 
@@ -897,9 +895,9 @@ export function FunSentenceBuilder() {
           size="lg"
         />
 
-        <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 p-4 ${UI_RADIUS.surface} backdrop-blur-sm ${isDark ? 'bg-slate-800/90' : 'bg-white/90'} shadow-xl`}>
-          <p className={`text-center font-medium mb-3 ${isDark ? 'text-white' : 'text-gray-800'}`}>
-            Sentence: <span className="text-purple-500">"{builtSentence}"</span>
+        <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 p-4 ${UI_RADIUS.surface} bg-surface-dark-elevated`}>
+          <p className="text-center font-medium mb-3 text-on-dark">
+            Sentence: <span className="text-on-dark-soft">"{builtSentence}"</span>
           </p>
           {renderSentenceActions({ compact: true, showClose: true })}
         </div>
@@ -920,7 +918,7 @@ export function FunSentenceBuilder() {
 
       <div 
         ref={containerRef}
-        className={`relative overflow-hidden ${isDark ? 'bg-gradient-to-br from-slate-800 to-slate-900' : 'bg-gradient-to-br from-gray-50 to-slate-100'} ${isExpanded ? 'fixed inset-0 z-50' : ''}`}
+        className={`relative overflow-hidden bg-surface-dark ${isExpanded ? 'fixed inset-0 z-50' : ''}`}
         style={{ minHeight: '400px', flex: 1 }}
       >
         <svg ref={svgRef} width="100%" height="100%" style={{ cursor: 'grab' }} />
@@ -939,14 +937,14 @@ export function FunSentenceBuilder() {
 
         {canvasNodes.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className={`text-center p-8 ${UI_RADIUS.surface} ${isDark ? 'bg-slate-800/50' : 'bg-white/50'} backdrop-blur-sm`}>
-              <p className={`text-lg font-medium ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+            <div className={`text-center p-8 ${UI_RADIUS.surface} bg-surface-dark-elevated`}>
+              <p className="text-lg font-medium text-on-dark">
                 Click the + buttons to add nodes.
               </p>
-              <p className={`text-sm mt-2 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+              <p className="text-sm mt-2 text-on-dark-soft">
                 Then drag them onto each other to connect them.
               </p>
-              <p className={`text-xs mt-4 ${isDark ? 'text-slate-600' : 'text-gray-400'}`}>
+              <p className="text-xs mt-4 text-on-dark-soft">
                 Scroll to zoom · drag to move
               </p>
             </div>
@@ -954,30 +952,30 @@ export function FunSentenceBuilder() {
         )}
 
         {hoveredNode && (
-          <div className={`absolute top-4 right-4 backdrop-blur-sm ${UI_RADIUS.surface} p-4 border shadow-xl min-w-[180px] ${isDark ? 'bg-slate-800/95 border-slate-700' : 'bg-white/95 border-gray-200'}`}>
-            <div className={`text-lg font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{hoveredNode.label}</div>
+          <div className={`absolute top-4 right-4 ${UI_RADIUS.surface} p-4 border border-hairline bg-canvas min-w-[180px]`}>
+            <div className="text-lg font-semibold mb-1 text-ink">{hoveredNode.label}</div>
             <div className="flex items-center gap-2">
-              <div 
-                className={`w-3 h-3 ${UI_RADIUS.pill}`} 
+              <div
+                className={`w-3 h-3 ${UI_RADIUS.pill}`}
                 style={{ backgroundColor: getNodeColor(hoveredNode.type) }}
               />
-              <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{getNodeLabel(hoveredNode.type)}</span>
+              <span className="text-xs text-body-strong">{getNodeLabel(hoveredNode.type)}</span>
             </div>
           </div>
         )}
 
         {draggedNode && potentialTarget && (
-          <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 ${UI_RADIUS.pill} ${isDark ? 'bg-pink-600' : 'bg-pink-500'} text-white font-medium animate-pulse`}>
+          <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 ${UI_RADIUS.pill} bg-primary text-on-primary font-medium animate-pulse`}>
             Release to connect to "{potentialTarget.label}"
           </div>
         )}
       </div>
 
-      <div className={`p-4 border-t ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
+      <div className="p-4 border-t border-hairline bg-canvas">
         {canvasNodes.length > 0 && (
           <div className="text-center mb-4">
-            <p className={`text-lg ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-              Sentence: <span className="font-bold text-purple-600">"{builtSentence}"</span>
+            <p className="text-lg text-body-strong">
+              Sentence: <span className="font-semibold text-primary">"{builtSentence}"</span>
             </p>
           </div>
         )}

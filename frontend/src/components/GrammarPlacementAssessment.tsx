@@ -22,23 +22,23 @@ export function GrammarPlacementAssessment({
           onBack={onBack}
           density="compact"
           actions={(
-            <div className={`${UI_RADIUS.pill} bg-white px-3 py-2 text-sm font-extrabold text-teal-600 shadow-sm ring-1 ring-teal-100 dark:bg-slate-800 dark:ring-slate-700`}>
+            <div className={`${UI_RADIUS.pill} bg-canvas px-3 py-2 text-sm font-extrabold text-accent-teal border border-hairline`}>
               Sentence task
             </div>
           )}
         />
 
-        <SurfacePanel padding="md" className="border-teal-100 bg-teal-50/80 dark:border-teal-900/50 dark:bg-teal-950/30">
+        <SurfacePanel padding="md" className="border-hairline bg-surface-soft">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="flex min-w-0 items-start gap-3">
-              <div className={`${UI_RADIUS.touchIcon} flex h-11 w-11 shrink-0 items-center justify-center bg-white text-teal-700 shadow-sm dark:bg-white/10 dark:text-teal-100`}>
+              <div className={`${UI_RADIUS.touchIcon} flex h-11 w-11 shrink-0 items-center justify-center bg-canvas text-accent-teal border border-hairline`}>
                 <Puzzle size={20} />
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-extrabold text-teal-900 dark:text-teal-100">
+                <p className="text-sm font-extrabold text-ink">
                   Sentence-based level check
                 </p>
-                <p className="mt-1 text-sm font-semibold leading-6 text-teal-800/80 dark:text-teal-100/80">
+                <p className="mt-1 text-sm font-semibold leading-6 text-body">
                   Use nouns, verbs, articles, pronouns, adverbs, prepositions, and conjunctions. This is the first step toward a total placement score.
                 </p>
               </div>
