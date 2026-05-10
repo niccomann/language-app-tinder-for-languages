@@ -1,5 +1,5 @@
 import { BookOpen, CheckCircle, FlaskConical, RotateCcw, SlidersHorizontal, Target, Trophy, XCircle } from 'lucide-react';
-import { AppScreen, NavButton, ScreenHeader, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
+import { AppScreen, Button, CalloutCard, NavButton, SurfacePanel, UI_RADIUS } from './ui';
 
 interface CompletionScreenProps {
   progress: {
@@ -20,17 +20,27 @@ export function CompletionScreen({
   onOpenLibrary,
   onOpenGrammarLab,
 }: CompletionScreenProps) {
-  const actionBase = `flex min-h-14 items-center justify-center gap-3 ${UI_RADIUS.control} px-5 py-4 font-sans font-semibold text-body-md ${UI_INTERACTION.transition} ${UI_INTERACTION.press}`;
-
   return (
     <AppScreen width="compact" contentClassName="flex min-h-dvh items-center px-4 py-6">
       <main className="w-full">
-        <ScreenHeader
-          title="Session Complete"
-          subtitle="You've completed all flashcards in this session."
-          icon={<Trophy size={30} />}
-          align="center"
-          className="mb-6 justify-center"
+        <CalloutCard
+          className="mb-6"
+          title={
+            <span className="flex items-center gap-3">
+              <Trophy size={28} strokeWidth={2} />
+              Session Complete
+            </span>
+          }
+          body="You've completed all flashcards in this session."
+          cta={
+            <Button
+              variant="secondary"
+              onClick={onRestart}
+              leadingIcon={<RotateCcw size={18} strokeWidth={2.5} />}
+            >
+              Start Over
+            </Button>
+          }
         />
 
         <SurfacePanel className="mb-6" padding="lg">
@@ -59,14 +69,7 @@ export function CompletionScreen({
           </div>
         </SurfacePanel>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <button
-            onClick={onRestart}
-            className={`${actionBase} bg-primary text-on-primary`}
-          >
-            <RotateCcw size={24} strokeWidth={2.5} />
-            <span>Start Over</span>
-          </button>
+        <div className="grid gap-3 sm:grid-cols-3">
           <NavButton
             onClick={onChangeCategories}
             icon={<SlidersHorizontal size={24} strokeWidth={2.5} />}
