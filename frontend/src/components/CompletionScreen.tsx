@@ -20,7 +20,7 @@ export function CompletionScreen({
   onOpenLibrary,
   onOpenGrammarLab,
 }: CompletionScreenProps) {
-  const actionBase = `flex min-h-14 items-center justify-center gap-3 ${UI_RADIUS.control} px-5 py-4 text-base font-extrabold ${UI_INTERACTION.transition} ${UI_INTERACTION.lift} ${UI_INTERACTION.press}`;
+  const actionBase = `flex min-h-14 items-center justify-center gap-3 ${UI_RADIUS.control} px-5 py-4 font-sans font-semibold text-body-md ${UI_INTERACTION.transition} ${UI_INTERACTION.press}`;
 
   return (
     <AppScreen width="compact" contentClassName="flex min-h-dvh items-center px-4 py-6">
@@ -35,26 +35,26 @@ export function CompletionScreen({
 
         <SurfacePanel className="mb-6" padding="lg">
           <div className="grid grid-cols-3 gap-6">
-            <div className={`p-4 bg-gradient-to-br from-indigo-50 to-indigo-100 ${UI_RADIUS.control}`}>
-              <Target size={24} className="mx-auto mb-2 text-indigo-600" />
-              <div className="text-4xl font-extrabold text-indigo-600 mb-1 text-center">
+            <div className={`p-4 bg-surface-card ${UI_RADIUS.control}`}>
+              <Target size={24} className="mx-auto mb-2 text-primary" />
+              <div className="font-display font-normal text-display-sm text-primary mb-1 text-center">
                 {progress.cards_reviewed}
               </div>
-              <div className="text-sm font-semibold text-gray-700 text-center">Reviewed</div>
+              <div className="text-body-sm font-medium text-muted text-center">Reviewed</div>
             </div>
-            <div className={`p-4 bg-gradient-to-br from-green-50 to-green-100 ${UI_RADIUS.control}`}>
-              <CheckCircle size={24} className="mx-auto mb-2 text-green-600" />
-              <div className="text-4xl font-extrabold text-green-600 mb-1 text-center">
+            <div className={`p-4 bg-surface-card ${UI_RADIUS.control}`}>
+              <CheckCircle size={24} className="mx-auto mb-2 text-success" />
+              <div className="font-display font-normal text-display-sm text-success mb-1 text-center">
                 {progress.known_count}
               </div>
-              <div className="text-sm font-semibold text-gray-700 text-center">Known</div>
+              <div className="text-body-sm font-medium text-muted text-center">Known</div>
             </div>
-            <div className={`p-4 bg-gradient-to-br from-red-50 to-red-100 ${UI_RADIUS.control}`}>
-              <XCircle size={24} className="mx-auto mb-2 text-red-600" />
-              <div className="text-4xl font-extrabold text-red-600 mb-1 text-center">
+            <div className={`p-4 bg-surface-card ${UI_RADIUS.control}`}>
+              <XCircle size={24} className="mx-auto mb-2 text-error" />
+              <div className="font-display font-normal text-display-sm text-error mb-1 text-center">
                 {progress.unknown_count}
               </div>
-              <div className="text-sm font-semibold text-gray-700 text-center">To Review</div>
+              <div className="text-body-sm font-medium text-muted text-center">To Review</div>
             </div>
           </div>
         </SurfacePanel>
@@ -62,7 +62,7 @@ export function CompletionScreen({
         <div className="grid gap-3 sm:grid-cols-2">
           <button
             onClick={onRestart}
-            className={`${actionBase} bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white shadow-xl hover:shadow-2xl`}
+            className={`${actionBase} bg-primary text-on-primary`}
           >
             <RotateCcw size={24} strokeWidth={2.5} />
             <span>Start Over</span>

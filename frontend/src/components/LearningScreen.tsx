@@ -64,7 +64,7 @@ export function LearningScreen({
   };
 
   return (
-    <AppScreen width="wide" contentClassName="min-h-dvh px-4 py-4">
+    <AppScreen width="wide" contentClassName="min-h-dvh bg-canvas px-4 py-4">
       <main className="mx-auto grid w-full max-w-6xl gap-4 lg:min-h-[calc(100dvh-2rem)] lg:grid-cols-[minmax(320px,380px)_minmax(360px,440px)] lg:items-start lg:justify-center">
         <header className="w-full space-y-3">
           <ScreenHeader
@@ -72,7 +72,7 @@ export function LearningScreen({
             subtitle="Just decide: know it or not. The algorithm adapts the learning path from there."
             density="compact"
             actions={(
-              <div className={`${UI_RADIUS.pill} bg-white px-3 py-2 text-sm font-extrabold text-indigo-600 shadow-sm ring-1 ring-indigo-100 dark:bg-slate-800 dark:ring-slate-700`}>
+              <div className={`${UI_RADIUS.pill} bg-surface-card px-3 py-2 text-caption font-medium text-ink border border-hairline`}>
                 {selectedCategories.length}/{categories.length || 0}
               </div>
             )}
@@ -120,18 +120,18 @@ export function LearningScreen({
         <div className="relative flex min-h-[520px] items-start justify-center">
           {nextCard && (
             <div className="absolute inset-x-0 top-0 w-full scale-90 opacity-20 pointer-events-none blur-sm -z-10">
-              <div className={`bg-white ${UI_RADIUS.surface} shadow-xl overflow-hidden border border-gray-200`}>
-                <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
+              <div className={`bg-canvas ${UI_RADIUS.surface} overflow-hidden border border-hairline`}>
+                <div className="aspect-[4/3] relative overflow-hidden bg-surface-card">
                   {nextCard.image_base64 ? (
                     <img src={`data:image/jpeg;base64,${nextCard.image_base64}`} alt={nextCard.word} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100">
-                      <span className="text-4xl font-bold text-indigo-300">{nextCard.word.charAt(0)}</span>
+                    <div className="w-full h-full flex items-center justify-center bg-surface-card">
+                      <span className="text-display-md font-display font-normal text-muted">{nextCard.word.charAt(0)}</span>
                     </div>
                   )}
                 </div>
                 <div className="p-6 text-center">
-                  <h2 className="text-4xl font-bold text-gray-900">{nextCard.word}</h2>
+                  <h2 className="font-display font-normal text-display-sm text-ink">{nextCard.word}</h2>
                 </div>
               </div>
             </div>
@@ -149,14 +149,14 @@ export function LearningScreen({
           </AnimatePresence>
 
           {!currentCard && (
-            <SurfacePanel className="w-full border-dashed border-slate-300 bg-white/80 text-center" padding="lg">
-              <h2 className="text-2xl font-extrabold text-slate-900">No cards in this deck</h2>
-              <p className="mt-2 text-sm font-medium text-slate-500">
+            <SurfacePanel className="w-full border-dashed border-hairline bg-canvas text-center" padding="lg">
+              <h2 className="font-display font-normal text-display-sm text-ink">No cards in this deck</h2>
+              <p className="mt-2 text-body-sm font-medium text-muted">
                 Open filters and select at least one category.
               </p>
               <button
                 onClick={() => onFiltersOpenChange(true)}
-                className={`mt-5 ${UI_RADIUS.control} bg-indigo-600 px-5 py-3 text-sm font-extrabold text-white`}
+                className={`mt-5 ${UI_RADIUS.control} bg-primary px-5 py-3 text-body-sm font-semibold text-on-primary`}
               >
                 Open Filters
               </button>
@@ -168,7 +168,7 @@ export function LearningScreen({
 
         <ProgressBar progress={progress} totalCards={totalCards} />
 
-        <div className="pb-2 text-center text-sm font-medium text-slate-500">
+        <div className="pb-2 text-center text-caption font-medium text-muted">
           Swipe left: Don't know · Swipe right: Know
         </div>
         </section>

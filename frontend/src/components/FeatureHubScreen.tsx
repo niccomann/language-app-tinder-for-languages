@@ -74,7 +74,7 @@ export function FeatureHubScreen({
             <button
               type="button"
               onClick={onBack}
-              className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-11 items-center gap-2 border border-slate-200 bg-white px-3 py-2 text-sm font-extrabold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700`}
+              className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.press} flex min-h-10 items-center gap-2 border border-hairline bg-canvas px-3 py-2 text-body-sm font-medium text-ink hover:bg-surface-card`}
             >
               <ArrowLeft size={17} />
               Path
@@ -86,10 +86,10 @@ export function FeatureHubScreen({
           {sections.map((section) => (
             <SurfacePanel key={section.title} padding="lg" className="space-y-4">
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-wide text-indigo-500 dark:text-indigo-200">
+                <p className="text-caption-uppercase tracking-[1.5px] text-primary uppercase">
                   {section.title}
                 </p>
-                <p className="mt-2 max-w-3xl text-sm font-semibold leading-6 text-slate-500 dark:text-slate-300">
+                <p className="mt-2 max-w-3xl text-body-sm font-medium leading-6 text-muted">
                   {section.body}
                 </p>
               </div>
@@ -127,15 +127,15 @@ function HubFeatureButton({
       type="button"
       aria-label={`Open ${item.title}`}
       onClick={onOpen}
-      className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.subtlePress} flex min-h-24 w-full items-start gap-3 border p-4 text-left hover:shadow-md ${tone.surface}`}
+      className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} ${UI_INTERACTION.subtlePress} flex min-h-24 w-full items-start gap-3 border p-4 text-left hover:bg-surface-cream-strong ${tone.surface}`}
     >
       <span className={`${UI_RADIUS.touchIcon} flex h-11 w-11 shrink-0 items-center justify-center ${tone.icon}`}>
         {icon}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-base font-extrabold text-slate-950 dark:text-white">{item.title}</span>
-        <span className="mt-1 block text-sm font-semibold leading-5 text-slate-600 dark:text-slate-300">{item.description}</span>
-        <span className={`mt-3 inline-flex ${UI_RADIUS.pill} px-3 py-1.5 text-xs font-extrabold ${tone.badge}`}>
+        <span className="block font-sans font-semibold text-body-md text-ink">{item.title}</span>
+        <span className="mt-1 block text-body-sm font-medium leading-5 text-muted">{item.description}</span>
+        <span className={`mt-3 inline-flex ${UI_RADIUS.pill} px-3 py-1.5 text-caption font-medium ${tone.badge}`}>
           Open
         </span>
       </span>
@@ -149,39 +149,39 @@ const hubToneClasses: Record<FeatureFlowTone, {
   badge: string;
 }> = {
   indigo: {
-    surface: 'border-indigo-200 bg-indigo-50 dark:border-indigo-800 dark:bg-indigo-950/40',
-    icon: 'bg-indigo-600 text-white',
-    badge: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-100',
+    surface: 'border-hairline bg-surface-card',
+    icon: 'bg-primary text-on-primary',
+    badge: 'bg-surface-card text-primary border border-hairline',
   },
   teal: {
-    surface: 'border-teal-200 bg-teal-50 dark:border-teal-800 dark:bg-teal-950/40',
-    icon: 'bg-teal-600 text-white',
-    badge: 'bg-teal-100 text-teal-700 dark:bg-teal-900 dark:text-teal-100',
+    surface: 'border-hairline bg-surface-card',
+    icon: 'bg-accent-teal text-on-primary',
+    badge: 'bg-surface-card text-accent-teal border border-hairline',
   },
   purple: {
-    surface: 'border-purple-200 bg-purple-50 dark:border-purple-800 dark:bg-purple-950/40',
-    icon: 'bg-purple-600 text-white',
-    badge: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-100',
+    surface: 'border-hairline bg-surface-card',
+    icon: 'bg-primary text-on-primary',
+    badge: 'bg-surface-card text-primary border border-hairline',
   },
   amber: {
-    surface: 'border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40',
-    icon: 'bg-amber-500 text-slate-950',
-    badge: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100',
+    surface: 'border-hairline bg-surface-card',
+    icon: 'bg-accent-amber text-ink',
+    badge: 'bg-surface-card text-accent-amber border border-hairline',
   },
   blue: {
-    surface: 'border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/40',
-    icon: 'bg-blue-600 text-white',
-    badge: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100',
+    surface: 'border-hairline bg-surface-card',
+    icon: 'bg-primary text-on-primary',
+    badge: 'bg-surface-card text-primary border border-hairline',
   },
   emerald: {
-    surface: 'border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/40',
-    icon: 'bg-emerald-600 text-white',
-    badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-100',
+    surface: 'border-hairline bg-surface-card',
+    icon: 'bg-success text-on-primary',
+    badge: 'bg-surface-card text-success border border-hairline',
   },
   slate: {
-    surface: 'border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/70',
-    icon: 'bg-slate-700 text-white',
-    badge: 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-100',
+    surface: 'border-hairline bg-surface-card',
+    icon: 'bg-ink text-canvas',
+    badge: 'bg-surface-card text-muted border border-hairline',
   },
 };
 
