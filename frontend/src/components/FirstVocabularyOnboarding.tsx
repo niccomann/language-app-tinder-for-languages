@@ -334,8 +334,8 @@ function AnimatedExplanationFrame({
   const [speechState, setSpeechState] = useState({ stepIndex: 0, isTyping: true });
 
   return (
-    <AppScreen width="full" className="bg-canvas" contentClassName="flex min-h-dvh items-center px-4 pb-28 pt-6 sm:py-6">
-      <main data-testid={dataTestId} className="relative mx-auto grid w-full max-w-5xl gap-5 pt-14 lg:grid-cols-[minmax(220px,300px)_minmax(420px,1fr)] lg:items-center lg:pt-0">
+    <AppScreen width="compact" className="bg-canvas" contentClassName="flex min-h-dvh items-center px-4 pb-28 pt-6 sm:py-6">
+      <main data-testid={dataTestId} className="relative mx-auto flex w-full max-w-2xl flex-col items-center gap-6 pt-14 lg:pt-0">
         <div className="flex justify-center">
           <MascotReaction
             state={speechState.isTyping ? mascotState : 'idle'}
