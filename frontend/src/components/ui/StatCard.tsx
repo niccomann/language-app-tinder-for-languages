@@ -10,7 +10,8 @@ interface StatCardProps {
   onClick?: () => void;
 }
 
-export function StatCard({ label, value, icon, color: _color, isActive, onClick }: StatCardProps) {
+export function StatCard({ label, value, icon, color, isActive, onClick }: StatCardProps) {
+  void color; // kept for API compatibility; styling is now token-based
   return (
     <div
       onClick={onClick}

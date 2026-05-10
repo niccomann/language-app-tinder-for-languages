@@ -23,11 +23,12 @@ export function NavButton({
   onClick,
   icon,
   label,
-  color: _color = 'indigo',
+  color, // kept for API compatibility; styling is now token-based
   size = 'medium',
   isActive = false,
   className = '',
 }: NavButtonProps) {
+  void color;
   return (
     <button
       onClick={onClick}
