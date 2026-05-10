@@ -27,6 +27,7 @@ import {
 } from './onboardingPreferenceMeta';
 
 type OnboardingPhase = 'intro' | 'preferences' | 'scan' | 'analysis' | 'science';
+type ScanStep = 'explain' | 'swipe';
 type PreferenceCopy = typeof copy.onboarding.preferences;
 
 interface FirstVocabularyOnboardingProps {
@@ -47,6 +48,7 @@ export function FirstVocabularyOnboarding({
   onComplete,
 }: FirstVocabularyOnboardingProps) {
   const [phase, setPhase] = useState<OnboardingPhase>('intro');
+  const [scanStep, setScanStep] = useState<ScanStep>('explain');
   const [signals, setSignals] = useState<VocabularySignal[]>([]);
   const [preferenceAnswers, setPreferenceAnswers] = useState<OnboardingPreferenceAnswers>(() => readOnboardingPreferences());
   const [lastSwipeDirection, setLastSwipeDirection] = useState<'left' | 'right'>('right');
@@ -184,10 +186,10 @@ export function FirstVocabularyOnboarding({
     );
   }
 
-  return (
-    <AppScreen width="wide" contentClassName="min-h-dvh px-4 py-4">
-      <main className="mx-auto grid w-full max-w-5xl gap-4 lg:min-h-[calc(100dvh-2rem)] lg:grid-cols-[minmax(300px,360px)_minmax(360px,440px)] lg:items-start lg:justify-center">
-        <section className="space-y-3">
+  if (scanStep === 'explain') {
+    return (
+      <AppScreen width="compact" contentClassName="min-h-dvh px-4 py-6">
+        <main className="mx-auto w-full max-w-xl">
           <SurfacePanel padding="lg" className="border-hairline bg-canvas">
             <MascotSpeechCallout
               testId="vocabulary-scan-bubble"
@@ -204,77 +206,94 @@ export function FirstVocabularyOnboarding({
               mascotClassName="shrink-0"
               bubbleClassName="rounded-[1.75rem] border-hairline bg-canvas p-4 ring-0"
               bubbleContentClassName="min-h-[148px]"
-              titleClassName="mt-2 min-h-[4.6rem] text-3xl font-semibold leading-tight text-ink"
-              bodyClassName="mt-2 min-h-[4.5rem] text-sm font-semibold leading-6 text-muted"
+              titleClassName="mt-2 text-display-md font-display font-normal tracking-[-0.5px] leading-tight text-ink"
+              bodyClassName="mt-2 text-body-md font-medium leading-6 text-muted"
             />
 
-            <div className="mt-5 grid auto-rows-fr grid-cols-3 gap-2">
-              <SignalSummaryTile icon={<Target size={17} />} label={onboardingCopy.scan.scanLabel} value={signals.length} tone="coral" compact />
-              <SignalSummaryTile icon={<Sparkles size={17} />} label={onboardingCopy.scan.knownLabel} value={insights.knownEstimate} tone="success" compact />
-              <SignalSummaryTile icon={<Brain size={17} />} label={onboardingCopy.scan.reviewLabel} value={insights.reviewEstimate} tone="amber" compact />
-            </div>
-
             <div className={`${UI_RADIUS.control} mt-5 border border-hairline bg-surface-soft p-4`}>
-              <p className="text-sm font-semibold text-ink">
-                {canPersonalize
-                  ? onboardingCopy.scan.readyMessage
-                  : formatCopy(onboardingCopy.scan.remainingMessage, { remaining: remainingToMinimum })}
+              <p className="text-body-sm font-semibold text-ink">
+                {formatCopy(onboardingCopy.scan.remainingMessage, { remaining: MIN_VOCABULARY_SCAN_SWIPES })}
               </p>
-              <p className="mt-1 text-sm font-medium text-muted">
+              <p className="mt-1 text-body-sm font-medium text-muted">
                 {formatCopy(onboardingCopy.scan.autoAdvanceMessage, { maxSwipes: MAX_VOCABULARY_SCAN_SWIPES })}
               </p>
             </div>
 
-            {canPersonalize && (
+            <button
+              type="button"
+              onClick={() => setScanStep('swipe')}
+              className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} mt-5 flex min-h-12 w-full items-center justify-center gap-2 bg-primary px-5 py-3 text-button font-semibold text-on-primary hover:bg-primary-active`}
+            >
+              {onboardingCopy.scan.startSwiping}
+              <ArrowRight size={17} />
+            </button>
+          </SurfacePanel>
+        </main>
+      </AppScreen>
+    );
+  }
+
+  return (
+    <AppScreen width="compact" contentClassName="min-h-dvh px-4 py-6">
+      <main className="mx-auto flex w-full max-w-xl flex-col gap-3">
+        <div className="grid auto-rows-fr grid-cols-3 gap-2">
+          <SignalSummaryTile icon={<Target size={17} />} label={onboardingCopy.scan.scanLabel} value={signals.length} tone="coral" compact />
+          <SignalSummaryTile icon={<Sparkles size={17} />} label={onboardingCopy.scan.knownLabel} value={insights.knownEstimate} tone="success" compact />
+          <SignalSummaryTile icon={<Brain size={17} />} label={onboardingCopy.scan.reviewLabel} value={insights.reviewEstimate} tone="amber" compact />
+        </div>
+
+        <div className="relative flex min-h-[520px] items-start justify-center">
+          {nextCard && (
+            <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 w-full scale-90 opacity-20 blur-sm">
+              <div className={`overflow-hidden border border-hairline bg-canvas ${UI_RADIUS.surface}`}>
+                <div className="aspect-[4/3] bg-surface-soft" />
+              </div>
+            </div>
+          )}
+
+          {currentCard ? (
+            <Card
+              key={currentCard.id}
+              flashcard={currentCard}
+              onSwipe={handleSwipe}
+              swipeDirection={lastSwipeDirection}
+            />
+          ) : (
+            <SurfacePanel className="w-full border-dashed border-hairline bg-canvas text-center" padding="lg">
+              <h2 className="font-display font-normal text-display-sm text-ink">{onboardingCopy.scan.emptyTitle}</h2>
+              <p className="mt-2 text-body-sm font-medium text-muted">
+                {onboardingCopy.scan.emptyBody}
+              </p>
               <button
                 type="button"
-                onClick={() => advanceWithMascot('analysis')}
-                className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} mt-5 flex min-h-12 w-full items-center justify-center gap-2 bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-active`}
+                onClick={onComplete}
+                className={`${UI_RADIUS.control} mt-5 bg-primary px-5 py-3 text-button font-semibold text-on-primary`}
               >
-                {onboardingCopy.scan.personalizeAction}
-                <ArrowRight size={17} />
+                {onboardingCopy.scan.emptyAction}
               </button>
-            )}
-          </SurfacePanel>
-        </section>
+            </SurfacePanel>
+          )}
+        </div>
 
-        <section className="flex min-h-0 flex-col gap-3">
-          <div className="relative flex min-h-[520px] items-start justify-center">
-            {nextCard && (
-              <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 w-full scale-90 opacity-20 blur-sm">
-                <div className={`overflow-hidden border border-hairline bg-canvas ${UI_RADIUS.surface}`}>
-                  <div className="aspect-[4/3] bg-surface-soft" />
-                </div>
-              </div>
-            )}
+        <SwipeButtons onSwipe={handleSwipe} disabled={!currentCard} />
+        <ProgressBar progress={progress} totalCards={totalCards} />
 
-            {currentCard ? (
-              <Card
-                key={currentCard.id}
-                flashcard={currentCard}
-                onSwipe={handleSwipe}
-                swipeDirection={lastSwipeDirection}
-              />
-            ) : (
-              <SurfacePanel className="w-full border-dashed border-hairline bg-canvas text-center" padding="lg">
-                <h2 className="text-2xl font-semibold text-ink">{onboardingCopy.scan.emptyTitle}</h2>
-                <p className="mt-2 text-sm font-medium text-muted">
-                  {onboardingCopy.scan.emptyBody}
-                </p>
-                <button
-                  type="button"
-                  onClick={onComplete}
-                  className={`${UI_RADIUS.control} mt-5 bg-primary px-5 py-3 text-sm font-semibold text-on-primary`}
-                >
-                  {onboardingCopy.scan.emptyAction}
-                </button>
-              </SurfacePanel>
-            )}
-          </div>
+        {canPersonalize && (
+          <button
+            type="button"
+            onClick={() => advanceWithMascot('analysis')}
+            className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} mt-2 flex min-h-12 w-full items-center justify-center gap-2 bg-primary px-5 py-3 text-button font-semibold text-on-primary hover:bg-primary-active`}
+          >
+            {onboardingCopy.scan.personalizeAction}
+            <ArrowRight size={17} />
+          </button>
+        )}
 
-          <SwipeButtons onSwipe={handleSwipe} disabled={!currentCard} />
-          <ProgressBar progress={progress} totalCards={totalCards} />
-        </section>
+        <p className="text-center text-caption font-medium text-muted">
+          {canPersonalize
+            ? onboardingCopy.scan.readyMessage
+            : formatCopy(onboardingCopy.scan.remainingMessage, { remaining: remainingToMinimum })}
+        </p>
       </main>
     </AppScreen>
   );

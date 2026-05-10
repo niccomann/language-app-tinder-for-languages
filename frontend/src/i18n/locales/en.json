@@ -369,6 +369,7 @@
       "remainingMessage": "{{remaining}} more swipes to estimate the first vocabulary profile.",
       "autoAdvanceMessage": "At {{maxSwipes}} swipes, we automatically move to personalization.",
       "personalizeAction": "Personalize my path",
+      "startSwiping": "Start swiping",
       "emptyTitle": "No words available",
       "emptyBody": "Enter the path and reload the deck when the data is ready.",
       "emptyAction": "Enter the path"

@@ -369,6 +369,7 @@
       "remainingMessage": "Ancora {{remaining}} swipe per stimare il primo profilo vocabolario.",
       "autoAdvanceMessage": "A {{maxSwipes}} swipe passiamo automaticamente alla personalizzazione.",
       "personalizeAction": "Personalizza il mio percorso",
+      "startSwiping": "Inizia lo swipe",
       "emptyTitle": "Nessuna parola disponibile",
       "emptyBody": "Entra nel percorso e ricarica il mazzo quando i dati sono pronti.",
       "emptyAction": "Entra nel percorso"
