@@ -29,14 +29,13 @@ export function SurfacePanel({
   tone = 'default',
   variant,
 }: SurfacePanelProps) {
-  // If `variant` is provided, it takes precedence over `tone`
+  // `variant` takes precedence over `tone`; both honor the `padding` prop.
   let surfaceClass: string;
   if (variant === 'cream') {
-    surfaceClass = 'bg-surface-card p-8 rounded-lg';
+    surfaceClass = `bg-surface-card ${UI_RADIUS.surface} ${paddingClasses[padding]}`;
   } else if (variant === 'dark') {
-    surfaceClass = 'bg-surface-dark text-on-dark p-8 rounded-lg';
+    surfaceClass = `bg-surface-dark text-on-dark ${UI_RADIUS.surface} ${paddingClasses[padding]}`;
   } else {
-    // variant === 'canvas' or not provided — use tone map
     surfaceClass = `${UI_RADIUS.surface} border ${toneClasses[tone]} ${paddingClasses[padding]}`;
   }
 

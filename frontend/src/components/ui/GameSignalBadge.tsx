@@ -10,14 +10,16 @@ interface GameSignalBadgeProps {
   className?: string;
 }
 
-// Neutral tones → cream pill; highlight tones → coral/primary
+// Neutral tones → cream pill; highlight tones → coral/primary.
+// `coral-strong` uses primary-active (darker coral) so callers picking
+// the strong variant get a visibly heavier accent, not a synonym.
 const toneClasses: Record<GameSignalTone, string> = {
   amber:         'border-hairline bg-surface-card text-ink',
   success:       'border-hairline bg-surface-card text-ink',
   teal:          'border-hairline bg-surface-card text-ink',
   error:         'border-primary/30 bg-primary text-on-primary',
   coral:         'border-primary/30 bg-primary text-on-primary',
-  'coral-strong':'border-primary/30 bg-primary text-on-primary',
+  'coral-strong':'border-primary-active bg-primary-active text-on-primary',
 };
 
 export function GameSignalBadge({

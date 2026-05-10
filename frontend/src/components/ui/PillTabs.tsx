@@ -7,6 +7,10 @@ export interface PillTabItem<T extends string> {
   value: T;
   label: string;
   icon?: ReactNode;
+  // Reserved for future per-tab accent treatment. PillTabs currently
+  // renders all tabs with the same cream/active pair; the `tone` is
+  // kept on the item shape so callers don't need to refactor when we
+  // wire up accents later.
   tone?: PillTabTone;
 }
 
