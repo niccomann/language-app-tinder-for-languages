@@ -15,6 +15,7 @@ import type { GrammarNode, ValidationStatus, ValidateSentenceResponse, Connectio
 import { LoadingSpinner } from './ui';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface SentenceBuilderProps {
   onBack: () => void;
@@ -40,6 +41,7 @@ export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
   const [validationResult, setValidationResult] = useState<ValidateSentenceResponse | null>(null);
   const [playingAudio, setPlayingAudio] = useState(false);
   const { isDark } = useTheme();
+  const { language } = useLanguage();
 
   useEffect(() => {
     loadAvailableNodes();
@@ -122,7 +124,7 @@ export function SentenceBuilder({ onBack }: SentenceBuilderProps) {
       const result = await api.validateSentence({
         nodes: nodesForValidation,
         connections: connectionsForValidation,
-        language: 'de'
+        language,
       });
       
       setValidationResult(result);

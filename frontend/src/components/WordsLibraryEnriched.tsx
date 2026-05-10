@@ -4,16 +4,12 @@ import { api } from '../services/api';
 import type { FlashcardWithProgress, LibraryFilters } from '../types';
 import { LoadingSpinner, ErrorState, PageHeader, StatCard } from './ui';
 import { WordDetailModal } from './WordDetailModalEnriched';
+import { useLanguage } from '../contexts/LanguageContext';
+import { genderBadge } from '../utils/wordDisplayMeta';
 
 interface WordsLibraryEnrichedProps {
   onClose: () => void;
 }
-
-const GENDER_LABELS: Record<string, { article: string; color: string }> = {
-  masculine: { article: 'der', color: 'bg-blue-500' },
-  feminine: { article: 'die', color: 'bg-pink-500' },
-  neuter: { article: 'das', color: 'bg-green-500' },
-};
 
 const CEFR_COLORS: Record<string, string> = {
   A1: 'bg-green-100 text-green-800',
@@ -33,6 +29,7 @@ const FREQUENCY_ICONS: Record<string, string> = {
 };
 
 export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
+  const { language } = useLanguage();
   const [words, setWords] = useState<FlashcardWithProgress[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,19 +48,19 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
 
   const loadFilters = useCallback(async () => {
     try {
-      const filtersData = await api.getLibraryFilters('de');
+      const filtersData = await api.getLibraryFilters(language);
       setFilters(filtersData);
     } catch (err) {
       console.error('Failed to load filters:', err);
     }
-  }, []);
+  }, [language]);
 
   const loadWords = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       const data = await api.getLibraryWords({
-        language: 'de',
+        language,
         search: searchQuery || undefined,
         status: statusFilter || undefined,
         category: categoryFilter || undefined,
@@ -81,7 +78,7 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
     } finally {
       setLoading(false);
     }
-  }, [searchQuery, statusFilter, categoryFilter, cefrFilter, genderFilter, frequencyFilter, posFilter, compoundFilter]);
+  }, [language, searchQuery, statusFilter, categoryFilter, cefrFilter, genderFilter, frequencyFilter, posFilter, compoundFilter]);
 
   useEffect(() => {
     loadFilters();
@@ -254,7 +251,7 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
                 <option value="">All Genders</option>
                 {filters.genders.map(gender => (
                   <option key={gender} value={gender}>
-                    {GENDER_LABELS[gender]?.article || gender} ({gender})
+                    {genderBadge(language, gender)?.article || gender} ({gender})
                   </option>
                 ))}
               </select>
@@ -358,9 +355,9 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
                         {word.cefr_level}
                       </span>
                     )}
-                    {word.gender && GENDER_LABELS[word.gender] && (
-                      <span className={`${GENDER_LABELS[word.gender].color} text-white px-2 py-0.5 rounded-full text-xs font-bold`}>
-                        {GENDER_LABELS[word.gender].article}
+                    {word.gender && genderBadge(language, word.gender) && (
+                      <span className={`${genderBadge(language, word.gender)!.color} text-white px-2 py-0.5 rounded-full text-xs font-bold`}>
+                        {genderBadge(language, word.gender)!.article}
                       </span>
                     )}
                   </div>
@@ -400,9 +397,9 @@ export function WordsLibraryEnriched({ onClose }: WordsLibraryEnrichedProps) {
 
                 <div className="p-4">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-0.5">
-                    {word.gender && GENDER_LABELS[word.gender] && (
+                    {word.gender && genderBadge(language, word.gender) && (
                       <span className="text-gray-500 dark:text-gray-400 font-normal">
-                        {GENDER_LABELS[word.gender].article}{' '}
+                        {genderBadge(language, word.gender)!.article}{' '}
                       </span>
                     )}
                     {word.word}

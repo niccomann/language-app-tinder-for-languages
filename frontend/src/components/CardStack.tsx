@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { CategorySelector } from './CategorySelector';
 import { WordsLibraryEnriched } from './WordsLibraryEnriched';
 import { GrammarLab } from './GrammarLab';
@@ -7,14 +7,28 @@ import { LearningScreen } from './LearningScreen';
 import { LoadingSpinner, ErrorState } from './ui';
 import { useCategories } from '../hooks/useCategories';
 import { useLearningSession } from '../hooks/useLearningSession';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const CardStack = () => {
+  const { language } = useLanguage();
   const [showCategorySelector, setShowCategorySelector] = useState(true);
   const [showWordsLibrary, setShowWordsLibrary] = useState(false);
   const [showGrammarLab, setShowGrammarLab] = useState(false);
-  
+
   const categories = useCategories();
   const session = useLearningSession();
+
+  // Reset to category selector whenever the active language changes
+  const prevLanguageRef = useRef(language);
+  useEffect(() => {
+    if (prevLanguageRef.current !== language) {
+      prevLanguageRef.current = language;
+      setShowCategorySelector(true);
+      setShowWordsLibrary(false);
+      setShowGrammarLab(false);
+      session.reset();
+    }
+  }, [language]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleStartLearning = async () => {
     setShowCategorySelector(false);

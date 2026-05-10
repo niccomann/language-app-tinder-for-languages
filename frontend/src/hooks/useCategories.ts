@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { api } from '../services/api';
+import { useLanguage } from '../contexts/LanguageContext';
 
 /**
  * Hook to manage category selection and loading
  */
 export const useCategories = () => {
+  const { language } = useLanguage();
   const [allCategories, setAllCategories] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -12,13 +14,13 @@ export const useCategories = () => {
 
   useEffect(() => {
     loadCategories();
-  }, []);
+  }, [language]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadCategories = async () => {
     try {
       setLoading(true);
       setError(null);
-      const cards = await api.getFlashcards({ language: 'de' });
+      const cards = await api.getFlashcards({ language });
       const categories = Array.from(
         new Set(cards.map(card => card.category).filter(Boolean))
       ) as string[];

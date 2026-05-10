@@ -3,11 +3,13 @@ import { api } from '../services/api';
 import { soraService } from '../services/sora';
 import { videoApi } from '../services/video';
 import type { Flashcard, UserProgress, SoraVideoGenerationResponse, VideoData } from '../types';
+import { useLanguage } from '../contexts/LanguageContext';
 
 /**
  * Hook to manage learning session state and actions
  */
 export const useLearningSession = () => {
+  const { language } = useLanguage();
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState<UserProgress>({
@@ -33,7 +35,7 @@ export const useLearningSession = () => {
     try {
       setLoading(true);
       setError(null);
-      const cards = await api.getFlashcards({ language: 'de' });
+      const cards = await api.getFlashcards({ language });
       const filteredCards = cards.filter(
         card => card.category && selectedCategories.includes(card.category)
       );

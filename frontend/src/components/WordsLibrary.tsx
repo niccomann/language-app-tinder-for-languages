@@ -6,12 +6,14 @@ import { LoadingSpinner, ErrorState, PageHeader, StatCard } from './ui';
 import { AudioButton } from './AudioButton';
 import { ConfidenceBadge } from './ConfidenceBadge';
 import { StatsSummary } from './StatsSummary';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface WordsLibraryProps {
   onClose: () => void;
 }
 
 export function WordsLibrary({ onClose }: WordsLibraryProps) {
+  const { language } = useLanguage();
   const [words, setWords] = useState<FlashcardWithProgress[]>([]);
   const [filteredWords, setFilteredWords] = useState<FlashcardWithProgress[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,7 +28,7 @@ export function WordsLibrary({ onClose }: WordsLibraryProps) {
       setError(null);
       const data = await api.getWordsLibrary({
         status: statusFilter === 'all' ? undefined : statusFilter,
-        language: 'de',
+        language,
       });
       setWords(data);
       setFilteredWords(data);
@@ -66,7 +68,7 @@ export function WordsLibrary({ onClose }: WordsLibraryProps) {
 
   useEffect(() => {
     loadWords();
-  }, [statusFilter]);
+  }, [statusFilter, language]);
 
   useEffect(() => {
     let filtered = words;

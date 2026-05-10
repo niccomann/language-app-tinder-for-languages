@@ -29,6 +29,7 @@ import type { GrammarNode, ValidateSentenceResponse, ConnectionInfo } from '../t
 import { LoadingSpinner } from './ui';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { useGrammarNodeFilters } from '../hooks/useGrammarNodeFilters';
 import { GrammarNodeFilterBar } from './GrammarNodeFilterBar';
 
@@ -83,6 +84,7 @@ export function FunSentenceBuilder() {
   const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   
   const { isDark } = useTheme();
+  const { language } = useLanguage();
 
   // ==========================================================================
   // Data Loading
@@ -727,7 +729,7 @@ export function FunSentenceBuilder() {
       const result = await api.validateSentence({
         nodes: nodesForValidation,
         connections: connectionsForValidation,
-        language: 'de'
+        language,
       });
       
       setValidationResult(result);

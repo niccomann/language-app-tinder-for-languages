@@ -13,6 +13,7 @@ import { ClusteredNodes } from './ClusteredNodes';
 import { DialectMap } from './DialectMap';
 import { HierarchySunburst } from './HierarchySunburst';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 type LabView = 'graph' | 'wordcloud' | 'builder' | 'funbuilder' | 'clusters' | 'dialects' | 'sunburst';
 
@@ -38,6 +39,7 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
   const [selectedNode, setSelectedNode] = useState<GrammarNode | null>(null);
   const [selectedWord, setSelectedWord] = useState<WordCloudItem | null>(null);
   const { isDark } = useTheme();
+  const { language } = useLanguage();
 
   const [audioCache, setAudioCache] = useState<Record<string, boolean>>({});
   const [loadingAudio, setLoadingAudio] = useState<string | null>(null);
@@ -46,14 +48,14 @@ export function GrammarLab({ onBack }: GrammarLabProps) {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [language]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadData = async () => {
     setLoading(true);
     try {
       const [sentencesData, wordsData] = await Promise.all([
         api.getGrammarSentences(),
-        api.getLibraryWords({ language: 'de', limit: 200 }),
+        api.getLibraryWords({ language, limit: 200 }),
       ]);
 
       setSentences(sentencesData);
