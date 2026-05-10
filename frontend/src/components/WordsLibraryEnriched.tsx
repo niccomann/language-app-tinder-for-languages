@@ -229,7 +229,7 @@ export function WordsLibraryEnriched({
           <StatCard
             label="Total"
             value={totalWords}
-            icon={<BookOpen size={20} className="text-gray-600 dark:text-gray-400" />}
+            icon={<BookOpen size={20} className="text-muted" />}
             color="muted"
             isActive={!statusFilter}
             onClick={() => setStatusFilter('')}
@@ -237,7 +237,7 @@ export function WordsLibraryEnriched({
           <StatCard
             label="Learned"
             value={knownWords.length}
-            icon={<CheckCircle size={20} className="text-green-600" />}
+            icon={<CheckCircle size={20} className="text-success" />}
             color="success"
             isActive={statusFilter === 'known'}
             onClick={() => setStatusFilter(statusFilter === 'known' ? '' : 'known')}
@@ -245,7 +245,7 @@ export function WordsLibraryEnriched({
           <StatCard
             label="To Review"
             value={unknownWords.length}
-            icon={<XCircle size={20} className="text-red-600" />}
+            icon={<XCircle size={20} className="text-error" />}
             color="error"
             isActive={statusFilter === 'unknown'}
             onClick={() => setStatusFilter(statusFilter === 'unknown' ? '' : 'unknown')}
@@ -253,7 +253,7 @@ export function WordsLibraryEnriched({
           <StatCard
             label="Not Viewed"
             value={notReviewedWords.length}
-            icon={<Sparkles size={20} className="text-blue-600" />}
+            icon={<Sparkles size={20} className="text-accent-teal" />}
             color="teal"
           />
         </div>
@@ -261,13 +261,13 @@ export function WordsLibraryEnriched({
         <SurfacePanel className="mb-6" padding="md">
           <div className="flex flex-wrap gap-3 items-center">
             <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted" size={18} />
               <input
                 type="text"
                 placeholder="Search word or translation..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className={`w-full pl-10 pr-4 py-2.5 border-2 border-gray-200 dark:border-slate-600 ${UI_RADIUS.control} focus:border-indigo-500 focus:outline-none transition-colors bg-white dark:bg-slate-700 dark:text-white`}
+                className={`w-full pl-10 pr-4 py-2.5 border border-hairline ${UI_RADIUS.control} focus:border-primary focus:outline-none transition-colors bg-canvas text-ink`}
               />
             </div>
 
@@ -275,14 +275,14 @@ export function WordsLibraryEnriched({
               onClick={() => setShowFilters(!showFilters)}
               className={`flex items-center gap-2 px-4 py-2.5 ${UI_RADIUS.control} font-semibold transition-all ${
                 showFilters || activeFilterCount > 0
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
+                  ? 'bg-primary text-on-primary'
+                  : 'bg-surface-card text-body hover:bg-surface-cream-strong'
               }`}
             >
               <Filter size={18} />
               Filters
               {activeFilterCount > 0 && (
-                <span className={`bg-white text-indigo-600 text-xs font-bold px-2 py-0.5 ${UI_RADIUS.pill}`}>
+                <span className={`bg-canvas text-primary text-xs font-bold px-2 py-0.5 ${UI_RADIUS.pill}`}>
                   {activeFilterCount}
                 </span>
               )}
@@ -292,7 +292,7 @@ export function WordsLibraryEnriched({
             {activeFilterCount > 0 && (
               <button
                 onClick={clearFilters}
-                className={`flex items-center gap-1 px-3 py-2.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 ${UI_RADIUS.control} transition-colors`}
+                className={`flex items-center gap-1 px-3 py-2.5 text-error hover:bg-error/10 ${UI_RADIUS.control} transition-colors`}
               >
                 <X size={16} />
                 Clear
@@ -301,7 +301,7 @@ export function WordsLibraryEnriched({
           </div>
 
           {showFilters && filters && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4 pt-4 border-t border-gray-200 dark:border-slate-600">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4 pt-4 border-t border-hairline">
               <FilterSelect
                 ariaLabel="Filter by CEFR level"
                 value={cefrFilter}
@@ -386,18 +386,18 @@ export function WordsLibraryEnriched({
         </SurfacePanel>
 
         <div className="mb-4">
-          <p className="text-gray-600 dark:text-gray-400 font-medium">
-            Showing <span className="font-bold text-indigo-600">{visibleWords.length}</span>
-            {' '}of <span className="font-bold text-indigo-600">{totalWords}</span> words
-            {loading && <span className="ml-2 text-sm text-gray-400">(loading...)</span>}
+          <p className="text-muted font-medium">
+            Showing <span className="font-bold text-primary">{visibleWords.length}</span>
+            {' '}of <span className="font-bold text-primary">{totalWords}</span> words
+            {loading && <span className="ml-2 text-sm text-muted">(loading...)</span>}
           </p>
         </div>
 
         {visibleWords.length === 0 ? (
           <div className="text-center py-16">
-            <BookOpen size={56} className="mx-auto mb-4 text-slate-300" />
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No words found</h3>
-            <p className="text-gray-600 dark:text-gray-400">Try modifying your search filters</p>
+            <BookOpen size={56} className="mx-auto mb-4 text-muted" />
+            <h3 className="text-xl font-bold text-ink mb-2">No words found</h3>
+            <p className="text-muted">Try modifying your search filters</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
@@ -405,9 +405,9 @@ export function WordsLibraryEnriched({
               <div
                 key={word.id}
                 onClick={() => handleWordClick(word)}
-                className={`bg-white dark:bg-slate-800 ${UI_RADIUS.surface} shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border-2 border-gray-100 dark:border-slate-700 cursor-pointer`}
+                className={`bg-canvas ${UI_RADIUS.surface} overflow-hidden hover:scale-[1.02] transition-all duration-300 border border-hairline cursor-pointer`}
               >
-                <div className="relative h-40 bg-gray-100 dark:bg-slate-700 overflow-hidden">
+                <div className="relative h-40 bg-surface-soft overflow-hidden">
                   {word.image_base64 ? (
                     <img
                       src={`data:image/jpeg;base64,${word.image_base64}`}
@@ -415,19 +415,19 @@ export function WordsLibraryEnriched({
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900 dark:to-purple-900">
-                      <span className="text-4xl font-bold text-indigo-300">{word.word.charAt(0)}</span>
+                    <div className="w-full h-full flex items-center justify-center bg-surface-card">
+                      <span className="text-4xl font-bold text-muted">{word.word.charAt(0)}</span>
                     </div>
                   )}
-                  
+
                   <div className="absolute top-2 left-2 flex gap-1.5">
                     {word.cefr_level && (
-                      <span className={`px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-bold ${CEFR_COLORS[word.cefr_level] || 'bg-gray-100 text-gray-800'}`}>
+                      <span className={`px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-bold ${CEFR_COLORS[word.cefr_level] || 'bg-surface-card text-body'}`}>
                         {word.cefr_level}
                       </span>
                     )}
                     {word.gender && GENDER_LABELS[word.gender] && (
-                      <span className={`${GENDER_LABELS[word.gender].color} text-white px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-bold`}>
+                      <span className={`${GENDER_LABELS[word.gender].color} text-on-primary px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-bold`}>
                         {GENDER_LABELS[word.gender].article}
                       </span>
                     )}
@@ -436,12 +436,12 @@ export function WordsLibraryEnriched({
                   <div className="absolute top-2 right-2">
                     <button
                       onClick={(e) => handleToggleStatus(word, e)}
-                      className={`px-2.5 py-1 ${UI_RADIUS.pill} text-xs font-bold flex items-center gap-1 shadow-lg transition-colors ${
+                      className={`px-2.5 py-1 ${UI_RADIUS.pill} text-xs font-bold flex items-center gap-1 transition-colors ${
                         word.known === true
-                          ? 'bg-green-500 text-white hover:bg-green-600'
+                          ? 'bg-success text-on-primary hover:opacity-90'
                           : word.known === false
-                          ? 'bg-red-500 text-white hover:bg-red-600'
-                          : 'bg-blue-500 text-white hover:bg-blue-600'
+                          ? 'bg-error text-on-primary hover:opacity-90'
+                          : 'bg-primary text-on-primary hover:opacity-90'
                       }`}
                     >
                       {word.known === true ? <CheckCircle size={12} /> : word.known === false ? <XCircle size={12} /> : <Sparkles size={12} />}
@@ -451,7 +451,7 @@ export function WordsLibraryEnriched({
 
                   {word.is_compound && (
                     <div className="absolute bottom-2 left-2">
-                      <span className={`bg-purple-500 text-white px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-semibold`}>
+                      <span className={`bg-accent-teal text-on-primary px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-semibold`}>
                         Compound
                       </span>
                     </div>
@@ -459,7 +459,7 @@ export function WordsLibraryEnriched({
 
                   {word.category && (
                     <div className="absolute bottom-2 right-2">
-                      <span className={`bg-black/60 backdrop-blur-sm text-white px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-semibold`}>
+                      <span className={`bg-surface-dark/80 text-on-dark px-2 py-0.5 ${UI_RADIUS.pill} text-xs font-semibold`}>
                         {word.category}
                       </span>
                     </div>
@@ -467,36 +467,36 @@ export function WordsLibraryEnriched({
                 </div>
 
                 <div className="p-4">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-0.5">
+                  <h3 className="text-xl font-bold text-ink mb-0.5">
                     {word.gender && GENDER_LABELS[word.gender] && (
-                      <span className="text-gray-500 dark:text-gray-400 font-normal">
+                      <span className="text-muted font-normal">
                         {GENDER_LABELS[word.gender].article}{' '}
                       </span>
                     )}
                     {word.word}
                     {word.plural_form && (
-                      <span className="text-sm text-gray-400 dark:text-gray-500 font-normal ml-1">
+                      <span className="text-sm text-muted font-normal ml-1">
                         ({word.plural_form})
                       </span>
                     )}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-2">{word.translation}</p>
+                  <p className="text-body mb-2">{word.translation}</p>
 
                   <div className="flex flex-wrap gap-1.5 mb-2">
                     {word.part_of_speech && (
-                      <span className={`bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 px-2 py-0.5 ${UI_RADIUS.pill} text-xs`}>
+                      <span className={`bg-surface-card text-body px-2 py-0.5 ${UI_RADIUS.pill} text-xs`}>
                         {word.part_of_speech}
                       </span>
                     )}
                     {word.register && word.register !== 'neutral' && (
-                      <span className={`bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2 py-0.5 ${UI_RADIUS.pill} text-xs`}>
+                      <span className={`bg-accent-amber/10 text-accent-amber px-2 py-0.5 ${UI_RADIUS.pill} text-xs`}>
                         {word.register}
                       </span>
                     )}
                   </div>
 
                   {word.frequency_band && (
-                    <div className="text-xs text-gray-400 dark:text-gray-500">
+                    <div className="text-xs text-muted">
                       {FREQUENCY_ICONS[word.frequency_band] || '⭐'}
                       <span className="ml-1">{word.frequency_band.replace('_', ' ')}</span>
                     </div>
@@ -513,7 +513,7 @@ export function WordsLibraryEnriched({
               type="button"
               onClick={loadMoreWords}
               disabled={loadingMore}
-              className={`${UI_RADIUS.control} min-h-12 border border-indigo-200 bg-indigo-600 px-6 py-2 text-sm font-extrabold text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300 dark:border-indigo-700 dark:disabled:bg-slate-700`}
+              className={`${UI_RADIUS.control} min-h-12 border border-hairline bg-primary px-6 py-2 text-sm font-extrabold text-on-primary transition-colors hover:bg-primary-active disabled:cursor-not-allowed disabled:bg-primary-disabled`}
             >
               {loadingMore ? 'Loading more...' : 'Load more words'}
             </button>

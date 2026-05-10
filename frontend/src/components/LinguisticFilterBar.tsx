@@ -1,10 +1,9 @@
 /**
  * LinguisticFilterBar - reusable UI component for linguistic filters.
- * 
+ *
  * This component can be used in any D3 game/view to provide consistent
  * linguistic filtering/grouping UI.
  */
-import { useTheme } from '../contexts/useTheme';
 import type { LinguisticCriteria, LinguisticFilterConfig } from '../hooks/useLinguisticFilters';
 import { FilterSelect, UI_RADIUS } from './ui';
 
@@ -29,8 +28,6 @@ export function LinguisticFilterBar({
   showIcons = true,
   className = '',
 }: LinguisticFilterBarProps) {
-  const { isDark } = useTheme();
-
   if (variant === 'dropdown') {
     return (
       <div className={`relative ${className}`}>
@@ -55,7 +52,7 @@ export function LinguisticFilterBar({
         {configs.map((config) => {
           const Icon = config.icon;
           const isActive = activeCriteria === config.id;
-          
+
           return (
             <button
               key={config.id}
@@ -64,10 +61,8 @@ export function LinguisticFilterBar({
               className={`
                 p-2 ${UI_RADIUS.control} transition-all duration-200
                 ${isActive
-                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-[1.02]'
-                  : isDark
-                    ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-primary text-on-primary'
+                  : 'bg-surface-card text-body hover:bg-surface-cream-strong'
                 }
               `}
             >
@@ -85,7 +80,7 @@ export function LinguisticFilterBar({
         {configs.map((config) => {
           const Icon = config.icon;
           const isActive = activeCriteria === config.id;
-          
+
           return (
             <button
               key={config.id}
@@ -93,10 +88,8 @@ export function LinguisticFilterBar({
               className={`
                 flex items-center gap-3 px-4 py-3 ${UI_RADIUS.control} transition-all duration-200 text-left
                 ${isActive
-                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
-                  : isDark
-                    ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-primary text-on-primary'
+                  : 'bg-surface-card text-body hover:bg-surface-cream-strong'
                 }
               `}
             >
@@ -104,7 +97,7 @@ export function LinguisticFilterBar({
               <div>
                 <span className="font-semibold">{config.label}</span>
                 {showDescriptions && (
-                  <p className={`text-xs mt-0.5 ${isActive ? 'text-white/80' : isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                  <p className={`text-xs mt-0.5 ${isActive ? 'text-on-primary/80' : 'text-muted'}`}>
                     {config.description}
                   </p>
                 )}
@@ -121,20 +114,18 @@ export function LinguisticFilterBar({
       {configs.map((config) => {
         const Icon = config.icon;
         const isActive = activeCriteria === config.id;
-        
+
         return (
           <button
             key={config.id}
             onClick={() => onCriteriaChange(config.id)}
             title={config.description}
             className={`
-              flex items-center gap-2 px-4 py-2 ${UI_RADIUS.pill} font-semibold 
+              flex items-center gap-2 px-4 py-2 ${UI_RADIUS.pill} font-semibold
               transition-all duration-200 whitespace-nowrap
               ${isActive
-                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-[1.02]'
-                : isDark
-                  ? 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:scale-[1.02]'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:scale-[1.02]'
+                ? 'bg-primary text-on-primary'
+                : 'bg-surface-card text-body hover:bg-surface-cream-strong hover:scale-[1.02]'
               }
             `}
           >
@@ -162,7 +153,6 @@ export function GroupLegend({
   selectedGroup,
   className = '',
 }: GroupLegendProps) {
-  const { isDark } = useTheme();
   const sortedGroups = Array.from(groups.entries()).sort((a, b) => b[1].length - a[1].length);
 
   return (
@@ -170,7 +160,7 @@ export function GroupLegend({
       {sortedGroups.map(([groupName, items], index) => {
         const isSelected = selectedGroup === groupName;
         const color = getColor(groupName, index);
-        
+
         return (
           <button
             key={groupName}
@@ -179,21 +169,20 @@ export function GroupLegend({
               flex items-center gap-2 px-3 py-1.5 ${UI_RADIUS.pill} text-sm font-medium
               transition-all duration-200
               ${isSelected
-                ? 'ring-2 ring-offset-2 ring-purple-500 scale-[1.02]'
+                ? 'ring-2 ring-offset-2 ring-primary scale-[1.02]'
                 : 'hover:scale-[1.02]'
               }
-              ${isDark ? 'bg-slate-700/80' : 'bg-white/80'}
-              backdrop-blur-sm shadow-sm
+              bg-canvas border border-hairline
             `}
           >
-            <div 
-              className={`w-3 h-3 ${UI_RADIUS.pill}`} 
+            <div
+              className={`w-3 h-3 ${UI_RADIUS.pill}`}
               style={{ backgroundColor: color }}
             />
-            <span className={isDark ? 'text-slate-200' : 'text-gray-700'}>
+            <span className="text-body">
               {groupName}
             </span>
-            <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+            <span className="text-xs text-muted">
               ({items.length})
             </span>
           </button>
@@ -216,14 +205,12 @@ export function FilterStats({
   activeFilter,
   className = '',
 }: FilterStatsProps) {
-  const { isDark } = useTheme();
-
   return (
     <div className={`flex items-center gap-4 text-sm ${className}`}>
-      <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>
-        Raggruppamento: <strong className={isDark ? 'text-white' : 'text-gray-800'}>{activeFilter}</strong>
+      <span className="text-muted">
+        Raggruppamento: <strong className="text-ink">{activeFilter}</strong>
       </span>
-      <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>
+      <span className="text-muted">
         {filteredItems} / {totalItems} elementi
       </span>
     </div>
