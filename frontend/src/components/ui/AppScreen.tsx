@@ -28,7 +28,7 @@ export function AppScreen({
 
   return (
     <div
-      className={`${rootMode} ${scrollClass} bg-gradient-to-br from-indigo-50 via-white to-purple-50 transition-colors duration-300 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 ${className}`}
+      className={`${rootMode} ${scrollClass} bg-canvas transition-colors duration-200 ${className}`}
     >
       <div className={`${widthClasses[width]} ${contentClassName}`}>
         {children}

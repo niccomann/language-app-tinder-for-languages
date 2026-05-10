@@ -23,8 +23,7 @@ export function ScreenHeader({
   density = 'regular',
   className = '',
 }: ScreenHeaderProps) {
-  const titleSize = density === 'compact' ? 'text-2xl' : 'text-3xl md:text-4xl';
-  const subtitleSize = density === 'compact' ? 'text-sm' : 'text-sm md:text-base';
+  const titleSize = density === 'compact' ? 'text-display-sm' : 'text-display-md';
 
   return (
     <header className={`flex items-start justify-between gap-4 ${className}`}>
@@ -33,19 +32,19 @@ export function ScreenHeader({
           <button
             type="button"
             onClick={onBack}
-            className={`flex h-11 w-11 shrink-0 items-center justify-center ${UI_RADIUS.touchIcon} border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-950 active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700`}
+            className={`flex h-10 w-10 shrink-0 items-center justify-center ${UI_RADIUS.touchIcon} border border-hairline bg-canvas text-ink transition-colors duration-150 hover:bg-surface-card`}
             aria-label="Go back"
           >
             <ArrowLeft size={21} />
           </button>
         )}
         <div className="min-w-0">
-          <h1 className={`${titleSize} flex items-center gap-2 font-extrabold leading-tight text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text`}>
+          <h1 className={`${titleSize} font-display font-normal leading-tight tracking-[-0.5px] text-ink flex items-center gap-2`}>
             {icon}
             <span className="truncate">{title}</span>
           </h1>
           {subtitle && (
-            <p className={`mt-1 max-w-2xl font-semibold leading-6 text-slate-600 dark:text-slate-300 ${subtitleSize}`}>
+            <p className={`mt-1 max-w-2xl font-sans text-body-md leading-6 text-muted`}>
               {subtitle}
             </p>
           )}

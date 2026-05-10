@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react';
-import { UI_ELEVATION, UI_RADIUS } from './geometry';
+import { UI_RADIUS } from './geometry';
 
 interface SurfacePanelProps {
   children: ReactNode;
   className?: string;
   padding?: 'none' | 'sm' | 'md' | 'lg';
   tone?: 'default' | 'muted' | 'dark';
+  variant?: 'canvas' | 'cream' | 'dark';
 }
 
 const paddingClasses = {
@@ -16,9 +17,9 @@ const paddingClasses = {
 };
 
 const toneClasses = {
-  default: `border-slate-200 bg-white ${UI_ELEVATION.surface} dark:border-slate-700 dark:bg-slate-800`,
-  muted: `border-slate-200 bg-slate-50 ${UI_ELEVATION.surface} dark:border-slate-700 dark:bg-slate-800/80`,
-  dark: `border-slate-800 bg-slate-950 text-white ${UI_ELEVATION.floating} dark:border-slate-700 dark:bg-slate-900`,
+  default: `border-hairline bg-canvas`,
+  muted: `border-hairline bg-surface-card`,
+  dark: `border-hairline bg-surface-dark text-on-dark`,
 };
 
 export function SurfacePanel({
@@ -26,9 +27,21 @@ export function SurfacePanel({
   className = '',
   padding = 'md',
   tone = 'default',
+  variant,
 }: SurfacePanelProps) {
+  // If `variant` is provided, it takes precedence over `tone`
+  let surfaceClass: string;
+  if (variant === 'cream') {
+    surfaceClass = 'bg-surface-card p-8 rounded-lg';
+  } else if (variant === 'dark') {
+    surfaceClass = 'bg-surface-dark text-on-dark p-8 rounded-lg';
+  } else {
+    // variant === 'canvas' or not provided — use tone map
+    surfaceClass = `${UI_RADIUS.surface} border ${toneClasses[tone]} ${paddingClasses[padding]}`;
+  }
+
   return (
-    <section className={`${UI_RADIUS.surface} border ${toneClasses[tone]} ${paddingClasses[padding]} ${className}`}>
+    <section className={`${surfaceClass} ${className}`.trim()}>
       {children}
     </section>
   );

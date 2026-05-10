@@ -1,6 +1,6 @@
 import { ArrowLeft } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { UI_ELEVATION, UI_RADIUS } from './geometry';
+import { UI_RADIUS } from './geometry';
 
 interface PageHeaderProps {
   title: string;
@@ -17,17 +17,17 @@ export function PageHeader({ title, subtitle, icon, onBack, rightContent }: Page
         {onBack && (
           <button
             onClick={onBack}
-            className={`p-3 bg-white ${UI_RADIUS.touchIcon} ${UI_ELEVATION.raised} hover:shadow-lg transition-all hover:scale-[1.02]`}
+            className={`p-3 bg-canvas ${UI_RADIUS.touchIcon} border border-hairline hover:bg-surface-card transition-colors duration-150`}
           >
-            <ArrowLeft size={24} className="text-gray-700" />
+            <ArrowLeft size={24} className="text-body-strong" />
           </button>
         )}
         <div>
-          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+          <h1 className="font-display font-normal text-display-md tracking-[-0.5px] text-ink flex items-center gap-3">
             {icon}
             {title}
           </h1>
-          {subtitle && <p className="text-gray-600 mt-1">{subtitle}</p>}
+          {subtitle && <p className="font-sans text-body-md text-muted mt-1">{subtitle}</p>}
         </div>
       </div>
       {rightContent}
