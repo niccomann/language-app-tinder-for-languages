@@ -8,6 +8,7 @@ import { readFirstVocabularyOnboardingDone } from './components/firstVocabularyO
 
 const CardStack = lazy(() => import('./components/CardStack').then((module) => ({ default: module.CardStack })));
 const GrammarLab = lazy(() => import('./components/GrammarLab').then((module) => ({ default: module.GrammarLab })));
+const GrammarHub = lazy(() => import('./components/GrammarHub').then((module) => ({ default: module.GrammarHub })));
 const WordsLibraryEnriched = lazy(() => import('./components/WordsLibraryEnriched').then((module) => ({ default: module.WordsLibraryEnriched })));
 const DeveloperChartsScreen = lazy(() => import('./components/DeveloperChartsScreen').then((module) => ({ default: module.DeveloperChartsScreen })));
 
@@ -80,11 +81,15 @@ function App() {
               onWordTabChange={(wordId, tab) => navigateTo(libraryWordPath(wordId, tab))}
             />
           ) : route.screen === 'grammar' ? (
-            <GrammarLab
-              activeView={route.view}
-              onViewChange={(view) => navigateTo(grammarPath(view))}
-              onBack={() => navigateTo('/')}
-            />
+            route.view === 'hub' ? (
+              <GrammarHub onNavigate={navigateTo} />
+            ) : (
+              <GrammarLab
+                activeView={route.view}
+                onViewChange={(view) => navigateTo(grammarPath(view))}
+                onBack={() => navigateTo(grammarPath('hub'))}
+              />
+            )
           ) : (
             <CardStack
               mode={route.mode}

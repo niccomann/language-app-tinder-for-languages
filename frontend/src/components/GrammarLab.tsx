@@ -1,9 +1,8 @@
 import { lazy, Suspense, useState, useEffect, useCallback, useRef } from 'react';
-import { GitBranch, Cloud, Play, Info, Volume2, Loader2, Puzzle, Magnet, Globe2, Layers, Gamepad2, Sparkles, Star, Trophy } from 'lucide-react';
+import { Play, Info, Volume2, Loader2, Puzzle } from 'lucide-react';
 import { api } from '../services/api';
 import type { GrammarSentence, GrammarNode, FlashcardWithProgress, WordCloudItem } from '../types';
-import { AppScreen, GameSignalBadge, PillTabs, ScreenHeader, SurfacePanel, UI_RADIUS } from './ui';
-import type { PillTabItem } from './ui';
+import { AppScreen, SurfacePanel, UI_RADIUS } from './ui';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
 import type { GrammarView } from '../routes/appRoutes';
 import { reportClientError } from '../utils/clientError';
@@ -18,21 +17,65 @@ const ClusteredNodes = lazy(() => import('./ClusteredNodes').then((module) => ({
 const DialectMap = lazy(() => import('./DialectMap').then((module) => ({ default: module.DialectMap })));
 const HierarchySunburst = lazy(() => import('./HierarchySunburst').then((module) => ({ default: module.HierarchySunburst })));
 
+import { SceneShell } from './scene';
+
 interface GrammarLabProps {
   activeView: GrammarView;
   onViewChange: (view: GrammarView) => void;
   onBack: () => void;
 }
 
-const LAB_TABS: Array<PillTabItem<GrammarView>> = [
-  { value: 'graph', label: 'Sentence Graph', icon: <GitBranch size={18} />, tone: 'teal' },
-  { value: 'wordcloud', label: 'Word Cloud', icon: <Cloud size={18} />, tone: 'teal-soft' },
-  { value: 'builder', label: 'Build Sentence', icon: <Puzzle size={18} />, tone: 'amber' },
-  { value: 'funbuilder', label: 'Compose Sentence', icon: <Gamepad2 size={18} />, tone: 'coral' },
-  { value: 'clusters', label: 'Clusters', icon: <Magnet size={18} />, tone: 'coral' },
-  { value: 'dialects', label: 'Dialects', icon: <Globe2 size={18} />, tone: 'success' },
-  { value: 'sunburst', label: 'Hierarchy', icon: <Layers size={18} />, tone: 'amber' },
-];
+const VIEW_META: Record<Exclude<GrammarView, 'hub'>, { eyebrow: string; title: string; subline: string; key: string; body: React.ReactNode }> = {
+  graph: {
+    eyebrow: 'GRAMMAR · SENTENCE GRAPH',
+    title: 'Sentence Graph',
+    subline: 'Relazioni grammaticali tra le parole di ogni frase.',
+    key: 'grammar.graph',
+    body: <p>Visualizza il grafo grammaticale di una frase: ogni parola è un nodo, ogni relazione (soggetto, oggetto, modificatore) è un arco. Tocca un nodo per vedere caso, genere, tempo.</p>,
+  },
+  wordcloud: {
+    eyebrow: 'GRAMMAR · WORD CLOUD',
+    title: 'Word Cloud',
+    subline: 'Quanto sono frequenti le parole che hai incontrato.',
+    key: 'grammar.wordcloud',
+    body: <p>Le parole più grandi sono quelle viste o swipe-ate più spesso. Tocca una parola per aprirne il dettaglio.</p>,
+  },
+  builder: {
+    eyebrow: 'GRAMMAR · BUILD SENTENCE',
+    title: 'Build Sentence',
+    subline: 'Costruisci frasi grammaticali a partire da un word bank.',
+    key: 'grammar.builder',
+    body: <p>Trascina o tocca i tile per assemblare una frase. Il sistema controlla la struttura grammaticale.</p>,
+  },
+  funbuilder: {
+    eyebrow: 'GRAMMAR · COMPOSE SENTENCE',
+    title: 'Compose Sentence',
+    subline: 'Versione playful del builder con tile più ricchi.',
+    key: 'grammar.funbuilder',
+    body: <p>Variante del builder con interazione più giocosa: scegli i tile, componi la frase, vedi feedback.</p>,
+  },
+  clusters: {
+    eyebrow: 'GRAMMAR · CLUSTERS',
+    title: 'Clusters',
+    subline: 'Gruppi semantici e quartieri di parole correlate.',
+    key: 'grammar.clusters',
+    body: <p>Le parole vengono raggruppate per significato simile. Esempio: tutti i verbi di movimento finiscono nello stesso cluster.</p>,
+  },
+  dialects: {
+    eyebrow: 'GRAMMAR · DIALECTS',
+    title: 'Dialects',
+    subline: 'Varianti regionali del vocabolario tedesco.',
+    key: 'grammar.dialects',
+    body: <p>Vedi come una stessa parola può cambiare in zone diverse della Germania, Austria, Svizzera.</p>,
+  },
+  sunburst: {
+    eyebrow: 'GRAMMAR · HIERARCHY',
+    title: 'Hierarchy',
+    subline: 'Struttura gerarchica dei concetti e categorie.',
+    key: 'grammar.sunburst',
+    body: <p>Un grafico a corona che mostra come categorie macro contengono sotto-categorie e parole.</p>,
+  },
+};
 
 export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps) {
   const [sentences, setSentences] = useState<GrammarSentence[]>([]);
@@ -161,40 +204,28 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
 
   const currentSentence = sentences[currentIndex];
   const wordDatasetLoading = loading && words.length === 0;
+  const leaf = activeView === 'hub' ? VIEW_META.graph : VIEW_META[activeView];
+  void onViewChange;
 
   return (
-    <AppScreen mode="overlay" width="full" scroll="none" contentClassName="flex h-full flex-col">
-      <SurfacePanel className="rounded-none border-x-0 border-t-0" padding="none">
-        <div className="px-4 py-3">
-          <ScreenHeader
-            title="Grammar Lab"
-            onBack={onBack}
-            density="compact"
-            align="center"
-            actions={activeView === 'graph' && currentSentence ? (
-              <button
-                onClick={handleNextSentence}
-                className={`flex min-h-11 items-center gap-2 ${UI_RADIUS.pill} bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition-all`}
-              >
-                Next <Play size={16} />
-              </button>
-            ) : <div className="w-20" />}
-          />
-          <div className="mt-3 flex flex-wrap justify-center gap-2">
-            <GameSignalBadge icon={<Star size={14} />} label="Grammar Quest" tone="coral" />
-            <GameSignalBadge icon={<Sparkles size={14} />} label="Combo Lab" tone="coral-strong" />
-            <GameSignalBadge icon={<Trophy size={14} />} label="Syntax Loot" tone="amber" />
-          </div>
-        </div>
-        <PillTabs
-          items={LAB_TABS}
-          value={activeView}
-          onChange={onViewChange}
-          className="px-4 pb-3"
-          ariaLabel="Grammar Lab views"
-        />
-      </SurfacePanel>
-
+    <SceneShell
+      eyebrow={leaf.eyebrow}
+      title={leaf.title}
+      subline={leaf.subline}
+      explainerKey={leaf.key}
+      explainerTitle={`Cos'è ${leaf.title}`}
+      explainerBody={leaf.body}
+      back={{ onClick: onBack }}
+      action={activeView === 'graph' && currentSentence ? (
+        <button
+          onClick={handleNextSentence}
+          className={`flex min-h-10 items-center gap-2 ${UI_RADIUS.pill} bg-primary px-3 py-2 text-caption font-semibold text-on-primary transition-all`}
+        >
+          Next <Play size={14} />
+        </button>
+      ) : null}
+      onNavigate={onBack}
+    >
       {/* Sentence Display (only for graph view) */}
       {activeView === 'graph' && currentSentence && (
         <div className="text-center py-4 border-b border-hairline bg-canvas">
@@ -361,7 +392,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
           <WordDetailModal word={selectedWord} onClose={() => setSelectedWord(null)} />
         </Suspense>
       )}
-    </AppScreen>
+    </SceneShell>
   );
 }
 

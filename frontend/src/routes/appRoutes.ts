@@ -13,6 +13,7 @@ export type LearningRouteMode =
   | 'explore';
 
 export type GrammarView =
+  | 'hub'
   | 'graph'
   | 'wordcloud'
   | 'builder'
@@ -38,6 +39,7 @@ export type RouteState =
   | { screen: 'developer' };
 
 const GRAMMAR_SEGMENTS: Record<GrammarView, string> = {
+  hub: '',
   graph: 'graph',
   wordcloud: 'word-cloud',
   builder: 'build-sentence',
@@ -61,7 +63,7 @@ const LIBRARY_TAB_SEGMENTS: Record<LibraryDetailTab, string> = {
 const grammarViewBySegment = invertRecord(GRAMMAR_SEGMENTS);
 const libraryTabBySegment = invertRecord(LIBRARY_TAB_SEGMENTS);
 
-export const DEFAULT_GRAMMAR_VIEW: GrammarView = 'graph';
+export const DEFAULT_GRAMMAR_VIEW: GrammarView = 'hub';
 export const DEFAULT_LIBRARY_TAB: LibraryDetailTab = 'overview';
 
 export function parseAppRoute(pathname: string): RouteState {
@@ -131,7 +133,8 @@ export function parseAppRoute(pathname: string): RouteState {
 }
 
 export function grammarPath(view: GrammarView = DEFAULT_GRAMMAR_VIEW) {
-  return `/grammar/${GRAMMAR_SEGMENTS[view]}`;
+  const segment = GRAMMAR_SEGMENTS[view];
+  return segment ? `/grammar/${segment}` : '/grammar';
 }
 
 export function libraryWordPath(wordId: number, tab: LibraryDetailTab = DEFAULT_LIBRARY_TAB) {
