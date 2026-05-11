@@ -12,6 +12,7 @@ import { StreamingSpeechBubble, type StreamingSpeechStep } from './StreamingSpee
 import {
   MAX_VOCABULARY_SCAN_SWIPES,
   MIN_VOCABULARY_SCAN_SWIPES,
+  clearOnboardingPreferences,
   readOnboardingPreferences,
   saveOnboardingPreferences,
   buildVocabularyInsights,
@@ -64,6 +65,12 @@ export function FirstVocabularyOnboarding({
     setReactionEventId((current) => current + 1);
   };
 
+  const handleSkipPersonalization = () => {
+    clearOnboardingPreferences();
+    setPreferenceAnswers({});
+    onComplete();
+  };
+
   const handleSwipe = (direction: 'left' | 'right') => {
     if (!currentCard || phase !== 'scan') return;
 
@@ -98,6 +105,9 @@ export function FirstVocabularyOnboarding({
         speechSteps={onboardingCopy.intro.speechSteps}
         primaryActionLabel={onboardingCopy.intro.primaryAction}
         onPrimaryAction={() => advanceWithMascot('preferences')}
+        secondaryActionLabel={onboardingCopy.intro.skipPersonalizationAction}
+        secondaryActionHint={onboardingCopy.intro.skipPersonalizationHint}
+        onSecondaryAction={handleSkipPersonalization}
       >
         <div className="grid auto-rows-fr gap-3 sm:grid-cols-3">
           <GameSignalBadge icon={<Target size={14} />} label={onboardingCopy.intro.knownSignal} tone="success" />
@@ -118,6 +128,9 @@ export function FirstVocabularyOnboarding({
         eyebrow={onboardingCopy.preferences.eyebrow}
         title={onboardingCopy.preferences.title}
         body={onboardingCopy.preferences.body}
+        secondaryActionLabel={onboardingCopy.intro.skipPersonalizationAction}
+        secondaryActionHint={onboardingCopy.intro.skipPersonalizationHint}
+        onSecondaryAction={handleSkipPersonalization}
       >
         <PreferenceQuestionnaire
           preferencesCopy={onboardingCopy.preferences}
@@ -310,6 +323,9 @@ interface AnimatedExplanationFrameProps {
   speechSteps?: StreamingSpeechStep[];
   primaryActionLabel?: string;
   onPrimaryAction?: () => void;
+  secondaryActionLabel?: string;
+  secondaryActionHint?: string;
+  onSecondaryAction?: () => void;
   children: ReactNode;
 }
 
@@ -324,6 +340,9 @@ function AnimatedExplanationFrame({
   speechSteps,
   primaryActionLabel,
   onPrimaryAction,
+  secondaryActionLabel,
+  secondaryActionHint,
+  onSecondaryAction,
   children,
 }: AnimatedExplanationFrameProps) {
   const steps = useMemo<StreamingSpeechStep[]>(() => (
@@ -370,6 +389,21 @@ function AnimatedExplanationFrame({
                 {primaryActionLabel}
                 <ArrowRight size={18} />
               </button>
+            )}
+            {secondaryActionLabel && onSecondaryAction && (
+              <div className="flex flex-col items-center gap-1">
+                <button
+                  type="button"
+                  onClick={onSecondaryAction}
+                  className={`${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} text-body-sm font-medium text-muted underline-offset-2 hover:text-ink hover:underline`}
+                  data-testid="skip-personalization"
+                >
+                  {secondaryActionLabel}
+                </button>
+                {secondaryActionHint && (
+                  <p className="text-caption text-muted-soft">{secondaryActionHint}</p>
+                )}
+              </div>
             )}
           </div>
         </StreamingSpeechBubble>

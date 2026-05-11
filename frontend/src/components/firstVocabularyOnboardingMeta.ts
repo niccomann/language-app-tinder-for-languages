@@ -1,6 +1,6 @@
 import type { AdaptiveLearningSummary, UserProgress } from '../types';
 import { copy } from '../i18n/staticCopy';
-import { readStorageValue, writeStorageValue } from '../utils/browserStorage';
+import { readStorageValue, removeStorageValue, writeStorageValue } from '../utils/browserStorage';
 
 export const FIRST_VOCABULARY_ONBOARDING_STORAGE_KEY = 'languageApp:firstVocabularyOnboardingDone:v1';
 export const FIRST_VOCABULARY_ONBOARDING_TEST_BYPASS_STORAGE_KEY = 'languageApp:firstVocabularyOnboardingTestBypass:v1';
@@ -99,6 +99,10 @@ export function readOnboardingPreferences(): OnboardingPreferenceAnswers {
 
 export function saveOnboardingPreferences(answers: OnboardingPreferenceAnswers) {
   writeStorageValue(ONBOARDING_PREFERENCES_STORAGE_KEY, JSON.stringify(answers));
+}
+
+export function clearOnboardingPreferences() {
+  removeStorageValue(ONBOARDING_PREFERENCES_STORAGE_KEY);
 }
 
 export function hasVocabularyHistory(

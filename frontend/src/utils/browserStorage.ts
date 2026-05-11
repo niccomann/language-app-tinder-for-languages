@@ -13,3 +13,11 @@ export function writeStorageValue(key: string, value: string) {
     // Storage can be unavailable in private or embedded contexts.
   }
 }
+
+export function removeStorageValue(key: string) {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // Storage can be unavailable in private or embedded contexts.
+  }
+}

@@ -11,6 +11,8 @@
       "unknownSignal": "I do not know it yet",
       "wordLevelSignal": "Word level",
       "primaryAction": "Start the scan",
+      "skipPersonalizationAction": "Skip personalization",
+      "skipPersonalizationHint": "Skip straight in. No questions, no personalized profile.",
       "speechSteps": [
         {
           "eyebrow": "First calibration",
