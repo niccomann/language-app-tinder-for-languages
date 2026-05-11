@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useCopy, useLanguage } from '../i18n/languageContext';
-import type { TargetLanguage } from '../i18n/languageStorage';
+import type { SourceLocale, TargetLanguage } from '../i18n/languageStorage';
 import { UI_INTERACTION, UI_RADIUS } from './ui';
 
-const TARGET_SHORT: Record<TargetLanguage, string> = { de: 'DE', it: 'IT', fr: 'FR' };
 const TARGET_FLAGS: Record<TargetLanguage, string> = { de: '🇩🇪', it: '🇮🇹', fr: '🇫🇷' };
+const SOURCE_FLAGS: Record<SourceLocale, string> = { en: '🇬🇧', it: '🇮🇹', fr: '🇫🇷' };
 
 interface LanguageSwitcherProps {
   onOpenSourceModal: () => void;
@@ -18,10 +18,10 @@ export function LanguageSwitcher({ onOpenSourceModal }: LanguageSwitcherProps) {
   if (!targetLanguage) return null;
 
   const targets: TargetLanguage[] = ['de', 'it', 'fr'];
-  const currentShort = TARGET_SHORT[targetLanguage];
-  const currentFlag = TARGET_FLAGS[targetLanguage];
+  const currentTargetFlag = TARGET_FLAGS[targetLanguage];
+  const currentSourceFlag = sourceLocale ? SOURCE_FLAGS[sourceLocale] : null;
 
-  const triggerClass = `inline-flex h-10 items-center gap-1.5 px-3 ${UI_RADIUS.control} border border-hairline bg-canvas text-body-sm font-medium text-ink ${UI_INTERACTION.fastTransition} hover:bg-surface-card`;
+  const triggerClass = `inline-flex h-10 items-center gap-1 px-3 ${UI_RADIUS.control} border border-hairline bg-canvas text-body-sm font-medium text-ink ${UI_INTERACTION.fastTransition} hover:bg-surface-card`;
 
   return (
     <div className="relative">
@@ -33,8 +33,13 @@ export function LanguageSwitcher({ onOpenSourceModal }: LanguageSwitcherProps) {
         aria-expanded={open}
         aria-label={copy.languageSwitcher.triggerAriaLabel}
       >
-        <span className="text-base leading-none">{currentFlag}</span>
-        <span>{currentShort}</span>
+        {currentSourceFlag && (
+          <>
+            <span className="text-base leading-none">{currentSourceFlag}</span>
+            <span className="text-caption text-muted-soft">→</span>
+          </>
+        )}
+        <span className="text-base leading-none">{currentTargetFlag}</span>
         <span className="text-caption text-muted">▾</span>
       </button>
 
@@ -47,9 +52,22 @@ export function LanguageSwitcher({ onOpenSourceModal }: LanguageSwitcherProps) {
             onClick={() => setOpen(false)}
           />
           <div
-            className={`absolute right-0 top-full mt-2 z-[90] w-60 ${UI_RADIUS.surface} border border-hairline bg-canvas p-2 shadow-sm`}
+            className={`absolute right-0 top-full mt-2 z-[90] w-64 ${UI_RADIUS.surface} border border-hairline bg-canvas p-2 shadow-sm`}
             role="menu"
           >
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                onOpenSourceModal();
+              }}
+              className={`flex w-full items-center justify-between gap-2 px-2 py-2 text-left text-body-sm font-semibold text-ink ${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} bg-surface-card hover:bg-surface-cream-strong`}
+              role="menuitem"
+            >
+              <span>{copy.languageSwitcher.editBoth}</span>
+              <span className="text-caption text-muted">›</span>
+            </button>
+            <div className="my-1 border-t border-hairline" />
             <div className="px-2 py-1 text-caption-uppercase font-medium uppercase tracking-[1.5px] text-muted">
               {copy.languageSwitcher.imParo}
             </div>
@@ -78,17 +96,6 @@ export function LanguageSwitcher({ onOpenSourceModal }: LanguageSwitcherProps) {
               );
             })}
             <div className="my-1 border-t border-hairline" />
-            <button
-              type="button"
-              onClick={() => {
-                setOpen(false);
-                onOpenSourceModal();
-              }}
-              className={`flex w-full items-center gap-2 px-2 py-2 text-left text-body-sm text-ink ${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} hover:bg-surface-card`}
-              role="menuitem"
-            >
-              {copy.languageSwitcher.changeSourceLanguage}
-            </button>
             <button
               type="button"
               onClick={() => {

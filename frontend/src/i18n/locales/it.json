@@ -566,7 +566,8 @@
     "triggerAriaLabel": "Cambia lingua di apprendimento",
     "imParo": "Imparo",
     "changeSourceLanguage": "Cambia lingua di partenza",
-    "resetOnboarding": "Reset onboarding"
+    "resetOnboarding": "Reset onboarding",
+    "editBoth": "Cambia lingue (source + target)"
   },
   "languageBadge": {
     "learning": "Imparando",

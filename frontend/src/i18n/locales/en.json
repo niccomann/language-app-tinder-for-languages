@@ -566,7 +566,8 @@
     "triggerAriaLabel": "Change learning language",
     "imParo": "I learn",
     "changeSourceLanguage": "Change starting language",
-    "resetOnboarding": "Reset onboarding"
+    "resetOnboarding": "Reset onboarding",
+    "editBoth": "Change languages (source + target)"
   },
   "languageBadge": {
     "learning": "Learning",

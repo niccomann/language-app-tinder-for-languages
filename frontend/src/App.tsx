@@ -95,7 +95,7 @@ function AppWithLanguage() {
           productNavigationHidden={productNavigationHidden}
           onOpenSourceModal={() => setShowSourceModal(true)}
         />
-        <LanguageBadge />
+        <LanguageBadge onClick={() => setShowSourceModal(true)} />
         <Suspense fallback={<RouteFallback />}>
           {route.screen === 'developer' ? (
             <DeveloperChartsScreen
