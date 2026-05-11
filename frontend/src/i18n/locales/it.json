@@ -42,7 +42,7 @@
     },
     "preferences": {
       "eyebrow": "Setup allenamento",
-      "title": "Dimmi che tipo di tedesco vuoi costruire.",
+      "title": "Dimmi che tipo di {{language}} vuoi costruire.",
       "body": "Prima della scansione vocabolario, scegli stile delle parole, domini, tono ed esercizi che dovrebbero guidare il percorso.",
       "progressLabel": "Domanda {{current}} di {{total}}",
       "selectedLabel": "Selezionato",
@@ -481,7 +481,7 @@
     "vocabularyReview": {
       "title": "Ripasso vocabolario",
       "missionLabel": "Missione 1",
-      "description": "Scorri le parole che sai o non sai così il sistema continua a calibrare il tuo livello di tedesco.",
+      "description": "Scorri le parole che sai o non sai così il sistema continua a calibrare il tuo livello di {{language}}.",
       "ctaLabel": "Continua percorso"
     },
     "sentencePlacement": {
@@ -793,5 +793,117 @@
     "learn": "Learn",
     "review": "Review",
     "explore": "Explore"
+  },
+  "library": {
+    "statsTitle": "Stats della libreria",
+    "noWordsTitle": "Nessuna parola trovata",
+    "noWordsBody": "Prova a modificare i filtri di ricerca",
+    "allCefr": "Tutti i livelli CEFR",
+    "allGenders": "Tutti i generi",
+    "allFrequencies": "Tutte le frequenze",
+    "allCategories": "Tutte le categorie",
+    "allPos": "Tutte le parti del discorso",
+    "simpleAndCompound": "Semplici e composte",
+    "simpleOnly": "Solo parole semplici",
+    "compoundOnly": "Solo parole composte",
+    "allRegisters": "Tutti i registri"
+  },
+  "learningStrip": {
+    "eyebrow": "Game packs",
+    "title": "Topic Deck"
+  },
+  "learningSystemMenu": {
+    "title": "Learning System",
+    "subtitle": "Le tue swipe modellano la prossima difficoltà."
+  },
+  "completion": {
+    "reviewed": "Riviste",
+    "toReview": "Da rivedere",
+    "known": "Conosciute",
+    "sessionComplete": "Sessione completata",
+    "sessionBody": "Hai completato tutte le flashcard di questa sessione.",
+    "startOver": "Ricomincia",
+    "adjustFilters": "Modifica filtri",
+    "viewLibrary": "Vedi libreria",
+    "grammarLab": "Grammar Lab"
+  },
+  "wordDetail": {
+    "timesKnown": "Volte conosciuta",
+    "timesUnknown": "Volte sconosciuta",
+    "totalReviews": "Review totali",
+    "masteryLevel": "Livello di mastery",
+    "frequency": "Frequenza",
+    "register": "Registro",
+    "formation": "Formazione",
+    "originLanguage": "Lingua di origine",
+    "originWord": "Parola di origine",
+    "languageFamily": "Famiglia linguistica",
+    "timePeriod": "Periodo",
+    "loadingDetails": "Caricamento dettagli parola...",
+    "loadingRow": "Caricamento riga database...",
+    "noExamples": "Nessun esempio disponibile",
+    "noEtymology": "Nessun dato etimologico",
+    "noFalseFriends": "Nessun falso amico identificato",
+    "noProverbs": "Nessun proverbio o modo di dire disponibile",
+    "noCollocations": "Nessuna collocazione disponibile",
+    "noDialectVariants": "Nessuna variante dialettale disponibile",
+    "noRows": "Nessuna riga"
+  },
+  "featureHub": {
+    "grammarEyebrow": "Allenamento grammatica",
+    "grammarTitle": "Grammar",
+    "languageMapEyebrow": "Mappa lingua"
+  },
+  "dialectMap": {
+    "loading": "Caricamento dialetti...",
+    "noDataTitle": "Nessun dato sui dialetti",
+    "noDataBody": "I dati dialettali regionali devono essere popolati nel database.",
+    "mapTitle": "Mappa dialetti"
+  },
+  "sentenceBuilder": {
+    "selectPrompt": "Seleziona i nodi sopra per iniziare a costruire",
+    "clickHint": "Tocca i nodi per aggiungerli, poi connettili in ordine"
+  },
+  "cardStack": {
+    "masteryLabel": "Mastery",
+    "progress": "Progresso",
+    "known": "Conosciuta",
+    "unknown": "Sconosciuta",
+    "swipeHint": "Swipe sinistra: Non so · Swipe destra: So",
+    "noDeck": "Nessuna carta in questo deck",
+    "buildTopicDeck": "Costruisci il tuo topic deck",
+    "selectedPacks": "Pack selezionati"
+  },
+  "featureHubScreen": {
+    "review": {
+      "eyebrow": "Review · Hub",
+      "title": "Review e Setup",
+      "subtitle": "Gli strumenti sono raggruppati qui per mantenere il path focalizzato. Topic {{selected}}/{{total}} attivi.",
+      "sectionTitle": "Review e setup",
+      "sectionBody": "Regola il deck, ispeziona le parole conosciute, apri la libreria o rivedi come il learning system valuta la memoria."
+    },
+    "exploreGrammar": {
+      "eyebrow": "Explore · Grammar training",
+      "title": "Grammar Training",
+      "subtitle": "Verifiche a livello di frase, builder, lab grammaticale."
+    },
+    "exploreMap": {
+      "eyebrow": "Explore · Language map",
+      "title": "Language Map",
+      "subtitle": "Cluster, dialetti, gerarchia e nuvole di parole."
+    },
+    "exploreHub": {
+      "eyebrow": "Explore · Hub",
+      "title": "Esplora {{language}}",
+      "subtitle": "Strumenti avanzati: pratica grammaticale o mappa della lingua."
+    },
+    "grammarTraining": {
+      "title": "Grammar training",
+      "body": "Usali quando il path ha bisogno di logica frasale, pratica grammaticale o strumenti di builder."
+    },
+    "languageMap": {
+      "title": "Language map",
+      "body": "Esplora relazioni, cluster, dialetti e gerarchia quando vuoi ispezionare il sistema."
+    }
   }
 }

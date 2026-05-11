@@ -3,6 +3,7 @@ import { AudioButton } from './AudioButton';
 import { ConfidenceBadge } from './ConfidenceBadge';
 import { UI_RADIUS } from './ui';
 import { CATEGORY_COLORS } from '../utils/wordDisplayMeta';
+import { useCopy } from '../i18n/languageContext';
 
 interface WordDetailModalProps {
   word: WordCloudItem;
@@ -10,6 +11,8 @@ interface WordDetailModalProps {
 }
 
 export function WordDetailModal({ word, onClose }: WordDetailModalProps) {
+  const copy = useCopy();
+  const wd = copy.wordDetail;
   const totalSwipes = (word.swipe_right_count || 0) + (word.swipe_left_count || 0);
   const masteryPercentage = totalSwipes > 0
     ? Math.round(((word.swipe_right_count || 0) / totalSwipes) * 100)
@@ -61,26 +64,26 @@ export function WordDetailModal({ word, onClose }: WordDetailModalProps) {
               <div className="text-2xl font-semibold text-success">
                 {word.swipe_right_count || 0}
               </div>
-              <div className="text-xs text-success">Times known</div>
+              <div className="text-xs text-success">{wd.timesKnown}</div>
             </div>
             <div className={`bg-error/10 ${UI_RADIUS.control} p-4 text-center`}>
               <div className="text-2xl font-semibold text-error">
                 {word.swipe_left_count || 0}
               </div>
-              <div className="text-xs text-error">Times not known</div>
+              <div className="text-xs text-error">{wd.timesUnknown}</div>
             </div>
             <div className={`bg-surface-soft ${UI_RADIUS.control} p-4 text-center`}>
               <div className="text-2xl font-semibold text-primary">
                 {word.review_count || 0}
               </div>
-              <div className="text-xs text-muted">Total reviews</div>
+              <div className="text-xs text-muted">{wd.totalReviews}</div>
             </div>
           </div>
 
           {totalSwipes > 0 && (
             <div className="mb-4">
               <div className="flex justify-between text-sm mb-1">
-                <span className="text-muted">Mastery level</span>
+                <span className="text-muted">{wd.masteryLevel}</span>
                 <span className="font-semibold text-ink">{masteryPercentage}%</span>
               </div>
               <div className={`h-3 bg-surface-soft ${UI_RADIUS.pill} overflow-hidden`}>
@@ -96,7 +99,7 @@ export function WordDetailModal({ word, onClose }: WordDetailModalProps) {
             onClick={onClose}
             className={`w-full py-3 bg-primary text-on-primary ${UI_RADIUS.control} font-semibold hover:bg-primary-active transition-colors`}
           >
-            Close
+            {copy.common.close}
           </button>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { Brain, ChevronDown, Database, Gauge, Layers } from 'lucide-react';
 import { UI_RADIUS, UI_SIZE } from './ui';
+import { useCopy } from '../i18n/languageContext';
 
 const learningSystemItems = [
   {
@@ -30,6 +31,7 @@ interface LearningSystemMenuProps {
 }
 
 export function LearningSystemMenu({ isOpen, onToggle }: LearningSystemMenuProps) {
+  const copy = useCopy();
   return (
     <section className={`${UI_RADIUS.surface} border border-hairline bg-canvas p-3`}>
       <button
@@ -44,9 +46,9 @@ export function LearningSystemMenu({ isOpen, onToggle }: LearningSystemMenuProps
             <Brain size={19} />
           </span>
           <span className="min-w-0">
-            <span className="block text-body-sm font-semibold text-ink">Learning System</span>
+            <span className="block text-body-sm font-semibold text-ink">{copy.learningSystemMenu.title}</span>
             <span className="block text-caption font-medium leading-5 text-muted">
-              Your swipes shape the next difficulty.
+              {copy.learningSystemMenu.subtitle}
             </span>
           </span>
         </span>

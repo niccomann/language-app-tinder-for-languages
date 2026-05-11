@@ -42,7 +42,7 @@
     },
     "preferences": {
       "eyebrow": "Configuration",
-      "title": "Dites-moi quel allemand vous voulez construire.",
+      "title": "Dis-moi quel {{language}} tu veux construire.",
       "body": "Avant le scan du vocabulaire, choisissez le style des mots, les domaines, le ton et les exercices qui doivent orienter votre parcours.",
       "progressLabel": "Question {{current}} sur {{total}}",
       "selectedLabel": "Sélectionné",
@@ -481,7 +481,7 @@
     "vocabularyReview": {
       "title": "Révision du vocabulaire",
       "missionLabel": "Mission 1",
-      "description": "Swipez les mots que vous connaissez ou manquez pour que le système continue à calibrer votre niveau d'allemand.",
+      "description": "Swipe les mots que tu connais ou que tu manques pour que le système continue à calibrer ton niveau d'{{language}}.",
       "ctaLabel": "Continuer le parcours"
     },
     "sentencePlacement": {
@@ -793,5 +793,117 @@
     "learn": "Apprendre",
     "review": "Réviser",
     "explore": "Explorer"
+  },
+  "library": {
+    "statsTitle": "Stats de la bibliothèque",
+    "noWordsTitle": "Aucun mot trouvé",
+    "noWordsBody": "Modifie tes filtres de recherche",
+    "allCefr": "Tous les niveaux CEFR",
+    "allGenders": "Tous les genres",
+    "allFrequencies": "Toutes les fréquences",
+    "allCategories": "Toutes les catégories",
+    "allPos": "Toutes les catégories grammaticales",
+    "simpleAndCompound": "Simples et composés",
+    "simpleOnly": "Mots simples seulement",
+    "compoundOnly": "Mots composés seulement",
+    "allRegisters": "Tous les registres"
+  },
+  "learningStrip": {
+    "eyebrow": "Game packs",
+    "title": "Topic Deck"
+  },
+  "learningSystemMenu": {
+    "title": "Learning System",
+    "subtitle": "Tes swipes modèlent la prochaine difficulté."
+  },
+  "completion": {
+    "reviewed": "Revus",
+    "toReview": "À revoir",
+    "known": "Connus",
+    "sessionComplete": "Session terminée",
+    "sessionBody": "Tu as complété toutes les flashcards de cette session.",
+    "startOver": "Recommencer",
+    "adjustFilters": "Modifier les filtres",
+    "viewLibrary": "Voir la bibliothèque",
+    "grammarLab": "Grammar Lab"
+  },
+  "wordDetail": {
+    "timesKnown": "Fois connu",
+    "timesUnknown": "Fois inconnu",
+    "totalReviews": "Total reviews",
+    "masteryLevel": "Niveau de maîtrise",
+    "frequency": "Fréquence",
+    "register": "Registre",
+    "formation": "Formation",
+    "originLanguage": "Langue d'origine",
+    "originWord": "Mot d'origine",
+    "languageFamily": "Famille linguistique",
+    "timePeriod": "Période",
+    "loadingDetails": "Chargement des détails du mot...",
+    "loadingRow": "Chargement de la ligne de base de données...",
+    "noExamples": "Aucun exemple disponible",
+    "noEtymology": "Aucune donnée étymologique",
+    "noFalseFriends": "Aucun faux ami identifié",
+    "noProverbs": "Aucun proverbe ou expression disponible",
+    "noCollocations": "Aucune collocation disponible",
+    "noDialectVariants": "Aucune variante dialectale disponible",
+    "noRows": "Aucune ligne"
+  },
+  "featureHub": {
+    "grammarEyebrow": "Entraînement grammatical",
+    "grammarTitle": "Grammar",
+    "languageMapEyebrow": "Carte linguistique"
+  },
+  "dialectMap": {
+    "loading": "Chargement des dialectes...",
+    "noDataTitle": "Aucune donnée dialectale",
+    "noDataBody": "Les données dialectales régionales doivent être populées dans la base.",
+    "mapTitle": "Carte des dialectes"
+  },
+  "sentenceBuilder": {
+    "selectPrompt": "Sélectionne les nœuds ci-dessus pour commencer",
+    "clickHint": "Tape sur les nœuds pour les ajouter, puis connecte-les dans l'ordre"
+  },
+  "cardStack": {
+    "masteryLabel": "Maîtrise",
+    "progress": "Progrès",
+    "known": "Connu",
+    "unknown": "Inconnu",
+    "swipeHint": "Swipe gauche : Je ne sais pas · Swipe droite : Je sais",
+    "noDeck": "Aucune carte dans ce deck",
+    "buildTopicDeck": "Construis ton topic deck",
+    "selectedPacks": "Packs sélectionnés"
+  },
+  "featureHubScreen": {
+    "review": {
+      "eyebrow": "Review · Hub",
+      "title": "Review et Setup",
+      "subtitle": "Les outils sont regroupés ici pour garder le parcours focalisé. Sujets {{selected}}/{{total}} actifs.",
+      "sectionTitle": "Review et setup",
+      "sectionBody": "Ajuste le deck, inspecte les mots connus, ouvre la bibliothèque ou revois comment le learning system évalue la mémoire."
+    },
+    "exploreGrammar": {
+      "eyebrow": "Explore · Grammar training",
+      "title": "Grammar Training",
+      "subtitle": "Vérifications au niveau de la phrase, builder, grammar lab."
+    },
+    "exploreMap": {
+      "eyebrow": "Explore · Language map",
+      "title": "Language Map",
+      "subtitle": "Clusters, dialectes, hiérarchie et nuages de mots."
+    },
+    "exploreHub": {
+      "eyebrow": "Explore · Hub",
+      "title": "Explorer l'{{language}}",
+      "subtitle": "Outils avancés : pratique grammaticale ou carte linguistique."
+    },
+    "grammarTraining": {
+      "title": "Grammar training",
+      "body": "Utilise-les quand le parcours a besoin de logique phrasale, de pratique grammaticale ou d'outils builder."
+    },
+    "languageMap": {
+      "title": "Language map",
+      "body": "Explore relations, clusters, dialectes et hiérarchie quand tu veux inspecter le système."
+    }
   }
 }

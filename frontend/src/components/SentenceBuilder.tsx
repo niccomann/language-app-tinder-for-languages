@@ -17,7 +17,7 @@ import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
 import { buildOrderedSentence } from '../utils/sentenceBuilderOrder';
 import { useAvailableGrammarNodes } from '../hooks/useAvailableGrammarNodes';
 import { reportClientError } from '../utils/clientError';
-import { useTargetLanguage } from '../i18n/languageContext';
+import { useCopy, useTargetLanguage } from '../i18n/languageContext';
 
 interface Connection {
   fromId: string;
@@ -30,6 +30,7 @@ interface SentenceBuilderProps {
 
 export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) {
   const language = useTargetLanguage();
+  const copy = useCopy();
   const { availableNodes, loading } = useAvailableGrammarNodes();
   const [selectedNodes, setSelectedNodes] = useState<GrammarNode[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
@@ -198,8 +199,8 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
             
             {selectedNodes.length === 0 ? (
               <div className="text-center py-8 text-muted-soft">
-                <p className="text-lg">Select nodes from above to start building</p>
-                <p className="text-sm mt-2">Click nodes to add them, then connect them in order</p>
+                <p className="text-lg">{copy.sentenceBuilder.selectPrompt}</p>
+                <p className="text-sm mt-2">{copy.sentenceBuilder.clickHint}</p>
               </div>
             ) : (
               <div className="space-y-4">

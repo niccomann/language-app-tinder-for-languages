@@ -271,7 +271,7 @@ export function LearningPathHome({
             </span>
           </span>
           <span className="text-body-sm font-medium leading-5 text-on-primary/85">
-            {primaryMission.description}
+            {formatCopy(primaryMission.description, { language: languageName })}
           </span>
           <span
             className={`${UI_RADIUS.pill} bg-canvas px-3 py-2 text-caption font-medium text-primary`}

@@ -42,7 +42,7 @@
     },
     "preferences": {
       "eyebrow": "Training setup",
-      "title": "Tell me what kind of German you want to build.",
+      "title": "Tell me what kind of {{language}} you want to build.",
       "body": "Before the vocabulary scan, choose the style of words, domains, tone, and exercises that should shape your path.",
       "progressLabel": "Question {{current}} of {{total}}",
       "selectedLabel": "Selected",
@@ -481,7 +481,7 @@
     "vocabularyReview": {
       "title": "Vocabulary Review",
       "missionLabel": "Mission 1",
-      "description": "Swipe words you know or miss so the system can keep tuning your German level.",
+      "description": "Swipe words you know or miss so the system can keep tuning your {{language}} level.",
       "ctaLabel": "Continue path"
     },
     "sentencePlacement": {
@@ -793,5 +793,117 @@
     "learn": "Learn",
     "review": "Review",
     "explore": "Explore"
+  },
+  "library": {
+    "statsTitle": "Library stats",
+    "noWordsTitle": "No words found",
+    "noWordsBody": "Try modifying your search filters",
+    "allCefr": "All CEFR levels",
+    "allGenders": "All genders",
+    "allFrequencies": "All frequencies",
+    "allCategories": "All categories",
+    "allPos": "All parts of speech",
+    "simpleAndCompound": "Simple & compound",
+    "simpleOnly": "Simple words only",
+    "compoundOnly": "Compound words only",
+    "allRegisters": "All registers"
+  },
+  "learningStrip": {
+    "eyebrow": "Game packs",
+    "title": "Topic Deck"
+  },
+  "learningSystemMenu": {
+    "title": "Learning System",
+    "subtitle": "Your swipes shape the next difficulty."
+  },
+  "completion": {
+    "reviewed": "Reviewed",
+    "toReview": "To Review",
+    "known": "Known",
+    "sessionComplete": "Session Complete",
+    "sessionBody": "You've completed all flashcards in this session.",
+    "startOver": "Start Over",
+    "adjustFilters": "Adjust Filters",
+    "viewLibrary": "View Library",
+    "grammarLab": "Grammar Lab"
+  },
+  "wordDetail": {
+    "timesKnown": "Times known",
+    "timesUnknown": "Times not known",
+    "totalReviews": "Total reviews",
+    "masteryLevel": "Mastery level",
+    "frequency": "Frequency",
+    "register": "Register",
+    "formation": "Formation",
+    "originLanguage": "Origin language",
+    "originWord": "Origin word",
+    "languageFamily": "Language family",
+    "timePeriod": "Time period",
+    "loadingDetails": "Loading word details...",
+    "loadingRow": "Loading database row...",
+    "noExamples": "No examples available",
+    "noEtymology": "No etymology data available",
+    "noFalseFriends": "No false friends identified",
+    "noProverbs": "No proverbs or idioms available",
+    "noCollocations": "No collocations available",
+    "noDialectVariants": "No dialect variants available",
+    "noRows": "No rows"
+  },
+  "featureHub": {
+    "grammarEyebrow": "Grammar training",
+    "grammarTitle": "Grammar",
+    "languageMapEyebrow": "Language map"
+  },
+  "dialectMap": {
+    "loading": "Loading dialects...",
+    "noDataTitle": "No dialect data available",
+    "noDataBody": "Regional dialect data needs to be populated in the database.",
+    "mapTitle": "Dialect Map"
+  },
+  "sentenceBuilder": {
+    "selectPrompt": "Select nodes from above to start building",
+    "clickHint": "Click nodes to add them, then connect them in order"
+  },
+  "cardStack": {
+    "masteryLabel": "Mastery",
+    "progress": "Progress",
+    "known": "Known",
+    "unknown": "Unknown",
+    "swipeHint": "Swipe left: Don't know · Swipe right: Know",
+    "noDeck": "No cards in this deck",
+    "buildTopicDeck": "Build your topic deck",
+    "selectedPacks": "Selected packs"
+  },
+  "featureHubScreen": {
+    "review": {
+      "eyebrow": "Review · Hub",
+      "title": "Review & Setup",
+      "subtitle": "Tools are grouped here so the path can stay focused. Topics {{selected}}/{{total}} are active.",
+      "sectionTitle": "Review & setup",
+      "sectionBody": "Adjust the deck, inspect known words, open the library, or review how the learning system scores memory."
+    },
+    "exploreGrammar": {
+      "eyebrow": "Explore · Grammar training",
+      "title": "Grammar Training",
+      "subtitle": "Sentence-level checks, builder, grammar lab."
+    },
+    "exploreMap": {
+      "eyebrow": "Explore · Language map",
+      "title": "Language Map",
+      "subtitle": "Clusters, dialects, hierarchy and word clouds."
+    },
+    "exploreHub": {
+      "eyebrow": "Explore · Hub",
+      "title": "Explore {{language}}",
+      "subtitle": "Advanced tools: grammar practice or language map."
+    },
+    "grammarTraining": {
+      "title": "Grammar training",
+      "body": "Use these when the path needs sentence logic, grammar practice, or builder tools."
+    },
+    "languageMap": {
+      "title": "Language map",
+      "body": "Explore relationships, clusters, dialects, and hierarchy when you want to inspect the system."
+    }
   }
 }

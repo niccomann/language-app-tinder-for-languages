@@ -11,7 +11,7 @@ import {
   FREQUENCY_ICONS,
   GENDER_BADGE_META as GENDER_LABELS,
 } from '../utils/wordDisplayMeta';
-import { useTargetLanguage } from '../i18n/languageContext';
+import { useCopy, useTargetLanguage } from '../i18n/languageContext';
 
 interface WordsLibraryEnrichedProps {
   onClose: () => void;
@@ -41,6 +41,8 @@ export function WordsLibraryEnriched({
   onWordTabChange,
 }: WordsLibraryEnrichedProps) {
   const language = useTargetLanguage();
+  const copy = useCopy();
+  const lib = copy.library;
   const [words, setWords] = useState<FlashcardWithProgress[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -267,7 +269,7 @@ export function WordsLibraryEnriched({
               className={`mb-4 flex w-full items-center justify-between gap-3 border border-hairline bg-canvas px-4 py-3 ${UI_RADIUS.control} text-left hover:bg-surface-card`}
             >
               <span>
-                <span className="block text-body-sm font-semibold text-ink">Stats della libreria</span>
+                <span className="block text-body-sm font-semibold text-ink">{lib.statsTitle}</span>
                 <span className="mt-0.5 block text-caption font-medium text-muted">
                   Total {totalWords} · Learned {knownWords.length} · To review {unknownWords.length}
                 </span>
@@ -327,7 +329,7 @@ export function WordsLibraryEnriched({
                 value={cefrFilter}
                 onChange={setCefrFilter}
               >
-                <option value="">All CEFR Levels</option>
+                <option value="">{lib.allCefr}</option>
                 {filters.cefr_levels.map(level => (
                   <option key={level} value={level}>{level}</option>
                 ))}
@@ -338,7 +340,7 @@ export function WordsLibraryEnriched({
                 value={genderFilter}
                 onChange={setGenderFilter}
               >
-                <option value="">All Genders</option>
+                <option value="">{lib.allGenders}</option>
                 {filters.genders.map(gender => (
                   <option key={gender} value={gender}>
                     {GENDER_LABELS[gender]?.article || gender} ({gender})
@@ -351,7 +353,7 @@ export function WordsLibraryEnriched({
                 value={frequencyFilter}
                 onChange={setFrequencyFilter}
               >
-                <option value="">All Frequencies</option>
+                <option value="">{lib.allFrequencies}</option>
                 {filters.frequency_bands.map(freq => (
                   <option key={freq} value={freq}>{freq.replace('_', ' ')}</option>
                 ))}
@@ -362,7 +364,7 @@ export function WordsLibraryEnriched({
                 value={categoryFilter}
                 onChange={setCategoryFilter}
               >
-                <option value="">All Categories</option>
+                <option value="">{lib.allCategories}</option>
                 {filters.categories.map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
@@ -373,7 +375,7 @@ export function WordsLibraryEnriched({
                 value={posFilter}
                 onChange={setPosFilter}
               >
-                <option value="">All Parts of Speech</option>
+                <option value="">{lib.allPos}</option>
                 {filters.parts_of_speech.map(pos => (
                   <option key={pos} value={pos}>{pos}</option>
                 ))}
@@ -384,9 +386,9 @@ export function WordsLibraryEnriched({
                 value={compoundFilter}
                 onChange={setCompoundFilter}
               >
-                <option value="">Simple & Compound</option>
-                <option value="false">Simple words only</option>
-                <option value="true">Compound words only</option>
+                <option value="">{lib.simpleAndCompound}</option>
+                <option value="false">{lib.simpleOnly}</option>
+                <option value="true">{lib.compoundOnly}</option>
               </FilterSelect>
 
               {filters.registers.length > 0 && (
@@ -395,7 +397,7 @@ export function WordsLibraryEnriched({
                   value={registerFilter}
                   onChange={setRegisterFilter}
                 >
-                  <option value="">All Registers</option>
+                  <option value="">{lib.allRegisters}</option>
                   {filters.registers.map(reg => (
                     <option key={reg} value={reg}>{reg}</option>
                   ))}
@@ -416,8 +418,8 @@ export function WordsLibraryEnriched({
         {visibleWords.length === 0 ? (
           <div className="text-center py-16">
             <BookOpen size={56} className="mx-auto mb-4 text-muted" />
-            <h3 className="text-xl font-semibold text-ink mb-2">No words found</h3>
-            <p className="text-muted">Try modifying your search filters</p>
+            <h3 className="text-xl font-semibold text-ink mb-2">{lib.noWordsTitle}</h3>
+            <p className="text-muted">{lib.noWordsBody}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">

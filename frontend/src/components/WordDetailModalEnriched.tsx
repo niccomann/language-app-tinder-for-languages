@@ -11,7 +11,7 @@ import {
   CONFUSION_LEVEL_CLASSES as CONFUSION_COLORS,
   GENDER_BADGE_META as GENDER_LABELS,
 } from '../utils/wordDisplayMeta';
-import { useTargetLanguage } from '../i18n/languageContext';
+import { useCopy, useTargetLanguage } from '../i18n/languageContext';
 
 interface WordDetailModalProps {
   wordId: number;
@@ -44,6 +44,8 @@ const DbField = ({ name, value }: { name: string; value: unknown }) => (
 
 export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, onClose }: WordDetailModalProps) {
   const language = useTargetLanguage();
+  const copy = useCopy();
+  const wd = copy.wordDetail;
   const [word, setWord] = useState<FlashcardDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -137,7 +139,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
       <div className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4">
         <div className={`bg-canvas border border-hairline ${UI_RADIUS.surface} p-8 text-center`}>
           <div className={`animate-spin ${UI_RADIUS.pill} h-12 w-12 border-b-2 border-primary mx-auto mb-4`} />
-          <p className="text-muted">Loading word details...</p>
+          <p className="text-muted">{wd.loadingDetails}</p>
         </div>
       </div>
     );
@@ -275,19 +277,19 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {word.frequency_band && (
                   <div className={`bg-surface-soft ${UI_RADIUS.control} p-4`}>
-                    <p className="text-xs text-muted uppercase tracking-wide mb-1">Frequency</p>
+                    <p className="text-xs text-muted uppercase tracking-wide mb-1">{wd.frequency}</p>
                     <p className="font-semibold text-ink capitalize">{word.frequency_band.replace('_', ' ')}</p>
                   </div>
                 )}
                 {word.register && (
                   <div className={`bg-surface-soft ${UI_RADIUS.control} p-4`}>
-                    <p className="text-xs text-muted uppercase tracking-wide mb-1">Register</p>
+                    <p className="text-xs text-muted uppercase tracking-wide mb-1">{wd.register}</p>
                     <p className="font-semibold text-ink capitalize">{word.register}</p>
                   </div>
                 )}
                 {word.word_formation && (
                   <div className={`bg-surface-soft ${UI_RADIUS.control} p-4`}>
-                    <p className="text-xs text-muted uppercase tracking-wide mb-1">Formation</p>
+                    <p className="text-xs text-muted uppercase tracking-wide mb-1">{wd.formation}</p>
                     <p className="font-semibold text-ink capitalize">{word.word_formation}</p>
                   </div>
                 )}
@@ -358,7 +360,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                 </div>
               ))}
               {word.examples.length === 0 && (
-                <p className="text-center text-muted py-8">No examples available</p>
+                <p className="text-center text-muted py-8">{wd.noExamples}</p>
               )}
             </div>
           )}
@@ -373,25 +375,25 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     {etym.origin_language && (
                       <div>
-                        <p className="text-muted">Origin Language</p>
+                        <p className="text-muted">{wd.originLanguage}</p>
                         <p className="font-semibold text-ink">{etym.origin_language}</p>
                       </div>
                     )}
                     {etym.origin_word && (
                       <div>
-                        <p className="text-muted">Origin Word</p>
+                        <p className="text-muted">{wd.originWord}</p>
                         <p className="font-semibold text-ink italic">{etym.origin_word}</p>
                       </div>
                     )}
                     {etym.language_family && (
                       <div>
-                        <p className="text-muted">Language Family</p>
+                        <p className="text-muted">{wd.languageFamily}</p>
                         <p className="font-semibold text-ink capitalize">{etym.language_family}</p>
                       </div>
                     )}
                     {etym.time_period && (
                       <div>
-                        <p className="text-muted">Time Period</p>
+                        <p className="text-muted">{wd.timePeriod}</p>
                         <p className="font-semibold text-ink">{etym.time_period}</p>
                       </div>
                     )}
@@ -399,7 +401,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                 </div>
               ))}
               {word.etymologies.length === 0 && (
-                <p className="text-center text-muted py-8">No etymology data available</p>
+                <p className="text-center text-muted py-8">{wd.noEtymology}</p>
               )}
             </div>
           )}
@@ -426,7 +428,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                 </div>
               ))}
               {word.false_friends.length === 0 && (
-                <p className="text-center text-muted py-8">No false friends identified</p>
+                <p className="text-center text-muted py-8">{wd.noFalseFriends}</p>
               )}
             </div>
           )}
@@ -456,7 +458,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                 </div>
               ))}
               {word.proverbs.length === 0 && (
-                <p className="text-center text-muted py-8">No proverbs or idioms available</p>
+                <p className="text-center text-muted py-8">{wd.noProverbs}</p>
               )}
             </div>
           )}
@@ -486,7 +488,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                 </div>
               ))}
               {word.collocations.length === 0 && (
-                <p className="text-center text-muted py-8">No collocations available</p>
+                <p className="text-center text-muted py-8">{wd.noCollocations}</p>
               )}
             </div>
           )}
@@ -516,7 +518,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                 </div>
               ))}
               {word.dialect_variants.length === 0 && (
-                <p className="text-center text-muted py-8">No dialect variants available</p>
+                <p className="text-center text-muted py-8">{wd.noDialectVariants}</p>
               )}
             </div>
           )}
@@ -526,7 +528,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
               {dbRowLoading && (
                 <div className="py-10 text-center">
                   <div className={`animate-spin ${UI_RADIUS.pill} h-10 w-10 border-b-2 border-primary mx-auto mb-3`} />
-                  <p className="text-muted">Loading database row...</p>
+                  <p className="text-muted">{wd.loadingRow}</p>
                 </div>
               )}
 
@@ -573,7 +575,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                           </summary>
                           <div className="border-t border-hairline p-4 space-y-3">
                             {rows.length === 0 ? (
-                              <p className="text-sm text-muted">No rows</p>
+                              <p className="text-sm text-muted">{wd.noRows}</p>
                             ) : (
                               rows.map((row, index) => (
                                 <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-3">

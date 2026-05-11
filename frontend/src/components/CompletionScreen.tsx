@@ -1,5 +1,6 @@
 import { BookOpen, CheckCircle, FlaskConical, RotateCcw, SlidersHorizontal, Target, Trophy, XCircle } from 'lucide-react';
 import { AppScreen, Button, CalloutCard, NavButton, SurfacePanel, UI_RADIUS } from './ui';
+import { useCopy } from '../i18n/languageContext';
 
 interface CompletionScreenProps {
   progress: {
@@ -20,6 +21,8 @@ export function CompletionScreen({
   onOpenLibrary,
   onOpenGrammarLab,
 }: CompletionScreenProps) {
+  const copy = useCopy();
+  const c = copy.completion;
   return (
     <AppScreen width="compact" contentClassName="flex min-h-dvh items-center px-4 py-6">
       <main className="w-full">
@@ -28,17 +31,17 @@ export function CompletionScreen({
           title={
             <span className="flex items-center gap-3">
               <Trophy size={28} strokeWidth={2} />
-              Session Complete
+              {c.sessionComplete}
             </span>
           }
-          body="You've completed all flashcards in this session."
+          body={c.sessionBody}
           cta={
             <Button
               variant="secondary"
               onClick={onRestart}
               leadingIcon={<RotateCcw size={18} strokeWidth={2.5} />}
             >
-              Start Over
+              {c.startOver}
             </Button>
           }
         />
@@ -50,21 +53,21 @@ export function CompletionScreen({
               <div className="font-display font-normal text-display-sm text-primary mb-1 text-center">
                 {progress.cards_reviewed}
               </div>
-              <div className="text-body-sm font-medium text-muted text-center">Reviewed</div>
+              <div className="text-body-sm font-medium text-muted text-center">{c.reviewed}</div>
             </div>
             <div className={`p-4 bg-surface-card ${UI_RADIUS.control}`}>
               <CheckCircle size={24} className="mx-auto mb-2 text-success" />
               <div className="font-display font-normal text-display-sm text-success mb-1 text-center">
                 {progress.known_count}
               </div>
-              <div className="text-body-sm font-medium text-muted text-center">Known</div>
+              <div className="text-body-sm font-medium text-muted text-center">{c.known}</div>
             </div>
             <div className={`p-4 bg-surface-card ${UI_RADIUS.control}`}>
               <XCircle size={24} className="mx-auto mb-2 text-error" />
               <div className="font-display font-normal text-display-sm text-error mb-1 text-center">
                 {progress.unknown_count}
               </div>
-              <div className="text-body-sm font-medium text-muted text-center">To Review</div>
+              <div className="text-body-sm font-medium text-muted text-center">{c.toReview}</div>
             </div>
           </div>
         </SurfacePanel>
@@ -73,7 +76,7 @@ export function CompletionScreen({
           <NavButton
             onClick={onChangeCategories}
             icon={<SlidersHorizontal size={24} strokeWidth={2.5} />}
-            label="Adjust Filters"
+            label={c.adjustFilters}
             color="muted"
             size="large"
             className="w-full"
@@ -81,7 +84,7 @@ export function CompletionScreen({
           <NavButton
             onClick={onOpenLibrary}
             icon={<BookOpen size={24} strokeWidth={2.5} />}
-            label="View Library"
+            label={c.viewLibrary}
             color="coral-strong"
             size="large"
             className="w-full"
@@ -89,7 +92,7 @@ export function CompletionScreen({
           <NavButton
             onClick={onOpenGrammarLab}
             icon={<FlaskConical size={24} strokeWidth={2.5} />}
-            label="Grammar Lab"
+            label={c.grammarLab}
             color="teal"
             size="large"
             className="w-full"

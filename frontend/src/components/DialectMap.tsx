@@ -6,7 +6,7 @@ import type { DialectWord } from '../types';
 import germanyGeoJsonUrl from '../assets/germany-states.json?url';
 import { ExpandedViewWrapper, UI_RADIUS } from './ui';
 import { reportClientError } from '../utils/clientError';
-import { useTargetLanguage } from '../i18n/languageContext';
+import { useCopy, useTargetLanguage } from '../i18n/languageContext';
 
 interface DialectMapProps {
   initialWord?: string;
@@ -48,6 +48,8 @@ const getRegionColor = (regionId: string): string => {
 
 export function DialectMap({ initialWord }: DialectMapProps) {
   const language = useTargetLanguage();
+  const copy = useCopy();
+  const dm = copy.dialectMap;
   const [dialectWords, setDialectWords] = useState<DialectWord[]>([]);
   const [geoJson, setGeoJson] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
@@ -126,7 +128,7 @@ export function DialectMap({ initialWord }: DialectMapProps) {
       <div className="w-full h-full flex items-center justify-center bg-surface-dark">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="w-8 h-8 text-accent-teal animate-spin" />
-          <span className="text-on-dark-soft">Loading dialects...</span>
+          <span className="text-on-dark-soft">{dm.loading}</span>
         </div>
       </div>
     );
@@ -137,8 +139,8 @@ export function DialectMap({ initialWord }: DialectMapProps) {
       <div className="w-full h-full flex items-center justify-center bg-surface-dark">
         <div className="flex flex-col items-center gap-3 text-center p-8">
           <Globe2 className="w-12 h-12 text-on-dark-soft" />
-          <h3 className="text-lg font-semibold text-on-dark">No dialect data available</h3>
-          <p className="text-on-dark-soft text-sm">Regional dialect data needs to be populated in the database.</p>
+          <h3 className="text-lg font-semibold text-on-dark">{dm.noDataTitle}</h3>
+          <p className="text-on-dark-soft text-sm">{dm.noDataBody}</p>
         </div>
       </div>
     );
@@ -152,7 +154,7 @@ export function DialectMap({ initialWord }: DialectMapProps) {
             <Globe2 className="w-5 h-5 text-on-primary" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-on-dark">Dialect Map</h2>
+            <h2 className="text-lg font-semibold text-on-dark">{dm.mapTitle}</h2>
             <p className="text-xs text-on-dark-soft">Explore German regional variants</p>
           </div>
         </div>

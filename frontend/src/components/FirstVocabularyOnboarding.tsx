@@ -8,6 +8,7 @@ import { ProgressBar } from './ProgressBar';
 import { SwipeButtons } from './SwipeButtons';
 import { AppScreen, GameSignalBadge, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
 import { copy, formatCopy } from '../i18n/staticCopy';
+import { useTargetLanguage } from '../i18n/languageContext';
 import { StreamingSpeechBubble, type StreamingSpeechStep } from './StreamingSpeechBubble';
 import {
   MAX_VOCABULARY_SCAN_SWIPES,
@@ -59,6 +60,8 @@ export function FirstVocabularyOnboarding({
   const remainingToMinimum = Math.max(0, MIN_VOCABULARY_SCAN_SWIPES - signals.length);
   const canPersonalize = signals.length >= MIN_VOCABULARY_SCAN_SWIPES;
   const onboardingCopy = copy.onboarding;
+  const targetLanguage = useTargetLanguage();
+  const targetLanguageName = copy.targetLanguageNames[targetLanguage];
 
   const advanceWithMascot = (nextPhase: OnboardingPhase) => {
     setPhase(nextPhase);
@@ -126,7 +129,7 @@ export function FirstVocabularyOnboarding({
         mascotPersona="coach"
         eventKey={reactionEventId}
         eyebrow={onboardingCopy.preferences.eyebrow}
-        title={onboardingCopy.preferences.title}
+        title={formatCopy(onboardingCopy.preferences.title, { language: targetLanguageName })}
         body={onboardingCopy.preferences.body}
         secondaryActionLabel={onboardingCopy.intro.skipPersonalizationAction}
         secondaryActionHint={onboardingCopy.intro.skipPersonalizationHint}

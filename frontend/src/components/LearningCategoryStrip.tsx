@@ -1,6 +1,7 @@
 import { SlidersHorizontal } from 'lucide-react';
 import { getLearningCategoryMeta } from './learningCategoryMeta';
 import { SurfacePanel, UI_RADIUS } from './ui';
+import { useCopy } from '../i18n/languageContext';
 
 interface LearningCategoryStripProps {
   categories: string[];
@@ -13,6 +14,7 @@ export function LearningCategoryStrip({
   selectedCategories,
   onOpenFilters,
 }: LearningCategoryStripProps) {
+  const copy = useCopy();
   const visibleCategories = selectedCategories.length > 0 ? selectedCategories.slice(0, 4) : categories.slice(0, 4);
   const hiddenCount = Math.max((selectedCategories.length || categories.length) - visibleCategories.length, 0);
 
@@ -20,8 +22,8 @@ export function LearningCategoryStrip({
     <SurfacePanel padding="sm">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
-          <div className="text-caption-uppercase tracking-[1.5px] text-muted uppercase">Game packs</div>
-          <h2 className="font-sans font-semibold text-title-sm text-ink">Topic Deck</h2>
+          <div className="text-caption-uppercase tracking-[1.5px] text-muted uppercase">{copy.learningStrip.eyebrow}</div>
+          <h2 className="font-sans font-semibold text-title-sm text-ink">{copy.learningStrip.title}</h2>
         </div>
         <button
           type="button"

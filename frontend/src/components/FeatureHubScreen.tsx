@@ -7,6 +7,8 @@ import {
   type FeatureFlowItem,
   type FeatureFlowTone,
 } from '../gamification/featureFlowRegistry';
+import { useCopy, useTargetLanguage } from '../i18n/languageContext';
+import { formatCopy } from '../i18n/staticCopy';
 
 type FeatureHubKind = 'review' | 'explore' | 'explore_grammar' | 'explore_map';
 
@@ -33,6 +35,9 @@ export function FeatureHubScreen({
   onBack,
   onNavigateToFeature,
 }: FeatureHubScreenProps) {
+  const copy = useCopy();
+  const target = useTargetLanguage();
+  const fhs = copy.featureHubScreen;
   const collectionItems = getFeatureFlowItemsByPhase('collection');
   const upcomingItems = getFeatureFlowItemsByPhase('upcoming');
   const advancedItems = getFeatureFlowItemsByPhase('advanced');
@@ -42,20 +47,20 @@ export function FeatureHubScreen({
   ];
   const languageMapItems = advancedItems.filter((item) => !grammarTrainingIds.has(item.id));
   const grammarSection: HubSection = {
-    title: 'Grammar training',
-    body: 'Use these when the path needs sentence logic, grammar practice, or builder tools.',
+    title: fhs.grammarTraining.title,
+    body: fhs.grammarTraining.body,
     items: grammarTrainingItems,
   };
   const mapSection: HubSection = {
-    title: 'Language map',
-    body: 'Explore relationships, clusters, dialects, and hierarchy when you want to inspect the system.',
+    title: fhs.languageMap.title,
+    body: fhs.languageMap.body,
     items: languageMapItems,
   };
   const sections: HubSection[] =
     kind === 'review'
       ? [{
-          title: 'Review & setup',
-          body: 'Adjust the deck, inspect known words, open the library, or review how the learning system scores memory.',
+          title: fhs.review.sectionTitle,
+          body: fhs.review.sectionBody,
           items: collectionItems,
         }]
       : kind === 'explore_grammar'
@@ -65,25 +70,25 @@ export function FeatureHubScreen({
           : [grammarSection, mapSection];
 
   const title =
-    kind === 'review' ? 'Review & Setup'
-    : kind === 'explore_grammar' ? 'Grammar Training'
-    : kind === 'explore_map' ? 'Language Map'
-    : 'Explore German';
+    kind === 'review' ? fhs.review.title
+    : kind === 'explore_grammar' ? fhs.exploreGrammar.title
+    : kind === 'explore_map' ? fhs.exploreMap.title
+    : formatCopy(fhs.exploreHub.title, { language: copy.targetLanguageNames[target] });
 
   const subtitle =
     kind === 'review'
-      ? `Tools are grouped here so the path can stay focused. Topics ${selectedCategoriesCount}/${categoriesCount || 0} are active.`
+      ? formatCopy(fhs.review.subtitle, { selected: selectedCategoriesCount, total: categoriesCount || 0 })
       : kind === 'explore_grammar'
-        ? 'Sentence-level checks, builder, lab grammaticale.'
+        ? fhs.exploreGrammar.subtitle
         : kind === 'explore_map'
-          ? 'Cluster, dialetti, gerarchia e nuvole di parole.'
-          : 'Strumenti avanzati: pratica grammaticale o mappa della lingua.';
+          ? fhs.exploreMap.subtitle
+          : fhs.exploreHub.subtitle;
 
   const eyebrow =
-    kind === 'review' ? 'REVIEW · HUB'
-    : kind === 'explore_grammar' ? 'EXPLORE · GRAMMAR TRAINING'
-    : kind === 'explore_map' ? 'EXPLORE · LANGUAGE MAP'
-    : 'EXPLORE · HUB';
+    kind === 'review' ? fhs.review.eyebrow
+    : kind === 'explore_grammar' ? fhs.exploreGrammar.eyebrow
+    : kind === 'explore_map' ? fhs.exploreMap.eyebrow
+    : fhs.exploreHub.eyebrow;
 
   return (
     <SceneShell
@@ -100,7 +105,7 @@ export function FeatureHubScreen({
             onClick={() => onNavigateToFeature('/explore/grammar')}
             className={`${UI_RADIUS.surface} ${UI_INTERACTION.transition} flex min-h-[120px] flex-col items-start gap-2 border border-hairline bg-canvas p-5 text-left hover:bg-surface-card`}
           >
-            <span className={`${EYEBROW_CLASS} text-primary`}>Grammar training</span>
+            <span className={`${EYEBROW_CLASS} text-primary`}>{fhs.grammarTraining.title}</span>
             <span className="block font-display text-display-sm font-normal text-ink">Grammar</span>
             <span className="text-body-sm text-muted">
               Sentence Placement, Grammar Lab, Build / Compose Sentence.
@@ -111,7 +116,7 @@ export function FeatureHubScreen({
             onClick={() => onNavigateToFeature('/explore/map')}
             className={`${UI_RADIUS.surface} ${UI_INTERACTION.transition} flex min-h-[120px] flex-col items-start gap-2 border border-hairline bg-canvas p-5 text-left hover:bg-surface-card`}
           >
-            <span className={`${EYEBROW_CLASS} text-primary`}>Language map</span>
+            <span className={`${EYEBROW_CLASS} text-primary`}>{fhs.languageMap.title}</span>
             <span className="block font-display text-display-sm font-normal text-ink">Map</span>
             <span className="text-body-sm text-muted">
               Word Cloud, Clusters, Dialects, Hierarchy.
