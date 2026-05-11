@@ -1,64 +1,34 @@
 import en from './locales/en.json' with { type: 'json' };
 import fr from './locales/fr.json' with { type: 'json' };
 import it from './locales/it.json' with { type: 'json' };
+import { readStoredSource, type SourceLocale } from './languageStorage';
 
-export type Locale = 'en' | 'it' | 'fr';
 export type StaticCopy = typeof en;
-export const LOCALE_STORAGE_KEY = 'languageApp:locale:v1';
 
-export const staticCopyByLocale = {
+const staticCopyByLocale = {
   en,
   it,
   fr,
-} satisfies Record<Locale, StaticCopy>;
+} satisfies Record<SourceLocale, StaticCopy>;
 
-const supportedLocales = Object.keys(staticCopyByLocale) as Locale[];
-
-function isSupportedLocale(locale: string | null | undefined): locale is Locale {
-  return Boolean(locale && supportedLocales.includes(locale as Locale));
+export function getStaticCopy(locale: SourceLocale): StaticCopy {
+  return staticCopyByLocale[locale];
 }
 
-function readStoredLocale(): Locale | null {
-  if (typeof window === 'undefined') return null;
-
-  try {
-    const storedLocale = window.localStorage.getItem(LOCALE_STORAGE_KEY);
-    return isSupportedLocale(storedLocale) ? storedLocale : null;
-  } catch {
-    return null;
-  }
-}
-
-function persistLocale(locale: Locale) {
-  if (typeof window === 'undefined') return;
-
-  try {
-    window.localStorage.setItem(LOCALE_STORAGE_KEY, locale);
-  } catch {
-    // Locale persistence should never block app startup.
-  }
-}
-
-export function resolveActiveLocale(): Locale {
+function resolveModuleLocale(): SourceLocale {
   if (typeof window !== 'undefined') {
-    const requestedLocale = new URLSearchParams(window.location.search).get('locale');
-    if (isSupportedLocale(requestedLocale)) {
-      persistLocale(requestedLocale);
-      return requestedLocale;
+    const requested = new URLSearchParams(window.location.search).get('locale');
+    if (requested === 'en' || requested === 'it' || requested === 'fr') {
+      try { window.localStorage.setItem('languageApp:sourceLocale:v1', requested); } catch { /* ignore */ }
+      return requested;
     }
   }
-
-  const storedLocale = readStoredLocale();
-  if (storedLocale) return storedLocale;
-
-  const configuredLocale = import.meta.env?.VITE_APP_LOCALE as string | undefined;
-  if (isSupportedLocale(configuredLocale)) return configuredLocale;
-
-  return 'en';
+  return readStoredSource() ?? 'en';
 }
 
-export const activeLocale: Locale = resolveActiveLocale();
-export const copy = staticCopyByLocale[activeLocale];
+// Backward-compat for module-scope consumers (registries built at import time).
+// On locale change LanguageProvider reloads the page, so this constant stays fresh.
+export const copy: StaticCopy = staticCopyByLocale[resolveModuleLocale()];
 
 export function formatCopy(template: string, values: Record<string, string | number>) {
   return Object.entries(values).reduce(
