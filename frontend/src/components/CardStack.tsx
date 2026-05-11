@@ -122,7 +122,7 @@ export const CardStack = ({
     );
   }
 
-  if (mode === 'review' || mode === 'explore') {
+  if (mode === 'review' || mode === 'explore' || mode === 'explore_grammar' || mode === 'explore_map') {
     return (
       <FeatureHubScreen
         kind={mode}

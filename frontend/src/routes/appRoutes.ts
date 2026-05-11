@@ -10,7 +10,9 @@ export type LearningRouteMode =
   | 'grammar_placement'
   | 'vocabulary'
   | 'review'
-  | 'explore';
+  | 'explore'
+  | 'explore_grammar'
+  | 'explore_map';
 
 export type GrammarView =
   | 'hub'
@@ -36,7 +38,7 @@ export type RouteState =
   | { screen: 'learning'; mode: LearningRouteMode }
   | { screen: 'grammar'; view: GrammarView }
   | { screen: 'library'; filtersOpen: boolean; statsOnly?: boolean; wordId?: number; detailTab?: LibraryDetailTab }
-  | { screen: 'developer' };
+  | { screen: 'developer'; chartSlug?: string };
 
 const GRAMMAR_SEGMENTS: Record<GrammarView, string> = {
   hub: '',
@@ -93,6 +95,8 @@ export function parseAppRoute(pathname: string): RouteState {
   }
 
   if (section === 'explore') {
+    if (feature === 'grammar') return { screen: 'learning', mode: 'explore_grammar' };
+    if (feature === 'map') return { screen: 'learning', mode: 'explore_map' };
     return { screen: 'learning', mode: 'explore' };
   }
 
@@ -101,7 +105,7 @@ export function parseAppRoute(pathname: string): RouteState {
   }
 
   if (section === 'developer') {
-    return { screen: 'developer' };
+    return { screen: 'developer', chartSlug: feature };
   }
 
   if (section === 'grammar') {

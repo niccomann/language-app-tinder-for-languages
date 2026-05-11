@@ -1,18 +1,26 @@
-import { Code2 } from 'lucide-react';
-import { AppScreen, ScreenHeader } from './ui';
+import { Activity, BookOpen, Code2, GitBranch, Layers, Network } from 'lucide-react';
 import { MermaidChart } from './MermaidChart';
+import { HubGrid, SceneShell, type HubGridItem } from './scene';
 
 interface DeveloperChartsScreenProps {
   onBack: () => void;
+  chartSlug?: string;
+  onNavigate?: (path: string) => void;
 }
 
 interface DeveloperChartDefinition {
+  slug: string;
   title: string;
+  subline: string;
+  icon: HubGridItem['icon'];
   chart: string;
 }
 
 const developerCharts: DeveloperChartDefinition[] = [
   {
+    slug: 'preference-driven-learning',
+    icon: <Activity size={20} />,
+    subline: 'Come il sistema usa le preferenze per scegliere le parole.',
     title: 'Preference-driven learning',
     chart: `flowchart TD
   A["Onboarding answers"] --> B["Profile JSON"]
@@ -54,6 +62,9 @@ const developerCharts: DeveloperChartDefinition[] = [
   X --> Y`,
   },
   {
+    slug: 'memory-loop',
+    icon: <BookOpen size={20} />,
+    subline: 'Il loop di memorizzazione e la confidenza per parola.',
     title: 'Vocabulary memory loop',
     chart: `flowchart TD
   A["Shown card"] --> B{"Known?"}
@@ -68,6 +79,9 @@ const developerCharts: DeveloperChartDefinition[] = [
   F --> J["Deck order"]`,
   },
   {
+    slug: 'sentence-challenge',
+    icon: <GitBranch size={20} />,
+    subline: 'Come si valuta una sentence challenge.',
     title: 'Sentence challenge truth flow',
     chart: `flowchart TD
   A["User profile"] --> B["GET challenges"]
@@ -82,6 +96,9 @@ const developerCharts: DeveloperChartDefinition[] = [
   I --> J`,
   },
   {
+    slug: 'semantic-diversity',
+    icon: <Layers size={20} />,
+    subline: 'Diversificazione semantica della deck.',
     title: 'Semantic diversity ordering',
     chart: `flowchart TD
   A["semanticDiversityMode wide"] --> B["semantic_group_key"]
@@ -94,6 +111,9 @@ const developerCharts: DeveloperChartDefinition[] = [
   F --> G["Less adjacent topic repetition"]`,
   },
   {
+    slug: 'route-map',
+    icon: <Network size={20} />,
+    subline: 'Mappa delle route e delle feature dell\'app.',
     title: 'Route and feature map',
     chart: `flowchart TD
   A["/"] --> B["Learning path"]
@@ -111,27 +131,43 @@ const developerCharts: DeveloperChartDefinition[] = [
   },
 ];
 
-export function DeveloperChartsScreen({ onBack }: DeveloperChartsScreenProps) {
-  return (
-    <AppScreen width="wide" contentClassName="min-h-dvh px-4 py-4">
-      <div className="space-y-5 pb-10">
-        <ScreenHeader
-          title="Sviluppatore"
-          subtitle="Diagrammi Mermaid basati solo sul codice realmente implementato."
-          icon={<Code2 size={30} />}
-          onBack={onBack}
-        />
+export function DeveloperChartsScreen({ onBack, chartSlug, onNavigate }: DeveloperChartsScreenProps) {
+  const nav = onNavigate ?? onBack;
+  if (chartSlug) {
+    const chart = developerCharts.find((c) => c.slug === chartSlug);
+    if (chart) {
+      return (
+        <SceneShell
+          eyebrow={`DEV · ${chart.title.toUpperCase()}`}
+          title={chart.title}
+          subline={chart.subline}
+          back={{ onClick: () => nav('/developer') }}
+          onNavigate={nav}
+        >
+          <MermaidChart title={chart.title} chart={chart.chart} />
+        </SceneShell>
+      );
+    }
+  }
 
-        <div className="space-y-5">
-          {developerCharts.map((chart) => (
-            <MermaidChart
-              key={chart.title}
-              title={chart.title}
-              chart={chart.chart}
-            />
-          ))}
-        </div>
-      </div>
-    </AppScreen>
+  const items: HubGridItem[] = developerCharts.map((c) => ({
+    id: c.slug,
+    icon: c.icon,
+    title: c.title,
+    sub: c.subline,
+    onClick: () => nav(`/developer/${c.slug}`),
+  }));
+
+  return (
+    <SceneShell
+      eyebrow="DEV · HUB"
+      title="Sviluppatore"
+      subline="Diagrammi Mermaid basati solo sul codice realmente implementato."
+      action={<Code2 size={18} className="text-muted" />}
+      back={{ onClick: onBack }}
+      onNavigate={nav}
+    >
+      <HubGrid items={items} />
+    </SceneShell>
   );
 }

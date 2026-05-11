@@ -7,7 +7,7 @@ import {
   type FeatureFlowTone,
 } from '../gamification/featureFlowRegistry';
 
-type FeatureHubKind = 'review' | 'explore';
+type FeatureHubKind = 'review' | 'explore' | 'explore_grammar' | 'explore_map';
 
 interface FeatureHubScreenProps {
   kind: FeatureHubKind;
@@ -40,28 +40,43 @@ export function FeatureHubScreen({
     ...advancedItems.filter((item) => grammarTrainingIds.has(item.id)),
   ];
   const languageMapItems = advancedItems.filter((item) => !grammarTrainingIds.has(item.id));
-  const sections: HubSection[] = kind === 'review'
-    ? [{
-      title: 'Review & setup',
-      body: 'Adjust the deck, inspect known words, open the library, or review how the learning system scores memory.',
-      items: collectionItems,
-    }]
-    : [
-      {
-        title: 'Grammar training',
-        body: 'Use these when the path needs sentence logic, grammar practice, or builder tools.',
-        items: grammarTrainingItems,
-      },
-      {
-        title: 'Language map',
-        body: 'Explore relationships, clusters, dialects, and hierarchy when you want to inspect the system.',
-        items: languageMapItems,
-      },
-    ];
-  const title = kind === 'review' ? 'Review & Setup' : 'Explore German';
-  const subtitle = kind === 'review'
-    ? `Tools are grouped here so the path can stay focused. Topics ${selectedCategoriesCount}/${categoriesCount || 0} are active.`
-    : 'Advanced grammar and language-map tools stay available without crowding the daily path.';
+  const grammarSection: HubSection = {
+    title: 'Grammar training',
+    body: 'Use these when the path needs sentence logic, grammar practice, or builder tools.',
+    items: grammarTrainingItems,
+  };
+  const mapSection: HubSection = {
+    title: 'Language map',
+    body: 'Explore relationships, clusters, dialects, and hierarchy when you want to inspect the system.',
+    items: languageMapItems,
+  };
+  const sections: HubSection[] =
+    kind === 'review'
+      ? [{
+          title: 'Review & setup',
+          body: 'Adjust the deck, inspect known words, open the library, or review how the learning system scores memory.',
+          items: collectionItems,
+        }]
+      : kind === 'explore_grammar'
+        ? [grammarSection]
+        : kind === 'explore_map'
+          ? [mapSection]
+          : [grammarSection, mapSection];
+
+  const title =
+    kind === 'review' ? 'Review & Setup'
+    : kind === 'explore_grammar' ? 'Grammar Training'
+    : kind === 'explore_map' ? 'Language Map'
+    : 'Explore German';
+
+  const subtitle =
+    kind === 'review'
+      ? `Tools are grouped here so the path can stay focused. Topics ${selectedCategoriesCount}/${categoriesCount || 0} are active.`
+      : kind === 'explore_grammar'
+        ? 'Sentence-level checks, builder, lab grammaticale.'
+        : kind === 'explore_map'
+          ? 'Cluster, dialetti, gerarchia e nuvole di parole.'
+          : 'Strumenti avanzati: pratica grammaticale o mappa della lingua.';
 
   return (
     <AppScreen width="wide" contentClassName="min-h-dvh px-4 pb-4 pt-24 md:pt-20">
@@ -82,31 +97,63 @@ export function FeatureHubScreen({
           )}
         />
 
-        <div className="grid gap-4">
-          {sections.map((section) => (
-            <SurfacePanel key={section.title} padding="lg" className="space-y-4">
-              <div>
-                <p className="text-caption-uppercase tracking-[1.5px] text-primary uppercase">
-                  {section.title}
-                </p>
-                <p className="mt-2 max-w-3xl text-body-sm font-medium leading-6 text-muted">
-                  {section.body}
-                </p>
-              </div>
+        {kind === 'explore' && (
+          <div className="grid gap-3 md:grid-cols-2">
+            <button
+              type="button"
+              onClick={() => onNavigateToFeature('/explore/grammar')}
+              className={`${UI_RADIUS.surface} ${UI_INTERACTION.transition} flex min-h-[120px] flex-col items-start gap-2 border border-hairline bg-canvas p-5 text-left hover:bg-surface-card`}
+            >
+              <span className="text-caption-uppercase font-medium uppercase tracking-[1.5px] text-primary">
+                Grammar training
+              </span>
+              <span className="block font-display text-display-sm font-normal text-ink">Grammar</span>
+              <span className="text-body-sm text-muted">
+                Sentence Placement, Grammar Lab, Build / Compose Sentence.
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onNavigateToFeature('/explore/map')}
+              className={`${UI_RADIUS.surface} ${UI_INTERACTION.transition} flex min-h-[120px] flex-col items-start gap-2 border border-hairline bg-canvas p-5 text-left hover:bg-surface-card`}
+            >
+              <span className="text-caption-uppercase font-medium uppercase tracking-[1.5px] text-primary">
+                Language map
+              </span>
+              <span className="block font-display text-display-sm font-normal text-ink">Map</span>
+              <span className="text-body-sm text-muted">
+                Word Cloud, Clusters, Dialects, Hierarchy.
+              </span>
+            </button>
+          </div>
+        )}
+        {kind !== 'explore' && (
+          <div className="grid gap-4">
+            {sections.map((section) => (
+              <SurfacePanel key={section.title} padding="lg" className="space-y-4">
+                <div>
+                  <p className="text-caption-uppercase tracking-[1.5px] text-primary uppercase">
+                    {section.title}
+                  </p>
+                  <p className="mt-2 max-w-3xl text-body-sm font-medium leading-6 text-muted">
+                    {section.body}
+                  </p>
+                </div>
 
-              <div className="grid auto-rows-fr gap-3 md:grid-cols-2">
-                {section.items.map((item) => (
-                  <HubFeatureButton
-                    key={item.id}
-                    item={item}
-                    icon={getHubIcon(item.id)}
-                    onOpen={() => onNavigateToFeature(item.route)}
-                  />
-                ))}
-              </div>
-            </SurfacePanel>
-          ))}
-        </div>
+                <div className="grid auto-rows-fr gap-3 md:grid-cols-2">
+                  {section.items.map((item) => (
+                    <HubFeatureButton
+                      key={item.id}
+                      item={item}
+                      icon={getHubIcon(item.id)}
+                      onOpen={() => onNavigateToFeature(item.route)}
+                    />
+                  ))}
+                </div>
+              </SurfacePanel>
+            ))}
+          </div>
+        )}
       </main>
     </AppScreen>
   );

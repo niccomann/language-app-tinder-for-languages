@@ -68,7 +68,11 @@ function App() {
         />
         <Suspense fallback={<RouteFallback />}>
           {route.screen === 'developer' ? (
-            <DeveloperChartsScreen onBack={() => navigateTo('/')} />
+            <DeveloperChartsScreen
+              onBack={() => navigateTo('/')}
+              chartSlug={route.chartSlug}
+              onNavigate={navigateTo}
+            />
           ) : route.screen === 'library' ? (
             <WordsLibraryEnriched
               onClose={() => navigateTo('/')}
