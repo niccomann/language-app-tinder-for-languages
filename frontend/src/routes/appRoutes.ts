@@ -1,4 +1,16 @@
-export type LearningRouteMode = 'path' | 'session' | 'filters' | 'system' | 'grammar_placement' | 'vocabulary' | 'review' | 'explore';
+export type LearningRouteMode =
+  | 'path'
+  | 'path_full'
+  | 'path_stats'
+  | 'path_diary'
+  | 'path_next'
+  | 'session'
+  | 'filters'
+  | 'system'
+  | 'grammar_placement'
+  | 'vocabulary'
+  | 'review'
+  | 'explore';
 
 export type GrammarView =
   | 'graph'
@@ -55,6 +67,14 @@ export const DEFAULT_LIBRARY_TAB: LibraryDetailTab = 'overview';
 export function parseAppRoute(pathname: string): RouteState {
   const parts = pathname.split('/').filter(Boolean);
   const [section, feature] = parts;
+
+  if (section === 'path') {
+    if (feature === 'full') return { screen: 'learning', mode: 'path_full' };
+    if (feature === 'stats') return { screen: 'learning', mode: 'path_stats' };
+    if (feature === 'diary') return { screen: 'learning', mode: 'path_diary' };
+    if (feature === 'next') return { screen: 'learning', mode: 'path_next' };
+    return { screen: 'learning', mode: 'path' };
+  }
 
   if (section === 'learn') {
     if (feature === 'filters') return { screen: 'learning', mode: 'filters' };

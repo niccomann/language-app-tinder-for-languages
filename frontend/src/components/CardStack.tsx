@@ -150,9 +150,16 @@ export const CardStack = ({
     );
   }
 
-  if (mode === 'path') {
+  if (mode === 'path' || mode === 'path_full' || mode === 'path_stats' || mode === 'path_diary' || mode === 'path_next') {
+    const pathView =
+      mode === 'path_full' ? 'full'
+      : mode === 'path_stats' ? 'stats'
+      : mode === 'path_diary' ? 'diary'
+      : mode === 'path_next' ? 'next'
+      : 'home';
     return (
       <LearningPathHome
+        pathView={pathView}
         learningSummary={learningSummary}
         progress={progress}
         totalCards={flashcards.length}
