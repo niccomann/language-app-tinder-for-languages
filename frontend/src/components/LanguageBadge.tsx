@@ -19,8 +19,15 @@ export function LanguageBadge() {
   const t = TARGET_INFO[targetLanguage];
   const s = SOURCE_INFO[sourceLocale];
   return (
-    <div className="mx-auto mt-2 max-w-fit rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-      Stai imparando {t.flag} {t.label} da {s.flag} {s.label}
+    <div className="flex justify-center pt-3">
+      <div className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-surface-soft px-3 py-1 text-caption font-medium text-muted">
+        <span>Imparando</span>
+        <span className="text-base leading-none">{t.flag}</span>
+        <span className="text-ink">{t.label}</span>
+        <span>da</span>
+        <span className="text-base leading-none">{s.flag}</span>
+        <span className="text-ink">{s.label}</span>
+      </div>
     </div>
   );
 }

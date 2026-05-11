@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useLanguage } from '../i18n/languageContext';
 import type { TargetLanguage } from '../i18n/languageStorage';
+import { UI_INTERACTION, UI_RADIUS } from './ui';
 
-const TARGETS: Array<{ code: TargetLanguage; flag: string; label: string }> = [
-  { code: 'de', flag: '🇩🇪', label: 'DE' },
-  { code: 'it', flag: '🇮🇹', label: 'IT' },
-  { code: 'fr', flag: '🇫🇷', label: 'FR' },
+const TARGETS: Array<{ code: TargetLanguage; flag: string; short: string; full: string }> = [
+  { code: 'de', flag: '🇩🇪', short: 'DE', full: 'Deutsch' },
+  { code: 'it', flag: '🇮🇹', short: 'IT', full: 'Italiano' },
+  { code: 'fr', flag: '🇫🇷', short: 'FR', full: 'Français' },
 ];
 
 interface LanguageSwitcherProps {
@@ -20,18 +21,20 @@ export function LanguageSwitcher({ onOpenSourceModal }: LanguageSwitcherProps) {
 
   const current = TARGETS.find((t) => t.code === targetLanguage)!;
 
+  const triggerClass = `inline-flex h-10 items-center gap-1.5 px-3 ${UI_RADIUS.control} border border-hairline bg-canvas text-body-sm font-medium text-ink ${UI_INTERACTION.fastTransition} hover:bg-surface-card`;
+
   return (
     <div className="relative">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1 rounded-full bg-white/90 px-3 py-1.5 text-sm font-semibold shadow-sm border border-slate-200 hover:bg-white dark:bg-slate-800 dark:border-slate-700"
+        className={triggerClass}
         aria-haspopup="menu"
         aria-expanded={open}
       >
         <span className="text-base leading-none">{current.flag}</span>
-        <span>{current.label}</span>
-        <span className="text-xs opacity-50">▾</span>
+        <span>{current.short}</span>
+        <span className="text-caption text-muted">▾</span>
       </button>
 
       {open && (
@@ -42,8 +45,13 @@ export function LanguageSwitcher({ onOpenSourceModal }: LanguageSwitcherProps) {
             aria-label="Chiudi menu lingua"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute right-0 top-full mt-2 z-[90] w-56 rounded-xl bg-white p-1 shadow-xl border border-slate-200 dark:bg-slate-900 dark:border-slate-700" role="menu">
-            <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Imparo</div>
+          <div
+            className={`absolute right-0 top-full mt-2 z-[90] w-60 ${UI_RADIUS.surface} border border-hairline bg-canvas p-2 shadow-sm`}
+            role="menu"
+          >
+            <div className="px-2 py-1 text-caption-uppercase font-medium uppercase tracking-[1.5px] text-muted">
+              Imparo
+            </div>
             {TARGETS.map((t) => {
               const disabled = (t.code as string) === (sourceLocale as string);
               const active = t.code === targetLanguage;
@@ -56,25 +64,25 @@ export function LanguageSwitcher({ onOpenSourceModal }: LanguageSwitcherProps) {
                     setOpen(false);
                     if (!disabled && !active) setTarget(t.code);
                   }}
-                  className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition ${
-                    active ? 'bg-indigo-50 font-semibold dark:bg-indigo-950' : 'hover:bg-slate-100 dark:hover:bg-slate-800'
+                  className={`flex w-full items-center gap-2 px-2 py-2 text-left text-body-sm ${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} ${
+                    active ? 'bg-surface-card font-medium text-ink' : 'text-ink hover:bg-surface-card'
                   } ${disabled ? 'cursor-not-allowed opacity-40' : ''}`}
                   role="menuitem"
                 >
-                  <span className="text-lg">{t.flag}</span>
-                  <span>{t.label === 'DE' ? 'Deutsch' : t.label === 'IT' ? 'Italiano' : 'Français'}</span>
-                  {active && <span className="ml-auto text-indigo-600">✓</span>}
+                  <span className="text-lg leading-none">{t.flag}</span>
+                  <span>{t.full}</span>
+                  {active && <span className="ml-auto text-primary">✓</span>}
                 </button>
               );
             })}
-            <div className="my-1 border-t border-slate-200 dark:border-slate-700" />
+            <div className="my-1 border-t border-hairline" />
             <button
               type="button"
               onClick={() => {
                 setOpen(false);
                 onOpenSourceModal();
               }}
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+              className={`flex w-full items-center gap-2 px-2 py-2 text-left text-body-sm text-ink ${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} hover:bg-surface-card`}
               role="menuitem"
             >
               Cambia lingua di partenza
@@ -85,7 +93,7 @@ export function LanguageSwitcher({ onOpenSourceModal }: LanguageSwitcherProps) {
                 setOpen(false);
                 reset();
               }}
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950"
+              className={`flex w-full items-center gap-2 px-2 py-2 text-left text-body-sm text-error ${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} hover:bg-surface-card`}
               role="menuitem"
             >
               Reset onboarding
