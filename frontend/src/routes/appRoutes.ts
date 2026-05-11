@@ -35,7 +35,7 @@ export type LibraryDetailTab =
 export type RouteState =
   | { screen: 'learning'; mode: LearningRouteMode }
   | { screen: 'grammar'; view: GrammarView }
-  | { screen: 'library'; filtersOpen: boolean; wordId?: number; detailTab?: LibraryDetailTab }
+  | { screen: 'library'; filtersOpen: boolean; statsOnly?: boolean; wordId?: number; detailTab?: LibraryDetailTab }
   | { screen: 'developer' };
 
 const GRAMMAR_SEGMENTS: Record<GrammarView, string> = {
@@ -126,6 +126,7 @@ export function parseAppRoute(pathname: string): RouteState {
     return {
       screen: 'library',
       filtersOpen: feature === 'filters',
+      statsOnly: feature === 'stats',
     };
   }
 

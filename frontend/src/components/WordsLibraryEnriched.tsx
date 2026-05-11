@@ -17,7 +17,9 @@ interface WordsLibraryEnrichedProps {
   initialWordId?: number;
   initialDetailTab?: LibraryDetailTab;
   filtersOpen?: boolean;
+  statsOnly?: boolean;
   onFiltersOpenChange?: (open: boolean) => void;
+  onOpenStats?: () => void;
   onWordOpen?: (wordId: number) => void;
   onWordClose?: () => void;
   onWordTabChange?: (wordId: number, tab: LibraryDetailTab) => void;
@@ -30,7 +32,9 @@ export function WordsLibraryEnriched({
   initialWordId,
   initialDetailTab,
   filtersOpen,
+  statsOnly,
   onFiltersOpenChange,
+  onOpenStats,
   onWordOpen,
   onWordClose,
   onWordTabChange,
@@ -225,39 +229,52 @@ export function WordsLibraryEnriched({
           <GameSignalBadge icon={<Target size={14} />} label="Review Queue" tone="amber" />
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <StatCard
-            label="Total"
-            value={totalWords}
-            icon={<BookOpen size={20} className="text-muted" />}
-            color="muted"
-            isActive={!statusFilter}
-            onClick={() => setStatusFilter('')}
-          />
-          <StatCard
-            label="Learned"
-            value={knownWords.length}
-            icon={<CheckCircle size={20} className="text-success" />}
-            color="success"
-            isActive={statusFilter === 'known'}
-            onClick={() => setStatusFilter(statusFilter === 'known' ? '' : 'known')}
-          />
-          <StatCard
-            label="To Review"
-            value={unknownWords.length}
-            icon={<XCircle size={20} className="text-error" />}
-            color="error"
-            isActive={statusFilter === 'unknown'}
-            onClick={() => setStatusFilter(statusFilter === 'unknown' ? '' : 'unknown')}
-          />
-          <StatCard
-            label="Not Viewed"
-            value={notReviewedWords.length}
-            icon={<Sparkles size={20} className="text-accent-teal" />}
-            color="teal"
-          />
-        </div>
+        {statsOnly ? (
+          <div className="mb-6 grid grid-cols-2 gap-4">
+            <StatCard
+              label="Total"
+              value={totalWords}
+              icon={<BookOpen size={20} className="text-muted" />}
+              color="muted"
+            />
+            <StatCard
+              label="Learned"
+              value={knownWords.length}
+              icon={<CheckCircle size={20} className="text-success" />}
+              color="success"
+            />
+            <StatCard
+              label="To Review"
+              value={unknownWords.length}
+              icon={<XCircle size={20} className="text-error" />}
+              color="error"
+            />
+            <StatCard
+              label="Not Viewed"
+              value={notReviewedWords.length}
+              icon={<Sparkles size={20} className="text-accent-teal" />}
+              color="teal"
+            />
+          </div>
+        ) : (
+          onOpenStats && (
+            <button
+              type="button"
+              onClick={onOpenStats}
+              className={`mb-4 flex w-full items-center justify-between gap-3 border border-hairline bg-canvas px-4 py-3 ${UI_RADIUS.control} text-left hover:bg-surface-card`}
+            >
+              <span>
+                <span className="block text-body-sm font-semibold text-ink">Stats della libreria</span>
+                <span className="mt-0.5 block text-caption font-medium text-muted">
+                  Total {totalWords} · Learned {knownWords.length} · To review {unknownWords.length}
+                </span>
+              </span>
+              <span className="text-caption font-medium text-primary">Apri →</span>
+            </button>
+          )
+        )}
 
+        {!statsOnly && (<>
         <SurfacePanel className="mb-6" padding="md">
           <div className="flex flex-wrap gap-3 items-center">
             <div className="relative flex-1 min-w-[200px]">
@@ -519,6 +536,7 @@ export function WordsLibraryEnriched({
             </button>
           </div>
         )}
+        </>)}
 
       {selectedWordId && (
         <WordDetailModal

@@ -75,7 +75,9 @@ function App() {
               initialWordId={route.wordId}
               initialDetailTab={route.detailTab}
               filtersOpen={route.filtersOpen}
+              statsOnly={route.statsOnly}
               onFiltersOpenChange={(open) => navigateTo(open ? '/library/filters' : '/library')}
+              onOpenStats={() => navigateTo('/library/stats')}
               onWordOpen={(wordId) => navigateTo(libraryWordPath(wordId))}
               onWordClose={() => navigateTo('/library')}
               onWordTabChange={(wordId, tab) => navigateTo(libraryWordPath(wordId, tab))}
