@@ -2,12 +2,11 @@ import { useState } from 'react';
 import { useCopy, useLanguage } from '../i18n/languageContext';
 import { getStaticCopy } from '../i18n/staticCopy';
 import type { SourceLocale, TargetLanguage } from '../i18n/languageStorage';
+import { SOURCE_FLAGS, SOURCE_LOCALES, TARGET_FLAGS, TARGET_LANGUAGES } from '../i18n/languageMeta';
 import { Button, UI_INTERACTION, UI_RADIUS } from './ui';
 
-const TARGET_FLAGS: Record<TargetLanguage, string> = { de: '🇩🇪', it: '🇮🇹', fr: '🇫🇷' };
-const SOURCE_FLAGS: Record<SourceLocale, string> = { en: '🇬🇧', it: '🇮🇹', fr: '🇫🇷' };
-const TARGETS: TargetLanguage[] = ['de', 'it', 'fr'];
-const SOURCES: SourceLocale[] = ['en', 'it', 'fr'];
+const TARGETS = TARGET_LANGUAGES;
+const SOURCES = SOURCE_LOCALES;
 
 interface OnboardingModalProps {
   initialTarget?: TargetLanguage | null;

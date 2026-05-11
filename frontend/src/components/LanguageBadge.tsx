@@ -1,7 +1,5 @@
 import { useCopy, useLanguage } from '../i18n/languageContext';
-
-const FLAGS_TARGET: Record<string, string> = { de: '🇩🇪', it: '🇮🇹', fr: '🇫🇷' };
-const FLAGS_SOURCE: Record<string, string> = { en: '🇬🇧', it: '🇮🇹', fr: '🇫🇷' };
+import { SOURCE_FLAGS, TARGET_FLAGS } from '../i18n/languageMeta';
 
 interface LanguageBadgeProps {
   onClick?: () => void;
@@ -17,10 +15,10 @@ export function LanguageBadge({ onClick }: LanguageBadgeProps = {}) {
   const content = (
     <>
       <span>{copy.languageBadge.learning}</span>
-      <span className="text-base leading-none">{FLAGS_TARGET[targetLanguage]}</span>
+      <span className="text-base leading-none">{TARGET_FLAGS[targetLanguage]}</span>
       <span className="text-ink capitalize">{targetName}</span>
       <span>{copy.languageBadge.from}</span>
-      <span className="text-base leading-none">{FLAGS_SOURCE[sourceLocale]}</span>
+      <span className="text-base leading-none">{SOURCE_FLAGS[sourceLocale]}</span>
       <span className="text-ink">{sourceName}</span>
     </>
   );

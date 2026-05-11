@@ -1,12 +1,12 @@
 export type TargetLanguage = 'de' | 'it' | 'fr';
-export type SourceLocale = 'en' | 'it' | 'fr';
+export type SourceLocale = 'en' | 'it' | 'fr' | 'es' | 'de' | 'pt';
 
 export const TARGET_STORAGE_KEY = 'languageApp:targetLanguage:v1';
 export const SOURCE_STORAGE_KEY = 'languageApp:sourceLocale:v1';
 export const LEGACY_LOCALE_KEY = 'languageApp:locale:v1';
 
 const TARGETS: readonly TargetLanguage[] = ['de', 'it', 'fr'];
-const SOURCES: readonly SourceLocale[] = ['en', 'it', 'fr'];
+const SOURCES: readonly SourceLocale[] = ['en', 'it', 'fr', 'es', 'de', 'pt'];
 
 export function isTargetLanguage(value: unknown): value is TargetLanguage {
   return typeof value === 'string' && (TARGETS as readonly string[]).includes(value);

@@ -1,7 +1,10 @@
 import en from './locales/en.json' with { type: 'json' };
 import fr from './locales/fr.json' with { type: 'json' };
 import it from './locales/it.json' with { type: 'json' };
-import { readStoredSource, type SourceLocale } from './languageStorage';
+import es from './locales/es.json' with { type: 'json' };
+import de from './locales/de.json' with { type: 'json' };
+import pt from './locales/pt.json' with { type: 'json' };
+import { isSourceLocale, readStoredSource, type SourceLocale } from './languageStorage';
 
 export type StaticCopy = typeof en;
 
@@ -9,6 +12,9 @@ const staticCopyByLocale = {
   en,
   it,
   fr,
+  es,
+  de,
+  pt,
 } satisfies Record<SourceLocale, StaticCopy>;
 
 export function getStaticCopy(locale: SourceLocale): StaticCopy {
@@ -18,7 +24,7 @@ export function getStaticCopy(locale: SourceLocale): StaticCopy {
 function resolveModuleLocale(): SourceLocale {
   if (typeof window !== 'undefined') {
     const requested = new URLSearchParams(window.location.search).get('locale');
-    if (requested === 'en' || requested === 'it' || requested === 'fr') {
+    if (isSourceLocale(requested)) {
       try { window.localStorage.setItem('languageApp:sourceLocale:v1', requested); } catch { /* ignore */ }
       return requested;
     }

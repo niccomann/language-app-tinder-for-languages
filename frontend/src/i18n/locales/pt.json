@@ -1,0 +1,949 @@
+{
+  "localeName": "Português",
+  "onboarding": {
+    "intro": {
+      "eyebrow": "Primeira calibração",
+      "title": "This app starts from the vocabulary you actually know.",
+      "body": "Unlike apps that make you repeat everything the same way, we do not want to show you words you already know too often. We give those words lower weight in exercises and focus on the ones you still need to consolidate.",
+      "detailPrimary": "That is why we analyze your vocabulary: we want to understand how many words you know, which ones you already know, and which ones you only know a little.",
+      "detailSecondary": "Every word can have a different level: you may know it very well, barely recognize it, or not know it yet.",
+      "knownSignal": "Conheço esta palavra",
+      "unknownSignal": "Ainda não conheço",
+      "wordLevelSignal": "Nível da palavra",
+      "primaryAction": "Iniciar o scan",
+      "skipPersonalizationAction": "Pular personalização",
+      "skipPersonalizationHint": "Skip straight in. No questions, no personalized profile.",
+      "speechSteps": [
+        {
+          "eyebrow": "Primeira calibração",
+          "title": "This app starts from the vocabulary you actually know.",
+          "body": "Unlike apps that make you repeat everything the same way, we do not want to show you words you already know too often. We give those words lower weight in exercises and focus on the ones you still need to consolidate."
+        },
+        {
+          "eyebrow": "Personal path",
+          "title": "The coach starts by screening what matters to you.",
+          "body": "Every person wants to personalize learning around words they will actually use. Most apps skip this first screening, so you spend real mental effort learning words you may never use."
+        },
+        {
+          "eyebrow": "Vocabulary map",
+          "title": "First, we map what is already yours.",
+          "body": "That is why we analyze your vocabulary: we want to understand how many words you know, which ones you already know, and which ones you only know a little."
+        },
+        {
+          "eyebrow": "Nível da palavra",
+          "title": "Every word can have a different level.",
+          "body": "You may know it very well, barely recognize it, or not know it yet. The first scan gives the system enough signals to start adapting the path."
+        }
+      ]
+    },
+    "animation": {
+      "skipAction": "Pular",
+      "nextPageAction": "Próxima página"
+    },
+    "preferences": {
+      "eyebrow": "Setup de treino",
+      "title": "Me diga que tipo de {{language}} você quer construir.",
+      "body": "Before the vocabulary scan, choose the style of words, domains, tone, and exercises that should shape your path.",
+      "progressLabel": "Pergunta {{current}} de {{total}}",
+      "selectedLabel": "Selecionado",
+      "nextAction": "Próxima pergunta",
+      "finishAction": "Iniciar scan de vocabulário",
+      "backAction": "Voltar",
+      "questions": [
+        {
+          "id": "question-1",
+          "eyebrow": "Word style",
+          "title": "Modern, classic, or both?",
+          "body": "This controls whether the app favors current everyday vocabulary, older cultural vocabulary, or a balanced mix.",
+          "options": [
+            {
+              "id": "modern",
+              "label": "Modern everyday",
+              "description": "Words from daily life, media, technology, and current conversation."
+            },
+            {
+              "id": "classic",
+              "label": "Classic and cultural",
+              "description": "More literature, history, formal language, and older registers."
+            },
+            {
+              "id": "balanced",
+              "label": "Balanced mix",
+              "description": "A practical blend of modern words and timeless vocabulary."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-2",
+          "multiSelect": true,
+          "eyebrow": "Domínios",
+          "title": "Which domains should the app prioritize?",
+          "body": "Pick one or more topics. The learning path can weight the domains that feel useful to you first.",
+          "options": [
+            {
+              "id": "travel",
+              "label": "Travel and city life",
+              "description": "Stations, food, directions, shops, and everyday situations."
+            },
+            {
+              "id": "trabalho",
+              "label": "Work and business",
+              "description": "Meetings, roles, tasks, email, planning, and professional words."
+            },
+            {
+              "id": "study",
+              "label": "Study and culture",
+              "description": "University, books, ideas, art, history, and social topics."
+            },
+            {
+              "id": "technology",
+              "label": "Technology",
+              "description": "Apps, devices, data, software, and modern tools."
+            }
+          ]
+        },
+        {
+          "id": "question-3",
+          "eyebrow": "Tom",
+          "title": "What tone should exercises lean toward?",
+          "body": "The same word can appear in very different contexts depending on tone.",
+          "options": [
+            {
+              "id": "friendly",
+              "label": "Amigável",
+              "description": "Warm, conversational, and easy to reuse with people."
+            },
+            {
+              "id": "casual",
+              "label": "Casual",
+              "description": "Short, natural, and close to everyday spoken language."
+            },
+            {
+              "id": "formal",
+              "label": "Formal",
+              "description": "Useful for work, institutions, and written communication."
+            },
+            {
+              "id": "technical",
+              "label": "Técnico",
+              "description": "Precise words for systems, science, tools, and processes."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-4",
+          "eyebrow": "Objetivo",
+          "title": "What do you want to improve first?",
+          "body": "This helps decide whether future tasks should ask for recognition, production, or sentence logic.",
+          "options": [
+            {
+              "id": "speaking",
+              "label": "Falar",
+              "description": "Fast recall and simple sentences you can say aloud."
+            },
+            {
+              "id": "reading",
+              "label": "Ler",
+              "description": "Recognize more words in articles, books, and websites."
+            },
+            {
+              "id": "listening",
+              "label": "Escutar",
+              "description": "Build vocabulary that helps with videos, speech, and podcasts."
+            },
+            {
+              "id": "writing",
+              "label": "Escrever",
+              "description": "Compose clearer sentences with better word choice."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-5",
+          "eyebrow": "Exercise feel",
+          "title": "Which exercise style sounds best?",
+          "body": "The app can later weight the types of activities that keep you engaged.",
+          "options": [
+            {
+              "id": "quick",
+              "label": "Quick choices",
+              "description": "Fast, low-friction decisions like the vocabulary scan."
+            },
+            {
+              "id": "sentences",
+              "label": "Sentence building",
+              "description": "More tasks where you compose words into complete phrases."
+            },
+            {
+              "id": "visual",
+              "label": "Visual memory",
+              "description": "More image-based prompts and visual associations."
+            },
+            {
+              "id": "mixed",
+              "label": "Mixed game loop",
+              "description": "Rotate between cards, sentences, visuals, and review."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-6",
+          "eyebrow": "Difficulty",
+          "title": "How hard should the first path feel?",
+          "body": "This affects how aggressively the app introduces unknown words into exercises.",
+          "options": [
+            {
+              "id": "gentle",
+              "label": "Suave",
+              "description": "More familiar words around each new word."
+            },
+            {
+              "id": "normal",
+              "label": "Normal",
+              "description": "A balanced mix of known, weak, and new words."
+            },
+            {
+              "id": "ambitious",
+              "label": "Ambicioso",
+              "description": "More challenging contexts and faster vocabulary growth."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-7",
+          "eyebrow": "Gramática",
+          "title": "Which grammar area matters most now?",
+          "body": "This will help future sentence tasks choose what to test.",
+          "options": [
+            {
+              "id": "function-words",
+              "label": "Function words",
+              "description": "Articles, pronouns, prepositions, conjunctions, and particles."
+            },
+            {
+              "id": "verbs",
+              "label": "Verbos",
+              "description": "Conjugations, tense, separable verbs, and action words."
+            },
+            {
+              "id": "sentence-order",
+              "label": "Sentence order",
+              "description": "Who does what, where words go, and how clauses connect."
+            },
+            {
+              "id": "all-grammar",
+              "label": "All of it",
+              "description": "A broad grammar mix that changes with your answers."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-8",
+          "eyebrow": "Context age",
+          "title": "Which kind of context should appear more often?",
+          "body": "This gives the app a signal about the world your examples should come from.",
+          "options": [
+            {
+              "id": "current-life",
+              "label": "Current life",
+              "description": "Modern situations, technology, travel, and social contexts."
+            },
+            {
+              "id": "timeless",
+              "label": "Timeless basics",
+              "description": "Home, people, nature, feelings, movement, and objects."
+            },
+            {
+              "id": "culture-history",
+              "label": "Culture and history",
+              "description": "Literature, institutions, historical words, and public life."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-9",
+          "eyebrow": "Feedback",
+          "title": "How should feedback feel?",
+          "body": "The app can explain mistakes in different ways as it becomes more adaptive.",
+          "options": [
+            {
+              "id": "concise",
+              "label": "Conciso",
+              "description": "Short confirmations and corrections."
+            },
+            {
+              "id": "detailed",
+              "label": "Detailed",
+              "description": "More explanation of why an answer works."
+            },
+            {
+              "id": "playful",
+              "label": "Playful",
+              "description": "More mascot reactions, rewards, and game-like feedback."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-10",
+          "eyebrow": "Tempo",
+          "title": "How long should a normal session be?",
+          "body": "This helps the path feel complete instead of endless.",
+          "options": [
+            {
+              "id": "five-minutes",
+              "label": "5 minutes",
+              "description": "Very short, focused sessions."
+            },
+            {
+              "id": "ten-minutes",
+              "label": "10 minutes",
+              "description": "A compact daily training loop."
+            },
+            {
+              "id": "twenty-minutes",
+              "label": "20 minutes",
+              "description": "Longer sessions with more sentence work."
+            }
+          ],
+          "multiSelect": true
+        },
+        {
+          "id": "question-11",
+          "eyebrow": "Semantic distance",
+          "title": "How different should new words be from each other?",
+          "body": "To reduce cognitive load, the app can avoid too many near-synonyms early. Semantically distant words help you express more concepts with less memory friction.",
+          "options": [
+            {
+              "id": "wide-concepts",
+              "label": "Wide concepts first",
+              "description": "Prefer semantically distant verbs and words so each new item unlocks a different idea."
+            },
+            {
+              "id": "balanced-distance",
+              "label": "Balanced spacing",
+              "description": "Mix broad coverage with useful similar words when they matter."
+            },
+            {
+              "id": "precise-synonyms",
+              "label": "Precise synonyms too",
+              "description": "Allow closer near-synonyms earlier for more nuanced expression."
+            }
+          ]
+        }
+      ]
+    },
+    "analysis": {
+      "eyebrow": "Analysis complete",
+      "title": "You placed {{knownEstimate}} words in your vocabulary",
+      "body": "Every interaction from now on updates your vocabulary. You can always inspect it in Your Vocabulary.",
+      "primaryAction": "Continuar",
+      "wordsSeen": "Words seen",
+      "strongSignals": "Strong signals",
+      "toReview": "To review",
+      "strongestOn": "Strongest on",
+      "needsReinforcement": "Needs reinforcement"
+    },
+    "science": {
+      "eyebrow": "Adaptive system",
+      "title": "The science works underneath",
+      "body": "Every swipe becomes a signal. You just play: the system measures improvements, difficulties, words to repeat, and the contexts that fit you best.",
+      "primaryAction": "Enter the path",
+      "memorySignals": "Memory signals",
+      "progressScience": "Progress science",
+      "adaptivePath": "Adaptive path"
+    },
+    "scan": {
+      "eyebrow": "First run",
+      "title": "Vocabulary Scan",
+      "instructions": "First we learn which words you know. Swipe right if you know it, left if you do not.",
+      "scanLabel": "Scan",
+      "knownLabel": "Conhecidas",
+      "reviewLabel": "Revisão",
+      "readyMessage": "You have enough signals to create the first profile.",
+      "remainingMessage": "{{remaining}} more swipes to estimate the first vocabulary profile.",
+      "autoAdvanceMessage": "At {{maxSwipes}} swipes, we automatically move to personalization.",
+      "personalizeAction": "Personalize my path",
+      "startSwiping": "Start swiping",
+      "emptyTitle": "No words available",
+      "emptyBody": "Enter the path and reload the deck when the data is ready.",
+      "emptyAction": "Enter the path"
+    },
+    "categories": {
+      "fallbackStrong": "concrete nouns and words",
+      "fallbackWeak": "verbs and adjectives",
+      "fallbackMixed": "mixed words"
+    }
+  },
+  "yourVocabulary": {
+    "title": "Your Vocabulary",
+    "subtitle": "The words you interact with are ranked by mastery. Strong words rise to the top; weak or unknown words stay visible for review.",
+    "loadingMessage": "Loading your vocabulary...",
+    "errorTitle": "Vocabulary unavailable",
+    "errorMessage": "Failed to load your vocabulary. Try again when the backend is reachable.",
+    "strongStat": "Fortes",
+    "learningStat": "Aprendendo",
+    "weakStat": "Fracas",
+    "logicEyebrow": "How it works",
+    "logicBody": "Every swipe, sentence, and correction updates this memory. The app uses it to avoid over-repeating words you already know and to bring back words that need consolidation.",
+    "continueAction": "Continue training",
+    "emptyTitle": "No vocabulary signals yet",
+    "emptyBody": "Start with the swipe scan. As soon as you interact with words, this section becomes your personal vocabulary map.",
+    "emptyAction": "Iniciar scan de vocabulário",
+    "masteredLabel": "5-star",
+    "learningLabel": "3-4 stars",
+    "weakLabel": "1-2 stars",
+    "unknownLabel": "0 stars",
+    "levelLabel": "Nível"
+  },
+  "featureGuides": {
+    "vocabularyScan": {
+      "title": "First we learn what you know",
+      "body": "Swipe through words: the ones you recognize and the ones to review become your initial profile.",
+      "actionLabel": "Show me the scan"
+    },
+    "learningPath": {
+      "title": "The path adapts",
+      "body": "Every step comes from what you just showed: strong vocabulary, weak vocabulary, and the next challenge.",
+      "actionLabel": "Show me the path"
+    },
+    "learningFilters": {
+      "title": "Choose the training ground",
+      "body": "Filters help you train one precise area: nouns, verbs, concepts, or categories you want to reinforce.",
+      "actionLabel": "Show me the filters"
+    },
+    "learningSystem": {
+      "title": "The science keeps score",
+      "body": "You answer naturally. The system updates how well you know each word and when it is worth reviewing.",
+      "actionLabel": "Show me the method"
+    },
+    "sentencePlacement": {
+      "title": "Now we build sentences",
+      "body": "Knowing isolated words is not enough: here you choose the right order and train grammar, logic, and memory.",
+      "actionLabel": "Show me the sentence"
+    },
+    "library": {
+      "title": "The library is your memory",
+      "body": "Here you can find every word with translations, examples, links, and useful details for better study.",
+      "actionLabel": "Show me the library"
+    },
+    "grammarGraph": {
+      "title": "Look at the connections",
+      "body": "The graph shows how words, roles, and relationships fit together instead of staying as separate lists.",
+      "actionLabel": "Show me the graph"
+    },
+    "wordCloud": {
+      "title": "See what carries more weight",
+      "body": "The cloud highlights the most present or relevant words, so you know where to look first.",
+      "actionLabel": "Show me the cloud"
+    },
+    "sentenceGraphBuilder": {
+      "title": "Compose with nodes",
+      "body": "This view lets you build sentences while also seeing the structure: who does what, and with which links.",
+      "actionLabel": "Show me the nodes"
+    },
+    "sentenceComposer": {
+      "title": "Compose the simple way",
+      "body": "Here you put words in order and immediately test whether the sentence sounds correct and understandable.",
+      "actionLabel": "Show me the composer"
+    },
+    "clusters": {
+      "title": "Group the concepts",
+      "body": "Clusters reveal word families: they help you study by blocks, not word by word.",
+      "actionLabel": "Show me the groups"
+    },
+    "dialects": {
+      "title": "Discover variants",
+      "body": "Language changes by area and context. This view shows where a word can take on different nuances.",
+      "actionLabel": "Show me the variants"
+    },
+    "hierarchy": {
+      "title": "Give the system structure",
+      "body": "The hierarchy shows levels and families: from the large concept down to more specific words.",
+      "actionLabel": "Show me the hierarchy"
+    }
+  },
+  "featureGuideOverlay": {
+    "ariaLabel": "Feature introduction",
+    "closeLabel": "Close introduction",
+    "eyebrow": "Mission briefing",
+    "continueAction": "Continuar",
+    "dismissAllAction": "Não me mostre essas explicações novamente"
+  },
+  "featureFlow": {
+    "vocabularyReview": {
+      "title": "Vocabulary Review",
+      "missionLabel": "Mission 1",
+      "description": "Swipe words you know or miss so the system can keep tuning your {{language}} level.",
+      "ctaLabel": "Continue path"
+    },
+    "sentencePlacement": {
+      "title": "Sentence Placement",
+      "missionLabel": "Mission 2",
+      "description": "Build short sentences from a controlled word bank to test grammar beyond single words.",
+      "ctaLabel": "Open Sentence Placement mission"
+    },
+    "grammarLab": {
+      "title": "Grammar Lab",
+      "missionLabel": "Mission 3",
+      "description": "Inspect sentence logic, grammar relationships, and builder tools when you are ready.",
+      "ctaLabel": "Open Grammar Lab mission"
+    },
+    "topicDeck": {
+      "title": "Topic Deck",
+      "missionLabel": "Configuração",
+      "description": "Tune the packs used in the swipe deck without turning the app into a settings screen.",
+      "ctaLabel": "Open Topics mission"
+    },
+    "yourVocabulary": {
+      "title": "Your Vocabulary",
+      "missionLabel": "Collection",
+      "description": "See the words ranked by how strongly the system thinks you know them.",
+      "ctaLabel": "Open Your Vocabulary"
+    },
+    "wordLibrary": {
+      "title": "Word Library",
+      "missionLabel": "Collection",
+      "description": "Review every saved word, image, translation, example, etymology, and database row.",
+      "ctaLabel": "Open Word Library mission"
+    },
+    "learningSystem": {
+      "title": "Learning System",
+      "missionLabel": "Science",
+      "description": "See how every swipe updates mastery, level, and the next recommended contexts.",
+      "ctaLabel": "Open Learning System mission"
+    },
+    "wordCloud": {
+      "title": "Word Cloud",
+      "missionLabel": "Explorar",
+      "description": "Explore the vocabulary space visually after the core practice loop.",
+      "ctaLabel": "Open Word Cloud mission"
+    },
+    "buildSentence": {
+      "title": "Build Sentence",
+      "missionLabel": "Explorar",
+      "description": "Compose sentence structures with the full grammar word bank.",
+      "ctaLabel": "Open Build Sentence mission"
+    },
+    "composeSentence": {
+      "title": "Compose Sentence",
+      "missionLabel": "Explorar",
+      "description": "Use the alternate composer view while keeping the same sentence-building language.",
+      "ctaLabel": "Open Compose Sentence mission"
+    },
+    "clusters": {
+      "title": "Clusters",
+      "missionLabel": "Explorar",
+      "description": "Inspect semantic groups and word-image neighborhoods.",
+      "ctaLabel": "Open Clusters mission"
+    },
+    "dialects": {
+      "title": "Dialects",
+      "missionLabel": "Explorar",
+      "description": "Browse regional language variation once the core path is familiar.",
+      "ctaLabel": "Open Dialects mission"
+    },
+    "hierarchy": {
+      "title": "Hierarchy",
+      "missionLabel": "Explorar",
+      "description": "See the vocabulary hierarchy and concept structure.",
+      "ctaLabel": "Open Hierarchy mission"
+    }
+  },
+  "targetLanguageNames": {
+    "de": "alemão",
+    "it": "italiano",
+    "fr": "francês"
+  },
+  "languageSwitcher": {
+    "triggerAriaLabel": "Mudar idioma de aprendizado",
+    "imParo": "Aprendo",
+    "changeSourceLanguage": "Mudar idioma de partida",
+    "resetOnboarding": "Resetar onboarding",
+    "editBoth": "Mudar idiomas (origem + destino)"
+  },
+  "languageBadge": {
+    "learning": "Aprendendo",
+    "from": "de"
+  },
+  "onboardingChooser": {
+    "eyebrow": "Bem-vindo",
+    "title": "Escolha seus idiomas",
+    "body": "O que você quer aprender e do qual parte.",
+    "targetQuestion": "Qual idioma você quer aprender?",
+    "sourceQuestion": "De qual idioma você parte?",
+    "cancel": "Cancelar",
+    "submit": "Começar",
+    "sourceConflictTooltip": "Você não pode partir do mesmo idioma que quer aprender"
+  },
+  "common": {
+    "whatIs": "O que é isto?",
+    "whatIsAria": "What is this screen?",
+    "dontShowAgain": "Não mostrar novamente",
+    "close": "Fechar",
+    "continue": "Continuar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "skip": "Pular",
+    "loading": "Carregando…",
+    "unknownError": "Erro desconhecido",
+    "zoomIn": "Zoom +",
+    "zoomOut": "Zoom -",
+    "fitToView": "Ajustar à vista",
+    "resetZoom": "Resetar zoom",
+    "removeFilter": "Remover filtro"
+  },
+  "feedbackButton": {
+    "defaultUser": "Usuário tester",
+    "title": "O que você acha?",
+    "body": "Conte para nós o que está funcionando, o que não está, e qualquer outra coisa que você gostaria de ver neste app."
+  },
+  "pathHome": {
+    "home": {
+      "eyebrow": "Caminho · Início",
+      "title": "Aprenda {{language}}",
+      "subline": "Decida se você conhece uma palavra ou não — o sistema cuida do resto.",
+      "explainerTitle": "Como o Home funciona",
+      "explainerBodyP1": "The Home shows your current mission. Everything else — stats, diary, next challenge — lives in dedicated screens reachable from the links at the bottom.",
+      "explainerBodyP2": "Example: to see your path's four key numbers (level, words, mastery), tap \"Your numbers\".",
+      "snapshotEyebrow": "Snapshot de hoje",
+      "snapshotBody": "O caminho de 400 níveis atualiza a cada swipe. O sistema escolhe contextos mais fáceis ou difíceis com base no seu domínio.",
+      "primaryCtaPill": "Continuar",
+      "linkFull": "Ver caminho completo",
+      "linkFullSub": "Todos os 400 níveis — você está no {{level}}",
+      "linkStats": "Seus números",
+      "linkStatsSub": "Path level, palavras, fortes, domínio médio",
+      "linkDiary": "Diário de aprendizado",
+      "linkDiarySub": "{{reviewed}}/{{total}} hoje",
+      "linkNext": "Pronto para subir",
+      "linkNextSub": "Próximo desafio + ferramentas recomendadas",
+      "reengageTitle": "Bem-vindo de volta",
+      "reengageBody": "Faz {{days}} dias desde sua última sessão de {{language}}. Recalibre o caminho com uma revisão.",
+      "dailyQuest": "Daily Quest",
+      "streakShield": "Streak Shield",
+      "xpBank": "XP Bank"
+    },
+    "full": {
+      "eyebrow": "Caminho · 400 níveis",
+      "title": "Caminho completo",
+      "subline": "Todos os 400 níveis e onde você está agora.",
+      "explainerTitle": "O que é o caminho de 400 níveis",
+      "explainerBody": "The path is organised into 400 levels that reflect how much and how well you know words. Every swipe updates your level. Example: if you know a word at level 22, you will see contexts adapted to that level, not easier ones.",
+      "levelLabel": "Nível {{level}}"
+    },
+    "stats": {
+      "eyebrow": "Caminho · Stats",
+      "title": "Seus números",
+      "subline": "Path level, palavras, palavras fortes e domínio médio.",
+      "explainerTitle": "O que esses números medem",
+      "explainerBody": "Path Level is your level on the 400 path. Words is the total practiced. Strong is the count of words with high mastery. Avg Mastery is the average of all word confidences.",
+      "pathLevel": "Path Level",
+      "words": "Palavras",
+      "strong": "Fortes",
+      "avgMastery": "Domínio méd."
+    },
+    "diary": {
+      "eyebrow": "Caminho · Diário",
+      "title": "Diário de aprendizado",
+      "subline": "A história das missões do caminho, em ordem cronológica.",
+      "explainerTitle": "Como funciona o diário",
+      "explainerBody": "The diary shows the steps of the 400-level path — past missions are completed, current ones are highlighted, future ones stay greyed-out until unlocked.",
+      "progressEyebrow": "Progresso atual",
+      "todayPill": "{{reviewed}}/{{total}} hoje"
+    },
+    "next": {
+      "eyebrow": "Caminho · Próximo",
+      "title": "Pronto para subir",
+      "subline": "O próximo desafio e as ferramentas recomendadas para chegar lá.",
+      "explainerTitle": "Como decidimos o que é o 'próximo'",
+      "explainerBody": "When the system sees enough mastery signals, it unlocks the next challenge (e.g. Sentence Placement). Here you also find Review and Explore tools recommended for the current phase.",
+      "nextChallengeEyebrow": "Próximo desafio",
+      "nextChallengeBody": "Componha frases para checar gramática, lógica e palavras funcionais.",
+      "reviewToolsTitle": "Ferramentas de review",
+      "reviewToolsBody": "Your Vocabulary, Topic Deck, Word Library, and Learning System. Topics {{selected}}/{{total}}.",
+      "exploreToolsTitle": "Ferramentas de explore",
+      "exploreToolsBody": "Ferramentas de grammar e de language map ficam disponíveis quando o caminho pede um trabalho mais profundo."
+    }
+  },
+  "grammar": {
+    "hubSubline": "Sete ferramentas para analisar gramática e vocabulário.",
+    "graphSubline": "Relações gramaticais entre as palavras de cada frase.",
+    "cloudBody": "Bigger words are the ones seen or swiped most often. Use cloud density to spot what your eye notices first.",
+    "playfulSubline": "Variante playful do builder com tiles mais ricos.",
+    "dialectsBody": "See how the same word can change in different regions of Germany, Austria, and Switzerland."
+  },
+  "grammarLab": {
+    "whatIsViewTitle": "O que é {{title}}",
+    "nextButton": "Próximo",
+    "loadingView": "Carregando view...",
+    "noSentencesTitle": "Ainda não há frases de gramática",
+    "noSentencesBody": "The lab can still use the builder, clusters, dialect map, hierarchy, and word cloud while sentence data is empty.",
+    "openBuilderButton": "Build Sentence",
+    "playCachedTitle": "Reproduzir (cache)",
+    "playGenerateTitle": "Gerar e reproduzir",
+    "loadingGraph": "Carregando dados do grafo...",
+    "loadingCloud": "Carregando word cloud...",
+    "loadingClusters": "Carregando clusters...",
+    "loadingHierarchy": "Carregando hierarquia...",
+    "caseLabel": "Caso",
+    "genderLabel": "Gênero",
+    "tenseLabel": "Tempo",
+    "viewMeta": {
+      "graph": {
+        "eyebrow": "Grammar · Sentence graph",
+        "title": "Sentence Graph",
+        "subline": "Relações gramaticais entre as palavras de cada frase.",
+        "body": "View the grammar graph of a sentence: every word is a node, every relation (subject, object, modifier) is an edge. Tap a node to see case, gender, tense."
+      },
+      "wordcloud": {
+        "eyebrow": "Grammar · Word cloud",
+        "title": "Word Cloud",
+        "subline": "Quão frequentes são as palavras que você encontrou.",
+        "body": "Bigger words are the ones seen or swiped most often. Tap a word to open its detail."
+      },
+      "builder": {
+        "eyebrow": "Grammar · Build sentence",
+        "title": "Build Sentence",
+        "subline": "Construa frases gramaticais a partir de um word bank.",
+        "body": "Drag or tap tiles to assemble a sentence. The system checks the grammatical structure."
+      },
+      "funbuilder": {
+        "eyebrow": "Grammar · Compose sentence",
+        "title": "Compose Sentence",
+        "subline": "Variante playful do builder com tiles mais ricos.",
+        "body": "Builder variant with more playful interaction: pick tiles, compose the sentence, see feedback."
+      },
+      "clusters": {
+        "eyebrow": "Grammar · Clusters",
+        "title": "Clusters",
+        "subline": "Grupos semânticos e bairros de palavras relacionadas.",
+        "body": "Words are grouped by similar meaning. Example: all motion verbs end up in the same cluster."
+      },
+      "dialects": {
+        "eyebrow": "Grammar · Dialects",
+        "title": "Dialects",
+        "subline": "Variantes regionais do vocabulário.",
+        "body": "See how the same word can change across different regions (e.g. Germany, Austria, Switzerland)."
+      },
+      "sunburst": {
+        "eyebrow": "Grammar · Hierarchy",
+        "title": "Hierarchy",
+        "subline": "Estrutura hierárquica de conceitos e categorias.",
+        "body": "A crown chart that shows how macro categories contain sub-categories and words."
+      }
+    }
+  },
+  "grammarHub": {
+    "eyebrow": "Explore · Grammar · Hub",
+    "title": "Grammar Lab",
+    "subline": "Sete ferramentas para analisar gramática e vocabulário.",
+    "explainerTitle": "What you'll find in the Grammar Lab",
+    "explainerBodyP1": "The Grammar Lab is the toolbox to analyse the target language. Every tool answers a different question.",
+    "explainerBodyP2": "Example: Sentence Graph shows how the words of a sentence are linked; Word Cloud shows which words appear most often. Open them one at a time.",
+    "entries": {
+      "graph": {
+        "title": "Sentence Graph",
+        "sub": "Grammar relations between words."
+      },
+      "wordcloud": {
+        "title": "Word Cloud",
+        "sub": "Frequency of the words you've met."
+      },
+      "builder": {
+        "title": "Build Sentence",
+        "sub": "Build sentences from a word bank."
+      },
+      "funbuilder": {
+        "title": "Compose Sentence",
+        "sub": "Playful variant of the builder."
+      },
+      "clusters": {
+        "title": "Clusters",
+        "sub": "Semantic groups of related words."
+      },
+      "dialects": {
+        "title": "Dialects",
+        "sub": "Regional variants of the vocabulary."
+      },
+      "sunburst": {
+        "title": "Hierarchy",
+        "sub": "Hierarchical structure of concepts."
+      }
+    }
+  },
+  "feedbackForm": {
+    "openAria": "Abrir formulário de feedback tester",
+    "modalAria": "Formulário de feedback tester",
+    "eyebrow": "Tester feedback",
+    "title": "O que você acha?",
+    "body": "Leave a comment on the design, a feature you like or dislike. It will be saved persistently for whoever develops the app.",
+    "closeAria": "Fechar",
+    "like": "Curtir",
+    "dislike": "Não curtir",
+    "neutral": "Neutro",
+    "placeholder": "Escreva seu comentário aqui…",
+    "successMessage": "Obrigado! Seu comentário foi salvo.",
+    "errorMessagePrefix": "Erro ao salvar",
+    "closeButton": "Fechar",
+    "submitButton": "Enviar comentário",
+    "sendingButton": "Enviando…"
+  },
+  "bottomNav": {
+    "path": "Caminho",
+    "learn": "Aprender",
+    "review": "Revisão",
+    "explore": "Explorar"
+  },
+  "library": {
+    "statsTitle": "Estatísticas da biblioteca",
+    "noWordsTitle": "Nenhuma palavra encontrada",
+    "noWordsBody": "Tente modificar seus filtros de busca",
+    "allCefr": "Todos os níveis CEFR",
+    "allGenders": "Todos os gêneros",
+    "allFrequencies": "Todas as frequências",
+    "allCategories": "Todas as categorias",
+    "allPos": "Todas as classes gramaticais",
+    "simpleAndCompound": "Simples e compostas",
+    "simpleOnly": "Apenas palavras simples",
+    "compoundOnly": "Apenas palavras compostas",
+    "allRegisters": "Todos os registros",
+    "title": "Word Library",
+    "subtitle": "Explore seu vocabulário com dados linguísticos ricos",
+    "badgeCollection": "Collection Quest",
+    "badgeMastery": "Mastery Loot",
+    "badgeReview": "Review Queue",
+    "statTotal": "Total",
+    "statLearned": "Aprendidas",
+    "statToReview": "Para revisar",
+    "statsSummary": "Total {{total}} · Aprendidas {{learned}} · Para revisar {{toReview}}",
+    "statsOpen": "Abrir →",
+    "filtersLabel": "Filtros",
+    "clearLabel": "Limpar",
+    "searchPlaceholder": "Buscar palavra ou tradução...",
+    "showingCount": "Mostrando {{visible}} de {{total}} palavras",
+    "loading": "(loading...)",
+    "statNotViewed": "Não vistas",
+    "loadingWords": "Carregando palavras...",
+    "errorTitle": "Erro"
+  },
+  "learningStrip": {
+    "eyebrow": "Game packs",
+    "title": "Topic Deck"
+  },
+  "learningSystemMenu": {
+    "title": "Learning System",
+    "subtitle": "Seus swipes moldam a próxima dificuldade."
+  },
+  "completion": {
+    "reviewed": "Revisadas",
+    "toReview": "Para revisar",
+    "known": "Conhecidas",
+    "sessionComplete": "Sessão completa",
+    "sessionBody": "Você completou todas as flashcards desta sessão.",
+    "startOver": "Começar de novo",
+    "adjustFilters": "Ajustar filtros",
+    "viewLibrary": "Ver biblioteca",
+    "grammarLab": "Grammar Lab"
+  },
+  "wordDetail": {
+    "timesKnown": "Vezes conhecida",
+    "timesUnknown": "Vezes não conhecida",
+    "totalReviews": "Reviews totais",
+    "masteryLevel": "Nível de domínio",
+    "frequency": "Frequência",
+    "register": "Registro",
+    "formation": "Formação",
+    "originLanguage": "Idioma de origem",
+    "originWord": "Palavra de origem",
+    "languageFamily": "Família linguística",
+    "timePeriod": "Período",
+    "loadingDetails": "Carregando detalhes da palavra...",
+    "loadingRow": "Carregando linha do banco...",
+    "noExamples": "Sem exemplos disponíveis",
+    "noEtymology": "Sem dados de etimologia",
+    "noFalseFriends": "Nenhum falso amigo identificado",
+    "noProverbs": "Sem provérbios ou expressões disponíveis",
+    "noCollocations": "Sem colocações disponíveis",
+    "noDialectVariants": "Sem variantes dialetais disponíveis",
+    "noRows": "Sem linhas"
+  },
+  "featureHub": {
+    "grammarEyebrow": "Treino de grammar",
+    "grammarTitle": "Gramática",
+    "languageMapEyebrow": "Mapa linguístico"
+  },
+  "dialectMap": {
+    "loading": "Carregando dialetos...",
+    "noDataTitle": "Sem dados de dialetos",
+    "noDataBody": "Os dados de dialetos regionais precisam ser populados no banco.",
+    "mapTitle": "Mapa de dialetos"
+  },
+  "sentenceBuilder": {
+    "selectPrompt": "Selecione nós acima para começar a construir",
+    "clickHint": "Toque nos nós para adicioná-los e depois conecte-os em ordem"
+  },
+  "cardStack": {
+    "masteryLabel": "Domínio",
+    "progress": "Progress",
+    "known": "Conhecidas",
+    "unknown": "Unknown",
+    "swipeHint": "Swipe left: Don't know · Swipe right: Know",
+    "noDeck": "Nenhum cartão neste deck",
+    "buildTopicDeck": "Construa seu topic deck",
+    "selectedPacks": "Packs selecionados",
+    "noCardsInDeck": "Nenhum cartão neste deck",
+    "noCardsBody": "Try adjusting the topic deck or filters.",
+    "connectionError": "Erro de conexão",
+    "unknownError": "Erro desconhecido"
+  },
+  "featureHubScreen": {
+    "review": {
+      "eyebrow": "Review · Hub",
+      "title": "Review e Setup",
+      "subtitle": "Tools are grouped here so the path can stay focused. Topics {{selected}}/{{total}} are active.",
+      "sectionTitle": "Review e setup",
+      "sectionBody": "Adjust the deck, inspect known words, open the library, or review how the learning system scores memory."
+    },
+    "exploreGrammar": {
+      "eyebrow": "Explore · Grammar training",
+      "title": "Grammar Training",
+      "subtitle": "Verificações no nível da frase, builder, grammar lab."
+    },
+    "exploreMap": {
+      "eyebrow": "Explore · Language map",
+      "title": "Language Map",
+      "subtitle": "Clusters, dialetos, hierarquia e word clouds."
+    },
+    "exploreHub": {
+      "eyebrow": "Explore · Hub",
+      "title": "Explorar {{language}}",
+      "subtitle": "Ferramentas avançadas: prática de grammar ou language map."
+    },
+    "grammarTraining": {
+      "title": "Treino de grammar",
+      "body": "Use these when the path needs sentence logic, grammar practice, or builder tools."
+    },
+    "languageMap": {
+      "title": "Mapa linguístico",
+      "body": "Explore relationships, clusters, dialects, and hierarchy when you want to inspect the system."
+    }
+  },
+  "learningScreen": {
+    "noCardsTitle": "Nenhum cartão neste deck",
+    "noCardsBody": "Abra os filtros e selecione pelo menos uma categoria.",
+    "openFiltersButton": "Abrir filtros",
+    "headerTitle": "Aprenda {{language}}",
+    "headerSubtitle": "Apenas decida: você sabe ou não. O algoritmo adapta o caminho a partir daí."
+  },
+  "learningFiltersPanel": {
+    "title": "Construa seu topic deck",
+    "selectedPacks": "Packs selecionados"
+  }
+}

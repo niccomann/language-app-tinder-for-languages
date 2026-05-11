@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { useCopy, useLanguage } from '../i18n/languageContext';
-import type { SourceLocale, TargetLanguage } from '../i18n/languageStorage';
+import type { TargetLanguage } from '../i18n/languageStorage';
+import { SOURCE_FLAGS, TARGET_FLAGS, TARGET_LANGUAGES } from '../i18n/languageMeta';
 import { UI_INTERACTION, UI_RADIUS } from './ui';
-
-const TARGET_FLAGS: Record<TargetLanguage, string> = { de: '🇩🇪', it: '🇮🇹', fr: '🇫🇷' };
-const SOURCE_FLAGS: Record<SourceLocale, string> = { en: '🇬🇧', it: '🇮🇹', fr: '🇫🇷' };
 
 interface LanguageSwitcherProps {
   onOpenSourceModal: () => void;
@@ -17,7 +15,7 @@ export function LanguageSwitcher({ onOpenSourceModal }: LanguageSwitcherProps) {
 
   if (!targetLanguage) return null;
 
-  const targets: TargetLanguage[] = ['de', 'it', 'fr'];
+  const targets: readonly TargetLanguage[] = TARGET_LANGUAGES;
   const currentTargetFlag = TARGET_FLAGS[targetLanguage];
   const currentSourceFlag = sourceLocale ? SOURCE_FLAGS[sourceLocale] : null;
 
