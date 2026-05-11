@@ -76,6 +76,16 @@ function AppWithLanguage() {
     && route.mode.startsWith('path')
     && !firstVocabularyOnboardingDone;
 
+  if (onboardingNeeded) {
+    return (
+      <ThemeProvider>
+        <div className="min-h-screen bg-canvas">
+          <OnboardingModal initialTarget={targetLanguage} initialSource={sourceLocale} />
+        </div>
+      </ThemeProvider>
+    );
+  }
+
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-canvas pb-24 transition-colors duration-300 md:pb-0">
@@ -131,7 +141,7 @@ function AppWithLanguage() {
           )}
         </Suspense>
         {activeGuideId ? <GameGuideOverlay guideId={activeGuideId} routeKey={activeGuideRouteKey} /> : null}
-        {(onboardingNeeded || showSourceModal) && (
+        {showSourceModal && (
           <OnboardingModal
             initialTarget={targetLanguage}
             initialSource={sourceLocale}
