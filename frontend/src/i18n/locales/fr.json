@@ -930,8 +930,8 @@
     "noCardsTitle": "Aucune carte dans ce deck",
     "noCardsBody": "Ouvre les filtres et sélectionne au moins une catégorie.",
     "openFiltersButton": "Ouvrir filtres",
-    "headerTitle": "Révision vocabulaire",
-    "headerSubtitle": "Swipe à droite si tu connais le mot, à gauche sinon."
+    "headerTitle": "Apprends l'{{language}}",
+    "headerSubtitle": "Décide simplement : tu sais ou non. L'algorithme adapte le parcours à partir de là."
   },
   "learningFiltersPanel": {
     "title": "Construis ton topic deck",

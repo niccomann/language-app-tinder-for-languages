@@ -930,8 +930,8 @@
     "noCardsTitle": "No cards in this deck",
     "noCardsBody": "Open filters and select at least one category.",
     "openFiltersButton": "Open Filters",
-    "headerTitle": "Vocabulary Review",
-    "headerSubtitle": "Swipe right if you know the word, left if you don't."
+    "headerTitle": "Learn {{language}}",
+    "headerSubtitle": "Just decide: know it or not. The algorithm adapts the learning path from there."
   },
   "learningFiltersPanel": {
     "title": "Build your topic deck",

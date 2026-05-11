@@ -10,7 +10,8 @@ import { LearningSystemMenu } from './LearningSystemMenu';
 import { LearningFeedbackBanner } from './LearningFeedbackBanner';
 import { AppScreen, NavButton, ScreenHeader, SurfacePanel, UI_RADIUS } from './ui';
 import type { Flashcard, LearningFeedback } from '../types';
-import { useCopy } from '../i18n/languageContext';
+import { useCopy, useTargetLanguage } from '../i18n/languageContext';
+import { formatCopy } from '../i18n/staticCopy';
 
 interface LearningScreenProps {
   currentCard: Flashcard | null;
@@ -59,6 +60,8 @@ export function LearningScreen({
 }: LearningScreenProps) {
   const copy = useCopy();
   const ls = copy.learningScreen;
+  const target = useTargetLanguage();
+  const targetName = copy.targetLanguageNames[target];
   const [lastSwipeDirection, setLastSwipeDirection] = useState<'left' | 'right'>('left');
 
   const handleDirectionalSwipe = (direction: 'left' | 'right') => {
@@ -71,8 +74,8 @@ export function LearningScreen({
       <main className="mx-auto flex w-full max-w-2xl flex-col gap-4">
         <header className="w-full space-y-3">
           <ScreenHeader
-            title="Learn German"
-            subtitle="Just decide: know it or not. The algorithm adapts the learning path from there."
+            title={formatCopy(ls.headerTitle, { language: targetName })}
+            subtitle={ls.headerSubtitle}
             density="compact"
             actions={(
               <div className={`${UI_RADIUS.pill} bg-surface-card px-3 py-2 text-caption font-medium text-ink border border-hairline`}>
