@@ -1,7 +1,13 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, type ReactNode } from 'react';
 import { MessageSquarePlus, ThumbsDown, ThumbsUp, X } from 'lucide-react';
 import { api } from '../services/api';
 import { Button, UI_INTERACTION, UI_RADIUS } from './ui';
+
+interface FeedbackButtonProps {
+  triggerClassName?: string;
+  triggerLabel?: string;
+  triggerIcon?: ReactNode;
+}
 
 type Sentiment = 'like' | 'dislike' | 'neutral';
 
@@ -11,7 +17,11 @@ type Status =
   | { kind: 'success'; id: string }
   | { kind: 'error'; message: string };
 
-export function FeedbackButton() {
+export function FeedbackButton({
+  triggerClassName,
+  triggerLabel,
+  triggerIcon,
+}: FeedbackButtonProps = {}) {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [sentiment, setSentiment] = useState<Sentiment>('neutral');
@@ -53,11 +63,16 @@ export function FeedbackButton() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`flex min-h-10 items-center gap-2 px-3 py-2 ${UI_RADIUS.control} font-sans font-medium ${UI_INTERACTION.fastTransition} bg-canvas text-ink border border-hairline hover:bg-surface-card`}
+        className={
+          triggerClassName
+          ?? `flex min-h-10 items-center gap-2 px-3 py-2 ${UI_RADIUS.control} font-sans font-medium ${UI_INTERACTION.fastTransition} bg-canvas text-ink border border-hairline hover:bg-surface-card`
+        }
         aria-label="Open tester feedback form"
       >
-        <MessageSquarePlus size={18} />
-        <span className="hidden text-nav-link sm:inline">Utente Tester</span>
+        {triggerIcon ?? <MessageSquarePlus size={18} />}
+        <span className={triggerLabel ? '' : 'hidden text-nav-link sm:inline'}>
+          {triggerLabel ?? 'Utente Tester'}
+        </span>
       </button>
 
       {open && (

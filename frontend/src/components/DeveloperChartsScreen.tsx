@@ -5,7 +5,7 @@ import { HubGrid, SceneShell, type HubGridItem } from './scene';
 interface DeveloperChartsScreenProps {
   onBack: () => void;
   chartSlug?: string;
-  onNavigate?: (path: string) => void;
+  onNavigate: (path: string) => void;
 }
 
 interface DeveloperChartDefinition {
@@ -132,7 +132,6 @@ const developerCharts: DeveloperChartDefinition[] = [
 ];
 
 export function DeveloperChartsScreen({ onBack, chartSlug, onNavigate }: DeveloperChartsScreenProps) {
-  const nav = onNavigate ?? onBack;
   if (chartSlug) {
     const chart = developerCharts.find((c) => c.slug === chartSlug);
     if (chart) {
@@ -141,8 +140,8 @@ export function DeveloperChartsScreen({ onBack, chartSlug, onNavigate }: Develop
           eyebrow={`DEV · ${chart.title.toUpperCase()}`}
           title={chart.title}
           subline={chart.subline}
-          back={{ onClick: () => nav('/developer') }}
-          onNavigate={nav}
+          back={{ onClick: () => onNavigate('/developer') }}
+          onNavigate={onNavigate}
         >
           <MermaidChart title={chart.title} chart={chart.chart} />
         </SceneShell>
@@ -155,7 +154,7 @@ export function DeveloperChartsScreen({ onBack, chartSlug, onNavigate }: Develop
     icon: c.icon,
     title: c.title,
     sub: c.subline,
-    onClick: () => nav(`/developer/${c.slug}`),
+    onClick: () => onNavigate(`/developer/${c.slug}`),
   }));
 
   return (
@@ -165,7 +164,7 @@ export function DeveloperChartsScreen({ onBack, chartSlug, onNavigate }: Develop
       subline="Diagrammi Mermaid basati solo sul codice realmente implementato."
       action={<Code2 size={18} className="text-muted" />}
       back={{ onClick: onBack }}
-      onNavigate={nav}
+      onNavigate={onNavigate}
     >
       <HubGrid items={items} />
     </SceneShell>

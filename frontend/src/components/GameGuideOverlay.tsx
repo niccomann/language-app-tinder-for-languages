@@ -65,7 +65,6 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
   const guide = featureGuides[guideId];
   const prefersReducedMotion = useReducedMotion();
   const [dismissed, setDismissed] = useState(() => hasSeenFeatureGuide(guideId));
-  const [eventKey] = useState(0);
   const [frameIndex, setFrameIndex] = useState(0);
   const [framesReady, setFramesReady] = useState(false);
   const [speechState, setSpeechState] = useState({ stepIndex: 0, isTyping: true });
@@ -118,7 +117,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
       window.clearTimeout(showReactionFrame);
       window.clearTimeout(settleFrame);
     };
-  }, [eventKey, framesReady, guide.frames.length, prefersReducedMotion, speechState.isTyping]);
+  }, [framesReady, guide.frames.length, prefersReducedMotion, speechState.isTyping]);
 
   const motionProps = useMemo(() => {
     if (prefersReducedMotion) {
@@ -191,7 +190,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
           {step === 'watch' ? (
             <>
               <motion.div
-                key={`${guide.id}-${eventKey}`}
+                key={guide.id}
                 data-testid="guide-animated-character"
                 data-speaking={speechState.isTyping ? 'true' : 'false'}
                 className="flex w-full items-center justify-center"
@@ -235,9 +234,8 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
             </>
           ) : (
             <StreamingSpeechBubble
-              key={eventKey}
               steps={[{ eyebrow: overlayCopy.eyebrow, title: guide.title, body: guide.body }]}
-              playbackKey={eventKey}
+              playbackKey={guide.id}
               showStepIndicator={false}
               contentClassName="min-h-[255px] sm:min-h-[300px]"
               className={`w-full border ${styles.panel}`}

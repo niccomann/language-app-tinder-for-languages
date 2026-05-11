@@ -26,7 +26,6 @@ import {
 import {
   getFeatureFlowItemsByPhase,
   getPrimaryFeatureFlowItem,
-  type FeatureFlowItem,
 } from '../gamification/featureFlowRegistry';
 
 export type PathView = 'home' | 'full' | 'stats' | 'diary' | 'next';
@@ -473,5 +472,3 @@ function PathToolButton({
   );
 }
 
-// FeatureFlowItem unused type kept exported indirectly via getPrimaryFeatureFlowItem
-export type { FeatureFlowItem };

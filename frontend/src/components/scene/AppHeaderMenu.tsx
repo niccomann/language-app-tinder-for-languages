@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { Code2, MoreVertical } from 'lucide-react';
+import { Code2, MessageSquarePlus, MoreVertical } from 'lucide-react';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { FeedbackButton } from '../FeedbackButton';
 import { APP_MODE, SHOW_DEVELOPER_TOOLS } from '../../config/appMode';
 import { UI_INTERACTION, UI_RADIUS } from '../ui';
+
+const MENU_ITEM_CLASS = `flex w-full items-center gap-2 px-2 py-2 text-left text-body-sm font-medium text-ink ${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} hover:bg-surface-card`;
 
 interface AppHeaderMenuProps {
   onNavigate: (path: string) => void;
@@ -38,10 +40,11 @@ export function AppHeaderMenu({ onNavigate }: AppHeaderMenuProps) {
           role="menu"
           className={`absolute right-0 z-[75] mt-2 w-60 origin-top-right ${UI_RADIUS.surface} border border-hairline bg-canvas p-2 shadow-sm`}
         >
-          <div className="flex items-center gap-2 px-2 py-1.5">
-            <FeedbackButton />
-            <span className="text-body-sm text-muted">Feedback</span>
-          </div>
+          <FeedbackButton
+            triggerClassName={MENU_ITEM_CLASS}
+            triggerIcon={<MessageSquarePlus size={16} />}
+            triggerLabel="Feedback"
+          />
           {SHOW_DEVELOPER_TOOLS && (
             <button
               type="button"
@@ -49,7 +52,7 @@ export function AppHeaderMenu({ onNavigate }: AppHeaderMenuProps) {
                 setOpen(false);
                 onNavigate('/developer');
               }}
-              className={`mt-1 flex w-full items-center gap-2 px-2 py-2 text-left text-body-sm font-medium text-ink ${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} hover:bg-surface-card`}
+              className={`mt-1 ${MENU_ITEM_CLASS}`}
             >
               <Code2 size={16} />
               Sviluppatore

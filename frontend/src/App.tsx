@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useState } from 'react';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { GameGuideOverlay } from './components/GameGuideOverlay';
 import { AppHeaderMenu, BottomNav } from './components/scene';
-import { grammarPath, libraryWordPath, parseAppRoute, type RouteState } from './routes/appRoutes';
+import { grammarPath, libraryWordPath, parseAppRoute } from './routes/appRoutes';
 import { featureGuideRouteKey, resolveFeatureGuideForRoute } from './gamification/featureGuideResolver';
 import { readFirstVocabularyOnboardingDone } from './components/firstVocabularyOnboardingMeta';
 
@@ -55,13 +55,15 @@ function App() {
 
   const activeGuideId = route.screen === 'developer' ? null : resolveFeatureGuideForRoute(route);
   const activeGuideRouteKey = `${routePath}:${featureGuideRouteKey(route)}`;
-  const productNavigationHidden = route.screen === 'learning' && route.mode === 'path' && !firstVocabularyOnboardingDone;
+  const productNavigationHidden =
+    route.screen === 'learning'
+    && route.mode.startsWith('path')
+    && !firstVocabularyOnboardingDone;
 
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-canvas pb-24 transition-colors duration-300 md:pb-0">
         <AppChrome
-          route={route}
           routePath={routePath}
           navigateTo={navigateTo}
           productNavigationHidden={productNavigationHidden}
@@ -117,14 +119,12 @@ function App() {
 }
 
 interface AppChromeProps {
-  route: RouteState;
   routePath: string;
   navigateTo: (path: string) => void;
   productNavigationHidden: boolean;
 }
 
-function AppChrome({ route, routePath, navigateTo, productNavigationHidden }: AppChromeProps) {
-  void route;
+function AppChrome({ routePath, navigateTo, productNavigationHidden }: AppChromeProps) {
   return (
     <>
       {!productNavigationHidden && <BottomNav pathname={routePath} onNavigate={navigateTo} />}

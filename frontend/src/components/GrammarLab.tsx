@@ -2,7 +2,7 @@ import { lazy, Suspense, useState, useEffect, useCallback, useRef } from 'react'
 import { Play, Info, Volume2, Loader2, Puzzle } from 'lucide-react';
 import { api } from '../services/api';
 import type { GrammarSentence, GrammarNode, FlashcardWithProgress, WordCloudItem } from '../types';
-import { AppScreen, SurfacePanel, UI_RADIUS } from './ui';
+import { SurfacePanel, UI_RADIUS } from './ui';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
 import type { GrammarView } from '../routes/appRoutes';
 import { reportClientError } from '../utils/clientError';
@@ -205,7 +205,6 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
   const currentSentence = sentences[currentIndex];
   const wordDatasetLoading = loading && words.length === 0;
   const leaf = activeView === 'hub' ? VIEW_META.graph : VIEW_META[activeView];
-  void onViewChange;
 
   return (
     <SceneShell

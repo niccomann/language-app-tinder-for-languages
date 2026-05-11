@@ -1,8 +1,8 @@
 import { ArrowLeft } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { UI_INTERACTION, UI_RADIUS } from '../ui';
 import { SceneHeader } from './SceneHeader';
 import { AppHeaderMenu } from './AppHeaderMenu';
+import { iconButtonClass } from './sceneClasses';
 
 interface SceneShellProps {
   eyebrow: string;
@@ -38,7 +38,7 @@ export function SceneShell({
               type="button"
               onClick={back.onClick}
               aria-label={back.label ?? 'Indietro'}
-              className={`inline-flex h-9 w-9 items-center justify-center ${UI_RADIUS.control} text-ink ${UI_INTERACTION.fastTransition} hover:bg-surface-card`}
+              className={iconButtonClass(9)}
             >
               <ArrowLeft size={20} />
             </button>
