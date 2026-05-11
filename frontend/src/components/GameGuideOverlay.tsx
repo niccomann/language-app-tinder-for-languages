@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, Play, RotateCcw, X } from 'lucide-react';
+import { ArrowRight, Play, X } from 'lucide-react';
 import { motion, useReducedMotion, type Transition } from 'framer-motion';
 import { featureGuides, type FeatureGuideId, type FeatureGuideTone } from '../gamification/featureGuideManifest';
 import { hasSeenFeatureGuide, markAllFeatureGuidesDismissed, markFeatureGuideSeen, shouldDeferGuideUntilVocabularyScan } from '../gamification/featureGuideStorage';
@@ -65,7 +65,7 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
   const guide = featureGuides[guideId];
   const prefersReducedMotion = useReducedMotion();
   const [dismissed, setDismissed] = useState(() => hasSeenFeatureGuide(guideId));
-  const [eventKey, setEventKey] = useState(0);
+  const [eventKey] = useState(0);
   const [frameIndex, setFrameIndex] = useState(0);
   const [framesReady, setFramesReady] = useState(false);
   const [speechState, setSpeechState] = useState({ stepIndex: 0, isTyping: true });
@@ -147,12 +147,6 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
       transition: eventTransition,
     };
   }, [prefersReducedMotion, speechState.isTyping]);
-
-  const replayGuide = () => {
-    setEventKey((current) => current + 1);
-    setFrameIndex(0);
-    setStep('watch');
-  };
 
   const goToBriefing = () => {
     setStep('briefing');
@@ -262,15 +256,6 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
                 >
                   <Play size={18} aria-hidden="true" />
                   {guide.actionLabel}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={replayGuide}
-                  className={`inline-flex min-h-12 items-center justify-center gap-2 ${UI_RADIUS.control} border border-hairline bg-canvas px-5 py-3 text-base font-semibold text-body ${UI_INTERACTION.fastTransition} hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
-                >
-                  <RotateCcw size={18} aria-hidden="true" />
-                  {overlayCopy.replayAction}
                 </button>
               </div>
 

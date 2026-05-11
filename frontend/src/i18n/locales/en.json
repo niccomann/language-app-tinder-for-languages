@@ -475,7 +475,6 @@
     "closeLabel": "Close introduction",
     "eyebrow": "Mission briefing",
     "continueAction": "Continue",
-    "replayAction": "Replay animation",
     "dismissAllAction": "Don't show me these explanations again"
   },
   "featureFlow": {
