@@ -10,3 +10,4 @@ export type { SubNavItem } from './SubNav';
 export { PaginatedList } from './PaginatedList';
 export { StepFooter } from './StepFooter';
 export { isExplainerDismissed, markExplainerDismissed, explainerKey } from './explainerStorage';
+export { iconButtonClass, STICKY_BAR_CLASS, SURFACE_CARD_CLASS, EYEBROW_CLASS } from './sceneClasses';

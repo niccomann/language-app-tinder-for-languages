@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
-import { ArrowLeft, BookOpen, BookOpenCheck, Compass, FlaskConical, Layers3, Puzzle, Route, ShieldCheck, Sparkles } from 'lucide-react';
-import { AppScreen, ScreenHeader, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
+import { BookOpen, BookOpenCheck, Compass, FlaskConical, Layers3, Puzzle, Route, ShieldCheck, Sparkles } from 'lucide-react';
+import { SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
+import { SceneShell, EYEBROW_CLASS } from './scene';
 import {
   getFeatureFlowItemsByPhase,
   type FeatureFlowItem,
@@ -78,84 +79,70 @@ export function FeatureHubScreen({
           ? 'Cluster, dialetti, gerarchia e nuvole di parole.'
           : 'Strumenti avanzati: pratica grammaticale o mappa della lingua.';
 
+  const eyebrow =
+    kind === 'review' ? 'REVIEW · HUB'
+    : kind === 'explore_grammar' ? 'EXPLORE · GRAMMAR TRAINING'
+    : kind === 'explore_map' ? 'EXPLORE · LANGUAGE MAP'
+    : 'EXPLORE · HUB';
+
   return (
-    <AppScreen width="wide" contentClassName="min-h-dvh px-4 pb-4 pt-24 md:pt-20">
-      <main className="mx-auto w-full max-w-5xl space-y-4">
-        <ScreenHeader
-          title={title}
-          subtitle={subtitle}
-          density="compact"
-          actions={(
-            <button
-              type="button"
-              onClick={onBack}
-              className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} flex min-h-10 items-center gap-2 border border-hairline bg-canvas px-3 py-2 text-body-sm font-medium text-ink hover:bg-surface-card`}
-            >
-              <ArrowLeft size={17} />
-              Path
-            </button>
-          )}
-        />
+    <SceneShell
+      eyebrow={eyebrow}
+      title={title}
+      subline={subtitle}
+      back={{ onClick: onBack }}
+      onNavigate={onNavigateToFeature}
+    >
+      {kind === 'explore' && (
+        <div className="grid gap-3">
+          <button
+            type="button"
+            onClick={() => onNavigateToFeature('/explore/grammar')}
+            className={`${UI_RADIUS.surface} ${UI_INTERACTION.transition} flex min-h-[120px] flex-col items-start gap-2 border border-hairline bg-canvas p-5 text-left hover:bg-surface-card`}
+          >
+            <span className={`${EYEBROW_CLASS} text-primary`}>Grammar training</span>
+            <span className="block font-display text-display-sm font-normal text-ink">Grammar</span>
+            <span className="text-body-sm text-muted">
+              Sentence Placement, Grammar Lab, Build / Compose Sentence.
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => onNavigateToFeature('/explore/map')}
+            className={`${UI_RADIUS.surface} ${UI_INTERACTION.transition} flex min-h-[120px] flex-col items-start gap-2 border border-hairline bg-canvas p-5 text-left hover:bg-surface-card`}
+          >
+            <span className={`${EYEBROW_CLASS} text-primary`}>Language map</span>
+            <span className="block font-display text-display-sm font-normal text-ink">Map</span>
+            <span className="text-body-sm text-muted">
+              Word Cloud, Clusters, Dialects, Hierarchy.
+            </span>
+          </button>
+        </div>
+      )}
+      {kind !== 'explore' && (
+        <div className="grid gap-4">
+          {sections.map((section) => (
+            <SurfacePanel key={section.title} padding="lg" className="space-y-4">
+              <div>
+                <p className={`${EYEBROW_CLASS} text-primary`}>{section.title}</p>
+                <p className="mt-2 text-body-sm font-medium leading-6 text-muted">{section.body}</p>
+              </div>
 
-        {kind === 'explore' && (
-          <div className="grid gap-3 md:grid-cols-2">
-            <button
-              type="button"
-              onClick={() => onNavigateToFeature('/explore/grammar')}
-              className={`${UI_RADIUS.surface} ${UI_INTERACTION.transition} flex min-h-[120px] flex-col items-start gap-2 border border-hairline bg-canvas p-5 text-left hover:bg-surface-card`}
-            >
-              <span className="text-caption-uppercase font-medium uppercase tracking-[1.5px] text-primary">
-                Grammar training
-              </span>
-              <span className="block font-display text-display-sm font-normal text-ink">Grammar</span>
-              <span className="text-body-sm text-muted">
-                Sentence Placement, Grammar Lab, Build / Compose Sentence.
-              </span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onNavigateToFeature('/explore/map')}
-              className={`${UI_RADIUS.surface} ${UI_INTERACTION.transition} flex min-h-[120px] flex-col items-start gap-2 border border-hairline bg-canvas p-5 text-left hover:bg-surface-card`}
-            >
-              <span className="text-caption-uppercase font-medium uppercase tracking-[1.5px] text-primary">
-                Language map
-              </span>
-              <span className="block font-display text-display-sm font-normal text-ink">Map</span>
-              <span className="text-body-sm text-muted">
-                Word Cloud, Clusters, Dialects, Hierarchy.
-              </span>
-            </button>
-          </div>
-        )}
-        {kind !== 'explore' && (
-          <div className="grid gap-4">
-            {sections.map((section) => (
-              <SurfacePanel key={section.title} padding="lg" className="space-y-4">
-                <div>
-                  <p className="text-caption-uppercase tracking-[1.5px] text-primary uppercase">
-                    {section.title}
-                  </p>
-                  <p className="mt-2 max-w-3xl text-body-sm font-medium leading-6 text-muted">
-                    {section.body}
-                  </p>
-                </div>
-
-                <div className="grid auto-rows-fr gap-3 md:grid-cols-2">
-                  {section.items.map((item) => (
-                    <HubFeatureButton
-                      key={item.id}
-                      item={item}
-                      icon={getHubIcon(item.id)}
-                      onOpen={() => onNavigateToFeature(item.route)}
-                    />
-                  ))}
-                </div>
-              </SurfacePanel>
-            ))}
-          </div>
-        )}
-      </main>
-    </AppScreen>
+              <div className="grid auto-rows-fr gap-3">
+                {section.items.map((item) => (
+                  <HubFeatureButton
+                    key={item.id}
+                    item={item}
+                    icon={getHubIcon(item.id)}
+                    onOpen={() => onNavigateToFeature(item.route)}
+                  />
+                ))}
+              </div>
+            </SurfacePanel>
+          ))}
+        </div>
+      )}
+    </SceneShell>
   );
 }
 

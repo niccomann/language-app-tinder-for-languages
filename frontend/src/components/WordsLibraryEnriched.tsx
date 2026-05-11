@@ -120,11 +120,12 @@ export function WordsLibraryEnriched({
   }, [loadFilters]);
 
   useEffect(() => {
+    if (statsOnly) return;
     const debounce = setTimeout(() => {
       loadWords();
     }, 300);
     return () => clearTimeout(debounce);
-  }, [loadWords]);
+  }, [loadWords, statsOnly]);
 
   useEffect(() => {
     setSelectedWordId(initialWordId ?? null);

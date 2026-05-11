@@ -14,6 +14,22 @@ export type LearningRouteMode =
   | 'explore_grammar'
   | 'explore_map';
 
+export type PathView = 'home' | 'full' | 'stats' | 'diary' | 'next';
+
+export type PathRouteMode = Extract<LearningRouteMode, `path${string}` | 'path'>;
+
+export const PATH_MODE_TO_VIEW: Record<PathRouteMode, PathView> = {
+  path: 'home',
+  path_full: 'full',
+  path_stats: 'stats',
+  path_diary: 'diary',
+  path_next: 'next',
+};
+
+export function isPathMode(mode: LearningRouteMode): mode is PathRouteMode {
+  return mode in PATH_MODE_TO_VIEW;
+}
+
 export type GrammarView =
   | 'hub'
   | 'graph'

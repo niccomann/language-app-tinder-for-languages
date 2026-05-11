@@ -9,7 +9,7 @@ import { LoadingSpinner, ErrorState } from './ui';
 import { YourVocabularyScreen } from './YourVocabularyScreen';
 import { useCategories } from '../hooks/useCategories';
 import { useLearningSession } from '../hooks/useLearningSession';
-import type { LearningRouteMode } from '../routes/appRoutes';
+import { isPathMode, PATH_MODE_TO_VIEW, type LearningRouteMode } from '../routes/appRoutes';
 import {
   markFirstVocabularyOnboardingDone,
   readFirstVocabularyOnboardingDone,
@@ -150,16 +150,10 @@ export const CardStack = ({
     );
   }
 
-  if (mode === 'path' || mode === 'path_full' || mode === 'path_stats' || mode === 'path_diary' || mode === 'path_next') {
-    const pathView =
-      mode === 'path_full' ? 'full'
-      : mode === 'path_stats' ? 'stats'
-      : mode === 'path_diary' ? 'diary'
-      : mode === 'path_next' ? 'next'
-      : 'home';
+  if (isPathMode(mode)) {
     return (
       <LearningPathHome
-        pathView={pathView}
+        pathView={PATH_MODE_TO_VIEW[mode]}
         learningSummary={learningSummary}
         progress={progress}
         totalCards={flashcards.length}

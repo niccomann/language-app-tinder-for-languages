@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import type { AdaptiveLearningSummary, UserProgress } from '../types';
 import { GameSignalBadge, StatCard, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
-import { SceneShell } from './scene';
+import { EYEBROW_CLASS, SceneShell } from './scene';
 import {
   LEARNING_PATH_MILESTONES,
   getActiveMilestoneIndex,
@@ -28,7 +28,7 @@ import {
   getPrimaryFeatureFlowItem,
 } from '../gamification/featureFlowRegistry';
 
-export type PathView = 'home' | 'full' | 'stats' | 'diary' | 'next';
+import type { PathView } from '../routes/appRoutes';
 
 interface LearningPathHomeProps {
   pathView: PathView;
@@ -62,7 +62,7 @@ export function LearningPathHome({
     return (
       <SceneShell
         eyebrow="PATH · 400-LEVEL"
-        title="Full path"
+        title="Path completo"
         subline="Tutti i 400 livelli del percorso e dove sei adesso."
         explainerKey="path.full"
         explainerTitle="Cos'è il 400-level path"
@@ -127,7 +127,7 @@ export function LearningPathHome({
     return (
       <SceneShell
         eyebrow="PATH · DIARY"
-        title="Learning diary"
+        title="Diario di apprendimento"
         subline="La storia delle missioni del path, in ordine cronologico."
         explainerKey="path.diary"
         explainerTitle="Come funziona il diario"
@@ -180,8 +180,8 @@ export function LearningPathHome({
                 <Puzzle size={18} />
               </span>
               <span className="min-w-0">
-                <span className="block text-caption-uppercase font-medium uppercase tracking-[1.5px] text-accent-teal">
-                  Next when ready
+                <span className={`block ${EYEBROW_CLASS} text-accent-teal`}>
+                  Prossima sfida
                 </span>
                 <span className="mt-1 block text-body-md font-semibold text-ink">{nextMission.title}</span>
                 <span className="mt-1 block text-body-sm text-muted">
@@ -210,7 +210,7 @@ export function LearningPathHome({
   return (
     <SceneShell
       eyebrow="PATH · HOME"
-      title="German Learning"
+      title="Apprendi tedesco"
       subline="Decidi se sai una parola o no — il sistema fa il resto."
       explainerKey="path.home"
       explainerTitle="Come funziona la Home"
@@ -243,10 +243,10 @@ export function LearningPathHome({
                 <Clock3 size={20} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-body-sm font-semibold text-ink">Welcome back</p>
+                <p className="text-body-sm font-semibold text-ink">Bentornato</p>
                 <p className="mt-1 text-body-sm font-medium text-muted">
-                  {learningSummary?.days_since_last_practice} days since the last German session. Review German
-                  Level to recalibrate the path.
+                  Sono passati {learningSummary?.days_since_last_practice} giorni dall'ultima sessione di tedesco.
+                  Ricalibra il path con una review.
                 </p>
               </div>
             </div>
@@ -254,15 +254,13 @@ export function LearningPathHome({
         )}
 
         <SurfacePanel padding="lg" className="space-y-3">
-          <p className="text-caption-uppercase font-medium uppercase tracking-[1.5px] text-muted">
-            Daily Learning Snapshot
-          </p>
+          <p className={`${EYEBROW_CLASS} text-muted`}>Snapshot di oggi</p>
           <h2 className="font-display text-display-sm font-normal tracking-[-0.3px] text-ink">
             {getLearningTrendLabel(learningSummary)}
           </h2>
           <p className="text-body-sm font-medium text-muted">
-            Your 400-level path updates from every swipe, then uses word mastery to choose easier or harder
-            contexts.
+            Il path 400-level si aggiorna a ogni swipe. Il sistema sceglie i contesti più facili o più difficili
+            in base al tuo mastery.
           </p>
         </SurfacePanel>
 
@@ -279,7 +277,7 @@ export function LearningPathHome({
               <Play size={20} />
             </span>
             <span className="min-w-0">
-              <span className="block text-caption-uppercase font-medium uppercase tracking-[1.5px] text-on-primary/70">
+              <span className={`block ${EYEBROW_CLASS} text-on-primary/70`}>
                 {primaryMission.missionLabel}
               </span>
               <span className="mt-0.5 block font-sans text-title-sm font-semibold text-on-primary">
@@ -293,7 +291,7 @@ export function LearningPathHome({
           <span
             className={`${UI_RADIUS.pill} bg-canvas px-3 py-2 text-caption font-medium text-primary`}
           >
-            Continue
+            Continua
           </span>
         </button>
 
@@ -395,13 +393,11 @@ function DiaryTimeline({
   return (
     <SurfacePanel padding="lg" className="relative overflow-hidden">
       <div className="mb-4 flex items-center justify-between gap-3">
-        <p className="text-caption-uppercase font-medium uppercase tracking-[1.5px] text-muted">
-          Current progress
-        </p>
+        <p className={`${EYEBROW_CLASS} text-muted`}>Progresso attuale</p>
         <div
           className={`${UI_RADIUS.pill} border border-hairline bg-surface-card px-3 py-2 text-caption font-medium text-muted`}
         >
-          {progress.cards_reviewed}/{totalCards || 0} today
+          {progress.cards_reviewed}/{totalCards || 0} oggi
         </div>
       </div>
       <div className="relative space-y-3">
