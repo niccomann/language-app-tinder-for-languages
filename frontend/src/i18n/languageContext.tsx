@@ -25,8 +25,22 @@ interface LanguageProviderProps {
 }
 
 export function LanguageProvider({ children }: LanguageProviderProps) {
-  const [targetLanguage, setTargetState] = useState<TargetLanguage | null>(() => readStoredTarget());
-  const [sourceLocale, setSourceState] = useState<SourceLocale | null>(() => readStoredSource());
+  const [targetLanguage, setTargetState] = useState<TargetLanguage | null>(() => {
+    const t = readStoredTarget();
+    const s = readStoredSource();
+    // Treat source == target as a corrupted state (only reachable via dev-tools tampering).
+    if (t && s && (t as string) === (s as string)) {
+      clearStoredLanguage();
+      return null;
+    }
+    return t;
+  });
+  const [sourceLocale, setSourceState] = useState<SourceLocale | null>(() => {
+    const t = readStoredTarget();
+    const s = readStoredSource();
+    if (t && s && (t as string) === (s as string)) return null;
+    return s;
+  });
 
   const setTarget = useCallback((value: TargetLanguage) => {
     writeStoredTarget(value);
