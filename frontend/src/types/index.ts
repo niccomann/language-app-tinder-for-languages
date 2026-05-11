@@ -1,3 +1,5 @@
+import type { TargetLanguage } from '../i18n/languageStorage';
+
 export interface Flashcard {
   id: number;
   word: string;
@@ -5,7 +7,7 @@ export interface Flashcard {
   image_url?: string;
   image_base64?: string;
   audio_base64?: string;
-  language: string;
+  language: TargetLanguage;
   difficulty?: string;
   category?: string;
 }

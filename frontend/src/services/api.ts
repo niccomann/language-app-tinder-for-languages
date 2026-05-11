@@ -2,6 +2,7 @@ import { Capacitor, registerPlugin } from '@capacitor/core';
 import type { AdaptiveFlashcard, AdaptiveLearningSummary, Flashcard, UserProgress, FlashcardWithProgress, GrammarSentence, GrammarNode, SentenceChallenge, TTSResponse, TTSCheckResponse, ValidateSentenceRequest, ValidateSentenceResponse, LibraryFilters, LibraryStats, FlashcardDetail, DialectWord, WordDbRow, WordStatistics } from '../types';
 import { API_BASE_URL, API_REQUEST_TIMEOUT_MS, APP_MODE, isFeatureEnabled } from '../config/appMode';
 import type { LearningPreferenceProfile } from '../learning/preferenceProfile';
+import type { TargetLanguage } from '../i18n/languageStorage';
 
 interface OfflineBackendPlugin {
   request(options: {
@@ -123,7 +124,7 @@ export const api = {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          language: params?.language ?? 'de',
+          language: params?.language,
           selected_categories: params?.selectedCategories ?? [],
           profile: learningPreferenceProfile,
           limit: params?.limit ?? 50,
@@ -153,7 +154,7 @@ export const api = {
     return response.json();
   },
 
-  async getAdaptiveLearningSummary(language: string = 'de'): Promise<AdaptiveLearningSummary> {
+  async getAdaptiveLearningSummary(language: TargetLanguage): Promise<AdaptiveLearningSummary> {
     const response = await fetchWithTimeout(`${API_BASE_URL}/api/statistics/adaptive-summary?language=${language}`);
 
     if (!response.ok) {
@@ -163,7 +164,7 @@ export const api = {
     return response.json();
   },
 
-  async getAllWordStatistics(language: string = 'de'): Promise<WordStatistics[]> {
+  async getAllWordStatistics(language: TargetLanguage): Promise<WordStatistics[]> {
     const response = await fetchWithTimeout(`${API_BASE_URL}/api/statistics/all?language=${language}`);
 
     if (!response.ok) {
@@ -213,7 +214,7 @@ export const api = {
     }
   },
 
-  async speakText(text: string, language: string = 'de'): Promise<TTSResponse> {
+  async speakText(text: string, language: TargetLanguage): Promise<TTSResponse> {
     const response = await fetchWithTimeout(`${API_BASE_URL}/api/tts/speak`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -237,7 +238,7 @@ export const api = {
     return response.json();
   },
 
-  async generateSpeech(text: string, language: string = 'de', voice: string = 'nova'): Promise<TTSResponse> {
+  async generateSpeech(text: string, language: TargetLanguage, voice: string = 'nova'): Promise<TTSResponse> {
     if (!isFeatureEnabled('textToSpeech')) {
       throw new Error('Text-to-speech is not available in offline mode');
     }
@@ -257,7 +258,7 @@ export const api = {
     return response.json();
   },
 
-  async checkAudioExists(texts: string[], language: string = 'de', voice: string = 'nova'): Promise<TTSCheckResponse> {
+  async checkAudioExists(texts: string[], language?: TargetLanguage, voice: string = 'nova'): Promise<TTSCheckResponse> {
     if (!isFeatureEnabled('textToSpeech')) {
       return { results: Object.fromEntries(texts.map((text) => [text, false])) };
     }
@@ -435,7 +436,7 @@ export const api = {
     return response.json();
   },
 
-  async getDialectWords(language: string = 'de'): Promise<DialectWord[]> {
+  async getDialectWords(language: TargetLanguage): Promise<DialectWord[]> {
     const response = await fetchWithTimeout(`${API_BASE_URL}/api/library/dialects?language=${language}`);
     
     if (!response.ok) {
@@ -445,7 +446,7 @@ export const api = {
     return response.json();
   },
 
-  async updateWordStatistics(word: string, correct: boolean, language: string = 'de'): Promise<{
+  async updateWordStatistics(word: string, correct: boolean, language: TargetLanguage): Promise<{
     word: string;
     new_confidence_score: number;
     knowledge_level: number;
@@ -466,7 +467,7 @@ export const api = {
     return response.json();
   },
 
-  async getWordStatistics(word: string, language: string = 'de'): Promise<{
+  async getWordStatistics(word: string, language: TargetLanguage): Promise<{
     word: string;
     language: string;
     confidence_score: number;

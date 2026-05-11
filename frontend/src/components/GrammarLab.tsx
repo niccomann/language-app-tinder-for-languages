@@ -7,6 +7,7 @@ import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
 import type { GrammarView } from '../routes/appRoutes';
 import { reportClientError } from '../utils/clientError';
 import { CATEGORY_COLORS } from '../utils/wordDisplayMeta';
+import { useTargetLanguage } from '../i18n/languageContext';
 
 const EmbeddedGrammarGraph = lazy(() => import('./EmbeddedGrammarGraph').then((module) => ({ default: module.EmbeddedGrammarGraph })));
 const EmbeddedWordCloud = lazy(() => import('./EmbeddedWordCloud').then((module) => ({ default: module.EmbeddedWordCloud })));
@@ -78,6 +79,7 @@ const VIEW_META: Record<Exclude<GrammarView, 'hub'>, { eyebrow: string; title: s
 };
 
 export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps) {
+  const language = useTargetLanguage();
   const [sentences, setSentences] = useState<GrammarSentence[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [words, setWords] = useState<WordCloudItem[]>([]);
@@ -103,7 +105,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
     try {
       const [sentencesData, wordsData] = await Promise.all([
         api.getGrammarSentences(),
-        api.getLibraryWords({ language: 'de', limit: 200 }),
+        api.getLibraryWords({ language, limit: 200 }),
       ]);
 
       setSentences(sentencesData);
@@ -143,12 +145,12 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
   const checkAudioCache = useCallback(async (sentence: GrammarSentence) => {
     const textsToCheck = [sentence.german, ...sentence.nodes.map(node => node.label)];
     try {
-      const response = await api.checkAudioExists(textsToCheck);
+      const response = await api.checkAudioExists(textsToCheck, language);
       setAudioCache(prev => ({ ...prev, ...response.results }));
     } catch (error) {
       reportClientError('Failed to check audio cache:', error);
     }
-  }, []);
+  }, [language]);
 
   useEffect(() => {
     if (sentences[currentIndex]) {
@@ -167,7 +169,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
     setLoadingAudio(text);
 
     try {
-      const response = await api.generateSpeech(text);
+      const response = await api.generateSpeech(text, language);
       setAudioCache(prev => ({ ...prev, [text]: true }));
 
       const audio = new Audio(response.audio_base64);
@@ -191,7 +193,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
       reportClientError('Failed to play audio:', error);
       setLoadingAudio(null);
     }
-  }, [loadingAudio, playingAudio]);
+  }, [loadingAudio, playingAudio, language]);
 
   useEffect(() => {
     return () => {

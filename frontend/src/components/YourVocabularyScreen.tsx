@@ -5,6 +5,7 @@ import { api } from '../services/api';
 import { copy } from '../i18n/staticCopy';
 import { AppScreen, ErrorState, LoadingSpinner, ScreenHeader, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
 import { reportClientError } from '../utils/clientError';
+import { useTargetLanguage } from '../i18n/languageContext';
 
 function sortVocabularyByMastery(words: WordStatistics[]) {
   return [...words].sort((left, right) => (
@@ -71,6 +72,7 @@ export function YourVocabularyScreen({
   onBack,
   onStartLearning,
 }: YourVocabularyScreenProps) {
+  const language = useTargetLanguage();
   const [words, setWords] = useState<WordStatistics[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -83,7 +85,7 @@ export function YourVocabularyScreen({
       try {
         setLoading(true);
         setError(null);
-        const statistics = await api.getAllWordStatistics('de');
+        const statistics = await api.getAllWordStatistics(language);
         if (!cancelled) {
           setWords(statistics);
         }

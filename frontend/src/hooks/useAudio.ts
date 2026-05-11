@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { api } from '../services/api';
 import { reportClientError } from '../utils/clientError';
+import type { TargetLanguage } from '../i18n/languageStorage';
 
 /**
  * Reusable hook for TTS audio playback.
@@ -11,7 +12,7 @@ export const useAudio = () => {
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const playAudio = useCallback(async (text: string, language: string = 'de') => {
+  const playAudio = useCallback(async (text: string, language: TargetLanguage) => {
     if (isPlaying === text || isLoading === text) return;
 
     if (audioRef.current) {

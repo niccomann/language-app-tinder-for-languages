@@ -8,6 +8,7 @@ import type { MascotReactionState } from '../gamification/mascotManifest';
 import { reportClientError } from '../utils/clientError';
 import { MascotSpeechCallout } from './MascotSpeechCallout';
 import type { StreamingSpeechStep } from './StreamingSpeechBubble';
+import { useTargetLanguage } from '../i18n/languageContext';
 
 interface PlacementOption {
   id: string;
@@ -17,6 +18,7 @@ interface PlacementOption {
 type AnswerStatus = 'idle' | 'correct' | 'wrong';
 
 export function SentencePlacementChallenge() {
+  const language = useTargetLanguage();
   const [challenges, setChallenges] = useState<SentenceChallenge[]>([]);
   const [currentChallengeIndex, setCurrentChallengeIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -30,7 +32,7 @@ export function SentencePlacementChallenge() {
         setLoading(true);
         const preferenceProfile = readSavedLearningPreferenceProfile();
         const sentenceChallenges = await api.getSentenceChallenges({
-          language: 'de',
+          language,
           limit: 20,
           learningPreferenceProfile: preferenceProfile,
         });

@@ -3,6 +3,7 @@ import { api } from '../services/api';
 import { readSavedLearningPreferenceProfile } from '../learning/preferenceProfile';
 import type { AdaptiveFlashcard, AdaptiveLearningSummary, LearningFeedback, UserProgress } from '../types';
 import { reportClientError } from '../utils/clientError';
+import { useTargetLanguage } from '../i18n/languageContext';
 
 const SESSION_CARD_LIMIT = 80;
 
@@ -10,6 +11,7 @@ const SESSION_CARD_LIMIT = 80;
  * Hook to manage learning session state and actions
  */
 export const useLearningSession = () => {
+  const language = useTargetLanguage();
   const [flashcards, setFlashcards] = useState<AdaptiveFlashcard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState<UserProgress>({
@@ -23,7 +25,7 @@ export const useLearningSession = () => {
   const [learningFeedback, setLearningFeedback] = useState<LearningFeedback | null>(null);
 
   const loadLearningSummary = useCallback(async () => {
-    const summary = await api.getAdaptiveLearningSummary('de');
+    const summary = await api.getAdaptiveLearningSummary(language);
     setLearningSummary(summary);
     return summary;
   }, []);
@@ -42,7 +44,7 @@ export const useLearningSession = () => {
       const preferenceProfile = readSavedLearningPreferenceProfile();
       const [cards] = await Promise.all([
         api.getAdaptiveFlashcards({
-          language: 'de',
+          language,
           selectedCategories,
           learningPreferenceProfile: preferenceProfile,
           limit: SESSION_CARD_LIMIT,

@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { TrendingUp, Star, Zap, Sparkles } from 'lucide-react';
 import { api } from '../services/api';
 import { UI_RADIUS } from './ui';
+import { useTargetLanguage } from '../i18n/languageContext';
+import type { TargetLanguage } from '../i18n/languageStorage';
 
 interface ConfidenceBadgeProps {
   word: string;
-  language?: string;
+  language?: TargetLanguage;
   showLabel?: boolean;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
@@ -15,13 +17,15 @@ interface ConfidenceBadgeProps {
  * Reusable confidence badge component.
  * Shows how well the user knows a word (confidence score).
  */
-export function ConfidenceBadge({ 
-  word, 
-  language = 'de',
+export function ConfidenceBadge({
+  word,
+  language: languageProp,
   showLabel = true,
   size = 'md',
   className = ''
 }: ConfidenceBadgeProps) {
+  const contextLanguage = useTargetLanguage();
+  const language = languageProp ?? contextLanguage;
   const [score, setScore] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 

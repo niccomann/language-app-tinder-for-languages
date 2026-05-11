@@ -1,10 +1,12 @@
 import { Volume2, Loader2 } from 'lucide-react';
 import { useAudio } from '../hooks/useAudio';
 import { UI_INTERACTION, UI_RADIUS } from './ui';
+import { useTargetLanguage } from '../i18n/languageContext';
+import type { TargetLanguage } from '../i18n/languageStorage';
 
 interface AudioButtonProps {
   text: string;
-  language?: string;
+  language?: TargetLanguage;
   size?: 'sm' | 'md' | 'lg';
   variant?: 'default' | 'ghost' | 'accent';
   className?: string;
@@ -14,13 +16,15 @@ interface AudioButtonProps {
  * Reusable audio button component.
  * Can be placed anywhere to enable TTS for any text.
  */
-export function AudioButton({ 
-  text, 
-  language = 'de', 
+export function AudioButton({
+  text,
+  language: languageProp,
   size = 'md',
   variant = 'default',
   className = ''
 }: AudioButtonProps) {
+  const contextLanguage = useTargetLanguage();
+  const language = languageProp ?? contextLanguage;
   const { playAudio, isPlayingText, isLoadingText } = useAudio();
   
   const isActive = isPlayingText(text) || isLoadingText(text);

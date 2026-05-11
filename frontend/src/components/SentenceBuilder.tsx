@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { 
-  Check, 
-  X, 
-  AlertTriangle, 
-  Loader2, 
-  RotateCcw, 
+import {
+  Check,
+  X,
+  AlertTriangle,
+  Loader2,
+  RotateCcw,
   Volume2,
   Link,
   Unlink
@@ -17,6 +17,7 @@ import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
 import { buildOrderedSentence } from '../utils/sentenceBuilderOrder';
 import { useAvailableGrammarNodes } from '../hooks/useAvailableGrammarNodes';
 import { reportClientError } from '../utils/clientError';
+import { useTargetLanguage } from '../i18n/languageContext';
 
 interface Connection {
   fromId: string;
@@ -28,6 +29,7 @@ interface SentenceBuilderProps {
 }
 
 export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) {
+  const language = useTargetLanguage();
   const { availableNodes, loading } = useAvailableGrammarNodes();
   const [selectedNodes, setSelectedNodes] = useState<GrammarNode[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
@@ -101,7 +103,7 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
       const result = await api.validateSentence({
         nodes: nodesForValidation,
         connections: connectionsForValidation,
-        language: 'de'
+        language,
       });
       
       setValidationResult(result);
@@ -124,7 +126,7 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
     
     setPlayingAudio(true);
     try {
-      const response = await api.generateSpeech(validationResult.sentence);
+      const response = await api.generateSpeech(validationResult.sentence, language);
       const audio = new Audio(response.audio_base64);
       audio.onended = () => setPlayingAudio(false);
       audio.onerror = () => setPlayingAudio(false);

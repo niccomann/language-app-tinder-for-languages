@@ -11,6 +11,7 @@ import {
   FREQUENCY_ICONS,
   GENDER_BADGE_META as GENDER_LABELS,
 } from '../utils/wordDisplayMeta';
+import { useTargetLanguage } from '../i18n/languageContext';
 
 interface WordsLibraryEnrichedProps {
   onClose: () => void;
@@ -39,6 +40,7 @@ export function WordsLibraryEnriched({
   onWordClose,
   onWordTabChange,
 }: WordsLibraryEnrichedProps) {
+  const language = useTargetLanguage();
   const [words, setWords] = useState<FlashcardWithProgress[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -62,18 +64,18 @@ export function WordsLibraryEnriched({
   const loadFilters = useCallback(async () => {
     try {
       const [filtersData, statsData] = await Promise.all([
-        api.getLibraryFilters('de'),
-        api.getLibraryStats('de'),
+        api.getLibraryFilters(language),
+        api.getLibraryStats(language),
       ]);
       setFilters(filtersData);
       setLibraryStats(statsData);
     } catch (err) {
       reportClientError('Failed to load filters:', err);
     }
-  }, []);
+  }, [language]);
 
   const getWordQuery = useCallback((offset: number) => ({
-    language: 'de',
+    language,
     search: searchQuery || undefined,
     category: categoryFilter || undefined,
     cefr_level: cefrFilter || undefined,
@@ -84,7 +86,7 @@ export function WordsLibraryEnriched({
     is_compound: compoundFilter === 'true' ? true : compoundFilter === 'false' ? false : undefined,
     limit: LIBRARY_PAGE_SIZE,
     offset,
-  }), [searchQuery, categoryFilter, cefrFilter, genderFilter, frequencyFilter, registerFilter, posFilter, compoundFilter]);
+  }), [language, searchQuery, categoryFilter, cefrFilter, genderFilter, frequencyFilter, registerFilter, posFilter, compoundFilter]);
 
   const loadWords = useCallback(async () => {
     try {

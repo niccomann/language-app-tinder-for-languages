@@ -6,6 +6,7 @@ import type { DialectWord } from '../types';
 import germanyGeoJsonUrl from '../assets/germany-states.json?url';
 import { ExpandedViewWrapper, UI_RADIUS } from './ui';
 import { reportClientError } from '../utils/clientError';
+import { useTargetLanguage } from '../i18n/languageContext';
 
 interface DialectMapProps {
   initialWord?: string;
@@ -46,6 +47,7 @@ const getRegionColor = (regionId: string): string => {
 };
 
 export function DialectMap({ initialWord }: DialectMapProps) {
+  const language = useTargetLanguage();
   const [dialectWords, setDialectWords] = useState<DialectWord[]>([]);
   const [geoJson, setGeoJson] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
@@ -60,7 +62,7 @@ export function DialectMap({ initialWord }: DialectMapProps) {
   const loadDialectWords = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await api.getDialectWords('de');
+      const data = await api.getDialectWords(language);
       setDialectWords(data);
       if (data.length > 0) {
         setSelectedWord(initialWord || data[0].standardGerman);
@@ -70,7 +72,7 @@ export function DialectMap({ initialWord }: DialectMapProps) {
     } finally {
       setLoading(false);
     }
-  }, [initialWord]);
+  }, [initialWord, language]);
 
   useEffect(() => {
     loadDialectWords();

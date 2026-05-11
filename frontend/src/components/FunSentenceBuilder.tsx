@@ -26,6 +26,7 @@ import { buildOrderedSentence } from '../utils/sentenceBuilderOrder';
 import { GrammarBuilderFrame } from './GrammarBuilderFrame';
 import { useAvailableGrammarNodes } from '../hooks/useAvailableGrammarNodes';
 import { reportClientError } from '../utils/clientError';
+import { useTargetLanguage } from '../i18n/languageContext';
 
 // ============================================================================
 // Types
@@ -55,6 +56,7 @@ const CONNECTION_THRESHOLD = 180;  // Distance to create a connection on release
 const PREVIEW_THRESHOLD = 250;     // Distance to show preview arrow (larger for smoother UX)
 
 export function FunSentenceBuilder() {
+  const language = useTargetLanguage();
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const simulationRef = useRef<d3.Simulation<SimNode, undefined> | null>(null);
@@ -691,7 +693,7 @@ export function FunSentenceBuilder() {
       const result = await api.validateSentence({
         nodes: nodesForValidation,
         connections: connectionsForValidation,
-        language: 'de'
+        language,
       });
       
       setValidationResult(result);
@@ -714,7 +716,7 @@ export function FunSentenceBuilder() {
     
     setPlayingAudio(true);
     try {
-      const response = await api.generateSpeech(validationResult.sentence);
+      const response = await api.generateSpeech(validationResult.sentence, language);
       const audio = new Audio(response.audio_base64);
       audio.onended = () => setPlayingAudio(false);
       audio.onerror = () => setPlayingAudio(false);

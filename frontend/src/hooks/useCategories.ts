@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import { reportClientError } from '../utils/clientError';
+import { useTargetLanguage } from '../i18n/languageContext';
 
 /**
  * Hook to manage category selection and loading
  */
 export const useCategories = () => {
+  const language = useTargetLanguage();
   const [allCategories, setAllCategories] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +21,7 @@ export const useCategories = () => {
     try {
       setLoading(true);
       setError(null);
-      const filters = await api.getLibraryFilters('de');
+      const filters = await api.getLibraryFilters(language);
       const categories = filters.categories;
       setAllCategories(categories);
       setSelectedCategories(categories); // Select all by default

@@ -11,6 +11,7 @@ import {
   CONFUSION_LEVEL_CLASSES as CONFUSION_COLORS,
   GENDER_BADGE_META as GENDER_LABELS,
 } from '../utils/wordDisplayMeta';
+import { useTargetLanguage } from '../i18n/languageContext';
 
 interface WordDetailModalProps {
   wordId: number;
@@ -42,6 +43,7 @@ const DbField = ({ name, value }: { name: string; value: unknown }) => (
 );
 
 export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, onClose }: WordDetailModalProps) {
+  const language = useTargetLanguage();
   const [word, setWord] = useState<FlashcardDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -106,7 +108,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
 
     try {
       setIsPlaying(true);
-      const response = await api.generateSpeech(word.word, 'de');
+      const response = await api.generateSpeech(word.word, language);
       const audio = new Audio(`data:audio/mp3;base64,${response.audio_base64}`);
       audio.onended = () => setIsPlaying(false);
       audio.onerror = () => setIsPlaying(false);
