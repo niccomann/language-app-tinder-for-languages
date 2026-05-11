@@ -3,6 +3,7 @@ import { Info } from 'lucide-react';
 import { UI_INTERACTION, UI_RADIUS } from '../ui';
 import { ExplainerSheet } from './ExplainerSheet';
 import { isExplainerDismissed } from './explainerStorage';
+import { useCopy } from '../../i18n/languageContext';
 
 interface SceneHeaderProps {
   eyebrow: string;
@@ -23,6 +24,7 @@ export function SceneHeader({
   explainerBody,
   className = '',
 }: SceneHeaderProps) {
+  const copy = useCopy();
   const [open, setOpen] = useState(false);
   const dismissed = explainerKey ? isExplainerDismissed(explainerKey) : false;
   const showChip = Boolean(explainerKey && explainerBody);
@@ -43,10 +45,10 @@ export function SceneHeader({
             className={`inline-flex items-center gap-1 px-2.5 py-1 ${UI_RADIUS.control} border border-hairline bg-canvas text-caption font-medium ${
               dismissed ? 'text-muted-soft' : 'text-muted'
             } ${UI_INTERACTION.fastTransition} hover:bg-surface-card hover:text-ink`}
-            aria-label="Cos'è questa schermata?"
+            aria-label={copy.common.whatIsAria}
           >
             <Info size={14} />
-            Cos'è?
+            {copy.common.whatIs}
           </button>
         )}
       </div>

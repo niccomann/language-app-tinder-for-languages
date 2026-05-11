@@ -1,20 +1,20 @@
 import { BookOpen, Compass, Home, Sparkles } from 'lucide-react';
 import { UI_INTERACTION, UI_RADIUS } from '../ui';
+import { useCopy } from '../../i18n/languageContext';
 
 type SectionId = 'path' | 'learn' | 'review' | 'explore';
 
 interface BottomNavItem {
   id: SectionId;
-  label: string;
   path: string;
   icon: typeof Home;
 }
 
 const ITEMS: readonly BottomNavItem[] = [
-  { id: 'path', label: 'Path', path: '/', icon: Home },
-  { id: 'learn', label: 'Learn', path: '/learn', icon: BookOpen },
-  { id: 'review', label: 'Review', path: '/review', icon: Sparkles },
-  { id: 'explore', label: 'Explore', path: '/explore', icon: Compass },
+  { id: 'path', path: '/', icon: Home },
+  { id: 'learn', path: '/learn', icon: BookOpen },
+  { id: 'review', path: '/review', icon: Sparkles },
+  { id: 'explore', path: '/explore', icon: Compass },
 ];
 
 export function matchSection(pathname: string): SectionId {
@@ -44,6 +44,7 @@ interface BottomNavProps {
 
 export function BottomNav({ pathname, onNavigate }: BottomNavProps) {
   const active = matchSection(pathname);
+  const copy = useCopy();
   return (
     <nav
       aria-label="Product navigation"
@@ -66,7 +67,7 @@ export function BottomNav({ pathname, onNavigate }: BottomNavProps) {
                 }`}
               >
                 <Icon size={18} />
-                <span>{item.label}</span>
+                <span>{copy.bottomNav[item.id]}</span>
               </button>
             </li>
           );

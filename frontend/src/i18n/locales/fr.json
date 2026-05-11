@@ -556,5 +556,242 @@
       "description": "Voyez la hiérarchie du vocabulaire et la structure des concepts.",
       "ctaLabel": "Ouvrir la hiérarchie"
     }
+  },
+  "targetLanguageNames": {
+    "de": "allemand",
+    "it": "italien",
+    "fr": "français"
+  },
+  "languageSwitcher": {
+    "triggerAriaLabel": "Changer la langue d'apprentissage",
+    "imParo": "J'apprends",
+    "changeSourceLanguage": "Changer la langue de départ",
+    "resetOnboarding": "Réinitialiser l'onboarding"
+  },
+  "languageBadge": {
+    "learning": "J'apprends",
+    "from": "depuis"
+  },
+  "onboardingChooser": {
+    "eyebrow": "Bienvenue",
+    "title": "Choisis tes langues",
+    "body": "Celle que tu veux apprendre et celle d'où tu pars.",
+    "targetQuestion": "Quelle langue veux-tu apprendre ?",
+    "sourceQuestion": "Depuis quelle langue pars-tu ?",
+    "cancel": "Annuler",
+    "submit": "Commencer",
+    "sourceConflictTooltip": "Tu ne peux pas partir de la même langue que celle que tu veux apprendre"
+  },
+  "common": {
+    "whatIs": "Qu'est-ce que c'est ?",
+    "whatIsAria": "Qu'est-ce que cet écran ?",
+    "dontShowAgain": "Ne plus afficher",
+    "close": "Fermer",
+    "continue": "Continuer",
+    "back": "Retour",
+    "next": "Suivant",
+    "skip": "Passer",
+    "loading": "Chargement…"
+  },
+  "feedbackButton": {
+    "defaultUser": "Testeur",
+    "title": "Qu'en penses-tu ?",
+    "body": "Dis-nous ce qui fonctionne, ce qui ne fonctionne pas et ce que tu aimerais voir d'autre dans cette app."
+  },
+  "pathHome": {
+    "home": {
+      "eyebrow": "Parcours · Accueil",
+      "title": "Apprends l'{{language}}",
+      "subline": "Décide si tu connais un mot ou non — le système fait le reste.",
+      "explainerTitle": "Comment fonctionne l'Accueil",
+      "explainerBodyP1": "L'Accueil affiche ta mission en cours. Tout le reste — stats, journal, prochain défi — vit dans des écrans dédiés accessibles depuis les liens en bas.",
+      "explainerBodyP2": "Exemple : pour voir les 4 chiffres clés de ton parcours (niveau, mots, maîtrise), tape sur \"Tes chiffres\".",
+      "snapshotEyebrow": "Aperçu du jour",
+      "snapshotBody": "Le parcours 400 niveaux se met à jour à chaque swipe. Le système choisit des contextes plus simples ou plus difficiles selon ta maîtrise.",
+      "primaryCtaPill": "Continuer",
+      "linkFull": "Voir le parcours complet",
+      "linkFullSub": "Tous les 400 niveaux — tu es au {{level}}",
+      "linkStats": "Tes chiffres",
+      "linkStatsSub": "Niveau, mots, mots forts, maîtrise moyenne",
+      "linkDiary": "Journal d'apprentissage",
+      "linkDiarySub": "{{reviewed}}/{{total}} aujourd'hui",
+      "linkNext": "Prêt à monter",
+      "linkNextSub": "Prochain défi + outils recommandés",
+      "reengageTitle": "Bon retour",
+      "reengageBody": "Il s'est passé {{days}} jours depuis ta dernière session d'{{language}}. Recalibre le parcours avec une review.",
+      "dailyQuest": "Quête quotidienne",
+      "streakShield": "Bouclier de série",
+      "xpBank": "Banque d'XP"
+    },
+    "full": {
+      "eyebrow": "Parcours · 400 niveaux",
+      "title": "Parcours complet",
+      "subline": "Tous les 400 niveaux et où tu en es maintenant.",
+      "explainerTitle": "Qu'est-ce que le parcours 400 niveaux",
+      "explainerBody": "Le parcours est organisé en 400 niveaux qui reflètent à quel point et à quel point bien tu connais les mots. Chaque swipe met à jour ton niveau. Exemple : si tu connais un mot au niveau 22, tu verras des contextes adaptés à ce niveau, pas plus simples.",
+      "levelLabel": "Niveau {{level}}"
+    },
+    "stats": {
+      "eyebrow": "Parcours · Stats",
+      "title": "Tes chiffres",
+      "subline": "Niveau, mots, mots forts et maîtrise moyenne.",
+      "explainerTitle": "Ce que ces chiffres mesurent",
+      "explainerBody": "Path Level est ton niveau sur le parcours 400. Words est le total de mots pratiqués. Strong est le nombre de mots avec une maîtrise élevée. Avg Mastery est la moyenne de toutes les confiances de mot.",
+      "pathLevel": "Niveau",
+      "words": "Mots",
+      "strong": "Forts",
+      "avgMastery": "Maîtrise moy."
+    },
+    "diary": {
+      "eyebrow": "Parcours · Journal",
+      "title": "Journal d'apprentissage",
+      "subline": "L'histoire des missions du parcours, en ordre chronologique.",
+      "explainerTitle": "Comment fonctionne le journal",
+      "explainerBody": "Le journal montre les étapes du parcours 400 niveaux — les missions passées sont complétées, les actuelles sont mises en évidence, les futures restent grisées jusqu'au déblocage.",
+      "progressEyebrow": "Progression actuelle",
+      "todayPill": "{{reviewed}}/{{total}} aujourd'hui"
+    },
+    "next": {
+      "eyebrow": "Parcours · Suivant",
+      "title": "Prêt à monter",
+      "subline": "Le prochain défi et les outils recommandés pour y arriver.",
+      "explainerTitle": "Comment on décide ce qui est 'suivant'",
+      "explainerBody": "Quand le système voit assez de signaux de maîtrise, il débloque le prochain défi (par ex. Sentence Placement). Tu trouves ici aussi les outils Review et Explore recommandés pour la phase actuelle.",
+      "nextChallengeEyebrow": "Prochain défi",
+      "nextChallengeBody": "Compose des phrases pour vérifier la grammaire, la logique et les mots de liaison.",
+      "reviewToolsTitle": "Outils de review",
+      "reviewToolsBody": "Your Vocabulary, Topic Deck, Word Library et Learning System. Sujets {{selected}}/{{total}}.",
+      "exploreToolsTitle": "Outils d'explore",
+      "exploreToolsBody": "Les outils Grammar et carte-langue sont disponibles quand le parcours demande un travail plus profond."
+    }
+  },
+  "grammar": {
+    "hubSubline": "Sept outils pour analyser grammaire et vocabulaire.",
+    "graphSubline": "Relations grammaticales entre les mots de chaque phrase.",
+    "cloudBody": "Les mots plus grands sont ceux vus ou swipés le plus souvent. Utilise la densité du nuage pour repérer ce que ton œil remarque en premier.",
+    "playfulSubline": "Variante playful du builder avec des tuiles plus riches.",
+    "dialectsBody": "Vois comment un même mot peut changer dans différentes régions d'Allemagne, d'Autriche et de Suisse."
+  },
+  "grammarLab": {
+    "whatIsViewTitle": "Qu'est-ce que {{title}}",
+    "nextButton": "Suivant",
+    "loadingView": "Chargement de la vue...",
+    "noSentencesTitle": "Aucune phrase de grammaire",
+    "noSentencesBody": "Le lab peut quand même utiliser le builder, les clusters, la carte des dialectes, la hiérarchie et le word cloud sans phrases.",
+    "openBuilderButton": "Build Sentence",
+    "playCachedTitle": "Lire (en cache)",
+    "playGenerateTitle": "Générer et lire",
+    "loadingGraph": "Chargement des données du graphe...",
+    "loadingCloud": "Chargement du word cloud...",
+    "loadingClusters": "Chargement des clusters...",
+    "loadingHierarchy": "Chargement de la hiérarchie...",
+    "caseLabel": "Cas",
+    "genderLabel": "Genre",
+    "tenseLabel": "Temps",
+    "viewMeta": {
+      "graph": {
+        "eyebrow": "Grammar · Sentence graph",
+        "title": "Sentence Graph",
+        "subline": "Relations grammaticales entre les mots de chaque phrase.",
+        "body": "Visualise le graphe grammatical d'une phrase : chaque mot est un nœud, chaque relation (sujet, objet, modificateur) est un arc. Tape sur un nœud pour voir cas, genre, temps."
+      },
+      "wordcloud": {
+        "eyebrow": "Grammar · Word cloud",
+        "title": "Word Cloud",
+        "subline": "À quelle fréquence apparaissent les mots que tu as rencontrés.",
+        "body": "Les mots plus grands sont ceux vus ou swipés le plus souvent. Tape sur un mot pour ouvrir son détail."
+      },
+      "builder": {
+        "eyebrow": "Grammar · Build sentence",
+        "title": "Build Sentence",
+        "subline": "Construis des phrases grammaticales à partir d'un word bank.",
+        "body": "Glisse ou tape sur les tuiles pour assembler une phrase. Le système vérifie la structure grammaticale."
+      },
+      "funbuilder": {
+        "eyebrow": "Grammar · Compose sentence",
+        "title": "Compose Sentence",
+        "subline": "Variante playful du builder avec des tuiles plus riches.",
+        "body": "Variante du builder avec une interaction plus ludique : choisis les tuiles, compose la phrase, vois le feedback."
+      },
+      "clusters": {
+        "eyebrow": "Grammar · Clusters",
+        "title": "Clusters",
+        "subline": "Groupes sémantiques et quartiers de mots liés.",
+        "body": "Les mots sont regroupés par sens similaire. Exemple : tous les verbes de mouvement finissent dans le même cluster."
+      },
+      "dialects": {
+        "eyebrow": "Grammar · Dialects",
+        "title": "Dialects",
+        "subline": "Variantes régionales du vocabulaire de la langue cible.",
+        "body": "Vois comment un même mot peut changer selon les régions (ex. Allemagne, Autriche, Suisse)."
+      },
+      "sunburst": {
+        "eyebrow": "Grammar · Hierarchy",
+        "title": "Hierarchy",
+        "subline": "Structure hiérarchique des concepts et catégories.",
+        "body": "Un graphique en couronne qui montre comment les macro-catégories contiennent sous-catégories et mots."
+      }
+    }
+  },
+  "grammarHub": {
+    "eyebrow": "Explore · Grammar · Hub",
+    "title": "Grammar Lab",
+    "subline": "Sept outils pour analyser grammaire et vocabulaire.",
+    "explainerTitle": "Ce que tu trouves dans le Grammar Lab",
+    "explainerBodyP1": "Le Grammar Lab est la boîte à outils pour analyser la langue cible. Chaque outil répond à une question différente.",
+    "explainerBodyP2": "Exemple : Sentence Graph montre comment les mots d'une phrase sont liés ; Word Cloud montre quels mots apparaissent le plus souvent. Ouvre-les un à la fois.",
+    "entries": {
+      "graph": {
+        "title": "Sentence Graph",
+        "sub": "Relations grammaticales entre les mots."
+      },
+      "wordcloud": {
+        "title": "Word Cloud",
+        "sub": "Fréquence des mots rencontrés."
+      },
+      "builder": {
+        "title": "Build Sentence",
+        "sub": "Construis des phrases depuis un word bank."
+      },
+      "funbuilder": {
+        "title": "Compose Sentence",
+        "sub": "Variante playful du builder."
+      },
+      "clusters": {
+        "title": "Clusters",
+        "sub": "Groupes sémantiques de mots liés."
+      },
+      "dialects": {
+        "title": "Dialects",
+        "sub": "Variantes régionales du vocabulaire."
+      },
+      "sunburst": {
+        "title": "Hierarchy",
+        "sub": "Structure hiérarchique des concepts."
+      }
+    }
+  },
+  "feedbackForm": {
+    "openAria": "Ouvrir le formulaire de feedback testeur",
+    "modalAria": "Formulaire de feedback testeur",
+    "eyebrow": "Tester feedback",
+    "title": "Qu'en penses-tu ?",
+    "body": "Laisse un commentaire sur le design, une fonctionnalité que tu aimes ou n'aimes pas. Il sera sauvegardé pour celui qui développe l'app.",
+    "closeAria": "Fermer",
+    "like": "J'aime",
+    "dislike": "Je n'aime pas",
+    "neutral": "Neutre",
+    "placeholder": "Écris ton commentaire ici…",
+    "successMessage": "Merci ! Ton commentaire a été sauvegardé.",
+    "errorMessagePrefix": "Erreur de sauvegarde",
+    "closeButton": "Fermer",
+    "submitButton": "Envoyer le commentaire",
+    "sendingButton": "Envoi…"
+  },
+  "bottomNav": {
+    "path": "Parcours",
+    "learn": "Apprendre",
+    "review": "Réviser",
+    "explore": "Explorer"
   }
 }

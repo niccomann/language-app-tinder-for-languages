@@ -1,19 +1,13 @@
 import { useState } from 'react';
-import { useLanguage } from '../i18n/languageContext';
+import { useCopy, useLanguage } from '../i18n/languageContext';
+import { getStaticCopy } from '../i18n/staticCopy';
 import type { SourceLocale, TargetLanguage } from '../i18n/languageStorage';
 import { Button, UI_INTERACTION, UI_RADIUS } from './ui';
 
-const TARGET_OPTIONS: Array<{ code: TargetLanguage; flag: string; label: string }> = [
-  { code: 'de', flag: '🇩🇪', label: 'Deutsch' },
-  { code: 'it', flag: '🇮🇹', label: 'Italiano' },
-  { code: 'fr', flag: '🇫🇷', label: 'Français' },
-];
-
-const SOURCE_OPTIONS: Array<{ code: SourceLocale; flag: string; label: string }> = [
-  { code: 'en', flag: '🇬🇧', label: 'English' },
-  { code: 'it', flag: '🇮🇹', label: 'Italiano' },
-  { code: 'fr', flag: '🇫🇷', label: 'Français' },
-];
+const TARGET_FLAGS: Record<TargetLanguage, string> = { de: '🇩🇪', it: '🇮🇹', fr: '🇫🇷' };
+const SOURCE_FLAGS: Record<SourceLocale, string> = { en: '🇬🇧', it: '🇮🇹', fr: '🇫🇷' };
+const TARGETS: TargetLanguage[] = ['de', 'it', 'fr'];
+const SOURCES: SourceLocale[] = ['en', 'it', 'fr'];
 
 interface OnboardingModalProps {
   initialTarget?: TargetLanguage | null;
@@ -23,8 +17,14 @@ interface OnboardingModalProps {
 
 export function OnboardingModal({ initialTarget, initialSource, onClose }: OnboardingModalProps) {
   const { setTarget, setSource } = useLanguage();
+  const ctxCopy = useCopy();
   const [target, setTargetLocal] = useState<TargetLanguage | null>(initialTarget ?? null);
   const [source, setSourceLocal] = useState<SourceLocale | null>(initialSource ?? null);
+
+  // The modal mirrors the SOURCE the user is currently building, so labels live-update
+  // in that locale (e.g. picking source=fr shows the rest of the modal in French immediately).
+  const copy = source ? getStaticCopy(source) : ctxCopy;
+  const oc = copy.onboardingChooser;
 
   const sourceConflict = (code: SourceLocale) => target !== null && (code as string) === (target as string);
   const canSubmit = target !== null && source !== null && !sourceConflict(source);
@@ -43,33 +43,33 @@ export function OnboardingModal({ initialTarget, initialSource, onClose }: Onboa
       className="fixed inset-0 z-[100] flex items-end justify-center bg-ink/40 px-0 sm:items-center sm:px-4"
       role="dialog"
       aria-modal="true"
-      aria-label="Scelta lingua"
+      aria-label={oc.title}
     >
       <div className={`relative mx-auto w-full max-w-[480px] ${UI_RADIUS.surface} max-h-[90vh] overflow-y-auto border border-hairline bg-canvas p-5 pb-6 sm:my-6`}>
         <p className="text-caption-uppercase font-medium uppercase tracking-[1.5px] text-primary">
-          Benvenuto
+          {oc.eyebrow}
         </p>
         <h2 className="mt-2 font-display text-display-sm font-normal tracking-[-0.3px] text-ink">
-          Scegli le tue lingue
+          {oc.title}
         </h2>
         <p className="mt-2 text-body-md text-muted">
-          Quella che vuoi imparare e quella da cui parti.
+          {oc.body}
         </p>
 
         <section className="mt-6">
           <p className="text-caption-uppercase font-medium uppercase tracking-[1.5px] text-muted">
-            Quale lingua vuoi imparare?
+            {oc.targetQuestion}
           </p>
           <div className="mt-3 grid grid-cols-3 gap-2">
-            {TARGET_OPTIONS.map((opt) => {
-              const selected = target === opt.code;
+            {TARGETS.map((code) => {
+              const selected = target === code;
               return (
                 <button
-                  key={opt.code}
+                  key={code}
                   type="button"
                   onClick={() => {
-                    setTargetLocal(opt.code);
-                    if (source && (opt.code as string) === (source as string)) {
+                    setTargetLocal(code);
+                    if (source && (code as string) === (source as string)) {
                       setSourceLocal(null);
                     }
                   }}
@@ -80,8 +80,8 @@ export function OnboardingModal({ initialTarget, initialSource, onClose }: Onboa
                   }`}
                   aria-pressed={selected}
                 >
-                  <span className="text-3xl leading-none">{opt.flag}</span>
-                  <span className="text-body-sm font-medium text-ink">{opt.label}</span>
+                  <span className="text-3xl leading-none">{TARGET_FLAGS[code]}</span>
+                  <span className="text-body-sm font-medium text-ink capitalize">{copy.targetLanguageNames[code]}</span>
                 </button>
               );
             })}
@@ -90,18 +90,20 @@ export function OnboardingModal({ initialTarget, initialSource, onClose }: Onboa
 
         <section className="mt-6">
           <p className="text-caption-uppercase font-medium uppercase tracking-[1.5px] text-muted">
-            Da quale lingua parti?
+            {oc.sourceQuestion}
           </p>
           <div className="mt-3 grid grid-cols-3 gap-2">
-            {SOURCE_OPTIONS.map((opt) => {
-              const selected = source === opt.code;
-              const disabled = sourceConflict(opt.code);
+            {SOURCES.map((code) => {
+              const selected = source === code;
+              const disabled = sourceConflict(code);
+              // Display the LOCALE_NAME from that locale's JSON (e.g. "Italiano", "English", "Français").
+              const localeName = getStaticCopy(code).localeName;
               return (
                 <button
-                  key={opt.code}
+                  key={code}
                   type="button"
                   disabled={disabled}
-                  onClick={() => setSourceLocal(opt.code)}
+                  onClick={() => setSourceLocal(code)}
                   className={`flex flex-col items-center gap-1 ${UI_RADIUS.surface} border bg-canvas p-3 ${UI_INTERACTION.fastTransition} ${
                     disabled
                       ? 'border-hairline opacity-40 cursor-not-allowed'
@@ -111,10 +113,10 @@ export function OnboardingModal({ initialTarget, initialSource, onClose }: Onboa
                   }`}
                   aria-pressed={selected}
                   aria-disabled={disabled}
-                  title={disabled ? 'Non puoi partire dalla stessa lingua che vuoi imparare' : undefined}
+                  title={disabled ? oc.sourceConflictTooltip : undefined}
                 >
-                  <span className="text-3xl leading-none">{opt.flag}</span>
-                  <span className="text-body-sm font-medium text-ink">{opt.label}</span>
+                  <span className="text-3xl leading-none">{SOURCE_FLAGS[code]}</span>
+                  <span className="text-body-sm font-medium text-ink">{localeName}</span>
                 </button>
               );
             })}
@@ -128,11 +130,11 @@ export function OnboardingModal({ initialTarget, initialSource, onClose }: Onboa
               onClick={onClose}
               className="text-body-sm font-medium text-muted underline-offset-2 hover:underline"
             >
-              Annulla
+              {oc.cancel}
             </button>
           )}
           <Button variant="primary" onClick={handleSubmit} disabled={!canSubmit}>
-            Inizia
+            {oc.submit}
           </Button>
         </div>
       </div>

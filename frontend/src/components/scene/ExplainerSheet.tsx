@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { Button, UI_RADIUS } from '../ui';
 import { markExplainerDismissed } from './explainerStorage';
 import { iconButtonClass } from './sceneClasses';
+import { useCopy } from '../../i18n/languageContext';
 
 interface ExplainerSheetProps {
   open: boolean;
@@ -13,6 +14,7 @@ interface ExplainerSheetProps {
 }
 
 export function ExplainerSheet({ open, onClose, storageKey, title, children }: ExplainerSheetProps) {
+  const copy = useCopy();
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => {
@@ -45,13 +47,13 @@ export function ExplainerSheet({ open, onClose, storageKey, title, children }: E
         <button
           type="button"
           onClick={onClose}
-          aria-label="Close"
+          aria-label={copy.common.close}
           className={`absolute right-3 top-3 ${iconButtonClass(9)} text-muted hover:text-ink`}
         >
           <X size={18} />
         </button>
         <p className="text-caption-uppercase font-medium uppercase tracking-[1.5px] text-primary">
-          Cos'è?
+          {copy.common.whatIs}
         </p>
         <h3 className="mt-2 font-display text-display-sm font-normal tracking-[-0.3px] text-ink">
           {title}
@@ -63,10 +65,10 @@ export function ExplainerSheet({ open, onClose, storageKey, title, children }: E
             onClick={dismissForever}
             className="text-body-sm font-medium text-muted underline-offset-2 hover:underline"
           >
-            Non mostrare più
+            {copy.common.dontShowAgain}
           </button>
           <Button variant="primary" onClick={onClose}>
-            Chiudi
+            {copy.common.close}
           </Button>
         </div>
       </div>

@@ -7,7 +7,8 @@ import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
 import type { GrammarView } from '../routes/appRoutes';
 import { reportClientError } from '../utils/clientError';
 import { CATEGORY_COLORS } from '../utils/wordDisplayMeta';
-import { useTargetLanguage } from '../i18n/languageContext';
+import { useCopy, useTargetLanguage } from '../i18n/languageContext';
+import { formatCopy } from '../i18n/staticCopy';
 
 const EmbeddedGrammarGraph = lazy(() => import('./EmbeddedGrammarGraph').then((module) => ({ default: module.EmbeddedGrammarGraph })));
 const EmbeddedWordCloud = lazy(() => import('./EmbeddedWordCloud').then((module) => ({ default: module.EmbeddedWordCloud })));
@@ -26,60 +27,20 @@ interface GrammarLabProps {
   onBack: () => void;
 }
 
-const VIEW_META: Record<Exclude<GrammarView, 'hub'>, { eyebrow: string; title: string; subline: string; key: string; body: React.ReactNode }> = {
-  graph: {
-    eyebrow: 'GRAMMAR · SENTENCE GRAPH',
-    title: 'Sentence Graph',
-    subline: 'Relazioni grammaticali tra le parole di ogni frase.',
-    key: 'grammar.graph',
-    body: <p>Visualizza il grafo grammaticale di una frase: ogni parola è un nodo, ogni relazione (soggetto, oggetto, modificatore) è un arco. Tocca un nodo per vedere caso, genere, tempo.</p>,
-  },
-  wordcloud: {
-    eyebrow: 'GRAMMAR · WORD CLOUD',
-    title: 'Word Cloud',
-    subline: 'Quanto sono frequenti le parole che hai incontrato.',
-    key: 'grammar.wordcloud',
-    body: <p>Le parole più grandi sono quelle viste o swipe-ate più spesso. Tocca una parola per aprirne il dettaglio.</p>,
-  },
-  builder: {
-    eyebrow: 'GRAMMAR · BUILD SENTENCE',
-    title: 'Build Sentence',
-    subline: 'Costruisci frasi grammaticali a partire da un word bank.',
-    key: 'grammar.builder',
-    body: <p>Trascina o tocca i tile per assemblare una frase. Il sistema controlla la struttura grammaticale.</p>,
-  },
-  funbuilder: {
-    eyebrow: 'GRAMMAR · COMPOSE SENTENCE',
-    title: 'Compose Sentence',
-    subline: 'Versione playful del builder con tile più ricchi.',
-    key: 'grammar.funbuilder',
-    body: <p>Variante del builder con interazione più giocosa: scegli i tile, componi la frase, vedi feedback.</p>,
-  },
-  clusters: {
-    eyebrow: 'GRAMMAR · CLUSTERS',
-    title: 'Clusters',
-    subline: 'Gruppi semantici e quartieri di parole correlate.',
-    key: 'grammar.clusters',
-    body: <p>Le parole vengono raggruppate per significato simile. Esempio: tutti i verbi di movimento finiscono nello stesso cluster.</p>,
-  },
-  dialects: {
-    eyebrow: 'GRAMMAR · DIALECTS',
-    title: 'Dialects',
-    subline: 'Varianti regionali del vocabolario tedesco.',
-    key: 'grammar.dialects',
-    body: <p>Vedi come una stessa parola può cambiare in zone diverse della Germania, Austria, Svizzera.</p>,
-  },
-  sunburst: {
-    eyebrow: 'GRAMMAR · HIERARCHY',
-    title: 'Hierarchy',
-    subline: 'Struttura gerarchica dei concetti e categorie.',
-    key: 'grammar.sunburst',
-    body: <p>Un grafico a corona che mostra come categorie macro contengono sotto-categorie e parole.</p>,
-  },
+const VIEW_STORAGE_KEYS: Record<Exclude<GrammarView, 'hub'>, string> = {
+  graph: 'grammar.graph',
+  wordcloud: 'grammar.wordcloud',
+  builder: 'grammar.builder',
+  funbuilder: 'grammar.funbuilder',
+  clusters: 'grammar.clusters',
+  dialects: 'grammar.dialects',
+  sunburst: 'grammar.sunburst',
 };
 
 export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps) {
   const language = useTargetLanguage();
+  const copy = useCopy();
+  const gl = copy.grammarLab;
   const [sentences, setSentences] = useState<GrammarSentence[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [words, setWords] = useState<WordCloudItem[]>([]);
@@ -206,23 +167,25 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
 
   const currentSentence = sentences[currentIndex];
   const wordDatasetLoading = loading && words.length === 0;
-  const leaf = activeView === 'hub' ? VIEW_META.graph : VIEW_META[activeView];
+  const viewKey: Exclude<GrammarView, 'hub'> = activeView === 'hub' ? 'graph' : activeView;
+  const viewMeta = gl.viewMeta[viewKey];
+  const storageKey = VIEW_STORAGE_KEYS[viewKey];
 
   return (
     <SceneShell
-      eyebrow={leaf.eyebrow}
-      title={leaf.title}
-      subline={leaf.subline}
-      explainerKey={leaf.key}
-      explainerTitle={`Cos'è ${leaf.title}`}
-      explainerBody={leaf.body}
+      eyebrow={viewMeta.eyebrow}
+      title={viewMeta.title}
+      subline={viewMeta.subline}
+      explainerKey={storageKey}
+      explainerTitle={formatCopy(gl.whatIsViewTitle, { title: viewMeta.title })}
+      explainerBody={<p>{viewMeta.body}</p>}
       back={{ onClick: onBack }}
       action={activeView === 'graph' && currentSentence ? (
         <button
           onClick={handleNextSentence}
           className={`flex min-h-10 items-center gap-2 ${UI_RADIUS.pill} bg-primary px-3 py-2 text-caption font-semibold text-on-primary transition-all`}
         >
-          Next <Play size={14} />
+          {gl.nextButton} <Play size={14} />
         </button>
       ) : null}
       onNavigate={onBack}
@@ -241,7 +204,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
                   ? 'bg-success/20 text-success'
                   : 'bg-surface-card text-muted'
                 }`}
-              title={audioCache[currentSentence.german] ? 'Play (cached)' : 'Generate & Play'}
+              title={audioCache[currentSentence.german] ? gl.playCachedTitle : gl.playGenerateTitle}
             >
               {loadingAudio === currentSentence.german ? (
                 <Loader2 size={20} className="animate-spin" />
@@ -256,19 +219,19 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
 
       {/* Content Area */}
       <div className="flex-1 overflow-visible relative">
-        <Suspense fallback={<GrammarViewFallback />}>
+        <Suspense fallback={<GrammarViewFallback message={gl.loadingView} />}>
           {activeView === 'graph' && loading && !currentSentence && (
-            <GrammarDataLoadingPanel message="Loading graph data..." />
+            <GrammarDataLoadingPanel message={gl.loadingGraph} />
           )}
           {activeView === 'graph' && !loading && !currentSentence && (
             <div className="flex h-full items-center justify-center p-6">
               <SurfacePanel className="max-w-md text-center" padding="lg">
                 <Puzzle size={44} className="mx-auto mb-4 text-primary" />
                 <h2 className="text-2xl font-semibold text-ink">
-                  No grammar sentences yet
+                  {gl.noSentencesTitle}
                 </h2>
                 <p className="mt-2 text-sm font-semibold leading-6 text-muted">
-                  The lab can still use the builder, clusters, dialect map, hierarchy, and word cloud while sentence data is empty.
+                  {gl.noSentencesBody}
                 </p>
                 <button
                   type="button"
@@ -276,7 +239,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
                   className={`mt-5 inline-flex min-h-11 items-center gap-2 ${UI_RADIUS.pill} bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary transition`}
                 >
                   <Puzzle size={17} />
-                  Build Sentence
+                  {gl.openBuilderButton}
                 </button>
               </SurfacePanel>
             </div>
@@ -291,7 +254,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
             <EmbeddedWordCloud words={words} onWordClick={setSelectedWord} />
           )}
           {activeView === 'wordcloud' && wordDatasetLoading && (
-            <GrammarDataLoadingPanel message="Loading word cloud..." />
+            <GrammarDataLoadingPanel message={gl.loadingCloud} />
           )}
           {activeView === 'builder' && (
             <SentenceBuilder />
@@ -303,7 +266,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
             <ClusteredNodes words={words} onWordClick={setSelectedWord} />
           )}
           {activeView === 'clusters' && wordDatasetLoading && (
-            <GrammarDataLoadingPanel message="Loading clusters..." />
+            <GrammarDataLoadingPanel message={gl.loadingClusters} />
           )}
           {activeView === 'dialects' && (
             <DialectMap />
@@ -312,7 +275,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
             <HierarchySunburst words={words} onWordClick={setSelectedWord} />
           )}
           {activeView === 'sunburst' && wordDatasetLoading && (
-            <GrammarDataLoadingPanel message="Loading hierarchy..." />
+            <GrammarDataLoadingPanel message={gl.loadingHierarchy} />
           )}
         </Suspense>
       </div>
@@ -342,7 +305,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
                       ? 'bg-success/20 text-success'
                       : 'bg-surface-card text-muted'
                     }`}
-                  title={audioCache[selectedNode.label] ? 'Play (cached)' : 'Generate & Play'}
+                  title={audioCache[selectedNode.label] ? gl.playCachedTitle : gl.playGenerateTitle}
                 >
                   {loadingAudio === selectedNode.label ? (
                     <Loader2 size={16} className="animate-spin" />
@@ -359,13 +322,13 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-1 text-sm text-muted mt-2">
                 {selectedNode.meta?.case && (
-                  <p><span className="text-muted-soft">Case:</span> <strong>{selectedNode.meta.case}</strong></p>
+                  <p><span className="text-muted-soft">{gl.caseLabel}:</span> <strong>{selectedNode.meta.case}</strong></p>
                 )}
                 {selectedNode.meta?.gender && (
-                  <p><span className="text-muted-soft">Gender:</span> <strong>{selectedNode.meta.gender}</strong></p>
+                  <p><span className="text-muted-soft">{gl.genderLabel}:</span> <strong>{selectedNode.meta.gender}</strong></p>
                 )}
                 {selectedNode.meta?.tense && (
-                  <p><span className="text-muted-soft">Tense:</span> <strong>{selectedNode.meta.tense}</strong></p>
+                  <p><span className="text-muted-soft">{gl.tenseLabel}:</span> <strong>{selectedNode.meta.tense}</strong></p>
                 )}
               </div>
             </div>
@@ -397,10 +360,10 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
   );
 }
 
-function GrammarViewFallback() {
+function GrammarViewFallback({ message }: { message: string }) {
   return (
     <div className="w-full h-full flex items-center justify-center text-sm font-semibold text-muted">
-      Loading view...
+      {message}
     </div>
   );
 }

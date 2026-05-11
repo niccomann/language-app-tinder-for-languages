@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { SceneHeader } from './SceneHeader';
 import { AppHeaderMenu } from './AppHeaderMenu';
 import { iconButtonClass } from './sceneClasses';
+import { useCopy } from '../../i18n/languageContext';
 
 interface SceneShellProps {
   eyebrow: string;
@@ -29,6 +30,7 @@ export function SceneShell({
   onNavigate,
   children,
 }: SceneShellProps) {
+  const copy = useCopy();
   return (
     <div className="mx-auto min-h-dvh max-w-[480px] px-4 pb-24">
       <div className="sticky top-0 z-[65] -mx-4 flex h-12 items-center justify-between border-b border-hairline bg-canvas/95 px-4 backdrop-blur-sm">
@@ -37,7 +39,7 @@ export function SceneShell({
             <button
               type="button"
               onClick={back.onClick}
-              aria-label={back.label ?? 'Indietro'}
+              aria-label={back.label ?? copy.common.back}
               className={iconButtonClass(9)}
             >
               <ArrowLeft size={20} />

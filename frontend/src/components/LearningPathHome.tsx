@@ -27,6 +27,8 @@ import {
   getFeatureFlowItemsByPhase,
   getPrimaryFeatureFlowItem,
 } from '../gamification/featureFlowRegistry';
+import { useCopy, useTargetLanguage } from '../i18n/languageContext';
+import { formatCopy } from '../i18n/staticCopy';
 
 import type { PathView } from '../routes/appRoutes';
 
@@ -49,6 +51,11 @@ export function LearningPathHome({
   selectedCategoriesCount,
   onNavigateToFeature,
 }: LearningPathHomeProps) {
+  const copy = useCopy();
+  const target = useTargetLanguage();
+  const languageName = copy.targetLanguageNames[target];
+  const t = copy.pathHome;
+
   const display = getPathDisplayValues(learningSummary);
   const shouldReengage = Boolean(learningSummary?.should_reengage);
   const primaryMission = getPrimaryFeatureFlowItem();
@@ -61,22 +68,16 @@ export function LearningPathHome({
   if (pathView === 'full') {
     return (
       <SceneShell
-        eyebrow="PATH · 400-LEVEL"
-        title="Path completo"
-        subline="Tutti i 400 livelli del percorso e dove sei adesso."
+        eyebrow={t.full.eyebrow}
+        title={t.full.title}
+        subline={t.full.subline}
         explainerKey="path.full"
-        explainerTitle="Cos'è il 400-level path"
-        explainerBody={
-          <p>
-            Il percorso è organizzato in 400 livelli che riflettono quanto e quanto bene conosci le parole.
-            Ogni swipe aggiorna il tuo livello. Esempio: se sai una parola al livello 22, vedrai contesti
-            adatti a quel livello, non più semplici.
-          </p>
-        }
+        explainerTitle={t.full.explainerTitle}
+        explainerBody={<p>{t.full.explainerBody}</p>}
         back={back}
         onNavigate={navigate}
       >
-        <FullPath pathLevel={display.pathLevel} />
+        <FullPath pathLevel={display.pathLevel} levelLabel={t.full.levelLabel} />
       </SceneShell>
     );
   }
@@ -84,36 +85,31 @@ export function LearningPathHome({
   if (pathView === 'stats') {
     return (
       <SceneShell
-        eyebrow="PATH · STATS"
-        title="Le tue cifre"
-        subline="Path level, parole, parole forti e mastery medio."
+        eyebrow={t.stats.eyebrow}
+        title={t.stats.title}
+        subline={t.stats.subline}
         explainerKey="path.stats"
-        explainerTitle="Cosa misurano queste cifre"
-        explainerBody={
-          <p>
-            Path Level è il tuo livello sul percorso 400. Words è il totale parole praticate. Strong è il
-            numero di parole con mastery alto. Avg Mastery è la media di tutte le confidence di parola.
-          </p>
-        }
+        explainerTitle={t.stats.explainerTitle}
+        explainerBody={<p>{t.stats.explainerBody}</p>}
         back={back}
         onNavigate={navigate}
       >
         <div className="grid auto-rows-fr grid-cols-2 gap-3">
-          <StatCard label="Path Level" value={display.pathLevel} icon={<Gauge size={20} />} color="coral" />
+          <StatCard label={t.stats.pathLevel} value={display.pathLevel} icon={<Gauge size={20} />} color="coral" />
           <StatCard
-            label="Words"
+            label={t.stats.words}
             value={learningSummary?.total_words_practiced ?? 0}
             icon={<BookOpen size={20} />}
             color="coral-strong"
           />
           <StatCard
-            label="Strong"
+            label={t.stats.strong}
             value={learningSummary?.words_mastered ?? 0}
             icon={<Trophy size={20} />}
             color="success"
           />
           <StatCard
-            label="Avg Mastery"
+            label={t.stats.avgMastery}
             value={Number(display.averageMastery.toFixed(1))}
             icon={<Target size={20} />}
             color="teal"
@@ -126,17 +122,12 @@ export function LearningPathHome({
   if (pathView === 'diary') {
     return (
       <SceneShell
-        eyebrow="PATH · DIARY"
-        title="Diario di apprendimento"
-        subline="La storia delle missioni del path, in ordine cronologico."
+        eyebrow={t.diary.eyebrow}
+        title={t.diary.title}
+        subline={t.diary.subline}
         explainerKey="path.diary"
-        explainerTitle="Come funziona il diario"
-        explainerBody={
-          <p>
-            Il diario mostra le tappe del path 400-level — le missioni passate sono completate, quelle correnti
-            sono evidenziate, quelle future restano grigie finché non le sblocchi.
-          </p>
-        }
+        explainerTitle={t.diary.explainerTitle}
+        explainerBody={<p>{t.diary.explainerBody}</p>}
         back={back}
         onNavigate={navigate}
       >
@@ -145,6 +136,9 @@ export function LearningPathHome({
           progress={progress}
           totalCards={totalCards}
           variant="full"
+          progressEyebrow={t.diary.progressEyebrow}
+          todayPillTemplate={t.diary.todayPill}
+          levelLabel={t.full.levelLabel}
         />
       </SceneShell>
     );
@@ -153,17 +147,12 @@ export function LearningPathHome({
   if (pathView === 'next') {
     return (
       <SceneShell
-        eyebrow="PATH · NEXT"
-        title="Pronto a salire"
-        subline="La sfida successiva e gli strumenti consigliati per arrivarci."
+        eyebrow={t.next.eyebrow}
+        title={t.next.title}
+        subline={t.next.subline}
         explainerKey="path.next"
-        explainerTitle="Come decidiamo cosa è 'next'"
-        explainerBody={
-          <p>
-            Quando il sistema vede abbastanza segnali di mastery, sblocca la prossima sfida (es. Sentence
-            Placement). Qui trovi anche i tool di Review ed Explore consigliati per la fase corrente.
-          </p>
-        }
+        explainerTitle={t.next.explainerTitle}
+        explainerBody={<p>{t.next.explainerBody}</p>}
         back={back}
         onNavigate={navigate}
       >
@@ -181,25 +170,25 @@ export function LearningPathHome({
               </span>
               <span className="min-w-0">
                 <span className={`block ${EYEBROW_CLASS} text-accent-teal`}>
-                  Prossima sfida
+                  {t.next.nextChallengeEyebrow}
                 </span>
                 <span className="mt-1 block text-body-md font-semibold text-ink">{nextMission.title}</span>
                 <span className="mt-1 block text-body-sm text-muted">
-                  Compose sentences to check grammar, logic, and function words.
+                  {t.next.nextChallengeBody}
                 </span>
               </span>
             </button>
           )}
           <PathToolButton
             icon={<BookOpenCheck size={18} />}
-            title="Review tools"
-            body={`Your Vocabulary, Topic Deck, Word Library, and Learning System. Topics ${selectedCategoriesCount}/${categoriesCount || 0}.`}
+            title={t.next.reviewToolsTitle}
+            body={formatCopy(t.next.reviewToolsBody, { selected: selectedCategoriesCount, total: categoriesCount || 0 })}
             onOpen={() => navigate('/review')}
           />
           <PathToolButton
             icon={<Compass size={18} />}
-            title="Explore tools"
-            body="Grammar training and language-map tools are available when the path asks for deeper work."
+            title={t.next.exploreToolsTitle}
+            body={t.next.exploreToolsBody}
             onOpen={() => navigate('/explore')}
           />
         </div>
@@ -209,29 +198,24 @@ export function LearningPathHome({
 
   return (
     <SceneShell
-      eyebrow="PATH · HOME"
-      title="Apprendi tedesco"
-      subline="Decidi se sai una parola o no — il sistema fa il resto."
+      eyebrow={t.home.eyebrow}
+      title={formatCopy(t.home.title, { language: languageName })}
+      subline={t.home.subline}
       explainerKey="path.home"
-      explainerTitle="Come funziona la Home"
+      explainerTitle={t.home.explainerTitle}
       explainerBody={
         <>
-          <p>
-            La Home mostra la missione corrente. Tutto il resto — stats, diario, sfida successiva — sta nelle
-            schermate dedicate raggiungibili dai link in fondo.
-          </p>
-          <p>
-            Esempio: se vuoi vedere i 4 numeri del tuo path (livello, parole, mastery), tocca "Le tue cifre".
-          </p>
+          <p>{t.home.explainerBodyP1}</p>
+          <p>{t.home.explainerBodyP2}</p>
         </>
       }
       onNavigate={navigate}
     >
       <div className="flex flex-col gap-5">
         <div className="flex flex-wrap gap-2">
-          <GameSignalBadge icon={<Sparkles size={14} />} label="Daily Quest" tone="amber" />
-          <GameSignalBadge icon={<ShieldCheck size={14} />} label="Streak Shield" tone="teal" />
-          <GameSignalBadge icon={<Trophy size={14} />} label="XP Bank" tone="success" />
+          <GameSignalBadge icon={<Sparkles size={14} />} label={t.home.dailyQuest} tone="amber" />
+          <GameSignalBadge icon={<ShieldCheck size={14} />} label={t.home.streakShield} tone="teal" />
+          <GameSignalBadge icon={<Trophy size={14} />} label={t.home.xpBank} tone="success" />
         </div>
 
         {shouldReengage && (
@@ -243,10 +227,12 @@ export function LearningPathHome({
                 <Clock3 size={20} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-body-sm font-semibold text-ink">Bentornato</p>
+                <p className="text-body-sm font-semibold text-ink">{t.home.reengageTitle}</p>
                 <p className="mt-1 text-body-sm font-medium text-muted">
-                  Sono passati {learningSummary?.days_since_last_practice} giorni dall'ultima sessione di tedesco.
-                  Ricalibra il path con una review.
+                  {formatCopy(t.home.reengageBody, {
+                    days: learningSummary?.days_since_last_practice ?? 0,
+                    language: languageName,
+                  })}
                 </p>
               </div>
             </div>
@@ -254,13 +240,12 @@ export function LearningPathHome({
         )}
 
         <SurfacePanel padding="lg" className="space-y-3">
-          <p className={`${EYEBROW_CLASS} text-muted`}>Snapshot di oggi</p>
+          <p className={`${EYEBROW_CLASS} text-muted`}>{t.home.snapshotEyebrow}</p>
           <h2 className="font-display text-display-sm font-normal tracking-[-0.3px] text-ink">
             {getLearningTrendLabel(learningSummary)}
           </h2>
           <p className="text-body-sm font-medium text-muted">
-            Il path 400-level si aggiorna a ogni swipe. Il sistema sceglie i contesti più facili o più difficili
-            in base al tuo mastery.
+            {t.home.snapshotBody}
           </p>
         </SurfacePanel>
 
@@ -291,29 +276,29 @@ export function LearningPathHome({
           <span
             className={`${UI_RADIUS.pill} bg-canvas px-3 py-2 text-caption font-medium text-primary`}
           >
-            Continua
+            {t.home.primaryCtaPill}
           </span>
         </button>
 
         <nav aria-label="Path sections" className="mt-2 flex flex-col gap-2">
           <PathSectionLink
-            label="Vedi il path completo"
-            sub={`Tutti i 400 livelli — sei al ${display.pathLevel}`}
+            label={t.home.linkFull}
+            sub={formatCopy(t.home.linkFullSub, { level: display.pathLevel })}
             onClick={() => navigate('/path/full')}
           />
           <PathSectionLink
-            label="Le tue cifre"
-            sub={`Path level, words, strong, mastery medio`}
+            label={t.home.linkStats}
+            sub={t.home.linkStatsSub}
             onClick={() => navigate('/path/stats')}
           />
           <PathSectionLink
-            label="Learning diary"
-            sub={`${progress.cards_reviewed}/${totalCards || 0} oggi`}
+            label={t.home.linkDiary}
+            sub={formatCopy(t.home.linkDiarySub, { reviewed: progress.cards_reviewed, total: totalCards || 0 })}
             onClick={() => navigate('/path/diary')}
           />
           <PathSectionLink
-            label="Pronto a salire"
-            sub="Prossima sfida + tool consigliati"
+            label={t.home.linkNext}
+            sub={t.home.linkNextSub}
             onClick={() => navigate('/path/next')}
           />
         </nav>
@@ -346,7 +331,7 @@ function PathSectionLink({
   );
 }
 
-function FullPath({ pathLevel }: { pathLevel: number }) {
+function FullPath({ pathLevel, levelLabel }: { pathLevel: number; levelLabel: string }) {
   return (
     <ul className="flex flex-col gap-2">
       {LEARNING_PATH_MILESTONES.map((step) => {
@@ -360,7 +345,7 @@ function FullPath({ pathLevel }: { pathLevel: number }) {
           >
             <div className="flex items-center justify-between gap-2">
               <h3 className="text-body-sm font-semibold text-ink">{step.title}</h3>
-              <span className="text-caption font-medium text-muted">Level {step.level}</span>
+              <span className="text-caption font-medium text-muted">{formatCopy(levelLabel, { level: step.level })}</span>
             </div>
             <p className="mt-1 text-body-sm font-medium text-muted">{step.detail}</p>
           </li>
@@ -375,11 +360,17 @@ function DiaryTimeline({
   progress,
   totalCards,
   variant,
+  progressEyebrow,
+  todayPillTemplate,
+  levelLabel,
 }: {
   pathLevel: number;
   progress: UserProgress;
   totalCards: number;
   variant: 'full' | 'compact';
+  progressEyebrow: string;
+  todayPillTemplate: string;
+  levelLabel: string;
 }) {
   const activeMilestoneIndex = getActiveMilestoneIndex(pathLevel);
   const visibleMilestones =
@@ -393,11 +384,11 @@ function DiaryTimeline({
   return (
     <SurfacePanel padding="lg" className="relative overflow-hidden">
       <div className="mb-4 flex items-center justify-between gap-3">
-        <p className={`${EYEBROW_CLASS} text-muted`}>Progresso attuale</p>
+        <p className={`${EYEBROW_CLASS} text-muted`}>{progressEyebrow}</p>
         <div
           className={`${UI_RADIUS.pill} border border-hairline bg-surface-card px-3 py-2 text-caption font-medium text-muted`}
         >
-          {progress.cards_reviewed}/{totalCards || 0} oggi
+          {formatCopy(todayPillTemplate, { reviewed: progress.cards_reviewed, total: totalCards || 0 })}
         </div>
       </div>
       <div className="relative space-y-3">
@@ -426,7 +417,7 @@ function DiaryTimeline({
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <h3 className="text-body-sm font-semibold text-ink">{step.title}</h3>
-                  <span className="text-caption font-medium text-muted">Level {step.level}</span>
+                  <span className="text-caption font-medium text-muted">{formatCopy(levelLabel, { level: step.level })}</span>
                 </div>
                 <p className="mt-1 text-body-sm font-medium text-muted">{step.detail}</p>
               </div>
@@ -467,4 +458,3 @@ function PathToolButton({
     </button>
   );
 }
-

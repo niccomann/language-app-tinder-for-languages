@@ -556,5 +556,242 @@
       "description": "See the vocabulary hierarchy and concept structure.",
       "ctaLabel": "Open Hierarchy mission"
     }
+  },
+  "targetLanguageNames": {
+    "de": "German",
+    "it": "Italian",
+    "fr": "French"
+  },
+  "languageSwitcher": {
+    "triggerAriaLabel": "Change learning language",
+    "imParo": "I learn",
+    "changeSourceLanguage": "Change starting language",
+    "resetOnboarding": "Reset onboarding"
+  },
+  "languageBadge": {
+    "learning": "Learning",
+    "from": "from"
+  },
+  "onboardingChooser": {
+    "eyebrow": "Welcome",
+    "title": "Pick your languages",
+    "body": "The one you want to learn and the one you start from.",
+    "targetQuestion": "Which language do you want to learn?",
+    "sourceQuestion": "Which language do you start from?",
+    "cancel": "Cancel",
+    "submit": "Start",
+    "sourceConflictTooltip": "You cannot start from the same language you want to learn"
+  },
+  "common": {
+    "whatIs": "What is this?",
+    "whatIsAria": "What is this screen?",
+    "dontShowAgain": "Don't show again",
+    "close": "Close",
+    "continue": "Continue",
+    "back": "Back",
+    "next": "Next",
+    "skip": "Skip",
+    "loading": "Loading…"
+  },
+  "feedbackButton": {
+    "defaultUser": "Tester user",
+    "title": "What do you think?",
+    "body": "Tell us what is working, what isn't, and anything else you'd like to see in this app."
+  },
+  "pathHome": {
+    "home": {
+      "eyebrow": "Path · Home",
+      "title": "Learn {{language}}",
+      "subline": "Decide whether you know a word or not — the system handles the rest.",
+      "explainerTitle": "How the Home works",
+      "explainerBodyP1": "The Home shows your current mission. Everything else — stats, diary, next challenge — lives in dedicated screens reachable from the links at the bottom.",
+      "explainerBodyP2": "Example: to see your path's four key numbers (level, words, mastery), tap \"Your numbers\".",
+      "snapshotEyebrow": "Today's snapshot",
+      "snapshotBody": "The 400-level path updates with every swipe. The system picks easier or harder contexts based on your mastery.",
+      "primaryCtaPill": "Continue",
+      "linkFull": "See full path",
+      "linkFullSub": "All 400 levels — you're at {{level}}",
+      "linkStats": "Your numbers",
+      "linkStatsSub": "Path level, words, strong, average mastery",
+      "linkDiary": "Learning diary",
+      "linkDiarySub": "{{reviewed}}/{{total}} today",
+      "linkNext": "Ready to level up",
+      "linkNextSub": "Next challenge + recommended tools",
+      "reengageTitle": "Welcome back",
+      "reengageBody": "It has been {{days}} days since your last {{language}} session. Recalibrate the path with a review.",
+      "dailyQuest": "Daily Quest",
+      "streakShield": "Streak Shield",
+      "xpBank": "XP Bank"
+    },
+    "full": {
+      "eyebrow": "Path · 400-level",
+      "title": "Full path",
+      "subline": "All 400 levels and where you are right now.",
+      "explainerTitle": "What the 400-level path is",
+      "explainerBody": "The path is organised into 400 levels that reflect how much and how well you know words. Every swipe updates your level. Example: if you know a word at level 22, you will see contexts adapted to that level, not easier ones.",
+      "levelLabel": "Level {{level}}"
+    },
+    "stats": {
+      "eyebrow": "Path · Stats",
+      "title": "Your numbers",
+      "subline": "Path level, words, strong words, and average mastery.",
+      "explainerTitle": "What these numbers measure",
+      "explainerBody": "Path Level is your level on the 400 path. Words is the total practiced. Strong is the count of words with high mastery. Avg Mastery is the average of all word confidences.",
+      "pathLevel": "Path Level",
+      "words": "Words",
+      "strong": "Strong",
+      "avgMastery": "Avg Mastery"
+    },
+    "diary": {
+      "eyebrow": "Path · Diary",
+      "title": "Learning diary",
+      "subline": "The story of the path missions, in chronological order.",
+      "explainerTitle": "How the diary works",
+      "explainerBody": "The diary shows the steps of the 400-level path — past missions are completed, current ones are highlighted, future ones stay greyed-out until unlocked.",
+      "progressEyebrow": "Current progress",
+      "todayPill": "{{reviewed}}/{{total}} today"
+    },
+    "next": {
+      "eyebrow": "Path · Next",
+      "title": "Ready to level up",
+      "subline": "The next challenge and recommended tools to get there.",
+      "explainerTitle": "How we decide what's 'next'",
+      "explainerBody": "When the system sees enough mastery signals, it unlocks the next challenge (e.g. Sentence Placement). Here you also find Review and Explore tools recommended for the current phase.",
+      "nextChallengeEyebrow": "Next challenge",
+      "nextChallengeBody": "Compose sentences to check grammar, logic, and function words.",
+      "reviewToolsTitle": "Review tools",
+      "reviewToolsBody": "Your Vocabulary, Topic Deck, Word Library, and Learning System. Topics {{selected}}/{{total}}.",
+      "exploreToolsTitle": "Explore tools",
+      "exploreToolsBody": "Grammar training and language-map tools are available when the path asks for deeper work."
+    }
+  },
+  "grammar": {
+    "hubSubline": "Seven tools to analyse grammar and vocabulary.",
+    "graphSubline": "Grammar relations between the words of each sentence.",
+    "cloudBody": "Bigger words are the ones seen or swiped most often. Use cloud density to spot what your eye notices first.",
+    "playfulSubline": "Playful variant of the builder with richer tiles.",
+    "dialectsBody": "See how the same word can change in different regions of Germany, Austria, and Switzerland."
+  },
+  "grammarLab": {
+    "whatIsViewTitle": "What is {{title}}",
+    "nextButton": "Next",
+    "loadingView": "Loading view...",
+    "noSentencesTitle": "No grammar sentences yet",
+    "noSentencesBody": "The lab can still use the builder, clusters, dialect map, hierarchy, and word cloud while sentence data is empty.",
+    "openBuilderButton": "Build Sentence",
+    "playCachedTitle": "Play (cached)",
+    "playGenerateTitle": "Generate & Play",
+    "loadingGraph": "Loading graph data...",
+    "loadingCloud": "Loading word cloud...",
+    "loadingClusters": "Loading clusters...",
+    "loadingHierarchy": "Loading hierarchy...",
+    "caseLabel": "Case",
+    "genderLabel": "Gender",
+    "tenseLabel": "Tense",
+    "viewMeta": {
+      "graph": {
+        "eyebrow": "Grammar · Sentence graph",
+        "title": "Sentence Graph",
+        "subline": "Grammar relations between the words of each sentence.",
+        "body": "View the grammar graph of a sentence: every word is a node, every relation (subject, object, modifier) is an edge. Tap a node to see case, gender, tense."
+      },
+      "wordcloud": {
+        "eyebrow": "Grammar · Word cloud",
+        "title": "Word Cloud",
+        "subline": "How frequent the words you've met are.",
+        "body": "Bigger words are the ones seen or swiped most often. Tap a word to open its detail."
+      },
+      "builder": {
+        "eyebrow": "Grammar · Build sentence",
+        "title": "Build Sentence",
+        "subline": "Build grammatical sentences from a word bank.",
+        "body": "Drag or tap tiles to assemble a sentence. The system checks the grammatical structure."
+      },
+      "funbuilder": {
+        "eyebrow": "Grammar · Compose sentence",
+        "title": "Compose Sentence",
+        "subline": "Playful variant of the builder with richer tiles.",
+        "body": "Builder variant with more playful interaction: pick tiles, compose the sentence, see feedback."
+      },
+      "clusters": {
+        "eyebrow": "Grammar · Clusters",
+        "title": "Clusters",
+        "subline": "Semantic groups and neighbourhoods of related words.",
+        "body": "Words are grouped by similar meaning. Example: all motion verbs end up in the same cluster."
+      },
+      "dialects": {
+        "eyebrow": "Grammar · Dialects",
+        "title": "Dialects",
+        "subline": "Regional variants of the target-language vocabulary.",
+        "body": "See how the same word can change across different regions (e.g. Germany, Austria, Switzerland)."
+      },
+      "sunburst": {
+        "eyebrow": "Grammar · Hierarchy",
+        "title": "Hierarchy",
+        "subline": "Hierarchical structure of concepts and categories.",
+        "body": "A crown chart that shows how macro categories contain sub-categories and words."
+      }
+    }
+  },
+  "grammarHub": {
+    "eyebrow": "Explore · Grammar · Hub",
+    "title": "Grammar Lab",
+    "subline": "Seven tools to analyse grammar and vocabulary.",
+    "explainerTitle": "What you'll find in the Grammar Lab",
+    "explainerBodyP1": "The Grammar Lab is the toolbox to analyse the target language. Every tool answers a different question.",
+    "explainerBodyP2": "Example: Sentence Graph shows how the words of a sentence are linked; Word Cloud shows which words appear most often. Open them one at a time.",
+    "entries": {
+      "graph": {
+        "title": "Sentence Graph",
+        "sub": "Grammar relations between words."
+      },
+      "wordcloud": {
+        "title": "Word Cloud",
+        "sub": "Frequency of the words you've met."
+      },
+      "builder": {
+        "title": "Build Sentence",
+        "sub": "Build sentences from a word bank."
+      },
+      "funbuilder": {
+        "title": "Compose Sentence",
+        "sub": "Playful variant of the builder."
+      },
+      "clusters": {
+        "title": "Clusters",
+        "sub": "Semantic groups of related words."
+      },
+      "dialects": {
+        "title": "Dialects",
+        "sub": "Regional variants of the vocabulary."
+      },
+      "sunburst": {
+        "title": "Hierarchy",
+        "sub": "Hierarchical structure of concepts."
+      }
+    }
+  },
+  "feedbackForm": {
+    "openAria": "Open tester feedback form",
+    "modalAria": "Tester feedback form",
+    "eyebrow": "Tester feedback",
+    "title": "What do you think?",
+    "body": "Leave a comment on the design, a feature you like or dislike. It will be saved persistently for whoever develops the app.",
+    "closeAria": "Close",
+    "like": "Like",
+    "dislike": "Don't like",
+    "neutral": "Neutral",
+    "placeholder": "Write your comment here…",
+    "successMessage": "Thanks! Your comment has been saved.",
+    "errorMessagePrefix": "Saving error",
+    "closeButton": "Close",
+    "submitButton": "Send comment",
+    "sendingButton": "Sending…"
+  },
+  "bottomNav": {
+    "path": "Path",
+    "learn": "Learn",
+    "review": "Review",
+    "explore": "Explore"
   }
 }

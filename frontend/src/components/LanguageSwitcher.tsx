@@ -1,13 +1,10 @@
 import { useState } from 'react';
-import { useLanguage } from '../i18n/languageContext';
+import { useCopy, useLanguage } from '../i18n/languageContext';
 import type { TargetLanguage } from '../i18n/languageStorage';
 import { UI_INTERACTION, UI_RADIUS } from './ui';
 
-const TARGETS: Array<{ code: TargetLanguage; flag: string; short: string; full: string }> = [
-  { code: 'de', flag: '🇩🇪', short: 'DE', full: 'Deutsch' },
-  { code: 'it', flag: '🇮🇹', short: 'IT', full: 'Italiano' },
-  { code: 'fr', flag: '🇫🇷', short: 'FR', full: 'Français' },
-];
+const TARGET_SHORT: Record<TargetLanguage, string> = { de: 'DE', it: 'IT', fr: 'FR' };
+const TARGET_FLAGS: Record<TargetLanguage, string> = { de: '🇩🇪', it: '🇮🇹', fr: '🇫🇷' };
 
 interface LanguageSwitcherProps {
   onOpenSourceModal: () => void;
@@ -15,11 +12,14 @@ interface LanguageSwitcherProps {
 
 export function LanguageSwitcher({ onOpenSourceModal }: LanguageSwitcherProps) {
   const { targetLanguage, sourceLocale, setTarget, reset } = useLanguage();
+  const copy = useCopy();
   const [open, setOpen] = useState(false);
 
   if (!targetLanguage) return null;
 
-  const current = TARGETS.find((t) => t.code === targetLanguage)!;
+  const targets: TargetLanguage[] = ['de', 'it', 'fr'];
+  const currentShort = TARGET_SHORT[targetLanguage];
+  const currentFlag = TARGET_FLAGS[targetLanguage];
 
   const triggerClass = `inline-flex h-10 items-center gap-1.5 px-3 ${UI_RADIUS.control} border border-hairline bg-canvas text-body-sm font-medium text-ink ${UI_INTERACTION.fastTransition} hover:bg-surface-card`;
 
@@ -31,9 +31,10 @@ export function LanguageSwitcher({ onOpenSourceModal }: LanguageSwitcherProps) {
         className={triggerClass}
         aria-haspopup="menu"
         aria-expanded={open}
+        aria-label={copy.languageSwitcher.triggerAriaLabel}
       >
-        <span className="text-base leading-none">{current.flag}</span>
-        <span>{current.short}</span>
+        <span className="text-base leading-none">{currentFlag}</span>
+        <span>{currentShort}</span>
         <span className="text-caption text-muted">▾</span>
       </button>
 
@@ -42,7 +43,7 @@ export function LanguageSwitcher({ onOpenSourceModal }: LanguageSwitcherProps) {
           <button
             type="button"
             className="fixed inset-0 z-[80]"
-            aria-label="Chiudi menu lingua"
+            aria-label={copy.common.close}
             onClick={() => setOpen(false)}
           />
           <div
@@ -50,27 +51,28 @@ export function LanguageSwitcher({ onOpenSourceModal }: LanguageSwitcherProps) {
             role="menu"
           >
             <div className="px-2 py-1 text-caption-uppercase font-medium uppercase tracking-[1.5px] text-muted">
-              Imparo
+              {copy.languageSwitcher.imParo}
             </div>
-            {TARGETS.map((t) => {
-              const disabled = (t.code as string) === (sourceLocale as string);
-              const active = t.code === targetLanguage;
+            {targets.map((code) => {
+              const disabled = (code as string) === (sourceLocale as string);
+              const active = code === targetLanguage;
+              const fullName = copy.targetLanguageNames[code];
               return (
                 <button
-                  key={t.code}
+                  key={code}
                   type="button"
                   disabled={disabled}
                   onClick={() => {
                     setOpen(false);
-                    if (!disabled && !active) setTarget(t.code);
+                    if (!disabled && !active) setTarget(code);
                   }}
                   className={`flex w-full items-center gap-2 px-2 py-2 text-left text-body-sm ${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} ${
                     active ? 'bg-surface-card font-medium text-ink' : 'text-ink hover:bg-surface-card'
                   } ${disabled ? 'cursor-not-allowed opacity-40' : ''}`}
                   role="menuitem"
                 >
-                  <span className="text-lg leading-none">{t.flag}</span>
-                  <span>{t.full}</span>
+                  <span className="text-lg leading-none">{TARGET_FLAGS[code]}</span>
+                  <span className="capitalize">{fullName}</span>
                   {active && <span className="ml-auto text-primary">✓</span>}
                 </button>
               );
@@ -85,7 +87,7 @@ export function LanguageSwitcher({ onOpenSourceModal }: LanguageSwitcherProps) {
               className={`flex w-full items-center gap-2 px-2 py-2 text-left text-body-sm text-ink ${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} hover:bg-surface-card`}
               role="menuitem"
             >
-              Cambia lingua di partenza
+              {copy.languageSwitcher.changeSourceLanguage}
             </button>
             <button
               type="button"
@@ -96,7 +98,7 @@ export function LanguageSwitcher({ onOpenSourceModal }: LanguageSwitcherProps) {
               className={`flex w-full items-center gap-2 px-2 py-2 text-left text-body-sm text-error ${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} hover:bg-surface-card`}
               role="menuitem"
             >
-              Reset onboarding
+              {copy.languageSwitcher.resetOnboarding}
             </button>
           </div>
         </>
