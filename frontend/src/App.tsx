@@ -5,6 +5,10 @@ import { AppHeaderMenu, BottomNav } from './components/scene';
 import { grammarPath, libraryWordPath, parseAppRoute } from './routes/appRoutes';
 import { featureGuideRouteKey, resolveFeatureGuideForRoute } from './gamification/featureGuideResolver';
 import { readFirstVocabularyOnboardingDone } from './components/firstVocabularyOnboardingMeta';
+import { LanguageProvider, useLanguage } from './i18n/languageContext';
+import { OnboardingModal } from './components/OnboardingModal';
+import { LanguageSwitcher } from './components/LanguageSwitcher';
+import { LanguageBadge } from './components/LanguageBadge';
 
 const CardStack = lazy(() => import('./components/CardStack').then((module) => ({ default: module.CardStack })));
 const GrammarLab = lazy(() => import('./components/GrammarLab').then((module) => ({ default: module.GrammarLab })));
@@ -13,6 +17,16 @@ const WordsLibraryEnriched = lazy(() => import('./components/WordsLibraryEnriche
 const DeveloperChartsScreen = lazy(() => import('./components/DeveloperChartsScreen').then((module) => ({ default: module.DeveloperChartsScreen })));
 
 function App() {
+  return (
+    <LanguageProvider>
+      <AppWithLanguage />
+    </LanguageProvider>
+  );
+}
+
+function AppWithLanguage() {
+  const { targetLanguage, sourceLocale } = useLanguage();
+  const [showSourceModal, setShowSourceModal] = useState(false);
   const [route, setRoute] = useState(() => parseAppRoute(window.location.pathname));
   const [routePath, setRoutePath] = useState(() => window.location.pathname);
   const [firstVocabularyOnboardingDone, setFirstVocabularyOnboardingDone] = useState(readFirstVocabularyOnboardingDone);
@@ -53,6 +67,8 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  const onboardingNeeded = !targetLanguage || !sourceLocale;
+
   const activeGuideId = route.screen === 'developer' ? null : resolveFeatureGuideForRoute(route);
   const activeGuideRouteKey = `${routePath}:${featureGuideRouteKey(route)}`;
   const productNavigationHidden =
@@ -67,7 +83,9 @@ function App() {
           routePath={routePath}
           navigateTo={navigateTo}
           productNavigationHidden={productNavigationHidden}
+          onOpenSourceModal={() => setShowSourceModal(true)}
         />
+        <LanguageBadge />
         <Suspense fallback={<RouteFallback />}>
           {route.screen === 'developer' ? (
             <DeveloperChartsScreen
@@ -113,6 +131,13 @@ function App() {
           )}
         </Suspense>
         {activeGuideId ? <GameGuideOverlay guideId={activeGuideId} routeKey={activeGuideRouteKey} /> : null}
+        {(onboardingNeeded || showSourceModal) && (
+          <OnboardingModal
+            initialTarget={targetLanguage}
+            initialSource={sourceLocale}
+            onClose={() => setShowSourceModal(false)}
+          />
+        )}
       </div>
     </ThemeProvider>
   );
@@ -122,13 +147,15 @@ interface AppChromeProps {
   routePath: string;
   navigateTo: (path: string) => void;
   productNavigationHidden: boolean;
+  onOpenSourceModal: () => void;
 }
 
-function AppChrome({ routePath, navigateTo, productNavigationHidden }: AppChromeProps) {
+function AppChrome({ routePath, navigateTo, productNavigationHidden, onOpenSourceModal }: AppChromeProps) {
   return (
     <>
       {!productNavigationHidden && <BottomNav pathname={routePath} onNavigate={navigateTo} />}
       <div className="fixed right-3 top-3 z-[70] flex items-center gap-2 sm:right-4 sm:top-4">
+        <LanguageSwitcher onOpenSourceModal={onOpenSourceModal} />
         <AppHeaderMenu onNavigate={navigateTo} />
       </div>
     </>
