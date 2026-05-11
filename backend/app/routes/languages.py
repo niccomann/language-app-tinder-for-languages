@@ -15,6 +15,7 @@ class LanguageInfo(BaseModel):
 SUPPORTED_LANGUAGES = [
     LanguageInfo(code="de", label="Deutsch", flag="🇩🇪"),
     LanguageInfo(code="fr", label="Français", flag="🇫🇷"),
+    LanguageInfo(code="it", label="Italiano", flag="🇮🇹"),
 ]
 
 
