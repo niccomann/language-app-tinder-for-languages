@@ -152,13 +152,13 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
           <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center ${UI_RADIUS.touchIcon} bg-error/10 text-error`}>
             <AlertTriangle size={24} />
           </div>
-          <h3 className="text-xl font-semibold text-ink mb-2">Error</h3>
+          <h3 className="text-xl font-semibold text-ink mb-2">{copy.library.errorTitle}</h3>
           <p className="text-muted mb-4">{error}</p>
           <button
             onClick={onClose}
             className={`px-6 py-2 bg-primary text-on-primary ${UI_RADIUS.control} font-semibold hover:bg-primary-active transition-colors`}
           >
-            Close
+            {copy.common.close}
           </button>
         </div>
       </div>

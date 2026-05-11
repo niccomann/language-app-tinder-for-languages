@@ -591,7 +591,13 @@
     "back": "Back",
     "next": "Next",
     "skip": "Skip",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "unknownError": "Unknown error",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "fitToView": "Fit to view",
+    "resetZoom": "Reset zoom",
+    "removeFilter": "Remove filter"
   },
   "feedbackButton": {
     "defaultUser": "Tester user",
@@ -892,7 +898,9 @@
     "buildTopicDeck": "Build your topic deck",
     "selectedPacks": "Selected packs",
     "noCardsInDeck": "No cards in this deck",
-    "noCardsBody": "Try adjusting the topic deck or filters."
+    "noCardsBody": "Try adjusting the topic deck or filters.",
+    "connectionError": "Connection Error",
+    "unknownError": "Unknown error"
   },
   "featureHubScreen": {
     "review": {

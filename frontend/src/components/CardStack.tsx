@@ -9,6 +9,7 @@ import { LoadingSpinner, ErrorState } from './ui';
 import { YourVocabularyScreen } from './YourVocabularyScreen';
 import { useCategories } from '../hooks/useCategories';
 import { useLearningSession } from '../hooks/useLearningSession';
+import { useCopy } from '../i18n/languageContext';
 import { isPathMode, PATH_MODE_TO_VIEW, type LearningRouteMode } from '../routes/appRoutes';
 import {
   markFirstVocabularyOnboardingDone,
@@ -39,6 +40,7 @@ export const CardStack = ({
   onNavigateToFeature,
   onFirstVocabularyOnboardingComplete,
 }: CardStackProps) => {
+  const copy = useCopy();
   const categories = useCategories();
   const [firstVocabularyOnboardingDone, setFirstVocabularyOnboardingDone] = useState(readFirstVocabularyOnboardingDone);
   const {
@@ -79,8 +81,8 @@ export const CardStack = ({
   if (error || categories.error) {
     return (
       <ErrorState
-        title="Connection Error"
-        message={error || categories.error || 'Unknown error'}
+        title={copy.cardStack.connectionError}
+        message={error || categories.error || copy.cardStack.unknownError}
         onRetry={() => loadFlashcards(categories.selectedCategories)}
       />
     );

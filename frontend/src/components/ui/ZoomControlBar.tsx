@@ -4,6 +4,7 @@
 import React from 'react';
 import { ZoomIn, ZoomOut, Maximize2, Minimize2, Focus, RotateCcw } from 'lucide-react';
 import { UI_INTERACTION, UI_RADIUS } from './geometry';
+import { useCopy } from '../../i18n/languageContext';
 
 export interface ZoomControlBarProps {
   currentZoom: number;
@@ -36,6 +37,7 @@ export function ZoomControlBar({
   size = 'md',
   className = '',
 }: ZoomControlBarProps) {
+  const copy = useCopy();
   const positionClasses: Record<string, string> = {
     'top-left': 'top-4 left-4',
     'top-right': 'top-4 right-4',
@@ -62,7 +64,7 @@ export function ZoomControlBar({
       <button
         onClick={onZoomIn}
         className={buttonBase}
-        title="Zoom In"
+        title={copy.common.zoomIn}
       >
         <ZoomIn size={sizeClasses[size].icon} />
       </button>
@@ -70,7 +72,7 @@ export function ZoomControlBar({
       <button
         onClick={onZoomOut}
         className={buttonBase}
-        title="Zoom Out"
+        title={copy.common.zoomOut}
       >
         <ZoomOut size={sizeClasses[size].icon} />
       </button>
@@ -79,7 +81,7 @@ export function ZoomControlBar({
         <button
           onClick={onFitToView}
           className={buttonBase}
-          title="Adatta alla vista"
+          title={copy.common.fitToView}
         >
           <Focus size={sizeClasses[size].icon} />
         </button>
@@ -88,7 +90,7 @@ export function ZoomControlBar({
       <button
         onClick={onZoomReset}
         className={buttonBase}
-        title="Reset Zoom"
+        title={copy.common.resetZoom}
       >
         <RotateCcw size={sizeClasses[size].icon - 2} />
       </button>

@@ -8,6 +8,7 @@ import { X } from 'lucide-react';
 import type { GrammarFilterCriteria, GrammarFilterConfig } from '../hooks/useGrammarNodeFilters';
 import { formatFilterLabel } from '../hooks/useGrammarNodeFilters';
 import { FilterSelect, UI_RADIUS } from './ui';
+import { useCopy } from '../i18n/languageContext';
 
 export interface GrammarNodeFilterBarProps {
   configs: GrammarFilterConfig[];
@@ -36,6 +37,7 @@ export function GrammarNodeFilterBar({
   totalCount,
   compact = false,
 }: GrammarNodeFilterBarProps) {
+  const copy = useCopy();
   if (compact) {
     return (
       <div className="flex items-center gap-2 flex-wrap">
@@ -72,7 +74,7 @@ export function GrammarNodeFilterBar({
           <button
             onClick={onClearFilters}
             className={`p-1 ${UI_RADIUS.control} transition-all hover:bg-surface-card text-muted`}
-            title="Rimuovi filtro"
+            title={copy.common.removeFilter}
           >
             <X size={14} />
           </button>
@@ -158,7 +160,7 @@ export function GrammarNodeFilterBar({
             `}
           >
             <X size={12} />
-            Rimuovi filtro
+            {copy.common.removeFilter}
           </button>
         </div>
       )}
