@@ -1,6 +1,7 @@
 import { Check, Trophy, X } from 'lucide-react';
 import { getLearningCategoryMeta } from './learningCategoryMeta';
 import { UI_RADIUS, UI_SIZE } from './ui';
+import { useCopy } from '../i18n/languageContext';
 
 interface LearningFiltersPanelProps {
   isOpen: boolean;
@@ -21,6 +22,8 @@ export function LearningFiltersPanel({
   onDeselectAll,
   onClose,
 }: LearningFiltersPanelProps) {
+  const copy = useCopy();
+  const lfp = copy.learningFiltersPanel;
   if (!isOpen) return null;
 
   return (
@@ -35,9 +38,9 @@ export function LearningFiltersPanel({
           <div>
             <div className="mb-2 flex items-center gap-2 text-caption-uppercase tracking-[1.5px] text-primary uppercase">
               <Trophy size={16} />
-              Game packs
+              {copy.learningStrip.eyebrow}
             </div>
-            <h2 id="learning-filters-title" className="font-display font-normal text-display-sm tracking-[-0.5px] text-ink">Build your topic deck</h2>
+            <h2 id="learning-filters-title" className="font-display font-normal text-display-sm tracking-[-0.5px] text-ink">{lfp.title}</h2>
             <p className="mt-1 text-body-sm font-medium leading-6 text-muted">
               Pick the packs you want in the swipe deck. Apply categories without leaving the deck.
             </p>
@@ -53,7 +56,7 @@ export function LearningFiltersPanel({
 
         <div className={`mb-4 flex items-center justify-between gap-3 ${UI_RADIUS.surface} bg-ink px-4 py-3 text-canvas`}>
           <div>
-            <div className="text-caption-uppercase tracking-[1.5px] text-canvas/50 uppercase">Selected packs</div>
+            <div className="text-caption-uppercase tracking-[1.5px] text-canvas/50 uppercase">{lfp.selectedPacks}</div>
             <div className="font-display font-normal text-display-sm text-canvas">
               {selectedCategories.length}
               <span className="text-body-md text-canvas/60"> / {categories.length}</span>

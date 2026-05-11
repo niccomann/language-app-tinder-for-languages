@@ -12,6 +12,7 @@ import {
   GENDER_BADGE_META as GENDER_LABELS,
 } from '../utils/wordDisplayMeta';
 import { useCopy, useTargetLanguage } from '../i18n/languageContext';
+import { formatCopy } from '../i18n/staticCopy';
 
 interface WordsLibraryEnrichedProps {
   onClose: () => void;
@@ -203,13 +204,13 @@ export function WordsLibraryEnriched({
       : words;
 
   if (loading && words.length === 0) {
-    return <LoadingSpinner message="Loading words..." size="large" fullScreen />;
+    return <LoadingSpinner message={lib.loadingWords} size="large" fullScreen />;
   }
 
   if (error) {
     return (
       <ErrorState
-        title="Error"
+        title={lib.errorTitle}
         message={error}
         onRetry={onClose}
         retryLabel="Go Back"
@@ -221,41 +222,41 @@ export function WordsLibraryEnriched({
   return (
     <AppScreen mode="overlay" width="wide" contentClassName="p-6">
         <ScreenHeader
-          title="Word Library"
-          subtitle="Explore your vocabulary with rich linguistic data"
+          title={lib.title}
+          subtitle={lib.subtitle}
           icon={<BookOpen size={32} />}
           onBack={onClose}
           className="mb-6"
         />
 
         <div className="mb-6 flex flex-wrap gap-2">
-          <GameSignalBadge icon={<Sparkles size={14} />} label="Collection Quest" tone="coral-strong" />
-          <GameSignalBadge icon={<Trophy size={14} />} label="Mastery Loot" tone="success" />
-          <GameSignalBadge icon={<Target size={14} />} label="Review Queue" tone="amber" />
+          <GameSignalBadge icon={<Sparkles size={14} />} label={lib.badgeCollection} tone="coral-strong" />
+          <GameSignalBadge icon={<Trophy size={14} />} label={lib.badgeMastery} tone="success" />
+          <GameSignalBadge icon={<Target size={14} />} label={lib.badgeReview} tone="amber" />
         </div>
 
         {statsOnly ? (
           <div className="mb-6 grid grid-cols-2 gap-4">
             <StatCard
-              label="Total"
+              label={lib.statTotal}
               value={totalWords}
               icon={<BookOpen size={20} className="text-muted" />}
               color="muted"
             />
             <StatCard
-              label="Learned"
+              label={lib.statLearned}
               value={knownWords.length}
               icon={<CheckCircle size={20} className="text-success" />}
               color="success"
             />
             <StatCard
-              label="To Review"
+              label={lib.statToReview}
               value={unknownWords.length}
               icon={<XCircle size={20} className="text-error" />}
               color="error"
             />
             <StatCard
-              label="Not Viewed"
+              label={lib.statNotViewed}
               value={notReviewedWords.length}
               icon={<Sparkles size={20} className="text-accent-teal" />}
               color="teal"
@@ -271,10 +272,10 @@ export function WordsLibraryEnriched({
               <span>
                 <span className="block text-body-sm font-semibold text-ink">{lib.statsTitle}</span>
                 <span className="mt-0.5 block text-caption font-medium text-muted">
-                  Total {totalWords} · Learned {knownWords.length} · To review {unknownWords.length}
+                  {formatCopy(lib.statsSummary, { total: totalWords, learned: knownWords.length, toReview: unknownWords.length })}
                 </span>
               </span>
-              <span className="text-caption font-medium text-primary">Apri →</span>
+              <span className="text-caption font-medium text-primary">{lib.statsOpen}</span>
             </button>
           )
         )}
@@ -286,7 +287,7 @@ export function WordsLibraryEnriched({
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted" size={18} />
               <input
                 type="text"
-                placeholder="Search word or translation..."
+                placeholder={lib.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={`w-full pl-10 pr-4 py-2.5 border border-hairline ${UI_RADIUS.control} focus:border-primary focus:outline-none transition-colors bg-canvas text-ink`}
@@ -302,7 +303,7 @@ export function WordsLibraryEnriched({
               }`}
             >
               <Filter size={18} />
-              Filters
+              {lib.filtersLabel}
               {activeFilterCount > 0 && (
                 <span className={`bg-canvas text-primary text-xs font-semibold px-2 py-0.5 ${UI_RADIUS.pill}`}>
                   {activeFilterCount}
@@ -317,7 +318,7 @@ export function WordsLibraryEnriched({
                 className={`flex items-center gap-1 px-3 py-2.5 text-error hover:bg-error/10 ${UI_RADIUS.control} transition-colors`}
               >
                 <X size={16} />
-                Clear
+                {lib.clearLabel}
               </button>
             )}
           </div>
@@ -409,9 +410,8 @@ export function WordsLibraryEnriched({
 
         <div className="mb-4">
           <p className="text-muted font-medium">
-            Showing <span className="font-semibold text-primary">{visibleWords.length}</span>
-            {' '}of <span className="font-semibold text-primary">{totalWords}</span> words
-            {loading && <span className="ml-2 text-sm text-muted">(loading...)</span>}
+            {formatCopy(lib.showingCount, { visible: visibleWords.length, total: totalWords })}
+            {loading && <span className="ml-2 text-sm text-muted">{lib.loading}</span>}
           </p>
         </div>
 

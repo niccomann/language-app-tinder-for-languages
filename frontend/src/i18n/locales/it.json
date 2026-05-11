@@ -790,9 +790,9 @@
   },
   "bottomNav": {
     "path": "Path",
-    "learn": "Learn",
-    "review": "Review",
-    "explore": "Explore"
+    "learn": "Impara",
+    "review": "Ripassa",
+    "explore": "Esplora"
   },
   "library": {
     "statsTitle": "Stats della libreria",
@@ -806,7 +806,25 @@
     "simpleAndCompound": "Semplici e composte",
     "simpleOnly": "Solo parole semplici",
     "compoundOnly": "Solo parole composte",
-    "allRegisters": "Tutti i registri"
+    "allRegisters": "Tutti i registri",
+    "title": "Libreria parole",
+    "subtitle": "Esplora il tuo vocabolario con dati linguistici ricchi",
+    "badgeCollection": "Collection Quest",
+    "badgeMastery": "Mastery Loot",
+    "badgeReview": "Review Queue",
+    "statTotal": "Totale",
+    "statLearned": "Conosciute",
+    "statToReview": "Da rivedere",
+    "statsSummary": "Totale {{total}} · Conosciute {{learned}} · Da rivedere {{toReview}}",
+    "statsOpen": "Apri →",
+    "filtersLabel": "Filtri",
+    "clearLabel": "Pulisci",
+    "searchPlaceholder": "Cerca parola o traduzione...",
+    "showingCount": "Mostro {{visible}} di {{total}} parole",
+    "loading": "(caricamento...)",
+    "statNotViewed": "Non viste",
+    "loadingWords": "Caricamento parole...",
+    "errorTitle": "Errore"
   },
   "learningStrip": {
     "eyebrow": "Game packs",
@@ -872,7 +890,9 @@
     "swipeHint": "Swipe sinistra: Non so · Swipe destra: So",
     "noDeck": "Nessuna carta in questo deck",
     "buildTopicDeck": "Costruisci il tuo topic deck",
-    "selectedPacks": "Pack selezionati"
+    "selectedPacks": "Pack selezionati",
+    "noCardsInDeck": "Nessuna carta in questo deck",
+    "noCardsBody": "Prova a modificare il topic deck o i filtri."
   },
   "featureHubScreen": {
     "review": {
@@ -905,5 +925,16 @@
       "title": "Language map",
       "body": "Esplora relazioni, cluster, dialetti e gerarchia quando vuoi ispezionare il sistema."
     }
+  },
+  "learningScreen": {
+    "noCardsTitle": "Nessuna carta in questo deck",
+    "noCardsBody": "Apri i filtri e seleziona almeno una categoria.",
+    "openFiltersButton": "Apri filtri",
+    "headerTitle": "Ripasso vocabolario",
+    "headerSubtitle": "Scorri a destra se conosci la parola, a sinistra se non la conosci."
+  },
+  "learningFiltersPanel": {
+    "title": "Costruisci il tuo topic deck",
+    "selectedPacks": "Pack selezionati"
   }
 }

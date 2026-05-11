@@ -806,7 +806,25 @@
     "simpleAndCompound": "Simples et composés",
     "simpleOnly": "Mots simples seulement",
     "compoundOnly": "Mots composés seulement",
-    "allRegisters": "Tous les registres"
+    "allRegisters": "Tous les registres",
+    "title": "Bibliothèque des mots",
+    "subtitle": "Explore ton vocabulaire avec des données linguistiques riches",
+    "badgeCollection": "Collection Quest",
+    "badgeMastery": "Mastery Loot",
+    "badgeReview": "Review Queue",
+    "statTotal": "Total",
+    "statLearned": "Apprises",
+    "statToReview": "À revoir",
+    "statsSummary": "Total {{total}} · Apprises {{learned}} · À revoir {{toReview}}",
+    "statsOpen": "Ouvrir →",
+    "filtersLabel": "Filtres",
+    "clearLabel": "Effacer",
+    "searchPlaceholder": "Cherche mot ou traduction...",
+    "showingCount": "{{visible}} sur {{total}} mots",
+    "loading": "(chargement...)",
+    "statNotViewed": "Non vues",
+    "loadingWords": "Chargement des mots...",
+    "errorTitle": "Erreur"
   },
   "learningStrip": {
     "eyebrow": "Game packs",
@@ -872,7 +890,9 @@
     "swipeHint": "Swipe gauche : Je ne sais pas · Swipe droite : Je sais",
     "noDeck": "Aucune carte dans ce deck",
     "buildTopicDeck": "Construis ton topic deck",
-    "selectedPacks": "Packs sélectionnés"
+    "selectedPacks": "Packs sélectionnés",
+    "noCardsInDeck": "Aucune carte dans ce deck",
+    "noCardsBody": "Essaie de modifier le topic deck ou les filtres."
   },
   "featureHubScreen": {
     "review": {
@@ -905,5 +925,16 @@
       "title": "Language map",
       "body": "Explore relations, clusters, dialectes et hiérarchie quand tu veux inspecter le système."
     }
+  },
+  "learningScreen": {
+    "noCardsTitle": "Aucune carte dans ce deck",
+    "noCardsBody": "Ouvre les filtres et sélectionne au moins une catégorie.",
+    "openFiltersButton": "Ouvrir filtres",
+    "headerTitle": "Révision vocabulaire",
+    "headerSubtitle": "Swipe à droite si tu connais le mot, à gauche sinon."
+  },
+  "learningFiltersPanel": {
+    "title": "Construis ton topic deck",
+    "selectedPacks": "Packs sélectionnés"
   }
 }

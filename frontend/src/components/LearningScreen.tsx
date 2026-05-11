@@ -10,6 +10,7 @@ import { LearningSystemMenu } from './LearningSystemMenu';
 import { LearningFeedbackBanner } from './LearningFeedbackBanner';
 import { AppScreen, NavButton, ScreenHeader, SurfacePanel, UI_RADIUS } from './ui';
 import type { Flashcard, LearningFeedback } from '../types';
+import { useCopy } from '../i18n/languageContext';
 
 interface LearningScreenProps {
   currentCard: Flashcard | null;
@@ -56,6 +57,8 @@ export function LearningScreen({
   learningFeedback,
   onClearLearningFeedback,
 }: LearningScreenProps) {
+  const copy = useCopy();
+  const ls = copy.learningScreen;
   const [lastSwipeDirection, setLastSwipeDirection] = useState<'left' | 'right'>('left');
 
   const handleDirectionalSwipe = (direction: 'left' | 'right') => {
@@ -150,15 +153,15 @@ export function LearningScreen({
 
           {!currentCard && (
             <SurfacePanel className="w-full border-dashed border-hairline bg-canvas text-center" padding="lg">
-              <h2 className="font-display font-normal text-display-sm text-ink">No cards in this deck</h2>
+              <h2 className="font-display font-normal text-display-sm text-ink">{ls.noCardsTitle}</h2>
               <p className="mt-2 text-body-sm font-medium text-muted">
-                Open filters and select at least one category.
+                {ls.noCardsBody}
               </p>
               <button
                 onClick={() => onFiltersOpenChange(true)}
                 className={`mt-5 ${UI_RADIUS.control} bg-primary px-5 py-3 text-body-sm font-semibold text-on-primary`}
               >
-                Open Filters
+                {ls.openFiltersButton}
               </button>
             </SurfacePanel>
           )}

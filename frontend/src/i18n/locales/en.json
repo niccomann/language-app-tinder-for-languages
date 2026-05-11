@@ -806,7 +806,25 @@
     "simpleAndCompound": "Simple & compound",
     "simpleOnly": "Simple words only",
     "compoundOnly": "Compound words only",
-    "allRegisters": "All registers"
+    "allRegisters": "All registers",
+    "title": "Word Library",
+    "subtitle": "Explore your vocabulary with rich linguistic data",
+    "badgeCollection": "Collection Quest",
+    "badgeMastery": "Mastery Loot",
+    "badgeReview": "Review Queue",
+    "statTotal": "Total",
+    "statLearned": "Learned",
+    "statToReview": "To Review",
+    "statsSummary": "Total {{total}} · Learned {{learned}} · To review {{toReview}}",
+    "statsOpen": "Open →",
+    "filtersLabel": "Filters",
+    "clearLabel": "Clear",
+    "searchPlaceholder": "Search word or translation...",
+    "showingCount": "Showing {{visible}} of {{total}} words",
+    "loading": "(loading...)",
+    "statNotViewed": "Not Viewed",
+    "loadingWords": "Loading words...",
+    "errorTitle": "Error"
   },
   "learningStrip": {
     "eyebrow": "Game packs",
@@ -872,7 +890,9 @@
     "swipeHint": "Swipe left: Don't know · Swipe right: Know",
     "noDeck": "No cards in this deck",
     "buildTopicDeck": "Build your topic deck",
-    "selectedPacks": "Selected packs"
+    "selectedPacks": "Selected packs",
+    "noCardsInDeck": "No cards in this deck",
+    "noCardsBody": "Try adjusting the topic deck or filters."
   },
   "featureHubScreen": {
     "review": {
@@ -905,5 +925,16 @@
       "title": "Language map",
       "body": "Explore relationships, clusters, dialects, and hierarchy when you want to inspect the system."
     }
+  },
+  "learningScreen": {
+    "noCardsTitle": "No cards in this deck",
+    "noCardsBody": "Open filters and select at least one category.",
+    "openFiltersButton": "Open Filters",
+    "headerTitle": "Vocabulary Review",
+    "headerSubtitle": "Swipe right if you know the word, left if you don't."
+  },
+  "learningFiltersPanel": {
+    "title": "Build your topic deck",
+    "selectedPacks": "Selected packs"
   }
 }
