@@ -150,6 +150,7 @@ class DatabaseConnection:
             
             # Import models to register them with SQLModel.
             import app.database.models  # noqa: F401
+            import app.database.user_models  # noqa: F401
             
             log.debug(f"Creating tables in schema: {config.database.db_schema}")
             SQLModel.metadata.create_all(self.engine, tables=main_database_tables())
@@ -200,6 +201,7 @@ class DatabaseConnection:
             
             log.info("Creating tables from ORM...")
             import app.database.models  # noqa: F401
+            import app.database.user_models  # noqa: F401
             SQLModel.metadata.create_all(self.engine, tables=main_database_tables())
             log.info("✓ Tables created")
             
