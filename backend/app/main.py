@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from app.routes import cards, grammar, tts, library, statistics, infographics, tracking, feedback
+from app.routes import cards, grammar, tts, library, statistics, infographics, tracking, feedback, users
 import logging
 
 from shared_fastapi_bootstrap import create_app, run
@@ -68,6 +68,7 @@ app.include_router(statistics.router)
 app.include_router(infographics.router)
 app.include_router(tracking.router)
 app.include_router(feedback.router)
+app.include_router(users.router)
 
 
 if __name__ == "__main__":
