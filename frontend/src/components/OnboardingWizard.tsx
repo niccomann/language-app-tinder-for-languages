@@ -1,6 +1,5 @@
-import { useCallback, useState, type ComponentProps } from 'react';
+import { useCallback, useState } from 'react';
 
-import { FirstVocabularyOnboarding } from './FirstVocabularyOnboarding';
 import { GoalStep } from './onboardingWizard/GoalStep';
 import { IdentityStep } from './onboardingWizard/IdentityStep';
 import { LanguageStep } from './onboardingWizard/LanguageStep';
@@ -8,20 +7,16 @@ import { LevelStep } from './onboardingWizard/LevelStep';
 import { WelcomeStep } from './onboardingWizard/WelcomeStep';
 import { DEFAULT_DRAFT, type WizardDraft } from './onboardingWizard/types';
 import { useUser } from '../contexts/useUser';
-import { createUser, patchUser } from '../services/userApi';
+import { createUser } from '../services/userApi';
 
-export type WizardPhase = 'welcome' | 'language' | 'level' | 'goal' | 'identity' | 'vocab';
-
-type VocabularyOnboardingProps = Omit<ComponentProps<typeof FirstVocabularyOnboarding>, 'onComplete'>;
+export type WizardPhase = 'welcome' | 'language' | 'level' | 'goal' | 'identity';
 
 interface OnboardingWizardProps {
-  /** When the user has POSTed identity but not yet finished vocab scan, jump here. */
-  initialPhase?: WizardPhase;
-  /** Props forwarded to FirstVocabularyOnboarding (everything except onComplete). */
-  vocabularyOnboardingProps: VocabularyOnboardingProps;
+  /** Fired after createUser + refreshProfile succeed. The parent then unmounts the wizard. */
+  onComplete?: () => void;
 }
 
-const ORDER: WizardPhase[] = ['welcome', 'language', 'level', 'goal', 'identity', 'vocab'];
+const ORDER: WizardPhase[] = ['welcome', 'language', 'level', 'goal', 'identity'];
 
 function nextPhase(p: WizardPhase): WizardPhase {
   const i = ORDER.indexOf(p);
@@ -33,12 +28,9 @@ function prevPhase(p: WizardPhase): WizardPhase {
   return ORDER[Math.max(i - 1, 0)];
 }
 
-export function OnboardingWizard({
-  initialPhase = 'welcome',
-  vocabularyOnboardingProps,
-}: OnboardingWizardProps) {
+export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   const { userId, refreshProfile } = useUser();
-  const [phase, setPhase] = useState<WizardPhase>(initialPhase);
+  const [phase, setPhase] = useState<WizardPhase>('welcome');
   const [draft, setDraft] = useState<WizardDraft>(DEFAULT_DRAFT);
   const [posting, setPosting] = useState(false);
 
@@ -63,10 +55,10 @@ export function OnboardingWizard({
             daily_goal_minutes: next.daily_goal_minutes,
           });
           await refreshProfile();
-          setPhase('vocab');
+          onComplete?.();
         } catch (err) {
           console.error('createUser failed', err);
-          // Keep the user on the identity step; the next "Continua" tap will retry.
+          // Stay on identity step; next "Continua" tap retries.
         } finally {
           setPosting(false);
         }
@@ -75,17 +67,10 @@ export function OnboardingWizard({
 
       setPhase(nextPhase(phase));
     },
-    [draft, phase, refreshProfile, userId],
+    [draft, phase, refreshProfile, userId, onComplete],
   );
 
   const back = useCallback(() => setPhase((p) => prevPhase(p)), []);
-
-  const onVocabComplete = useCallback(() => {
-    if (!userId) return;
-    void patchUser(userId, { onboarding_completed: true })
-      .then(() => refreshProfile())
-      .catch((err) => console.error('patchUser onboarding_completed failed', err));
-  }, [refreshProfile, userId]);
 
   if (posting) {
     return (
@@ -106,7 +91,5 @@ export function OnboardingWizard({
       return <GoalStep draft={draft} onAdvance={advance} onBack={back} />;
     case 'identity':
       return <IdentityStep draft={draft} onAdvance={advance} onBack={back} />;
-    case 'vocab':
-      return <FirstVocabularyOnboarding {...vocabularyOnboardingProps} onComplete={onVocabComplete} />;
   }
 }

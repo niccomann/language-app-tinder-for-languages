@@ -9,6 +9,9 @@ import { LanguageProvider, useLanguage } from './i18n/languageContext';
 import { OnboardingModal } from './components/OnboardingModal';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { LanguageBadge } from './components/LanguageBadge';
+import { useUser } from './contexts/useUser';
+import { OnboardingWizard } from './components/OnboardingWizard';
+import { patchUser } from './services/userApi';
 
 const CardStack = lazy(() => import('./components/CardStack').then((module) => ({ default: module.CardStack })));
 const GrammarLab = lazy(() => import('./components/GrammarLab').then((module) => ({ default: module.GrammarLab })));
@@ -26,6 +29,7 @@ function App() {
 
 function AppWithLanguage() {
   const { targetLanguage, sourceLocale } = useLanguage();
+  const { status: userStatus, profile, userId, refreshProfile } = useUser();
   const [showSourceModal, setShowSourceModal] = useState(false);
   const [route, setRoute] = useState(() => parseAppRoute(window.location.pathname));
   const [routePath, setRoutePath] = useState(() => window.location.pathname);
@@ -66,6 +70,26 @@ function AppWithLanguage() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  if (userStatus === 'loading') {
+    return (
+      <ThemeProvider>
+        <div className="min-h-screen flex items-center justify-center bg-canvas">
+          <p className="text-body-sm font-medium text-muted">Loading…</p>
+        </div>
+      </ThemeProvider>
+    );
+  }
+
+  if (profile === null) {
+    return (
+      <ThemeProvider>
+        <div className="min-h-screen bg-canvas">
+          <OnboardingWizard onComplete={() => refreshProfile()} />
+        </div>
+      </ThemeProvider>
+    );
+  }
 
   const onboardingNeeded = !targetLanguage || !sourceLocale;
 
@@ -136,7 +160,14 @@ function AppWithLanguage() {
               onOpenLibrary={() => navigateTo('/library')}
               onOpenGrammarLab={() => navigateTo(grammarPath())}
               onNavigateToFeature={navigateTo}
-              onFirstVocabularyOnboardingComplete={() => setFirstVocabularyOnboardingDone(true)}
+              onFirstVocabularyOnboardingComplete={() => {
+                setFirstVocabularyOnboardingDone(true);
+                if (userId && profile && !profile.onboarding_completed) {
+                  void patchUser(userId, { onboarding_completed: true })
+                    .then(() => refreshProfile())
+                    .catch((err) => console.error('patchUser onboarding_completed failed', err));
+                }
+              }}
             />
           )}
         </Suspense>
