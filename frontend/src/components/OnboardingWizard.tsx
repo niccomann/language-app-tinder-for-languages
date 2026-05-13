@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, type ReactNode } from 'react';
 
 import { GoalStep } from './onboardingWizard/GoalStep';
 import { IdentityStep } from './onboardingWizard/IdentityStep';
@@ -33,6 +33,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   const [phase, setPhase] = useState<WizardPhase>('welcome');
   const [draft, setDraft] = useState<WizardDraft>(DEFAULT_DRAFT);
   const [posting, setPosting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const advance = useCallback(
     async (patch: Partial<WizardDraft>) => {
@@ -41,10 +42,11 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
 
       if (phase === 'identity') {
         if (!userId) {
-          console.error('OnboardingWizard: missing userId at identity step');
+          setSubmitError('Identità non ancora pronta. Riprova fra un istante.');
           return;
         }
         setPosting(true);
+        setSubmitError(null);
         try {
           await createUser({
             user_id: userId,
@@ -57,8 +59,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
           await refreshProfile();
           onComplete?.();
         } catch (err) {
-          console.error('createUser failed', err);
-          // Stay on identity step; next "Continua" tap retries.
+          const msg = err instanceof Error ? err.message : String(err);
+          setSubmitError(`Salvataggio fallito: ${msg}`);
         } finally {
           setPosting(false);
         }
@@ -80,16 +82,47 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
     );
   }
 
+  const banner = submitError ? (
+    <div
+      role="alert"
+      style={{
+        margin: '0 24px',
+        marginTop: 16,
+        padding: 12,
+        borderRadius: 8,
+        background: '#fef2f2',
+        border: '1px solid #fecaca',
+        color: '#b91c1c',
+        fontSize: 13,
+      }}
+    >
+      {submitError}
+    </div>
+  ) : null;
+
+  let stepNode: ReactNode = null;
   switch (phase) {
     case 'welcome':
-      return <WelcomeStep draft={draft} onAdvance={advance} />;
+      stepNode = <WelcomeStep draft={draft} onAdvance={advance} />;
+      break;
     case 'language':
-      return <LanguageStep draft={draft} onAdvance={advance} onBack={back} />;
+      stepNode = <LanguageStep draft={draft} onAdvance={advance} onBack={back} />;
+      break;
     case 'level':
-      return <LevelStep draft={draft} onAdvance={advance} onBack={back} />;
+      stepNode = <LevelStep draft={draft} onAdvance={advance} onBack={back} />;
+      break;
     case 'goal':
-      return <GoalStep draft={draft} onAdvance={advance} onBack={back} />;
+      stepNode = <GoalStep draft={draft} onAdvance={advance} onBack={back} />;
+      break;
     case 'identity':
-      return <IdentityStep draft={draft} onAdvance={advance} onBack={back} />;
+      stepNode = <IdentityStep draft={draft} onAdvance={advance} onBack={back} />;
+      break;
   }
+
+  return (
+    <>
+      {banner}
+      {stepNode}
+    </>
+  );
 }
