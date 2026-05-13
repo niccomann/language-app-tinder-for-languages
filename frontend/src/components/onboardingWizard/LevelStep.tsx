@@ -6,10 +6,17 @@ const OPTIONS: Array<{ value: WizardDraft['proficiency_level']; label: string }>
   { value: 'b1_b2', label: '🎓 Livello intermedio (B1–B2)' },
 ];
 
+const LANGUAGE_NAMES: Record<string, string> = {
+  de: 'tedesco',
+  it: 'italiano',
+  fr: 'francese',
+};
+
 export function LevelStep({ draft, onAdvance, onBack }: StepProps) {
+  const langName = LANGUAGE_NAMES[draft.target_language] ?? draft.target_language;
   return (
     <div style={{ padding: 24 }}>
-      <h2>Quanto tedesco sai già?</h2>
+      <h2>Quanto {langName} sai già?</h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
         {OPTIONS.map((opt) => (
           <button
