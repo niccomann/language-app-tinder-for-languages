@@ -3,7 +3,7 @@ Tracking API Routes
 Endpoints per registrare le interazioni utente e recuperare i dati sessione.
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 import logging
@@ -22,7 +22,7 @@ router = APIRouter(prefix="/api/tracking", tags=["tracking"])
 # ==================== REQUEST/RESPONSE MODELS ====================
 
 class StartSessionRequest(BaseModel):
-    user_id: str = "default_user"
+    user_id: Optional[str] = None
     device_type: Optional[str] = None
     app_version: Optional[str] = None
 
@@ -97,17 +97,18 @@ class SessionSummaryResponse(BaseModel):
 # ==================== ENDPOINTS ====================
 
 @router.post("/session/start", response_model=StartSessionResponse)
-async def start_session(request: StartSessionRequest):
+async def start_session(payload: StartSessionRequest, request: Request):
     """
     Start a new tracking session.
     Call this when the user opens the app or starts a learning session.
     """
     try:
+        user_id = payload.user_id or getattr(request.state, "user_id", None) or "default_user"
         service = get_tracking_service()
         session = service.start_session(
-            user_id=request.user_id,
-            device_type=request.device_type,
-            app_version=request.app_version
+            user_id=user_id,
+            device_type=payload.device_type,
+            app_version=payload.app_version
         )
         
         return StartSessionResponse(
@@ -158,12 +159,13 @@ async def end_session(request: EndSessionRequest):
 
 
 @router.get("/session/active")
-async def get_active_session(user_id: str = "default_user"):
+async def get_active_session(request: Request, user_id: Optional[str] = None):
     """
     Get the active session for a user, if any.
     Useful for resuming a session after app restart.
     """
     try:
+        user_id = user_id or getattr(request.state, "user_id", None) or "default_user"
         service = get_tracking_service()
         session = service.get_active_session(user_id=user_id)
         
