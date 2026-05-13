@@ -10,6 +10,7 @@ import logging
 from shared_fastapi_bootstrap import create_app, run
 
 from app.core.config import config
+from app.core.user_middleware import attach_user_id_middleware
 from app.database.connection import DatabaseConnection
 from app.database.seed import run_seed
 from app.database.tracking_connection import init_tracking_database
@@ -69,6 +70,8 @@ app.include_router(infographics.router)
 app.include_router(tracking.router)
 app.include_router(feedback.router)
 app.include_router(users.router)
+
+app.middleware("http")(attach_user_id_middleware)
 
 
 if __name__ == "__main__":
