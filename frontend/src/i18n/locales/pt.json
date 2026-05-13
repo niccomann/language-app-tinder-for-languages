@@ -793,7 +793,55 @@
     "errorMessagePrefix": "Erro ao salvar",
     "closeButton": "Fechar",
     "submitButton": "Enviar comentário",
-    "sendingButton": "Enviando…"
+    "sendingButton": "Enviando…",
+    "persona": {
+      "sectionTitle": "Sobre você",
+      "sectionHint": "Ajude-nos a entender de quem vem o feedback (opcional).",
+      "nicknameLabel": "Apelido",
+      "nicknamePlaceholder": "ex. Luca, NerdyArtist…",
+      "ageLabel": "Idade",
+      "agePlaceholder": "ex. 28",
+      "professionLabel": "Perfil",
+      "professionPlaceholder": "Selecionar…",
+      "professionOptions": {
+        "artist": "Artístico / criativo",
+        "humanist": "Humanístico",
+        "scientific": "Científico",
+        "technical": "Técnico / engenharia",
+        "student": "Estudante",
+        "other": "Outro"
+      },
+      "genderLabel": "Gênero",
+      "genderPlaceholder": "Selecionar…",
+      "genderOptions": {
+        "woman": "Mulher",
+        "man": "Homem",
+        "other": "Outro",
+        "undisclosed": "Prefiro não dizer"
+      },
+      "nativeLanguageLabel": "Língua materna",
+      "nativeLanguagePlaceholder": "Selecionar…",
+      "nativeLanguageOptions": {
+        "it": "Italiano",
+        "en": "Inglês",
+        "es": "Espanhol",
+        "de": "Alemão",
+        "fr": "Francês",
+        "pt": "Português",
+        "other": "Outra"
+      },
+      "germanLevelLabel": "Nível de alemão",
+      "germanLevelPlaceholder": "Selecionar…",
+      "germanLevelOptions": {
+        "a1": "A1 — Iniciante",
+        "a2": "A2 — Básico",
+        "b1": "B1 — Intermediário",
+        "b2": "B2 — Intermediário avançado",
+        "c1": "C1 — Avançado",
+        "c2": "C2 — Domínio",
+        "none": "Nunca estudei"
+      }
+    }
   },
   "bottomNav": {
     "path": "Caminho",
@@ -835,7 +883,8 @@
   },
   "learningStrip": {
     "eyebrow": "Game packs",
-    "title": "Topic Deck"
+    "title": "Topic Deck",
+    "changeFilters": "Alterar filtros"
   },
   "learningSystemMenu": {
     "title": "Learning System",

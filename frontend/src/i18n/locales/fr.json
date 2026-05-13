@@ -793,7 +793,55 @@
     "errorMessagePrefix": "Erreur de sauvegarde",
     "closeButton": "Fermer",
     "submitButton": "Envoyer le commentaire",
-    "sendingButton": "Envoi…"
+    "sendingButton": "Envoi…",
+    "persona": {
+      "sectionTitle": "À propos de toi",
+      "sectionHint": "Aide-nous à comprendre de qui vient le feedback (facultatif).",
+      "nicknameLabel": "Pseudo",
+      "nicknamePlaceholder": "ex. Luca, NerdyArtist…",
+      "ageLabel": "Âge",
+      "agePlaceholder": "ex. 28",
+      "professionLabel": "Profil",
+      "professionPlaceholder": "Sélectionner…",
+      "professionOptions": {
+        "artist": "Artistique / créatif",
+        "humanist": "Sciences humaines",
+        "scientific": "Scientifique",
+        "technical": "Technique / ingénierie",
+        "student": "Étudiant·e",
+        "other": "Autre"
+      },
+      "genderLabel": "Genre",
+      "genderPlaceholder": "Sélectionner…",
+      "genderOptions": {
+        "woman": "Femme",
+        "man": "Homme",
+        "other": "Autre",
+        "undisclosed": "Préfère ne pas dire"
+      },
+      "nativeLanguageLabel": "Langue maternelle",
+      "nativeLanguagePlaceholder": "Sélectionner…",
+      "nativeLanguageOptions": {
+        "it": "Italien",
+        "en": "Anglais",
+        "es": "Espagnol",
+        "de": "Allemand",
+        "fr": "Français",
+        "pt": "Portugais",
+        "other": "Autre"
+      },
+      "germanLevelLabel": "Niveau d'allemand",
+      "germanLevelPlaceholder": "Sélectionner…",
+      "germanLevelOptions": {
+        "a1": "A1 — Débutant",
+        "a2": "A2 — Élémentaire",
+        "b1": "B1 — Intermédiaire",
+        "b2": "B2 — Intermédiaire avancé",
+        "c1": "C1 — Avancé",
+        "c2": "C2 — Maîtrise",
+        "none": "Jamais étudié"
+      }
+    }
   },
   "bottomNav": {
     "path": "Parcours",
@@ -835,7 +883,8 @@
   },
   "learningStrip": {
     "eyebrow": "Game packs",
-    "title": "Topic Deck"
+    "title": "Topic Deck",
+    "changeFilters": "Modifier les filtres"
   },
   "learningSystemMenu": {
     "title": "Learning System",

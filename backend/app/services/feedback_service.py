@@ -40,6 +40,7 @@ def save_feedback(
     source_url: str | None = None,
     user_agent: str | None = None,
     app_version: str | None = None,
+    persona: dict[str, Any] | None = None,
     extra: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Persist a feedback row to S3 as a JSON object. Returns the saved item."""
@@ -59,6 +60,8 @@ def save_feedback(
         item["user_agent"] = user_agent
     if app_version:
         item["app_version"] = app_version
+    if persona:
+        item["persona"] = persona
     if extra:
         item["extra"] = extra
 

@@ -793,7 +793,55 @@
     "errorMessagePrefix": "Saving error",
     "closeButton": "Close",
     "submitButton": "Send comment",
-    "sendingButton": "Sending…"
+    "sendingButton": "Sending…",
+    "persona": {
+      "sectionTitle": "About you",
+      "sectionHint": "Help us understand who the feedback is coming from (optional).",
+      "nicknameLabel": "Nickname",
+      "nicknamePlaceholder": "e.g. Luke, NerdyArtist…",
+      "ageLabel": "Age",
+      "agePlaceholder": "e.g. 28",
+      "professionLabel": "Profile",
+      "professionPlaceholder": "Select…",
+      "professionOptions": {
+        "artist": "Artistic / creative",
+        "humanist": "Humanities",
+        "scientific": "Scientific",
+        "technical": "Technical / engineering",
+        "student": "Student",
+        "other": "Other"
+      },
+      "genderLabel": "Gender",
+      "genderPlaceholder": "Select…",
+      "genderOptions": {
+        "woman": "Woman",
+        "man": "Man",
+        "other": "Other",
+        "undisclosed": "Prefer not to say"
+      },
+      "nativeLanguageLabel": "Native language",
+      "nativeLanguagePlaceholder": "Select…",
+      "nativeLanguageOptions": {
+        "it": "Italian",
+        "en": "English",
+        "es": "Spanish",
+        "de": "German",
+        "fr": "French",
+        "pt": "Portuguese",
+        "other": "Other"
+      },
+      "germanLevelLabel": "German level",
+      "germanLevelPlaceholder": "Select…",
+      "germanLevelOptions": {
+        "a1": "A1 — Beginner",
+        "a2": "A2 — Elementary",
+        "b1": "B1 — Intermediate",
+        "b2": "B2 — Upper intermediate",
+        "c1": "C1 — Advanced",
+        "c2": "C2 — Mastery",
+        "none": "Never studied"
+      }
+    }
   },
   "bottomNav": {
     "path": "Path",
@@ -835,7 +883,8 @@
   },
   "learningStrip": {
     "eyebrow": "Game packs",
-    "title": "Topic Deck"
+    "title": "Topic Deck",
+    "changeFilters": "Change filters"
   },
   "learningSystemMenu": {
     "title": "Learning System",

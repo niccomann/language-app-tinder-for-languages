@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { BookOpen, BookOpenCheck, Compass, FlaskConical, Layers3, Puzzle, Route, ShieldCheck, Sparkles } from 'lucide-react';
+import { BookOpen, BookOpenCheck, Compass, FlaskConical, Puzzle } from 'lucide-react';
 import { SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
 import { SceneShell, EYEBROW_CLASS } from './scene';
 import {
@@ -108,18 +108,7 @@ export function FeatureHubScreen({
             <span className={`${EYEBROW_CLASS} text-primary`}>{fhs.grammarTraining.title}</span>
             <span className="block font-display text-display-sm font-normal text-ink">Grammar</span>
             <span className="text-body-sm text-muted">
-              Sentence Placement, Grammar Lab, Build / Compose Sentence.
-            </span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onNavigateToFeature('/explore/map')}
-            className={`${UI_RADIUS.surface} ${UI_INTERACTION.transition} flex min-h-[120px] flex-col items-start gap-2 border border-hairline bg-canvas p-5 text-left hover:bg-surface-card`}
-          >
-            <span className={`${EYEBROW_CLASS} text-primary`}>{fhs.languageMap.title}</span>
-            <span className="block font-display text-display-sm font-normal text-ink">Map</span>
-            <span className="text-body-sm text-muted">
-              Word Cloud, Clusters, Dialects, Hierarchy.
+              Sentence Placement, Grammar Lab.
             </span>
           </button>
         </div>
@@ -217,11 +206,7 @@ const hubToneClasses: Record<FeatureFlowTone, {
 function getHubIcon(itemId: string) {
   if (itemId === 'sentence-placement') return <Puzzle size={18} />;
   if (itemId === 'grammar-lab') return <FlaskConical size={18} />;
-  if (itemId === 'topic-deck') return <Layers3 size={18} />;
   if (itemId === 'your-vocabulary') return <BookOpenCheck size={18} />;
   if (itemId === 'word-library') return <BookOpen size={18} />;
-  if (itemId === 'learning-system') return <ShieldCheck size={18} />;
-  if (itemId === 'build-sentence' || itemId === 'compose-sentence') return <Route size={18} />;
-  if (itemId === 'word-cloud' || itemId === 'clusters') return <Sparkles size={18} />;
   return <Compass size={18} />;
 }

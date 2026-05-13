@@ -793,7 +793,55 @@
     "errorMessagePrefix": "Errore nel salvataggio",
     "closeButton": "Chiudi",
     "submitButton": "Invia commento",
-    "sendingButton": "Invio…"
+    "sendingButton": "Invio…",
+    "persona": {
+      "sectionTitle": "Chi sei",
+      "sectionHint": "Aiutaci a capire da chi arriva il feedback (opzionale).",
+      "nicknameLabel": "Nickname",
+      "nicknamePlaceholder": "es. Luca, NerdyArtist…",
+      "ageLabel": "Età",
+      "agePlaceholder": "es. 28",
+      "professionLabel": "Profilo",
+      "professionPlaceholder": "Seleziona…",
+      "professionOptions": {
+        "artist": "Artistico / creativo",
+        "humanist": "Umanistico",
+        "scientific": "Scientifico",
+        "technical": "Tecnico / ingegneristico",
+        "student": "Studente",
+        "other": "Altro"
+      },
+      "genderLabel": "Genere",
+      "genderPlaceholder": "Seleziona…",
+      "genderOptions": {
+        "woman": "Donna",
+        "man": "Uomo",
+        "other": "Altro",
+        "undisclosed": "Preferisco non dire"
+      },
+      "nativeLanguageLabel": "Lingua madre",
+      "nativeLanguagePlaceholder": "Seleziona…",
+      "nativeLanguageOptions": {
+        "it": "Italiano",
+        "en": "Inglese",
+        "es": "Spagnolo",
+        "de": "Tedesco",
+        "fr": "Francese",
+        "pt": "Portoghese",
+        "other": "Altra"
+      },
+      "germanLevelLabel": "Livello di tedesco",
+      "germanLevelPlaceholder": "Seleziona…",
+      "germanLevelOptions": {
+        "a1": "A1 — Principiante",
+        "a2": "A2 — Elementare",
+        "b1": "B1 — Intermedio",
+        "b2": "B2 — Intermedio avanzato",
+        "c1": "C1 — Avanzato",
+        "c2": "C2 — Padronanza",
+        "none": "Mai studiato"
+      }
+    }
   },
   "bottomNav": {
     "path": "Path",
@@ -835,7 +883,8 @@
   },
   "learningStrip": {
     "eyebrow": "Game packs",
-    "title": "Topic Deck"
+    "title": "Topic Deck",
+    "changeFilters": "Cambia filtri"
   },
   "learningSystemMenu": {
     "title": "Learning System",

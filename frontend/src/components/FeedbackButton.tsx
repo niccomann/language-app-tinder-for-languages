@@ -11,12 +11,21 @@ interface FeedbackButtonProps {
 }
 
 type Sentiment = 'like' | 'dislike' | 'neutral';
+type Profession = 'artist' | 'humanist' | 'scientific' | 'technical' | 'student' | 'other';
+type Gender = 'woman' | 'man' | 'other' | 'undisclosed';
+type NativeLanguage = 'it' | 'en' | 'es' | 'de' | 'fr' | 'pt' | 'other';
+type GermanLevel = 'a1' | 'a2' | 'b1' | 'b2' | 'c1' | 'c2' | 'none';
 
 type Status =
   | { kind: 'idle' }
   | { kind: 'sending' }
   | { kind: 'success'; id: string }
   | { kind: 'error'; message: string };
+
+const PROFESSION_OPTIONS: Profession[] = ['artist', 'humanist', 'scientific', 'technical', 'student', 'other'];
+const GENDER_OPTIONS: Gender[] = ['woman', 'man', 'other', 'undisclosed'];
+const NATIVE_LANGUAGE_OPTIONS: NativeLanguage[] = ['it', 'en', 'es', 'de', 'fr', 'pt', 'other'];
+const GERMAN_LEVEL_OPTIONS: GermanLevel[] = ['a1', 'a2', 'b1', 'b2', 'c1', 'c2', 'none'];
 
 export function FeedbackButton({
   triggerClassName,
@@ -25,15 +34,28 @@ export function FeedbackButton({
 }: FeedbackButtonProps = {}) {
   const copy = useCopy();
   const f = copy.feedbackForm;
+  const p = f.persona;
   const defaultLabel = copy.feedbackButton.defaultUser;
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [sentiment, setSentiment] = useState<Sentiment>('neutral');
+  const [nickname, setNickname] = useState('');
+  const [age, setAge] = useState('');
+  const [profession, setProfession] = useState<Profession | ''>('');
+  const [gender, setGender] = useState<Gender | ''>('');
+  const [nativeLanguage, setNativeLanguage] = useState<NativeLanguage | ''>('');
+  const [germanLevel, setGermanLevel] = useState<GermanLevel | ''>('');
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
 
   const reset = () => {
     setMessage('');
     setSentiment('neutral');
+    setNickname('');
+    setAge('');
+    setProfession('');
+    setGender('');
+    setNativeLanguage('');
+    setGermanLevel('');
     setStatus({ kind: 'idle' });
   };
 
@@ -49,10 +71,17 @@ export function FeedbackButton({
     if (!trimmed) return;
     setStatus({ kind: 'sending' });
     try {
+      const ageNumber = age.trim() ? Number(age) : undefined;
       const res = await api.submitFeedback({
         message: trimmed,
         sentiment,
         source_url: typeof window !== 'undefined' ? window.location.href : undefined,
+        nickname: nickname.trim() || undefined,
+        age: Number.isFinite(ageNumber) ? (ageNumber as number) : undefined,
+        profession: profession || undefined,
+        gender: gender || undefined,
+        native_language: nativeLanguage || undefined,
+        german_level: germanLevel || undefined,
       });
       setStatus({ kind: 'success', id: res.id });
       setMessage('');
@@ -61,6 +90,10 @@ export function FeedbackButton({
       setStatus({ kind: 'error', message: detail });
     }
   };
+
+  const selectClass = `w-full ${UI_RADIUS.control} border border-hairline bg-canvas px-3 py-2 text-body-sm text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15`;
+  const inputClass = `w-full ${UI_RADIUS.control} border border-hairline bg-canvas px-3 py-2 text-body-sm text-ink placeholder:text-muted-soft focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15`;
+  const labelClass = 'block text-caption font-medium text-body-strong mb-1';
 
   return (
     <>
@@ -89,7 +122,7 @@ export function FeedbackButton({
             if (e.target === e.currentTarget) closeModal();
           }}
         >
-          <div className={`relative w-full max-w-lg ${UI_RADIUS.surface} border border-hairline bg-canvas p-6`}>
+          <div className={`relative w-full max-w-lg max-h-[90vh] overflow-y-auto ${UI_RADIUS.surface} border border-hairline bg-canvas p-6`}>
             <button
               type="button"
               onClick={closeModal}
@@ -141,6 +174,98 @@ export function FeedbackButton({
                 maxLength={4000}
                 className={`w-full ${UI_RADIUS.control} border border-hairline bg-canvas px-3.5 py-3 text-body-md text-ink placeholder:text-muted-soft focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15`}
               />
+
+              <div className={`${UI_RADIUS.control} border border-hairline bg-surface-card p-4`}>
+                <p className="text-caption-uppercase tracking-[1.5px] font-medium uppercase text-muted">
+                  {p.sectionTitle}
+                </p>
+                <p className="mt-1 text-caption text-muted">{p.sectionHint}</p>
+
+                <div className="mt-3 grid grid-cols-2 gap-3">
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className={labelClass} htmlFor="fb-nickname">{p.nicknameLabel}</label>
+                    <input
+                      id="fb-nickname"
+                      type="text"
+                      value={nickname}
+                      onChange={(e) => setNickname(e.target.value)}
+                      placeholder={p.nicknamePlaceholder}
+                      maxLength={64}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className={labelClass} htmlFor="fb-age">{p.ageLabel}</label>
+                    <input
+                      id="fb-age"
+                      type="number"
+                      inputMode="numeric"
+                      min={5}
+                      max={120}
+                      value={age}
+                      onChange={(e) => setAge(e.target.value)}
+                      placeholder={p.agePlaceholder}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className={labelClass} htmlFor="fb-profession">{p.professionLabel}</label>
+                    <select
+                      id="fb-profession"
+                      value={profession}
+                      onChange={(e) => setProfession(e.target.value as Profession | '')}
+                      className={selectClass}
+                    >
+                      <option value="">{p.professionPlaceholder}</option>
+                      {PROFESSION_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>{p.professionOptions[opt]}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className={labelClass} htmlFor="fb-gender">{p.genderLabel}</label>
+                    <select
+                      id="fb-gender"
+                      value={gender}
+                      onChange={(e) => setGender(e.target.value as Gender | '')}
+                      className={selectClass}
+                    >
+                      <option value="">{p.genderPlaceholder}</option>
+                      {GENDER_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>{p.genderOptions[opt]}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className={labelClass} htmlFor="fb-native">{p.nativeLanguageLabel}</label>
+                    <select
+                      id="fb-native"
+                      value={nativeLanguage}
+                      onChange={(e) => setNativeLanguage(e.target.value as NativeLanguage | '')}
+                      className={selectClass}
+                    >
+                      <option value="">{p.nativeLanguagePlaceholder}</option>
+                      {NATIVE_LANGUAGE_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>{p.nativeLanguageOptions[opt]}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className={labelClass} htmlFor="fb-german">{p.germanLevelLabel}</label>
+                    <select
+                      id="fb-german"
+                      value={germanLevel}
+                      onChange={(e) => setGermanLevel(e.target.value as GermanLevel | '')}
+                      className={selectClass}
+                    >
+                      <option value="">{p.germanLevelPlaceholder}</option>
+                      {GERMAN_LEVEL_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>{p.germanLevelOptions[opt]}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
 
               {status.kind === 'success' && (
                 <p className="text-body-sm font-medium text-success">

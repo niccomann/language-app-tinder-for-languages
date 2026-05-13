@@ -793,7 +793,55 @@
     "errorMessagePrefix": "Speicherfehler",
     "closeButton": "Schließen",
     "submitButton": "Kommentar senden",
-    "sendingButton": "Sende…"
+    "sendingButton": "Sende…",
+    "persona": {
+      "sectionTitle": "Über dich",
+      "sectionHint": "Hilf uns zu verstehen, von wem das Feedback kommt (optional).",
+      "nicknameLabel": "Spitzname",
+      "nicknamePlaceholder": "z. B. Luca, NerdyArtist…",
+      "ageLabel": "Alter",
+      "agePlaceholder": "z. B. 28",
+      "professionLabel": "Profil",
+      "professionPlaceholder": "Auswählen…",
+      "professionOptions": {
+        "artist": "Künstlerisch / kreativ",
+        "humanist": "Geisteswissenschaftlich",
+        "scientific": "Wissenschaftlich",
+        "technical": "Technisch / Ingenieurwesen",
+        "student": "Student:in",
+        "other": "Sonstiges"
+      },
+      "genderLabel": "Geschlecht",
+      "genderPlaceholder": "Auswählen…",
+      "genderOptions": {
+        "woman": "Frau",
+        "man": "Mann",
+        "other": "Andere",
+        "undisclosed": "Keine Angabe"
+      },
+      "nativeLanguageLabel": "Muttersprache",
+      "nativeLanguagePlaceholder": "Auswählen…",
+      "nativeLanguageOptions": {
+        "it": "Italienisch",
+        "en": "Englisch",
+        "es": "Spanisch",
+        "de": "Deutsch",
+        "fr": "Französisch",
+        "pt": "Portugiesisch",
+        "other": "Andere"
+      },
+      "germanLevelLabel": "Deutschniveau",
+      "germanLevelPlaceholder": "Auswählen…",
+      "germanLevelOptions": {
+        "a1": "A1 — Anfänger",
+        "a2": "A2 — Grundlegend",
+        "b1": "B1 — Mittelstufe",
+        "b2": "B2 — Obere Mittelstufe",
+        "c1": "C1 — Fortgeschritten",
+        "c2": "C2 — Muttersprachlich",
+        "none": "Nie gelernt"
+      }
+    }
   },
   "bottomNav": {
     "path": "Pfad",
@@ -835,7 +883,8 @@
   },
   "learningStrip": {
     "eyebrow": "Game packs",
-    "title": "Topic Deck"
+    "title": "Topic Deck",
+    "changeFilters": "Filter ändern"
   },
   "learningSystemMenu": {
     "title": "Learning System",

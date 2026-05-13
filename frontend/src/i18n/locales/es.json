@@ -793,7 +793,55 @@
     "errorMessagePrefix": "Error al guardar",
     "closeButton": "Cerrar",
     "submitButton": "Enviar comentario",
-    "sendingButton": "Enviando…"
+    "sendingButton": "Enviando…",
+    "persona": {
+      "sectionTitle": "Sobre ti",
+      "sectionHint": "Ayúdanos a entender de quién viene el feedback (opcional).",
+      "nicknameLabel": "Apodo",
+      "nicknamePlaceholder": "ej. Luca, NerdyArtist…",
+      "ageLabel": "Edad",
+      "agePlaceholder": "ej. 28",
+      "professionLabel": "Perfil",
+      "professionPlaceholder": "Selecciona…",
+      "professionOptions": {
+        "artist": "Artístico / creativo",
+        "humanist": "Humanístico",
+        "scientific": "Científico",
+        "technical": "Técnico / ingeniería",
+        "student": "Estudiante",
+        "other": "Otro"
+      },
+      "genderLabel": "Género",
+      "genderPlaceholder": "Selecciona…",
+      "genderOptions": {
+        "woman": "Mujer",
+        "man": "Hombre",
+        "other": "Otro",
+        "undisclosed": "Prefiero no decirlo"
+      },
+      "nativeLanguageLabel": "Lengua materna",
+      "nativeLanguagePlaceholder": "Selecciona…",
+      "nativeLanguageOptions": {
+        "it": "Italiano",
+        "en": "Inglés",
+        "es": "Español",
+        "de": "Alemán",
+        "fr": "Francés",
+        "pt": "Portugués",
+        "other": "Otra"
+      },
+      "germanLevelLabel": "Nivel de alemán",
+      "germanLevelPlaceholder": "Selecciona…",
+      "germanLevelOptions": {
+        "a1": "A1 — Principiante",
+        "a2": "A2 — Elemental",
+        "b1": "B1 — Intermedio",
+        "b2": "B2 — Intermedio alto",
+        "c1": "C1 — Avanzado",
+        "c2": "C2 — Maestría",
+        "none": "Nunca estudiado"
+      }
+    }
   },
   "bottomNav": {
     "path": "Ruta",
@@ -835,7 +883,8 @@
   },
   "learningStrip": {
     "eyebrow": "Game packs",
-    "title": "Topic Deck"
+    "title": "Topic Deck",
+    "changeFilters": "Cambiar filtros"
   },
   "learningSystemMenu": {
     "title": "Learning System",
