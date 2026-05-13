@@ -3,6 +3,7 @@ import type { AdaptiveFlashcard, AdaptiveLearningSummary, Flashcard, UserProgres
 import { API_BASE_URL, API_REQUEST_TIMEOUT_MS, APP_MODE, isFeatureEnabled } from '../config/appMode';
 import type { LearningPreferenceProfile } from '../learning/preferenceProfile';
 import type { TargetLanguage } from '../i18n/languageStorage';
+import { getOrCreateUserId } from './userIdentity';
 
 interface OfflineBackendPlugin {
   request(options: {
@@ -50,19 +51,38 @@ async function fetchFromOfflineBackend(input: RequestInfo | URL, init: RequestIn
   });
 }
 
+let cachedUserId: string | null = null;
+let userIdPromise: Promise<string> | null = null;
+
+async function resolveUserId(): Promise<string> {
+  if (cachedUserId) return cachedUserId;
+  if (!userIdPromise) {
+    userIdPromise = getOrCreateUserId().then((id) => {
+      cachedUserId = id;
+      return id;
+    });
+  }
+  return userIdPromise;
+}
+
 async function fetchWithTimeout(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
   const controller = new AbortController();
   const timeoutId = globalThis.setTimeout(() => controller.abort(), API_REQUEST_TIMEOUT_MS);
 
   try {
     if (shouldUseOfflineBackend(input)) {
+      // TODO: pass X-User-Id to OfflineBackend (requires extending the plugin contract).
       return await fetchFromOfflineBackend(input, init);
     }
 
-    return await fetch(input, {
-      ...init,
-      signal: controller.signal,
-    });
+    const userId = await resolveUserId();
+    const mergedHeaders = new Headers(init.headers || {});
+    if (!mergedHeaders.has('X-User-Id')) {
+      mergedHeaders.set('X-User-Id', userId);
+    }
+    const finalInit: RequestInit = { ...init, headers: mergedHeaders, signal: controller.signal };
+
+    return await fetch(input, finalInit);
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
       throw new Error(`Request timed out after ${API_REQUEST_TIMEOUT_MS}ms`);
