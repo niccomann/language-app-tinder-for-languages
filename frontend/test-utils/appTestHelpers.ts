@@ -236,3 +236,144 @@ export async function expectInViewport(page: Page, locator: Locator) {
   expect(box!.x + box!.width).toBeLessThanOrEqual(viewport!.width);
   expect(box!.y + box!.height).toBeLessThanOrEqual(viewport!.height);
 }
+
+// ---------------------------------------------------------------------------
+// User / Onboarding API helpers
+// ---------------------------------------------------------------------------
+
+export const USER_ID_STORAGE_KEY = 'languageApp:userId:v1';
+export const TARGET_LANGUAGE_STORAGE_KEY = 'languageApp:targetLanguage:v1';
+export const SOURCE_LOCALE_STORAGE_KEY = 'languageApp:sourceLocale:v1';
+
+export interface MockUserProfile {
+  user_id: string;
+  display_name: string;
+  age: number | null;
+  target_language: string;
+  proficiency_level: 'beginner' | 'a1_a2' | 'b1_b2';
+  daily_goal_minutes: number;
+  onboarding_completed: boolean;
+}
+
+export async function seedUserId(page: Page, uuid: string): Promise<void> {
+  await page.addInitScript(({ key, value }: { key: string; value: string }) => {
+    window.localStorage.setItem(key, value);
+  }, { key: USER_ID_STORAGE_KEY, value: uuid });
+}
+
+export async function clearUserIdentity(page: Page): Promise<void> {
+  await page.addInitScript((key: string) => {
+    window.localStorage.removeItem(key);
+  }, USER_ID_STORAGE_KEY);
+}
+
+/**
+ * Seed both target language and source locale so the OnboardingModal does not
+ * intercept on load. Defaults to German target + English source.
+ */
+export async function seedLanguageSettings(
+  page: Page,
+  target: string = 'de',
+  source: string = 'en',
+): Promise<void> {
+  await page.addInitScript(
+    ({ tKey, tVal, sKey, sVal }: { tKey: string; tVal: string; sKey: string; sVal: string }) => {
+      window.localStorage.setItem(tKey, tVal);
+      window.localStorage.setItem(sKey, sVal);
+    },
+    {
+      tKey: TARGET_LANGUAGE_STORAGE_KEY,
+      tVal: target,
+      sKey: SOURCE_LOCALE_STORAGE_KEY,
+      sVal: source,
+    },
+  );
+}
+
+/**
+ * Mock the /api/users surface. By default (profile=null) all GETs 404,
+ * POST creates 201, PATCH 200. Pass a profile to simulate an existing user.
+ */
+export async function mockUserApi(page: Page, profile: MockUserProfile | null = null): Promise<{
+  /** Mutable list of POST bodies seen — assert after the wizard runs. */
+  posts: unknown[];
+  /** Mutable list of PATCH bodies seen, paired with the path-extracted user_id. */
+  patches: Array<{ userId: string; body: unknown }>;
+}> {
+  const posts: unknown[] = [];
+  const patches: Array<{ userId: string; body: unknown }> = [];
+
+  await page.route('**/api/users', async (route) => {
+    if (route.request().method() === 'POST') {
+      const body = route.request().postDataJSON();
+      posts.push(body);
+      if (profile && profile.user_id === body.user_id) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(profile),
+        });
+        return;
+      }
+      const created: MockUserProfile = {
+        user_id: body.user_id,
+        display_name: body.display_name,
+        age: body.age ?? null,
+        target_language: body.target_language ?? 'de',
+        proficiency_level: body.proficiency_level ?? 'beginner',
+        daily_goal_minutes: body.daily_goal_minutes ?? 10,
+        onboarding_completed: false,
+      };
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify(created),
+      });
+      return;
+    }
+    await route.fallback();
+  });
+
+  await page.route(/.*\/api\/users\/[^/?]+$/, async (route) => {
+    const url = new URL(route.request().url());
+    const userId = decodeURIComponent(url.pathname.split('/').pop() ?? '');
+    const method = route.request().method();
+    if (method === 'GET') {
+      if (profile && profile.user_id === userId) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(profile),
+        });
+        return;
+      }
+      await route.fulfill({ status: 404, contentType: 'application/json', body: '{"detail":"User not found"}' });
+      return;
+    }
+    if (method === 'PATCH') {
+      const body = route.request().postDataJSON();
+      patches.push({ userId, body });
+      const base: MockUserProfile = profile && profile.user_id === userId
+        ? profile
+        : {
+            user_id: userId,
+            display_name: 'mock',
+            age: null,
+            target_language: 'de',
+            proficiency_level: 'beginner',
+            daily_goal_minutes: 10,
+            onboarding_completed: false,
+          };
+      const merged: MockUserProfile = { ...base, ...(body as Partial<MockUserProfile>) };
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(merged),
+      });
+      return;
+    }
+    await route.fallback();
+  });
+
+  return { posts, patches };
+}

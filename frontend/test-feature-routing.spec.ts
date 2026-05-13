@@ -5,9 +5,27 @@ import {
   markFeatureGuidesSeen,
   markFirstVocabularyOnboardingDone,
   mockLearningApi,
+  mockUserApi,
+  seedLanguageSettings,
+  seedUserId,
+  type MockUserProfile,
 } from './test-utils/appTestHelpers';
 
+const WIZARD_BYPASS_UUID = '00000000-0000-4000-8000-000000000099';
+const WIZARD_BYPASS_PROFILE: MockUserProfile = {
+  user_id: WIZARD_BYPASS_UUID,
+  display_name: 'TestUser',
+  age: null,
+  target_language: 'de',
+  proficiency_level: 'beginner',
+  daily_goal_minutes: 10,
+  onboarding_completed: true,
+};
+
 test.beforeEach(async ({ page }) => {
+  await seedUserId(page, WIZARD_BYPASS_UUID);
+  await seedLanguageSettings(page);
+  await mockUserApi(page, WIZARD_BYPASS_PROFILE);
   await markFeatureGuidesSeen(page);
 });
 

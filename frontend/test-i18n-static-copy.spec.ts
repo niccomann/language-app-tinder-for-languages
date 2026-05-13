@@ -5,7 +5,22 @@ import {
   APP_URL,
   clearFirstVocabularyOnboardingDone,
   mockLearningApi,
+  mockUserApi,
+  seedLanguageSettings,
+  seedUserId,
+  type MockUserProfile,
 } from './test-utils/appTestHelpers';
+
+const WIZARD_BYPASS_UUID = '00000000-0000-4000-8000-000000000099';
+const WIZARD_BYPASS_PROFILE: MockUserProfile = {
+  user_id: WIZARD_BYPASS_UUID,
+  display_name: 'TestUser',
+  age: null,
+  target_language: 'de',
+  proficiency_level: 'beginner',
+  daily_goal_minutes: 10,
+  onboarding_completed: true,
+};
 
 const localeDir = path.resolve(process.cwd(), 'src/i18n/locales');
 const locales = ['en', 'it', 'fr'] as const;
@@ -43,6 +58,9 @@ test('static UI copy is available in JSON for English, Italian, and French', () 
 });
 
 test('static UI copy can be switched from the URL locale', async ({ page }) => {
+  await seedUserId(page, WIZARD_BYPASS_UUID);
+  await seedLanguageSettings(page);
+  await mockUserApi(page, WIZARD_BYPASS_PROFILE);
   await mockLearningApi(page);
   await clearFirstVocabularyOnboardingDone(page);
   await page.goto(`${APP_URL}/?locale=it`);
