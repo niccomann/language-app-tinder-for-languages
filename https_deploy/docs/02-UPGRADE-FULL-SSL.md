@@ -58,9 +58,50 @@ A quel punto si può anche **chiudere la porta 80** nel security group.
 curl -sI https://customizeyourlingua.com/health   # deve restare 200
 ```
 
-## Stato attuale
+## ✅ FATTO (2026-05-14 22:25)
 
-- [ ] Origin Certificate generato
-- [ ] Certificato installato sull'EC2 + porta 443 aperta
-- [ ] Zona passata a Full
-- [ ] Porta 80 chiusa nel security group
+Eseguito, ma con un approccio diverso da quello sopra — più sicuro per il
+resto del sistema:
+
+- **No Origin Certificate** — la Cloudflare Origin CA API ha risposto `1016
+  User is not authorized` col token disponibile. Usato invece un **cert
+  self-signed** (valido 10 anni) — la modalità **Full** (non "Full strict")
+  lo accetta. La tratta Cloudflare↔origine è comunque **cifrata**; "Full
+  strict" aggiungerebbe solo l'autenticazione dell'origine.
+- **No modifiche a `language-frontend` né a `deploy_to_ec2.sh`** — invece di
+  toccare l'nginx del frontend, è stato aggiunto un **container dedicato
+  `https-proxy`** (`nginx:alpine`) che termina il TLS su :443 e fa da reverse
+  proxy a `language-frontend:80`. Config in `https_deploy/https-proxy.conf`,
+  cert+key in `/home/ec2-user/https-proxy/ssl/` sull'EC2. Usa il `resolver`
+  Docker per non cachare l'IP del frontend.
+- **Porta 443 aperta** nel SG `sg-032f76424400a35a7` (`0.0.0.0/0`, come la 80).
+- **Zona Cloudflare → Full** via `scripts/set_ssl_full.py` (dashboard Playwright).
+- **Verificato**: `https://customizeyourlingua.com` → 200, `/api/*` → 200,
+  E2E 13/13. La tratta App↔Cloudflare↔EC2 è ora cifrata end-to-end.
+
+### Ricreare il container https-proxy (se serve)
+```bash
+# self-signed cert (CN=customizeyourlingua.com, SAN wildcard), 10 anni:
+openssl req -x509 -newkey rsa:2048 -nodes -days 3650 \
+  -keyout origin.key -out origin.pem -subj "/CN=customizeyourlingua.com" \
+  -addext "subjectAltName=DNS:customizeyourlingua.com,DNS:*.customizeyourlingua.com"
+# sull'EC2: cert+key in /home/ec2-user/https-proxy/ssl/, conf montata, poi:
+docker run -d --name https-proxy --network language-app --restart unless-stopped \
+  -p 443:443 \
+  -v /home/ec2-user/https-proxy/ssl:/etc/nginx/ssl:ro \
+  -v /home/ec2-user/https-proxy/https-proxy.conf:/etc/nginx/conf.d/https-proxy.conf:ro \
+  nginx:alpine
+```
+
+### Ripristino a Flexible (se serve)
+`scripts/set_ssl_flexible.py` (dashboard Playwright) — l'EC2 continua a servire
+anche la :80, quindi Flexible torna a funzionare subito.
+
+### Stato checklist
+- [x] "Origin certificate" — self-signed (Origin CA API non autorizzata)
+- [x] Certificato installato sull'EC2 (`https-proxy` container) + porta 443 aperta
+- [x] Zona passata a Full
+- [ ] Porta 80 chiusa nel SG — lasciata aperta di proposito (verificare prima
+  che Cloudflare non la usi mai)
+- [ ] (Opzionale futuro) Origin Certificate vero + Full (strict) — se si ottiene
+  un token con permessi Origin CA, o via dashboard
