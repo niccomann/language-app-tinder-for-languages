@@ -1,4 +1,4 @@
-> Last updated: 2026-05-14 02:15
+> Last updated: 2026-05-15 02:30
 
 # Deploy playbook (EC2, single-node Docker)
 
@@ -16,7 +16,9 @@ scripts/deploy_to_ec2.sh --skip-db
 scripts/deploy_backend_to_ec2.sh
 ```
 
-Tempo realistico: **frontend 3-5 min**, **backend 5-7 min** (build ARM64 + scp 185MB). Lo script backend fa `docker inspect` del container vecchio e preserva mounts/env/network/restart policy.
+Tempo realistico: **frontend 3-5 min**, **backend 5-7 min** (build ARM64 + scp 185MB). Lo script backend fa `docker inspect` del container vecchio per preservare mounts/network/restart policy, ma l'**env** viene letto da un file persistente sull'EC2: `/home/ec2-user/language-deploy/backend.prod.env` (chmod 600, non in git — contiene `DB_PASSWORD` e le API key).
+
+⚠️ **Se quel file manca, lo script backend si ferma con errore.** Va ricreato a mano con: `USE_SQLITE=false`, `DB_HOST=language-postgres`, `DB_PORT=5432`, `DB_USER`, `DB_PASSWORD`, `DB_DATABASE=tinder_languages`, `DB_SCHEMA=public`, `ENV=prod`, `HOST=0.0.0.0`, `PORT=8500`, `TRACKING_DB_PATH=/app/data/tracking.db`, più le API key (`OPENAI_API_KEY` ecc.) — vedi `backend/.env` locale per i valori.
 
 ⚠️ **`deploy_to_ec2.sh` NON tocca il backend.** Se aggiungi un endpoint Python o modifichi `requirements.txt`, devi lanciare `deploy_backend_to_ec2.sh` separatamente.
 
@@ -86,6 +88,7 @@ CONTAINER_BE  = language-backend
 8. **Build cache `docker-container` driver** rifiutava `docker save` (manca `--load`). **Fix:** lo script `deploy_backend_to_ec2.sh` usa `docker buildx build --load`.
 9. **Playwright non installato** ma referenziato in `package.json`. `npm install --legacy-peer-deps` falliva con `Exit handler never called!` (bug npm 11.5.1) e lasciava `node_modules/` corrotto (vite mancante). **Fix:** `rm -rf node_modules && pnpm install` (pnpm più affidabile). Per il binario Chromium: `npx playwright install chromium`.
 10. **Storage keys hardcoded nei test**: `languageApp:userId:v1`, `languageApp:targetLanguage:v1`, `languageApp:sourceLocale:v1`, `languageApp:firstVocabularyOnboardingDone:v1`, `languageApp:featureGuideSeen:<guideId>`. Tutti sotto namespace `languageApp:*`. Necessari per bypassare onboarding/wizard nei test E2E.
+11. **🔴 `docker inspect ... printf "%q"` per l'env COMPONE le quote a ogni deploy** (grave). Lo script estraeva l'env del container vecchio con `{{printf "%q" .}}`: ogni deploy ri-quotava variabili già quotate, finché dopo N deploy `DB_HOST` ecc. diventavano nomi con quote letterali (`"DB_HOST` invece di `DB_HOST`). Risultato: il backend non vedeva più `DB_HOST`/`USE_SQLITE` → fallback a `localhost:5432` → crash-loop `Connection refused` → prod 502 sull'API (il frontend statico restava 200, quindi sembrava su). **Fix nel repo (2026-05-15):** lo script ora NON ispeziona più l'env; legge `--env-file /home/ec2-user/language-deploy/backend.prod.env` (file persistente sull'EC2, chmod 600). Mounts/ports/restart-policy si possono ancora ispezionare senza problemi (niente quoting). Se vedi 502 sull'API ma 200 sul frontend: `docker logs language-backend` → se `connection to server at "localhost"` è questo bug; ricrea il container con `--env-file`.
 
 ### Test E2E mirati (post-deploy validation)
 Tutto `/tmp/real-user-test.mjs` (13 scenari user critici, contro PROD).

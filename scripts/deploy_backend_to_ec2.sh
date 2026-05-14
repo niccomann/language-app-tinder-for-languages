@@ -62,6 +62,7 @@ INCOMING_DIR="$INCOMING_DIR"
 CONTAINER="$CONTAINER"
 NETWORK="$NETWORK"
 NEW_IMAGE="$IMAGE"
+ENV_FILE="/home/ec2-user/language-deploy/backend.prod.env"
 
 echo "==> [remote] Inspecting old $CONTAINER for config"
 if ! docker inspect "$CONTAINER" >/dev/null 2>&1; then
@@ -69,18 +70,24 @@ if ! docker inspect "$CONTAINER" >/dev/null 2>&1; then
   exit 1
 fi
 
-# Extract mounts as "-v src:dst" args
+# Env comes from a persistent file on the EC2, NOT from inspecting the old
+# container. Inspecting + re-quoting (printf %q) compounds across deploys:
+# each run re-quotes already-quoted vars, eventually mangling DB_HOST etc. into
+# literal-quoted garbage so the backend silently falls back to localhost.
+if [[ ! -f "\$ENV_FILE" ]]; then
+  echo "ERROR: \$ENV_FILE missing on EC2 — backend env unknown." >&2
+  echo "Create it (chmod 600) with USE_SQLITE=false, DB_HOST=language-postgres, DB_* and API keys." >&2
+  exit 1
+fi
+
+# Mounts and restart policy ARE safe to carry over from inspect (no quoting).
 MOUNT_ARGS="\$(docker inspect "$CONTAINER" --format '{{range .Mounts}}-v {{.Source}}:{{.Destination}} {{end}}')"
-# Extract env vars (skip empty)
-ENV_ARGS="\$(docker inspect "$CONTAINER" --format '{{range .Config.Env}}-e {{printf "%q" .}} {{end}}')"
-# Extract published ports
 PORT_ARGS="\$(docker inspect "$CONTAINER" --format '{{range \$p, \$conf := .HostConfig.PortBindings}}{{range \$conf}}-p {{.HostPort}}:{{\$p}} {{end}}{{end}}' | sed 's|/tcp||g')"
-# Restart policy
 RESTART="\$(docker inspect "$CONTAINER" --format '{{.HostConfig.RestartPolicy.Name}}')"
 [[ -z "\$RESTART" || "\$RESTART" == "no" ]] && RESTART="unless-stopped"
 
 echo "  Mounts: \$MOUNT_ARGS"
-echo "  Env: (\$(echo "\$ENV_ARGS" | wc -w) args)"
+echo "  Env file: \$ENV_FILE (\$(wc -l < "\$ENV_FILE") vars)"
 echo "  Ports: \$PORT_ARGS"
 echo "  Restart: \$RESTART"
 
@@ -98,7 +105,7 @@ docker run -d \\
   --network "$NETWORK" \\
   --restart "\$RESTART" \\
   \$MOUNT_ARGS \\
-  \$ENV_ARGS \\
+  --env-file "\$ENV_FILE" \\
   \$PORT_ARGS \\
   "\$NEW_IMAGE"
 
