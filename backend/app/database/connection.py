@@ -105,8 +105,14 @@ class DatabaseConnection:
         try:
             db_url = config.database.url
             log.debug(f"Database URL constructed successfully")
-            
-            DatabaseConnection._engine = create_engine(db_url, echo=False)
+
+            # pool_pre_ping: validate each pooled connection with a cheap SELECT 1
+            # before use, transparently reconnecting dead ones. Essential for
+            # Postgres reached over an SSH tunnel (local dev) or that may restart
+            # (prod) — without it a stale connection hangs the request.
+            DatabaseConnection._engine = create_engine(
+                db_url, echo=False, pool_pre_ping=True, pool_recycle=300
+            )
             log.info("Database engine created successfully")
             
             self._verify_connection()
