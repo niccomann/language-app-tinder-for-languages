@@ -102,6 +102,11 @@ docker run -d \\
   \$PORT_ARGS \\
   "\$NEW_IMAGE"
 
+# Recreating the backend can change its Docker-network IP; nginx caches the old
+# one and returns 502 until restarted. Restart the frontend so it re-resolves.
+echo "==> [remote] Restarting language-frontend (nginx) to re-resolve backend IP"
+docker restart language-frontend >/dev/null 2>&1 || true
+
 echo "==> [remote] Wait for backend health (up to 60s)"
 for i in \$(seq 1 30); do
   if curl -fsS --max-time 5 'http://localhost/api/cards/adaptive?language=de&limit=1' >/dev/null 2>&1; then
