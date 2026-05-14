@@ -43,6 +43,8 @@ test('learning features have direct routes', async ({ page }) => {
 
   await page.goto(`${APP_URL}/learn/system`);
   await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
+  // System menu items show only titles; description expands on click (split-text UX).
+  await page.getByRole('button', { name: 'Unified word memory' }).click();
   await expect(page.getByText('One memory database tracks every word you know, miss, or are still learning.')).toBeVisible();
 
   await page.goto(`${APP_URL}/vocabulary`);
@@ -60,13 +62,16 @@ test('learning features have direct routes', async ({ page }) => {
 
   await page.goto(`${APP_URL}/review`);
   await expect(page.getByRole('heading', { name: 'Review & Setup' })).toBeVisible({ timeout: 15000 });
-  await expect(page.getByRole('button', { name: /Open Topic Deck/i })).toBeVisible();
+  // Review hub keeps collection missions; Topic Deck moved out (reachable via the Learn screen filters).
   await expect(page.getByRole('button', { name: /Open Word Library/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Open Your Vocabulary/i })).toBeVisible();
 
   await page.goto(`${APP_URL}/explore`);
   await expect(page.getByRole('heading', { name: 'Explore German' })).toBeVisible({ timeout: 15000 });
+  // Explore hub now surfaces a single Grammar entry card; sub-features live inside Grammar Lab.
+  await expect(page.getByRole('button', { name: /Grammar/i }).first()).toBeVisible();
+  await page.goto(`${APP_URL}/explore/grammar`);
   await expect(page.getByRole('button', { name: /Open Sentence Placement/i })).toBeVisible();
-  await expect(page.getByRole('button', { name: /Open Word Cloud/i })).toBeVisible();
 });
 
 test('product navigation exposes a simpler Path Learn Review Explore model without hiding direct routes', async ({ page }) => {

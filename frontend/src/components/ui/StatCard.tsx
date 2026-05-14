@@ -22,7 +22,7 @@ export function StatCard({ label, value, icon, color, isActive, onClick }: StatC
       <div className="flex h-full items-center justify-between">
         <div>
           <p className="text-caption-uppercase tracking-[1.5px] text-muted uppercase font-sans font-medium mb-1">{label}</p>
-          <p className="font-display text-display-sm font-normal text-ink">
+          <p className="font-display text-display-md font-normal text-ink leading-none">
             {value}
           </p>
         </div>

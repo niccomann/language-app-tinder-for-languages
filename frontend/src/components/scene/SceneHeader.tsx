@@ -26,8 +26,9 @@ export function SceneHeader({
 }: SceneHeaderProps) {
   const copy = useCopy();
   const [open, setOpen] = useState(false);
-  const dismissed = explainerKey ? isExplainerDismissed(explainerKey) : false;
-  const showChip = Boolean(explainerKey && explainerBody);
+  const effectiveKey = explainerKey ?? `scene:${title}`;
+  const dismissed = isExplainerDismissed(effectiveKey);
+  const hasContent = Boolean(subline || explainerBody);
 
   return (
     <header className={`flex flex-col gap-2 ${className}`}>
@@ -38,11 +39,11 @@ export function SceneHeader({
         <h1 className="flex-1 font-display text-display-sm font-normal leading-tight tracking-[-0.3px] text-ink">
           {title}
         </h1>
-        {showChip && (
+        {hasContent && (
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className={`inline-flex items-center gap-1 px-2.5 py-1 ${UI_RADIUS.control} border border-hairline bg-canvas text-caption font-medium ${
+            className={`inline-flex shrink-0 items-center gap-1 px-2.5 py-1 ${UI_RADIUS.control} border border-hairline bg-canvas text-caption font-medium ${
               dismissed ? 'text-muted-soft' : 'text-muted'
             } ${UI_INTERACTION.fastTransition} hover:bg-surface-card hover:text-ink`}
             aria-label={copy.common.whatIsAria}
@@ -52,14 +53,14 @@ export function SceneHeader({
           </button>
         )}
       </div>
-      <p className="text-body-md text-muted">{subline}</p>
-      {showChip && explainerKey && (
+      {hasContent && (
         <ExplainerSheet
           open={open}
           onClose={() => setOpen(false)}
-          storageKey={explainerKey}
+          storageKey={effectiveKey}
           title={explainerTitle ?? title}
         >
+          {subline && <p>{subline}</p>}
           {explainerBody}
         </ExplainerSheet>
       )}

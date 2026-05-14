@@ -20,12 +20,13 @@ export function LearningCategoryStrip({
   return (
     <SurfacePanel padding="sm">
       <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0 flex items-center gap-2">
-          <span className="text-caption-uppercase tracking-[1.5px] text-muted uppercase">
-            {copy.learningStrip.title}
+        <div className="min-w-0 flex items-baseline gap-2">
+          <span className="font-display text-title-sm font-semibold text-ink leading-none">
+            {active}
+            <span className="text-muted">/{total}</span>
           </span>
-          <span className={`${UI_RADIUS.pill} bg-surface-card px-2 py-0.5 text-caption font-medium text-body-strong`}>
-            {active} / {total}
+          <span className="text-caption-uppercase tracking-[1.5px] text-muted uppercase truncate">
+            {copy.learningStrip.title}
           </span>
         </div>
         <button

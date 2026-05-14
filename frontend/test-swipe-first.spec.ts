@@ -126,8 +126,8 @@ test('home starts on the learning path and enters the swipe deck', async ({ page
   await markFeatureGuidesSeen(page);
   await page.goto(APP_URL);
 
-  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
-  await expect(page.getByText('Daily Learning Snapshot')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText("Today's snapshot")).toBeVisible();
   await expect(page.getByText('400-level path', { exact: true })).toBeVisible();
   await expect(page.getByText('XP to next level', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Continue path' })).toBeVisible();
@@ -158,7 +158,7 @@ test('completed first-run setup opens the learning path on next app start', asyn
 
   await page.goto(APP_URL);
 
-  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByTestId('vocabulary-intro')).toHaveCount(0);
 });
 
@@ -171,7 +171,7 @@ test('first-run setup is mandatory before the learning path is available', async
   const intro = page.getByTestId('vocabulary-intro');
   await expect(intro).toBeVisible({ timeout: 15000 });
   await expect(intro.getByRole('button', { name: 'Skip setup' })).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Learn German' })).toHaveCount(0);
 
   await skipIntroNarration(page);
   await intro.getByRole('button', { name: 'Start the scan' }).click();
@@ -180,7 +180,7 @@ test('first-run setup is mandatory before the learning path is available', async
   await preferences.getByRole('button', { name: 'Back' }).click();
 
   await expect(page.getByTestId('vocabulary-intro')).toBeVisible({ timeout: 15000 });
-  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Learn German' })).toHaveCount(0);
 });
 
 test('first setup questions allow selecting multiple options at once', async ({ page }) => {
@@ -226,7 +226,7 @@ test('home opens sentence placement from the learning path', async ({ page }) =>
   await markFeatureGuidesSeen(page);
   await page.goto(APP_URL);
 
-  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
   await page.getByRole('button', { name: 'Sentence Placement' }).click();
 
   await expect(page.getByRole('heading', { name: 'Grammar Placement' })).toBeVisible({ timeout: 15000 });
@@ -242,7 +242,7 @@ test('review hub keeps gamified topic filters one step away from the path', asyn
   await markFeatureGuidesSeen(page);
   await page.goto(APP_URL);
 
-  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
   await page.getByRole('button', { name: /Review tools/i }).click();
 
   await expect(page).toHaveURL(`${APP_URL}/review`);
@@ -262,17 +262,24 @@ test('home explains the adaptive learning system in a compact menu', async ({ pa
   await markFeatureGuidesSeen(page);
   await page.goto(APP_URL);
 
-  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
   await page.getByRole('button', { name: 'Continue path' }).click();
   await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('button', { name: 'Learning System' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Learning System' }).click();
 
-  await expect(page.getByText('One memory database tracks every word you know, miss, or are still learning.')).toBeVisible();
-  await expect(page.getByText('Your global path can grow through 400 levels.')).toBeVisible();
-  await expect(page.getByText('Each word still has a focused mastery score from 1 to 10.')).toBeVisible();
-  await expect(page.getByText('Future sentences can mix strong words with weaker words, keeping context useful without overload.')).toBeVisible();
+  // Each item shows only its title; the description expands on click (split-text UX).
+  const systemItems = [
+    ['Unified word memory', 'One memory database tracks every word you know, miss, or are still learning.'],
+    ['400-level path', 'Your global path can grow through 400 levels.'],
+    ['Word mastery', 'Each word still has a focused mastery score from 1 to 10.'],
+    ['Context difficulty', 'Future sentences can mix strong words with weaker words, keeping context useful without overload.'],
+  ] as const;
+  for (const [title, text] of systemItems) {
+    await page.getByRole('button', { name: title }).click();
+    await expect(page.getByText(text)).toBeVisible();
+  }
   await expect(page.getByText('New Features')).toHaveCount(0);
   await expect(page.getByText('Latest session updates')).toHaveCount(0);
 });
@@ -284,7 +291,7 @@ test('home keeps the swipe card and decision buttons usable in the first viewpor
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(APP_URL);
 
-  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
   await page.getByRole('button', { name: 'Continue path' }).click();
   await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
   const knowButton = page.getByRole('button', { name: 'Know', exact: true });
@@ -303,7 +310,7 @@ test('home prioritizes the next learning action and moves secondary features int
   await markFeatureGuidesSeen(page);
   await page.goto(APP_URL);
 
-  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
   const focusFlow = page.getByTestId('path-focus-flow');
   await expect(focusFlow).toBeVisible();
   await expect(focusFlow.getByRole('button', { name: /Continue path/i })).toBeVisible();

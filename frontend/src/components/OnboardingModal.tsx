@@ -51,9 +51,6 @@ export function OnboardingModal({ initialTarget, initialSource, onClose }: Onboa
         <h2 className="mt-2 font-display text-display-sm font-normal tracking-[-0.3px] text-ink">
           {oc.title}
         </h2>
-        <p className="mt-2 text-body-md text-muted">
-          {oc.body}
-        </p>
 
         <section className="mt-6">
           <p className="text-caption-uppercase font-medium uppercase tracking-[1.5px] text-muted">

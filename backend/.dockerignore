@@ -5,5 +5,17 @@
 __pycache__
 *.pyc
 app.db
+app.db.*
+app.db-shm
+app.db-wal
+app.before-*.db
+app.before-*.db-shm
+app.before-*.db-wal
+app.interrupted-*.db
+app.wordfreq-*.db
 tracking.db
+tracking.db-shm
+tracking.db-wal
 tests
+*.tar.gz
+asset_cache

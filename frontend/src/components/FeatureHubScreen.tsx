@@ -116,11 +116,8 @@ export function FeatureHubScreen({
       {kind !== 'explore' && (
         <div className="grid gap-4">
           {sections.map((section) => (
-            <SurfacePanel key={section.title} padding="lg" className="space-y-4">
-              <div>
-                <p className={`${EYEBROW_CLASS} text-primary`}>{section.title}</p>
-                <p className="mt-2 text-body-sm font-medium leading-6 text-muted">{section.body}</p>
-              </div>
+            <SurfacePanel key={section.title} padding="lg" className="space-y-3">
+              <p className={`${EYEBROW_CLASS} text-primary`}>{section.title}</p>
 
               <div className="grid auto-rows-fr gap-3">
                 {section.items.map((item) => (
@@ -160,10 +157,9 @@ function HubFeatureButton({
       <span className={`${UI_RADIUS.touchIcon} flex h-11 w-11 shrink-0 items-center justify-center ${tone.icon}`}>
         {icon}
       </span>
-      <span className="flex min-w-0 flex-1 flex-col self-stretch">
-        <span className="block font-sans font-semibold text-body-md text-ink">{item.title}</span>
-        <span className="mt-1 block text-body-sm font-medium leading-5 text-muted">{item.description}</span>
-        <span className={`mt-auto inline-flex w-fit ${UI_RADIUS.pill} px-3 py-1.5 text-caption font-medium ${tone.badge}`}>
+      <span className="flex min-w-0 flex-1 items-center justify-between gap-2 self-stretch">
+        <span className="block font-sans font-semibold text-title-sm text-ink truncate">{item.title}</span>
+        <span className={`inline-flex shrink-0 ${UI_RADIUS.pill} px-2.5 py-1 text-caption font-medium ${tone.badge}`}>
           Open
         </span>
       </span>

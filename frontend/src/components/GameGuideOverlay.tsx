@@ -5,7 +5,25 @@ import { featureGuides, type FeatureGuideId, type FeatureGuideTone } from '../ga
 import { hasSeenFeatureGuide, markAllFeatureGuidesDismissed, markFeatureGuideSeen, shouldDeferGuideUntilVocabularyScan } from '../gamification/featureGuideStorage';
 import { copy } from '../i18n/staticCopy';
 import { UI_INTERACTION, UI_RADIUS } from './ui';
-import { StreamingSpeechBubble } from './StreamingSpeechBubble';
+import { StreamingSpeechBubble, type StreamingSpeechStep } from './StreamingSpeechBubble';
+
+// Splits a guide body into at most 3 readable steps. Short bodies (<140 chars)
+// stay as one step; otherwise prefer paragraph breaks, then fall back to
+// grouping sentences so no single bubble is a wall of text.
+function splitGuideBody(body: string): string[] {
+  const trimmed = body.trim();
+  if (trimmed.length < 140) return [trimmed];
+  const paragraphs = trimmed.split(/\n\n+/).map((s) => s.trim()).filter(Boolean);
+  if (paragraphs.length > 1) return paragraphs.slice(0, 3);
+  const sentences = trimmed.split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean);
+  if (sentences.length <= 1) return [trimmed];
+  if (sentences.length <= 3) return sentences;
+  const groupSize = Math.ceil(sentences.length / 2);
+  return [
+    sentences.slice(0, groupSize).join(' '),
+    sentences.slice(groupSize).join(' '),
+  ];
+}
 
 interface GameGuideOverlayProps {
   guideId: FeatureGuideId;
@@ -72,6 +90,15 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
   const activeFrame = guide.frames[frameIndex % guide.frames.length];
   const styles = toneStyles[guide.tone];
   const overlayCopy = copy.featureGuideOverlay;
+
+  const speechSteps = useMemo<StreamingSpeechStep[]>(
+    () => splitGuideBody(guide.body).map((part, idx, all) => ({
+      eyebrow: idx === 0 ? overlayCopy.eyebrow : `${overlayCopy.eyebrow} · ${idx + 1}/${all.length}`,
+      title: guide.title,
+      body: part,
+    })),
+    [guide.body, guide.title, overlayCopy.eyebrow],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -234,9 +261,9 @@ function GameGuideOverlayContent({ guideId }: Pick<GameGuideOverlayProps, 'guide
             </>
           ) : (
             <StreamingSpeechBubble
-              steps={[{ eyebrow: overlayCopy.eyebrow, title: guide.title, body: guide.body }]}
+              steps={speechSteps}
               playbackKey={guide.id}
-              showStepIndicator={false}
+              manualStepControl
               contentClassName="min-h-[255px] sm:min-h-[300px]"
               className={`w-full border ${styles.panel}`}
               onStepChange={(stepIndex) => setSpeechState((current) => (

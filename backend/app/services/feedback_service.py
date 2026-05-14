@@ -18,6 +18,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 import boto3
+from botocore.exceptions import BotoCoreError, ClientError
 
 log = logging.getLogger(__name__)
 
@@ -68,12 +69,26 @@ def save_feedback(
     key = f"{FEEDBACK_PREFIX}/{now:%Y/%m/%d}/{item_id}.json"
     body = json.dumps(item, ensure_ascii=False).encode("utf-8")
 
-    _s3_client().put_object(
-        Bucket=FEEDBACK_BUCKET,
-        Key=key,
-        Body=body,
-        ContentType="application/json; charset=utf-8",
-    )
-    log.info("Feedback saved: s3://%s/%s", FEEDBACK_BUCKET, key)
-    item["s3_uri"] = f"s3://{FEEDBACK_BUCKET}/{key}"
+    try:
+        _s3_client().put_object(
+            Bucket=FEEDBACK_BUCKET,
+            Key=key,
+            Body=body,
+            ContentType="application/json; charset=utf-8",
+        )
+        log.info("Feedback saved: s3://%s/%s", FEEDBACK_BUCKET, key)
+        item["storage"] = "s3"
+        item["s3_uri"] = f"s3://{FEEDBACK_BUCKET}/{key}"
+        return item
+    except (BotoCoreError, ClientError) as exc:
+        log.warning("S3 upload failed (%s) — falling back to local jsonl", exc)
+
+    fallback_dir = os.getenv("FEEDBACK_LOCAL_DIR", "/app/data")
+    os.makedirs(fallback_dir, exist_ok=True)
+    fallback_path = os.path.join(fallback_dir, "feedback.jsonl")
+    with open(fallback_path, "a", encoding="utf-8") as f:
+        f.write(json.dumps(item, ensure_ascii=False) + "\n")
+    log.info("Feedback saved locally: %s", fallback_path)
+    item["storage"] = "local"
+    item["local_path"] = fallback_path
     return item

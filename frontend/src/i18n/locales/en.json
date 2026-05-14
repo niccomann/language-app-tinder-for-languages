@@ -794,6 +794,9 @@
     "closeButton": "Close",
     "submitButton": "Send comment",
     "sendingButton": "Sending…",
+    "continueButton": "Continue",
+    "backButton": "Back",
+    "skipButton": "Skip",
     "persona": {
       "sectionTitle": "About you",
       "sectionHint": "Help us understand who the feedback is coming from (optional).",

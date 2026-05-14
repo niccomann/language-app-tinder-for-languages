@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Brain, ChevronDown, Database, Gauge, Layers } from 'lucide-react';
 import { UI_RADIUS, UI_SIZE } from './ui';
 import { useCopy } from '../i18n/languageContext';
@@ -32,6 +33,8 @@ interface LearningSystemMenuProps {
 
 export function LearningSystemMenu({ isOpen, onToggle }: LearningSystemMenuProps) {
   const copy = useCopy();
+  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
+
   return (
     <section className={`${UI_RADIUS.surface} border border-hairline bg-canvas p-3`}>
       <button
@@ -45,12 +48,7 @@ export function LearningSystemMenu({ isOpen, onToggle }: LearningSystemMenuProps
           <span className={`flex h-10 w-10 shrink-0 items-center justify-center ${UI_RADIUS.control} bg-primary text-on-primary`}>
             <Brain size={19} />
           </span>
-          <span className="min-w-0">
-            <span className="block text-body-sm font-semibold text-ink">{copy.learningSystemMenu.title}</span>
-            <span className="block text-caption font-medium leading-5 text-muted">
-              {copy.learningSystemMenu.subtitle}
-            </span>
-          </span>
+          <span className="block text-title-sm font-semibold text-ink truncate">{copy.learningSystemMenu.title}</span>
         </span>
         <ChevronDown
           size={20}
@@ -60,17 +58,31 @@ export function LearningSystemMenu({ isOpen, onToggle }: LearningSystemMenuProps
 
       {isOpen && (
         <div id="learning-system-menu" className="mt-3 grid gap-2">
-          {learningSystemItems.map((item) => {
+          {learningSystemItems.map((item, idx) => {
             const Icon = item.icon;
+            const expanded = expandedIdx === idx;
             return (
-              <div key={item.title} className={`flex gap-3 ${UI_RADIUS.control} bg-surface-card p-3`}>
-                <span className={`mt-0.5 flex ${UI_SIZE.smallIcon} shrink-0 items-center justify-center ${UI_RADIUS.control} bg-canvas text-primary border border-hairline`}>
-                  <Icon size={17} />
-                </span>
-                <div>
-                  <h3 className="text-body-sm font-semibold text-ink">{item.title}</h3>
-                  <p className="mt-1 text-body-sm font-medium leading-6 text-muted">{item.text}</p>
-                </div>
+              <div key={item.title} className={`${UI_RADIUS.control} bg-surface-card`}>
+                <button
+                  type="button"
+                  onClick={() => setExpandedIdx(expanded ? null : idx)}
+                  aria-expanded={expanded}
+                  className={`flex w-full items-center gap-3 ${UI_RADIUS.control} p-3 text-left transition hover:bg-surface-cream-strong focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2`}
+                >
+                  <span className={`flex ${UI_SIZE.smallIcon} shrink-0 items-center justify-center ${UI_RADIUS.control} bg-canvas text-primary border border-hairline`}>
+                    <Icon size={17} />
+                  </span>
+                  <span className="flex-1 text-title-sm font-semibold text-ink">{item.title}</span>
+                  <ChevronDown
+                    size={16}
+                    className={`shrink-0 text-muted transition-transform ${expanded ? 'rotate-180' : ''}`}
+                  />
+                </button>
+                {expanded && (
+                  <p className="px-3 pb-3 text-body-sm font-medium leading-6 text-muted">
+                    {item.text}
+                  </p>
+                )}
               </div>
             );
           })}

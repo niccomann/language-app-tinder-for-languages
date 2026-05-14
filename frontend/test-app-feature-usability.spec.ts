@@ -48,8 +48,8 @@ test('primary app features render usable and consistent surfaces', async ({ page
   await markFeatureGuidesSeen(page);
 
   await page.goto(`${APP_URL}/`);
-  await expect(page.getByRole('heading', { name: 'German Learning Path' })).toBeVisible({ timeout: 15000 });
-  await expect(page.getByText('Daily Learning Snapshot')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText("Today's snapshot")).toBeVisible();
   await expectInViewport(page, page.getByRole('button', { name: 'Continue path' }));
   await expectNoHorizontalOverflow(page);
   await page.getByRole('button', { name: 'Continue path' }).click();

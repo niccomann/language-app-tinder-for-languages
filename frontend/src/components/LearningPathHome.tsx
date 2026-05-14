@@ -161,34 +161,30 @@ export function LearningPathHome({
             <button
               type="button"
               onClick={() => navigate(nextMission.route)}
-              className={`${UI_RADIUS.surface} ${UI_INTERACTION.transition} flex w-full items-start gap-3 border border-hairline bg-canvas p-4 text-left hover:bg-surface-card`}
+              className={`${UI_RADIUS.surface} ${UI_INTERACTION.transition} flex w-full items-center gap-3 border border-hairline bg-canvas p-4 text-left hover:bg-surface-card`}
             >
               <span
                 className={`${UI_RADIUS.touchIcon} flex h-10 w-10 shrink-0 items-center justify-center bg-accent-teal text-ink`}
               >
                 <Puzzle size={18} />
               </span>
-              <span className="min-w-0">
+              <span className="min-w-0 flex-1">
                 <span className={`block ${EYEBROW_CLASS} text-accent-teal`}>
                   {t.next.nextChallengeEyebrow}
                 </span>
-                <span className="mt-1 block text-body-md font-semibold text-ink">{nextMission.title}</span>
-                <span className="mt-1 block text-body-sm text-muted">
-                  {t.next.nextChallengeBody}
-                </span>
+                <span className="mt-1 block text-body-md font-semibold text-ink truncate">{nextMission.title}</span>
               </span>
+              <ChevronRight size={18} className="text-muted-soft shrink-0" />
             </button>
           )}
           <PathToolButton
             icon={<BookOpenCheck size={18} />}
             title={t.next.reviewToolsTitle}
-            body={formatCopy(t.next.reviewToolsBody, { selected: selectedCategoriesCount, total: categoriesCount || 0 })}
             onOpen={() => navigate('/review')}
           />
           <PathToolButton
             icon={<Compass size={18} />}
             title={t.next.exploreToolsTitle}
-            body={t.next.exploreToolsBody}
             onOpen={() => navigate('/explore')}
           />
         </div>
@@ -239,14 +235,11 @@ export function LearningPathHome({
           </SurfacePanel>
         )}
 
-        <SurfacePanel padding="lg" className="space-y-3">
+        <SurfacePanel padding="lg" className="space-y-2">
           <p className={`${EYEBROW_CLASS} text-muted`}>{t.home.snapshotEyebrow}</p>
           <h2 className="font-display text-display-sm font-normal tracking-[-0.3px] text-ink">
             {getLearningTrendLabel(learningSummary)}
           </h2>
-          <p className="text-body-sm font-medium text-muted">
-            {t.home.snapshotBody}
-          </p>
         </SurfacePanel>
 
         <button
@@ -270,9 +263,6 @@ export function LearningPathHome({
               </span>
             </span>
           </span>
-          <span className="text-body-sm font-medium leading-5 text-on-primary/85">
-            {formatCopy(primaryMission.description, { language: languageName })}
-          </span>
           <span
             className={`${UI_RADIUS.pill} bg-canvas px-3 py-2 text-caption font-medium text-primary`}
           >
@@ -283,22 +273,18 @@ export function LearningPathHome({
         <nav aria-label="Path sections" className="mt-2 flex flex-col gap-2">
           <PathSectionLink
             label={t.home.linkFull}
-            sub={formatCopy(t.home.linkFullSub, { level: display.pathLevel })}
             onClick={() => navigate('/path/full')}
           />
           <PathSectionLink
             label={t.home.linkStats}
-            sub={t.home.linkStatsSub}
             onClick={() => navigate('/path/stats')}
           />
           <PathSectionLink
             label={t.home.linkDiary}
-            sub={formatCopy(t.home.linkDiarySub, { reviewed: progress.cards_reviewed, total: totalCards || 0 })}
             onClick={() => navigate('/path/diary')}
           />
           <PathSectionLink
             label={t.home.linkNext}
-            sub={t.home.linkNextSub}
             onClick={() => navigate('/path/next')}
           />
         </nav>
@@ -309,11 +295,9 @@ export function LearningPathHome({
 
 function PathSectionLink({
   label,
-  sub,
   onClick,
 }: {
   label: string;
-  sub: string;
   onClick: () => void;
 }) {
   return (
@@ -322,11 +306,8 @@ function PathSectionLink({
       onClick={onClick}
       className={`${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} flex w-full items-center justify-between gap-3 border border-hairline bg-canvas px-4 py-3 text-left hover:bg-surface-card`}
     >
-      <span className="min-w-0">
-        <span className="block text-body-sm font-semibold text-ink">{label}</span>
-        <span className="mt-0.5 block text-caption font-medium text-muted">{sub}</span>
-      </span>
-      <ChevronRight size={18} className="text-muted-soft" />
+      <span className="block text-title-sm font-semibold text-ink truncate">{label}</span>
+      <ChevronRight size={18} className="text-muted-soft shrink-0" />
     </button>
   );
 }
@@ -432,29 +413,25 @@ function DiaryTimeline({
 function PathToolButton({
   icon,
   title,
-  body,
   onOpen,
 }: {
   icon: ReactNode;
   title: string;
-  body: string;
   onOpen: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onOpen}
-      className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} flex w-full items-start gap-3 border border-hairline bg-canvas p-4 text-left hover:bg-surface-card`}
+      className={`${UI_RADIUS.control} ${UI_INTERACTION.transition} flex w-full items-center gap-3 border border-hairline bg-canvas p-4 text-left hover:bg-surface-card`}
     >
       <span
         className={`${UI_RADIUS.touchIcon} flex h-10 w-10 shrink-0 items-center justify-center bg-ink text-canvas`}
       >
         {icon}
       </span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-body-sm font-semibold text-ink">{title}</span>
-        <span className="mt-1 block text-caption font-medium leading-5 text-muted">{body}</span>
-      </span>
+      <span className="block flex-1 text-title-sm font-semibold text-ink truncate">{title}</span>
+      <ChevronRight size={18} className="text-muted-soft shrink-0" />
     </button>
   );
 }

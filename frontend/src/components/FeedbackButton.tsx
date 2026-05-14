@@ -1,5 +1,5 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
-import { MessageSquarePlus, ThumbsDown, ThumbsUp, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, MessageSquarePlus, ThumbsDown, ThumbsUp, X } from 'lucide-react';
 import { api } from '../services/api';
 import { Button, UI_INTERACTION, UI_RADIUS } from './ui';
 import { useCopy } from '../i18n/languageContext';
@@ -16,6 +16,24 @@ type Gender = 'woman' | 'man' | 'other' | 'undisclosed';
 type NativeLanguage = 'it' | 'en' | 'es' | 'de' | 'fr' | 'pt' | 'other';
 type GermanLevel = 'a1' | 'a2' | 'b1' | 'b2' | 'c1' | 'c2' | 'none';
 
+interface Persona {
+  nickname: string;
+  age: string;
+  profession: Profession | '';
+  gender: Gender | '';
+  nativeLanguage: NativeLanguage | '';
+  germanLevel: GermanLevel | '';
+}
+
+const EMPTY_PERSONA: Persona = {
+  nickname: '',
+  age: '',
+  profession: '',
+  gender: '',
+  nativeLanguage: '',
+  germanLevel: '',
+};
+
 type Status =
   | { kind: 'idle' }
   | { kind: 'sending' }
@@ -27,6 +45,11 @@ const GENDER_OPTIONS: Gender[] = ['woman', 'man', 'other', 'undisclosed'];
 const NATIVE_LANGUAGE_OPTIONS: NativeLanguage[] = ['it', 'en', 'es', 'de', 'fr', 'pt', 'other'];
 const GERMAN_LEVEL_OPTIONS: GermanLevel[] = ['a1', 'a2', 'b1', 'b2', 'c1', 'c2', 'none'];
 
+const HEADING_CLASS = 'font-display font-normal text-display-sm tracking-[-0.3px] text-ink';
+const FIELD_CLASS = `w-full ${UI_RADIUS.control} border border-hairline bg-canvas px-3 py-2 text-body-sm text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15`;
+const INPUT_CLASS = `${FIELD_CLASS} placeholder:text-muted-soft`;
+const LABEL_CLASS = 'block text-caption font-medium text-body-strong mb-1';
+
 export function FeedbackButton({
   triggerClassName,
   triggerLabel,
@@ -34,28 +57,19 @@ export function FeedbackButton({
 }: FeedbackButtonProps = {}) {
   const copy = useCopy();
   const f = copy.feedbackForm;
-  const p = f.persona;
   const defaultLabel = copy.feedbackButton.defaultUser;
   const [open, setOpen] = useState(false);
+  const [step, setStep] = useState<1 | 2>(1);
   const [message, setMessage] = useState('');
   const [sentiment, setSentiment] = useState<Sentiment>('neutral');
-  const [nickname, setNickname] = useState('');
-  const [age, setAge] = useState('');
-  const [profession, setProfession] = useState<Profession | ''>('');
-  const [gender, setGender] = useState<Gender | ''>('');
-  const [nativeLanguage, setNativeLanguage] = useState<NativeLanguage | ''>('');
-  const [germanLevel, setGermanLevel] = useState<GermanLevel | ''>('');
+  const [persona, setPersona] = useState<Persona>(EMPTY_PERSONA);
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
 
   const reset = () => {
+    setStep(1);
     setMessage('');
     setSentiment('neutral');
-    setNickname('');
-    setAge('');
-    setProfession('');
-    setGender('');
-    setNativeLanguage('');
-    setGermanLevel('');
+    setPersona(EMPTY_PERSONA);
     setStatus({ kind: 'idle' });
   };
 
@@ -64,36 +78,41 @@ export function FeedbackButton({
     setTimeout(reset, 200);
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const submitNow = async () => {
     if (status.kind === 'sending') return;
     const trimmed = message.trim();
     if (!trimmed) return;
     setStatus({ kind: 'sending' });
     try {
-      const ageNumber = age.trim() ? Number(age) : undefined;
+      const ageNumber = persona.age.trim() ? Number(persona.age) : undefined;
       const res = await api.submitFeedback({
         message: trimmed,
         sentiment,
         source_url: typeof window !== 'undefined' ? window.location.href : undefined,
-        nickname: nickname.trim() || undefined,
+        nickname: persona.nickname.trim() || undefined,
         age: Number.isFinite(ageNumber) ? (ageNumber as number) : undefined,
-        profession: profession || undefined,
-        gender: gender || undefined,
-        native_language: nativeLanguage || undefined,
-        german_level: germanLevel || undefined,
+        profession: persona.profession || undefined,
+        gender: persona.gender || undefined,
+        native_language: persona.nativeLanguage || undefined,
+        german_level: persona.germanLevel || undefined,
       });
       setStatus({ kind: 'success', id: res.id });
-      setMessage('');
     } catch (err) {
       const detail = err instanceof Error ? err.message : 'Unexpected error';
       setStatus({ kind: 'error', message: detail });
     }
   };
 
-  const selectClass = `w-full ${UI_RADIUS.control} border border-hairline bg-canvas px-3 py-2 text-body-sm text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15`;
-  const inputClass = `w-full ${UI_RADIUS.control} border border-hairline bg-canvas px-3 py-2 text-body-sm text-ink placeholder:text-muted-soft focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15`;
-  const labelClass = 'block text-caption font-medium text-body-strong mb-1';
+  const handleStep1Submit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!message.trim()) return;
+    setStep(2);
+  };
+
+  const handleStep2Submit = (e: FormEvent) => {
+    e.preventDefault();
+    submitNow();
+  };
 
   return (
     <>
@@ -132,169 +151,222 @@ export function FeedbackButton({
               <X size={18} />
             </button>
 
-            <p className="text-caption-uppercase tracking-[1.5px] font-medium uppercase text-primary">
-              {f.eyebrow}
-            </p>
-            <h2 className="mt-2 font-display font-normal text-display-sm tracking-[-0.3px] text-ink">
-              {f.title}
-            </h2>
-            <p className="mt-2 text-body-sm text-muted">
-              {f.body}
-            </p>
+            <div className="flex items-center gap-2 text-caption-uppercase tracking-[1.5px] font-medium uppercase text-primary">
+              <span>{f.eyebrow}</span>
+              <span className="text-muted-soft">·</span>
+              <span className="text-muted">{step} / 2</span>
+            </div>
 
-            <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-4">
-              <div className="flex gap-2">
-                <SentimentChip
-                  label={f.like}
-                  icon={<ThumbsUp size={16} />}
-                  active={sentiment === 'like'}
-                  onClick={() => setSentiment('like')}
-                  activeClass="bg-success text-ink border-transparent"
-                />
-                <SentimentChip
-                  label={f.dislike}
-                  icon={<ThumbsDown size={16} />}
-                  active={sentiment === 'dislike'}
-                  onClick={() => setSentiment('dislike')}
-                  activeClass="bg-error text-on-primary border-transparent"
-                />
-                <SentimentChip
-                  label={f.neutral}
-                  active={sentiment === 'neutral'}
-                  onClick={() => setSentiment('neutral')}
-                  activeClass="bg-surface-cream-strong text-ink border-transparent"
-                />
-              </div>
-
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder={f.placeholder}
-                rows={5}
-                maxLength={4000}
-                className={`w-full ${UI_RADIUS.control} border border-hairline bg-canvas px-3.5 py-3 text-body-md text-ink placeholder:text-muted-soft focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15`}
-              />
-
-              <div className={`${UI_RADIUS.control} border border-hairline bg-surface-card p-4`}>
-                <p className="text-caption-uppercase tracking-[1.5px] font-medium uppercase text-muted">
-                  {p.sectionTitle}
-                </p>
-                <p className="mt-1 text-caption text-muted">{p.sectionHint}</p>
-
-                <div className="mt-3 grid grid-cols-2 gap-3">
-                  <div className="col-span-2 sm:col-span-1">
-                    <label className={labelClass} htmlFor="fb-nickname">{p.nicknameLabel}</label>
-                    <input
-                      id="fb-nickname"
-                      type="text"
-                      value={nickname}
-                      onChange={(e) => setNickname(e.target.value)}
-                      placeholder={p.nicknamePlaceholder}
-                      maxLength={64}
-                      className={inputClass}
-                    />
-                  </div>
-                  <div className="col-span-2 sm:col-span-1">
-                    <label className={labelClass} htmlFor="fb-age">{p.ageLabel}</label>
-                    <input
-                      id="fb-age"
-                      type="number"
-                      inputMode="numeric"
-                      min={5}
-                      max={120}
-                      value={age}
-                      onChange={(e) => setAge(e.target.value)}
-                      placeholder={p.agePlaceholder}
-                      className={inputClass}
-                    />
-                  </div>
-                  <div className="col-span-2 sm:col-span-1">
-                    <label className={labelClass} htmlFor="fb-profession">{p.professionLabel}</label>
-                    <select
-                      id="fb-profession"
-                      value={profession}
-                      onChange={(e) => setProfession(e.target.value as Profession | '')}
-                      className={selectClass}
-                    >
-                      <option value="">{p.professionPlaceholder}</option>
-                      {PROFESSION_OPTIONS.map((opt) => (
-                        <option key={opt} value={opt}>{p.professionOptions[opt]}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="col-span-2 sm:col-span-1">
-                    <label className={labelClass} htmlFor="fb-gender">{p.genderLabel}</label>
-                    <select
-                      id="fb-gender"
-                      value={gender}
-                      onChange={(e) => setGender(e.target.value as Gender | '')}
-                      className={selectClass}
-                    >
-                      <option value="">{p.genderPlaceholder}</option>
-                      {GENDER_OPTIONS.map((opt) => (
-                        <option key={opt} value={opt}>{p.genderOptions[opt]}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="col-span-2 sm:col-span-1">
-                    <label className={labelClass} htmlFor="fb-native">{p.nativeLanguageLabel}</label>
-                    <select
-                      id="fb-native"
-                      value={nativeLanguage}
-                      onChange={(e) => setNativeLanguage(e.target.value as NativeLanguage | '')}
-                      className={selectClass}
-                    >
-                      <option value="">{p.nativeLanguagePlaceholder}</option>
-                      {NATIVE_LANGUAGE_OPTIONS.map((opt) => (
-                        <option key={opt} value={opt}>{p.nativeLanguageOptions[opt]}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="col-span-2 sm:col-span-1">
-                    <label className={labelClass} htmlFor="fb-german">{p.germanLevelLabel}</label>
-                    <select
-                      id="fb-german"
-                      value={germanLevel}
-                      onChange={(e) => setGermanLevel(e.target.value as GermanLevel | '')}
-                      className={selectClass}
-                    >
-                      <option value="">{p.germanLevelPlaceholder}</option>
-                      {GERMAN_LEVEL_OPTIONS.map((opt) => (
-                        <option key={opt} value={opt}>{p.germanLevelOptions[opt]}</option>
-                      ))}
-                    </select>
-                  </div>
+            {status.kind === 'success' ? (
+              <>
+                <h2 className={`mt-2 ${HEADING_CLASS}`}>{f.title}</h2>
+                <p className="mt-4 text-body-sm font-medium text-success">{f.successMessage}</p>
+                <div className="mt-5 flex justify-end">
+                  <Button variant="primary" type="button" onClick={closeModal}>
+                    {f.closeButton}
+                  </Button>
                 </div>
-              </div>
+              </>
+            ) : step === 1 ? (
+              <form onSubmit={handleStep1Submit} className="mt-3 flex flex-col gap-4">
+                <h2 className={HEADING_CLASS}>{f.title}</h2>
 
-              {status.kind === 'success' && (
-                <p className="text-body-sm font-medium text-success">
-                  {f.successMessage}
-                </p>
-              )}
-              {status.kind === 'error' && (
-                <p className="text-body-sm font-medium text-error">
-                  {f.errorMessagePrefix}: {status.message}
-                </p>
-              )}
+                <div className="flex gap-2">
+                  <SentimentChip
+                    label={f.like}
+                    icon={<ThumbsUp size={16} />}
+                    active={sentiment === 'like'}
+                    onClick={() => setSentiment('like')}
+                    activeClass="bg-success text-ink border-transparent"
+                  />
+                  <SentimentChip
+                    label={f.dislike}
+                    icon={<ThumbsDown size={16} />}
+                    active={sentiment === 'dislike'}
+                    onClick={() => setSentiment('dislike')}
+                    activeClass="bg-error text-on-primary border-transparent"
+                  />
+                  <SentimentChip
+                    label={f.neutral}
+                    active={sentiment === 'neutral'}
+                    onClick={() => setSentiment('neutral')}
+                    activeClass="bg-surface-cream-strong text-ink border-transparent"
+                  />
+                </div>
 
-              <div className="flex flex-wrap items-center justify-end gap-2">
-                <Button variant="secondary" type="button" onClick={closeModal}>
-                  {f.closeButton}
-                </Button>
-                <Button
-                  variant="primary"
-                  type="submit"
-                  disabled={!message.trim() || status.kind === 'sending'}
-                >
-                  {status.kind === 'sending' ? f.sendingButton : f.submitButton}
-                </Button>
-              </div>
-            </form>
+                <textarea
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder={f.placeholder}
+                  rows={5}
+                  maxLength={4000}
+                  autoFocus
+                  className={`w-full ${UI_RADIUS.control} border border-hairline bg-canvas px-3.5 py-3 text-body-md text-ink placeholder:text-muted-soft focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15`}
+                />
+
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                  <Button variant="secondary" type="button" onClick={closeModal}>
+                    {f.closeButton}
+                  </Button>
+                  <Button variant="primary" type="submit" disabled={!message.trim()}>
+                    <span className="inline-flex items-center gap-1.5">
+                      {f.continueButton}
+                      <ArrowRight size={14} />
+                    </span>
+                  </Button>
+                </div>
+              </form>
+            ) : (
+              <PersonaForm
+                persona={persona}
+                onChange={(patch) => setPersona((current) => ({ ...current, ...patch }))}
+                copy={f}
+                sending={status.kind === 'sending'}
+                error={status.kind === 'error' ? status.message : null}
+                onBack={() => setStep(1)}
+                onSkip={submitNow}
+                onSubmit={handleStep2Submit}
+              />
+            )}
           </div>
         </div>
       )}
     </>
+  );
+}
+
+function PersonaForm({
+  persona,
+  onChange,
+  copy: f,
+  sending,
+  error,
+  onBack,
+  onSkip,
+  onSubmit,
+}: {
+  persona: Persona;
+  onChange: (patch: Partial<Persona>) => void;
+  copy: ReturnType<typeof useCopy>['feedbackForm'];
+  sending: boolean;
+  error: string | null;
+  onBack: () => void;
+  onSkip: () => void;
+  onSubmit: (e: FormEvent) => void;
+}) {
+  const p = f.persona;
+  return (
+    <form onSubmit={onSubmit} className="mt-3 flex flex-col gap-4">
+      <h2 className={HEADING_CLASS}>{p.sectionTitle}</h2>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="col-span-2 sm:col-span-1">
+          <label className={LABEL_CLASS} htmlFor="fb-nickname">{p.nicknameLabel}</label>
+          <input
+            id="fb-nickname"
+            type="text"
+            value={persona.nickname}
+            onChange={(e) => onChange({ nickname: e.target.value })}
+            placeholder={p.nicknamePlaceholder}
+            maxLength={64}
+            className={INPUT_CLASS}
+          />
+        </div>
+        <div className="col-span-2 sm:col-span-1">
+          <label className={LABEL_CLASS} htmlFor="fb-age">{p.ageLabel}</label>
+          <input
+            id="fb-age"
+            type="number"
+            inputMode="numeric"
+            min={5}
+            max={120}
+            value={persona.age}
+            onChange={(e) => onChange({ age: e.target.value })}
+            placeholder={p.agePlaceholder}
+            className={INPUT_CLASS}
+          />
+        </div>
+        <div className="col-span-2 sm:col-span-1">
+          <label className={LABEL_CLASS} htmlFor="fb-profession">{p.professionLabel}</label>
+          <select
+            id="fb-profession"
+            value={persona.profession}
+            onChange={(e) => onChange({ profession: e.target.value as Profession | '' })}
+            className={FIELD_CLASS}
+          >
+            <option value="">{p.professionPlaceholder}</option>
+            {PROFESSION_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>{p.professionOptions[opt]}</option>
+            ))}
+          </select>
+        </div>
+        <div className="col-span-2 sm:col-span-1">
+          <label className={LABEL_CLASS} htmlFor="fb-gender">{p.genderLabel}</label>
+          <select
+            id="fb-gender"
+            value={persona.gender}
+            onChange={(e) => onChange({ gender: e.target.value as Gender | '' })}
+            className={FIELD_CLASS}
+          >
+            <option value="">{p.genderPlaceholder}</option>
+            {GENDER_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>{p.genderOptions[opt]}</option>
+            ))}
+          </select>
+        </div>
+        <div className="col-span-2 sm:col-span-1">
+          <label className={LABEL_CLASS} htmlFor="fb-native">{p.nativeLanguageLabel}</label>
+          <select
+            id="fb-native"
+            value={persona.nativeLanguage}
+            onChange={(e) => onChange({ nativeLanguage: e.target.value as NativeLanguage | '' })}
+            className={FIELD_CLASS}
+          >
+            <option value="">{p.nativeLanguagePlaceholder}</option>
+            {NATIVE_LANGUAGE_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>{p.nativeLanguageOptions[opt]}</option>
+            ))}
+          </select>
+        </div>
+        <div className="col-span-2 sm:col-span-1">
+          <label className={LABEL_CLASS} htmlFor="fb-german">{p.germanLevelLabel}</label>
+          <select
+            id="fb-german"
+            value={persona.germanLevel}
+            onChange={(e) => onChange({ germanLevel: e.target.value as GermanLevel | '' })}
+            className={FIELD_CLASS}
+          >
+            <option value="">{p.germanLevelPlaceholder}</option>
+            {GERMAN_LEVEL_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>{p.germanLevelOptions[opt]}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {error && (
+        <p className="text-body-sm font-medium text-error">
+          {f.errorMessagePrefix}: {error}
+        </p>
+      )}
+
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Button variant="secondary" type="button" onClick={onBack}>
+          <span className="inline-flex items-center gap-1.5">
+            <ArrowLeft size={14} />
+            {f.backButton}
+          </span>
+        </Button>
+        <div className="flex gap-2">
+          <Button variant="secondary" type="button" onClick={onSkip} disabled={sending}>
+            {f.skipButton}
+          </Button>
+          <Button variant="primary" type="submit" disabled={sending}>
+            {sending ? f.sendingButton : f.submitButton}
+          </Button>
+        </div>
+      </div>
+    </form>
   );
 }
 
