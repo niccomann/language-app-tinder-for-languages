@@ -397,77 +397,77 @@
     "emptyTitle": "Noch keine Signale",
     "emptyBody": "Beginne mit dem Swipe-Scan. Sobald du mit Wörtern interagierst, wird dieser Bereich zu deiner persönlichen Wortschatzkarte.",
     "emptyAction": "Vokabular-Scan starten",
-    "masteredLabel": "5-star",
+    "masteredLabel": "5 Sterne",
     "learningLabel": "3-4 Sterne",
     "weakLabel": "1-2 Sterne",
-    "unknownLabel": "0 stars",
+    "unknownLabel": "0 Sterne",
     "levelLabel": "Level"
   },
   "featureGuides": {
     "vocabularyScan": {
-      "title": "First we learn what you know",
-      "body": "Swipe through words: the ones you recognize and the ones to review become your initial profile.",
-      "actionLabel": "Show me the scan"
+      "title": "Zuerst lernen wir, was du weißt",
+      "body": "Swipe durch die Wörter: Die, die du erkennst, und die zu wiederholenden werden zu deinem Anfangsprofil.",
+      "actionLabel": "Zeig mir den Scan"
     },
     "learningPath": {
-      "title": "The path adapts",
-      "body": "Every step comes from what you just showed: strong vocabulary, weak vocabulary, and the next challenge.",
-      "actionLabel": "Show me the path"
+      "title": "Der Pfad passt sich an",
+      "body": "Jeder Schritt entsteht aus dem, was du gerade gezeigt hast: starker Wortschatz, schwacher Wortschatz und die nächste Herausforderung.",
+      "actionLabel": "Zeig mir den Pfad"
     },
     "learningFilters": {
-      "title": "Choose the training ground",
-      "body": "Filters help you train one precise area: nouns, verbs, concepts, or categories you want to reinforce.",
-      "actionLabel": "Show me the filters"
+      "title": "Wähle das Trainingsgelände",
+      "body": "Filter helfen dir, einen bestimmten Bereich zu trainieren: Substantive, Verben, Konzepte oder Kategorien, die du festigen willst.",
+      "actionLabel": "Zeig mir die Filter"
     },
     "learningSystem": {
-      "title": "The science keeps score",
-      "body": "You answer naturally. The system updates how well you know each word and when it is worth reviewing.",
-      "actionLabel": "Show me the method"
+      "title": "Die Wissenschaft führt Buch",
+      "body": "Du antwortest auf natürliche Weise. Das System aktualisiert, wie gut du jedes Wort kennst und wann es sich zu wiederholen lohnt.",
+      "actionLabel": "Zeig mir die Methode"
     },
     "sentencePlacement": {
-      "title": "Now we build sentences",
-      "body": "Knowing isolated words is not enough: here you choose the right order and train grammar, logic, and memory.",
-      "actionLabel": "Show me the sentence"
+      "title": "Jetzt bauen wir Sätze",
+      "body": "Isolierte Wörter zu kennen reicht nicht: Hier wählst du die richtige Reihenfolge und trainierst Grammatik, Logik und Gedächtnis.",
+      "actionLabel": "Zeig mir den Satz"
     },
     "library": {
-      "title": "The library is your memory",
-      "body": "Here you can find every word with translations, examples, links, and useful details for better study.",
-      "actionLabel": "Show me the library"
+      "title": "Die Bibliothek ist dein Gedächtnis",
+      "body": "Hier findest du jedes Wort mit Übersetzungen, Beispielen, Verknüpfungen und nützlichen Details zum besseren Lernen.",
+      "actionLabel": "Zeig mir die Bibliothek"
     },
     "grammarGraph": {
-      "title": "Look at the connections",
-      "body": "The graph shows how words, roles, and relationships fit together instead of staying as separate lists.",
-      "actionLabel": "Show me the graph"
+      "title": "Schau dir die Verbindungen an",
+      "body": "Der Graph zeigt, wie Wörter, Rollen und Beziehungen zusammenpassen, statt getrennte Listen zu bleiben.",
+      "actionLabel": "Zeig mir den Graphen"
     },
     "wordCloud": {
-      "title": "See what carries more weight",
-      "body": "The cloud highlights the most present or relevant words, so you know where to look first.",
-      "actionLabel": "Show me the cloud"
+      "title": "Sieh, was mehr wiegt",
+      "body": "Die Wolke hebt die präsentesten oder relevantesten Wörter hervor, damit du weißt, wo du zuerst hinsehen sollst.",
+      "actionLabel": "Zeig mir die Wolke"
     },
     "sentenceGraphBuilder": {
-      "title": "Compose with nodes",
-      "body": "This view lets you build sentences while also seeing the structure: who does what, and with which links.",
-      "actionLabel": "Show me the nodes"
+      "title": "Komponiere mit Knoten",
+      "body": "Diese Ansicht lässt dich Sätze bauen und dabei auch die Struktur sehen: wer was macht und mit welchen Verbindungen.",
+      "actionLabel": "Zeig mir die Knoten"
     },
     "sentenceComposer": {
-      "title": "Compose the simple way",
-      "body": "Here you put words in order and immediately test whether the sentence sounds correct and understandable.",
-      "actionLabel": "Show me the composer"
+      "title": "Komponiere auf einfache Weise",
+      "body": "Hier bringst du Wörter in die richtige Reihenfolge und prüfst sofort, ob der Satz korrekt und verständlich klingt.",
+      "actionLabel": "Zeig mir die Komposition"
     },
     "clusters": {
-      "title": "Group the concepts",
-      "body": "Clusters reveal word families: they help you study by blocks, not word by word.",
-      "actionLabel": "Show me the groups"
+      "title": "Gruppiere die Konzepte",
+      "body": "Cluster zeigen Wortfamilien: Sie helfen dir, in Blöcken zu lernen, nicht Wort für Wort.",
+      "actionLabel": "Zeig mir die Gruppen"
     },
     "dialects": {
-      "title": "Discover variants",
-      "body": "Language changes by area and context. This view shows where a word can take on different nuances.",
-      "actionLabel": "Show me the variants"
+      "title": "Entdecke die Varianten",
+      "body": "Sprache ändert sich je nach Region und Kontext. Diese Ansicht zeigt dir, wo ein Wort verschiedene Nuancen annehmen kann.",
+      "actionLabel": "Zeig mir die Varianten"
     },
     "hierarchy": {
-      "title": "Give the system structure",
-      "body": "The hierarchy shows levels and families: from the large concept down to more specific words.",
-      "actionLabel": "Show me the hierarchy"
+      "title": "Gib dem System Struktur",
+      "body": "Die Hierarchie zeigt Ebenen und Familien: vom großen Konzept bis zu den spezifischeren Wörtern.",
+      "actionLabel": "Zeig mir die Hierarchie"
     }
   },
   "featureGuideOverlay": {
@@ -611,8 +611,8 @@
       "title": "{{language}} lernen",
       "subline": "Entscheide, ob du ein Wort kennst — den Rest macht das System.",
       "explainerTitle": "Wie der Home-Bildschirm funktioniert",
-      "explainerBodyP1": "Home zeigt deine aktuelle Mission. Alles andere — Stats, Tagebuch, nächste Challenge — liegt auf eigenen Screens, erreichbar über die Links unten.",
-      "explainerBodyP2": "Beispiel: Um die vier Schlüsselzahlen deines Pfads (Level, Wörter, Mastery) zu sehen, tippe auf \"Deine Zahlen\".",
+      "explainerBodyP1": "Die Home zeigt deine aktuelle Mission. Alles andere — Statistiken, Tagebuch, nächste Herausforderung — liegt in eigenen Bildschirmen, erreichbar über die Links unten.",
+      "explainerBodyP2": "Beispiel: Um die vier Schlüsselzahlen deines Pfads (Level, Wörter, Beherrschung) zu sehen, tippe auf \"Deine Zahlen\".",
       "snapshotEyebrow": "Heutiger Snapshot",
       "snapshotBody": "Der 400-Level-Pfad aktualisiert sich bei jedem Swipe. Das System wählt einfachere oder schwierigere Kontexte je nach deiner Mastery.",
       "primaryCtaPill": "Weiter",
@@ -635,7 +635,7 @@
       "title": "Voller Pfad",
       "subline": "Alle 400 Levels und wo du gerade stehst.",
       "explainerTitle": "Was der 400-Level-Pfad ist",
-      "explainerBody": "Der Pfad ist in 400 Levels organisiert, die widerspiegeln, wie viel und wie gut du Wörter kennst. Jeder Swipe aktualisiert dein Level. Beispiel: Wenn du ein Wort auf Level 22 kennst, siehst du Kontexte auf diesem Level, nicht einfachere.",
+      "explainerBody": "Der Pfad ist in 400 Level gegliedert, die widerspiegeln, wie viel und wie gut du Wörter kennst. Jeder Swipe aktualisiert dein Level. Beispiel: Kennst du ein Wort auf Level 22, siehst du Kontexte für dieses Level, nicht einfachere.",
       "levelLabel": "Level {{level}}"
     },
     "stats": {
@@ -643,7 +643,7 @@
       "title": "Deine Zahlen",
       "subline": "Path Level, Wörter, starke Wörter und durchschnittliche Mastery.",
       "explainerTitle": "Was diese Zahlen messen",
-      "explainerBody": "Path Level ist dein Level auf dem 400er-Pfad. Words ist die Gesamtzahl der geübten Wörter. Strong ist die Anzahl Wörter mit hoher Mastery. Avg Mastery ist der Durchschnitt aller Word Confidences.",
+      "explainerBody": "Path Level ist dein Level auf dem 400er-Pfad. Words ist die Gesamtzahl geübter Wörter. Strong ist die Anzahl der Wörter mit hoher Beherrschung. Avg Mastery ist der Durchschnitt aller Wort-Konfidenzen.",
       "pathLevel": "Path Level",
       "words": "Wörter",
       "strong": "Stark",
@@ -654,7 +654,7 @@
       "title": "Lerntagebuch",
       "subline": "Die Geschichte der Pfad-Missionen, chronologisch.",
       "explainerTitle": "Wie das Tagebuch funktioniert",
-      "explainerBody": "Das Tagebuch zeigt die Schritte des 400-Level-Pfads — vergangene Missionen sind abgeschlossen, aktuelle hervorgehoben, künftige bleiben ausgegraut, bis sie freigeschaltet sind.",
+      "explainerBody": "Das Tagebuch zeigt die Schritte des 400-Level-Pfads — vergangene Missionen sind abgeschlossen, aktuelle hervorgehoben, künftige bleiben ausgegraut, bis sie freigeschaltet werden.",
       "progressEyebrow": "Aktueller Fortschritt",
       "todayPill": "{{reviewed}}/{{total}} heute"
     },
@@ -663,11 +663,11 @@
       "title": "Bereit zum Aufstieg",
       "subline": "Die nächste Challenge und empfohlene Tools, um dort hinzukommen.",
       "explainerTitle": "Wie wir entscheiden, was 'nächstes' ist",
-      "explainerBody": "Wenn das System genug Mastery-Signale sieht, schaltet es die nächste Challenge frei (z. B. Sentence Placement). Hier findest du auch Review- und Explore-Tools, die für die aktuelle Phase empfohlen werden.",
+      "explainerBody": "Wenn das System genug Beherrschungssignale sieht, schaltet es die nächste Herausforderung frei (z. B. Sentence Placement). Hier findest du auch Review- und Explore-Tools, die für die aktuelle Phase empfohlen werden.",
       "nextChallengeEyebrow": "Nächste Challenge",
       "nextChallengeBody": "Komponiere Sätze, um Grammatik, Logik und Funktionswörter zu prüfen.",
       "reviewToolsTitle": "Review-Tools",
-      "reviewToolsBody": "Your Vocabulary, Topic Deck, Word Library und Learning System. Topics {{selected}}/{{total}}.",
+      "reviewToolsBody": "Your Vocabulary, Topic Deck, Word Library und Learning System. Themen {{selected}}/{{total}}.",
       "exploreToolsTitle": "Explore-Tools",
       "exploreToolsBody": "Grammar-Training und Language-Map-Tools sind verfügbar, wenn der Pfad tiefere Arbeit verlangt."
     },
@@ -720,7 +720,7 @@
     "nextButton": "Weiter",
     "loadingView": "Lade View...",
     "noSentencesTitle": "Noch keine Grammar-Sätze",
-    "noSentencesBody": "Das Lab kann den Builder, Clusters, Dialect Map, Hierarchy und Word Cloud auch ohne Satzdaten nutzen.",
+    "noSentencesBody": "Das Labor kann Builder, Cluster, Dialektkarte, Hierarchie und Wortwolke weiter nutzen, auch wenn keine Satzdaten vorhanden sind.",
     "openBuilderButton": "Build Sentence",
     "playCachedTitle": "Abspielen (gecacht)",
     "playGenerateTitle": "Generieren & abspielen",
@@ -736,43 +736,43 @@
         "eyebrow": "Grammar · Sentence graph",
         "title": "Sentence Graph",
         "subline": "Grammatische Beziehungen zwischen den Wörtern jedes Satzes.",
-        "body": "Sieh den Grammar-Graph eines Satzes: jedes Wort ist ein Knoten, jede Beziehung (Subjekt, Objekt, Modifier) eine Kante. Tippe einen Knoten an, um Kasus, Genus, Tempus zu sehen."
+        "body": "Sieh den Grammatikgraphen eines Satzes: Jedes Wort ist ein Knoten, jede Beziehung (Subjekt, Objekt, Modifikator) eine Kante. Tippe einen Knoten an, um Fall, Genus, Zeit zu sehen."
       },
       "wordcloud": {
         "eyebrow": "Grammar · Word cloud",
         "title": "Word Cloud",
         "subline": "Wie häufig die Wörter sind, die du gesehen hast.",
-        "body": "Größere Wörter sind die, die du am häufigsten gesehen oder geswipt hast. Tippe ein Wort an, um Details zu öffnen."
+        "body": "Größere Wörter sind die am häufigsten gesehenen oder geswipten. Tippe ein Wort an, um sein Detail zu öffnen."
       },
       "builder": {
         "eyebrow": "Grammar · Build sentence",
         "title": "Build Sentence",
         "subline": "Baue grammatikalische Sätze aus einer Word Bank.",
-        "body": "Ziehe oder tippe Tiles, um einen Satz zusammenzusetzen. Das System prüft die grammatische Struktur."
+        "body": "Ziehe oder tippe Kacheln, um einen Satz zusammenzusetzen. Das System prüft die grammatische Struktur."
       },
       "funbuilder": {
         "eyebrow": "Grammar · Compose sentence",
         "title": "Compose Sentence",
         "subline": "Spielerische Builder-Variante mit reicheren Tiles.",
-        "body": "Builder-Variante mit spielerischer Interaktion: wähle Tiles, komponiere den Satz, sieh Feedback."
+        "body": "Builder-Variante mit verspielterer Interaktion: Kacheln wählen, Satz komponieren, Feedback sehen."
       },
       "clusters": {
         "eyebrow": "Grammar · Clusters",
         "title": "Clusters",
         "subline": "Semantische Gruppen und Nachbarschaften verwandter Wörter.",
-        "body": "Wörter werden nach ähnlicher Bedeutung gruppiert. Beispiel: alle Bewegungsverben landen im selben Cluster."
+        "body": "Wörter werden nach ähnlicher Bedeutung gruppiert. Beispiel: Alle Bewegungsverben landen im selben Cluster."
       },
       "dialects": {
         "eyebrow": "Grammar · Dialects",
         "title": "Dialects",
         "subline": "Regionale Varianten des Vokabulars der Zielsprache.",
-        "body": "Sieh, wie sich dasselbe Wort in verschiedenen Regionen ändert (z. B. Deutschland, Österreich, Schweiz)."
+        "body": "Sieh, wie sich dasselbe Wort in verschiedenen Regionen ändern kann (z. B. Deutschland, Österreich, Schweiz)."
       },
       "sunburst": {
         "eyebrow": "Grammar · Hierarchy",
         "title": "Hierarchy",
         "subline": "Hierarchische Struktur von Konzepten und Kategorien.",
-        "body": "Ein Krone-Chart, das zeigt, wie Makro-Kategorien Unterkategorien und Wörter enthalten."
+        "body": "Ein Kronendiagramm, das zeigt, wie Makrokategorien Unterkategorien und Wörter enthalten."
       }
     }
   },
@@ -781,8 +781,8 @@
     "title": "Grammar Lab",
     "subline": "Sieben Tools, um Grammatik und Vokabular zu analysieren.",
     "explainerTitle": "Was du im Grammar Lab findest",
-    "explainerBodyP1": "Das Grammar Lab ist die Toolbox zum Analysieren der Zielsprache. Jedes Tool beantwortet eine andere Frage.",
-    "explainerBodyP2": "Beispiel: Sentence Graph zeigt, wie die Wörter eines Satzes verbunden sind; Word Cloud zeigt, welche Wörter am häufigsten erscheinen. Öffne sie einzeln.",
+    "explainerBodyP1": "Das Grammar Lab ist der Werkzeugkasten zur Analyse der Zielsprache. Jedes Tool beantwortet eine andere Frage.",
+    "explainerBodyP2": "Beispiel: Sentence Graph zeigt, wie die Wörter eines Satzes verbunden sind; Word Cloud zeigt, welche Wörter am häufigsten vorkommen. Öffne sie einzeln.",
     "entries": {
       "graph": {
         "title": "Sentence Graph",
@@ -819,7 +819,7 @@
     "modalAria": "Tester-Feedback-Formular",
     "eyebrow": "Tester feedback",
     "title": "Was denkst du?",
-    "body": "Hinterlasse einen Kommentar zum Design, zu einem Feature, das du magst oder nicht. Wird für die Entwickler dauerhaft gespeichert.",
+    "body": "Hinterlasse einen Kommentar zum Design, zu einer Funktion, die dir gefällt oder nicht. Er wird dauerhaft für die Entwickler gespeichert.",
     "closeAria": "Schließen",
     "like": "Gefällt mir",
     "dislike": "Gefällt mir nicht",
@@ -885,7 +885,7 @@
   "bottomNav": {
     "path": "Pfad",
     "learn": "Lernen",
-    "review": "Review",
+    "review": "Wiederholen",
     "explore": "Erkunden"
   },
   "library": {
@@ -915,7 +915,7 @@
     "clearLabel": "Löschen",
     "searchPlaceholder": "Wort oder Übersetzung suchen...",
     "showingCount": "Zeige {{visible}} von {{total}} Wörtern",
-    "loading": "(loading...)",
+    "loading": "(lädt...)",
     "statNotViewed": "Ungesehen",
     "loadingWords": "Lade Wörter...",
     "errorTitle": "Fehler"
@@ -994,10 +994,10 @@
   "featureHubScreen": {
     "review": {
       "eyebrow": "Review · Hub",
-      "title": "Review & Setup",
-      "subtitle": "Tools sind hier gruppiert, damit der Pfad fokussiert bleibt. Topics {{selected}}/{{total}} aktiv.",
+      "title": "Wiederholung & Einrichtung",
+      "subtitle": "Die Tools sind hier gruppiert, damit der Pfad fokussiert bleibt. Themen {{selected}}/{{total}} aktiv.",
       "sectionTitle": "Review & Setup",
-      "sectionBody": "Passe das Deck an, inspiziere bekannte Wörter, öffne die Library oder schaue, wie das Learning System die Memory bewertet."
+      "sectionBody": "Stelle das Deck ein, inspiziere bekannte Wörter, öffne die Bibliothek oder sieh nach, wie das Lernsystem das Gedächtnis bewertet."
     },
     "exploreGrammar": {
       "eyebrow": "Explore · Grammar training",
@@ -1016,11 +1016,11 @@
     },
     "grammarTraining": {
       "title": "Grammar-Training",
-      "body": "Nutze sie, wenn der Pfad Satzlogik, Grammar-Übung oder Builder-Tools verlangt."
+      "body": "Nutze sie, wenn der Pfad Satzlogik, Grammatikübung oder Builder-Tools braucht."
     },
     "languageMap": {
       "title": "Language Map",
-      "body": "Erkunde Beziehungen, Clusters, Dialekte und Hierarchy, wenn du das System untersuchen willst."
+      "body": "Erkunde Beziehungen, Cluster, Dialekte und Hierarchie, wenn du das System inspizieren willst."
     }
   },
   "learningScreen": {

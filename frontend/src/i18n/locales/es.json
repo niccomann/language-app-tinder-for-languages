@@ -405,69 +405,69 @@
   },
   "featureGuides": {
     "vocabularyScan": {
-      "title": "First we learn what you know",
-      "body": "Swipe through words: the ones you recognize and the ones to review become your initial profile.",
-      "actionLabel": "Show me the scan"
+      "title": "Primero aprendemos lo que sabes",
+      "body": "Desliza por las palabras: las que reconoces y las que hay que repasar se convierten en tu perfil inicial.",
+      "actionLabel": "Muéstrame el escaneo"
     },
     "learningPath": {
-      "title": "The path adapts",
-      "body": "Every step comes from what you just showed: strong vocabulary, weak vocabulary, and the next challenge.",
-      "actionLabel": "Show me the path"
+      "title": "El camino se adapta",
+      "body": "Cada paso surge de lo que acabas de mostrar: vocabulario fuerte, vocabulario débil y el siguiente reto.",
+      "actionLabel": "Muéstrame el camino"
     },
     "learningFilters": {
-      "title": "Choose the training ground",
-      "body": "Filters help you train one precise area: nouns, verbs, concepts, or categories you want to reinforce.",
-      "actionLabel": "Show me the filters"
+      "title": "Elige el terreno de entrenamiento",
+      "body": "Los filtros te ayudan a entrenar un área precisa: sustantivos, verbos, conceptos o categorías que quieras reforzar.",
+      "actionLabel": "Muéstrame los filtros"
     },
     "learningSystem": {
-      "title": "The science keeps score",
-      "body": "You answer naturally. The system updates how well you know each word and when it is worth reviewing.",
-      "actionLabel": "Show me the method"
+      "title": "La ciencia lleva la cuenta",
+      "body": "Respondes de forma natural. El sistema actualiza cuánto conoces cada palabra y cuándo conviene repasarla.",
+      "actionLabel": "Muéstrame el método"
     },
     "sentencePlacement": {
-      "title": "Now we build sentences",
-      "body": "Knowing isolated words is not enough: here you choose the right order and train grammar, logic, and memory.",
-      "actionLabel": "Show me the sentence"
+      "title": "Ahora construimos frases",
+      "body": "No basta con saber palabras aisladas: aquí eliges el orden correcto y entrenas gramática, lógica y memoria.",
+      "actionLabel": "Muéstrame la frase"
     },
     "library": {
-      "title": "The library is your memory",
-      "body": "Here you can find every word with translations, examples, links, and useful details for better study.",
-      "actionLabel": "Show me the library"
+      "title": "La biblioteca es tu memoria",
+      "body": "Aquí encuentras cada palabra con traducciones, ejemplos, enlaces y detalles útiles para estudiar mejor.",
+      "actionLabel": "Muéstrame la biblioteca"
     },
     "grammarGraph": {
-      "title": "Look at the connections",
-      "body": "The graph shows how words, roles, and relationships fit together instead of staying as separate lists.",
-      "actionLabel": "Show me the graph"
+      "title": "Mira las conexiones",
+      "body": "El grafo muestra cómo encajan palabras, roles y relaciones, en lugar de quedar como listas separadas.",
+      "actionLabel": "Muéstrame el grafo"
     },
     "wordCloud": {
-      "title": "See what carries more weight",
-      "body": "The cloud highlights the most present or relevant words, so you know where to look first.",
-      "actionLabel": "Show me the cloud"
+      "title": "Mira qué pesa más",
+      "body": "La nube destaca las palabras más presentes o relevantes, así sabes dónde mirar primero.",
+      "actionLabel": "Muéstrame la nube"
     },
     "sentenceGraphBuilder": {
-      "title": "Compose with nodes",
-      "body": "This view lets you build sentences while also seeing the structure: who does what, and with which links.",
-      "actionLabel": "Show me the nodes"
+      "title": "Compón con nodos",
+      "body": "Esta vista te deja construir frases viendo también la estructura: quién hace qué y con qué enlaces.",
+      "actionLabel": "Muéstrame los nodos"
     },
     "sentenceComposer": {
-      "title": "Compose the simple way",
-      "body": "Here you put words in order and immediately test whether the sentence sounds correct and understandable.",
-      "actionLabel": "Show me the composer"
+      "title": "Compón de forma sencilla",
+      "body": "Aquí pones las palabras en orden y compruebas enseguida si la frase suena correcta y comprensible.",
+      "actionLabel": "Muéstrame la composición"
     },
     "clusters": {
-      "title": "Group the concepts",
-      "body": "Clusters reveal word families: they help you study by blocks, not word by word.",
-      "actionLabel": "Show me the groups"
+      "title": "Agrupa los conceptos",
+      "body": "Los clústeres revelan familias de palabras: te ayudan a estudiar por bloques, no palabra por palabra.",
+      "actionLabel": "Muéstrame los grupos"
     },
     "dialects": {
-      "title": "Discover variants",
-      "body": "Language changes by area and context. This view shows where a word can take on different nuances.",
-      "actionLabel": "Show me the variants"
+      "title": "Descubre las variantes",
+      "body": "El idioma cambia según la zona y el contexto. Esta vista te muestra dónde una palabra puede tomar matices distintos.",
+      "actionLabel": "Muéstrame las variantes"
     },
     "hierarchy": {
-      "title": "Give the system structure",
-      "body": "The hierarchy shows levels and families: from the large concept down to more specific words.",
-      "actionLabel": "Show me the hierarchy"
+      "title": "Da estructura al sistema",
+      "body": "La jerarquía muestra niveles y familias: desde el concepto grande hasta las palabras más específicas.",
+      "actionLabel": "Muéstrame la jerarquía"
     }
   },
   "featureGuideOverlay": {
@@ -611,8 +611,8 @@
       "title": "Aprende {{language}}",
       "subline": "Decide si conoces una palabra o no — el sistema hace el resto.",
       "explainerTitle": "Cómo funciona la pantalla principal",
-      "explainerBodyP1": "La pantalla principal muestra tu misión actual. Lo demás — estadísticas, diario, próximo reto — vive en pantallas dedicadas accesibles desde los enlaces de abajo.",
-      "explainerBodyP2": "Ejemplo: para ver los cuatro números clave de tu ruta (nivel, palabras, maestría), pulsa \"Tus cifras\".",
+      "explainerBodyP1": "La Home muestra tu misión actual. Todo lo demás —estadísticas, diario, siguiente reto— está en pantallas dedicadas accesibles desde los enlaces de abajo.",
+      "explainerBodyP2": "Ejemplo: para ver los cuatro números clave de tu camino (nivel, palabras, dominio), toca \"Tus números\".",
       "snapshotEyebrow": "Snapshot de hoy",
       "snapshotBody": "La ruta de 400 niveles se actualiza con cada swipe. El sistema elige contextos más fáciles o más difíciles según tu maestría.",
       "primaryCtaPill": "Continuar",
@@ -635,7 +635,7 @@
       "title": "Ruta completa",
       "subline": "Los 400 niveles y dónde estás ahora.",
       "explainerTitle": "Qué es la ruta de 400 niveles",
-      "explainerBody": "La ruta se organiza en 400 niveles que reflejan cuánto y cómo de bien conoces las palabras. Cada swipe actualiza tu nivel. Ejemplo: si conoces una palabra en el nivel 22, verás contextos adaptados a ese nivel, no más fáciles.",
+      "explainerBody": "El camino está organizado en 400 niveles que reflejan cuánto y cómo de bien conoces las palabras. Cada swipe actualiza tu nivel. Ejemplo: si sabes una palabra en el nivel 22, verás contextos adaptados a ese nivel, no más fáciles.",
       "levelLabel": "Nivel {{level}}"
     },
     "stats": {
@@ -643,7 +643,7 @@
       "title": "Tus cifras",
       "subline": "Nivel, palabras, palabras fuertes y maestría media.",
       "explainerTitle": "Qué miden estos números",
-      "explainerBody": "Path Level es tu nivel en la ruta de 400. Words es el total de palabras practicadas. Strong es el número de palabras con alta maestría. Avg Mastery es el promedio de todas las confianzas.",
+      "explainerBody": "Path Level es tu nivel en el camino de 400. Words es el total practicado. Strong es el número de palabras con dominio alto. Avg Mastery es la media de todas las confianzas de palabra.",
       "pathLevel": "Path Level",
       "words": "Palabras",
       "strong": "Fuertes",
@@ -654,7 +654,7 @@
       "title": "Diario de aprendizaje",
       "subline": "La historia de las misiones de la ruta, en orden cronológico.",
       "explainerTitle": "Cómo funciona el diario",
-      "explainerBody": "El diario muestra los pasos de la ruta de 400 niveles — las misiones pasadas están completas, las actuales destacadas, las futuras quedan en gris hasta que las desbloquees.",
+      "explainerBody": "El diario muestra los pasos del camino de 400 niveles: las misiones pasadas están completadas, las actuales resaltadas, las futuras quedan en gris hasta desbloquearse.",
       "progressEyebrow": "Progreso actual",
       "todayPill": "{{reviewed}}/{{total}} hoy"
     },
@@ -663,11 +663,11 @@
       "title": "Listo para subir",
       "subline": "El próximo reto y las herramientas recomendadas para llegar.",
       "explainerTitle": "Cómo decidimos qué es lo siguiente",
-      "explainerBody": "Cuando el sistema ve suficientes señales de maestría, desbloquea el próximo reto (p. ej. Sentence Placement). Aquí también encuentras las herramientas Review y Explore recomendadas para la fase actual.",
+      "explainerBody": "Cuando el sistema ve suficientes señales de dominio, desbloquea el siguiente reto (p. ej. Sentence Placement). Aquí también encuentras herramientas de Review y Explore recomendadas para la fase actual.",
       "nextChallengeEyebrow": "Próximo reto",
       "nextChallengeBody": "Compón frases para comprobar gramática, lógica y palabras funcionales.",
       "reviewToolsTitle": "Herramientas de review",
-      "reviewToolsBody": "Your Vocabulary, Topic Deck, Word Library y Learning System. Topics {{selected}}/{{total}}.",
+      "reviewToolsBody": "Your Vocabulary, Topic Deck, Word Library y Learning System. Temas {{selected}}/{{total}}.",
       "exploreToolsTitle": "Herramientas de explore",
       "exploreToolsBody": "Las herramientas de Grammar y el mapa de la lengua están disponibles cuando la ruta pide un trabajo más profundo."
     },
@@ -720,7 +720,7 @@
     "nextButton": "Siguiente",
     "loadingView": "Cargando vista...",
     "noSentencesTitle": "Aún no hay frases de gramática",
-    "noSentencesBody": "El lab puede usar igualmente el builder, los clusters, el mapa de dialectos, la jerarquía y el word cloud sin frases.",
+    "noSentencesBody": "El laboratorio aún puede usar el constructor, los clústeres, el mapa de dialectos, la jerarquía y la nube de palabras aunque no haya frases.",
     "openBuilderButton": "Build Sentence",
     "playCachedTitle": "Reproducir (cache)",
     "playGenerateTitle": "Generar y reproducir",
@@ -736,43 +736,43 @@
         "eyebrow": "Grammar · Sentence Graph",
         "title": "Sentence Graph",
         "subline": "Relaciones gramaticales entre las palabras de cada frase.",
-        "body": "Visualiza el grafo gramatical de una frase: cada palabra es un nodo, cada relación (sujeto, objeto, modificador) es una arista. Toca un nodo para ver caso, género y tiempo."
+        "body": "Visualiza el grafo gramatical de una frase: cada palabra es un nodo, cada relación (sujeto, objeto, modificador) es una arista. Toca un nodo para ver caso, género, tiempo."
       },
       "wordcloud": {
         "eyebrow": "Grammar · Word Cloud",
         "title": "Word Cloud",
         "subline": "Lo frecuentes que son las palabras que has visto.",
-        "body": "Las palabras más grandes son las vistas o swipeadas más a menudo. Toca una palabra para abrir el detalle."
+        "body": "Las palabras más grandes son las vistas o deslizadas con más frecuencia. Toca una palabra para abrir su detalle."
       },
       "builder": {
         "eyebrow": "Grammar · Build Sentence",
         "title": "Build Sentence",
         "subline": "Construye frases gramaticales desde un word bank.",
-        "body": "Arrastra o toca las fichas para armar una frase. El sistema comprueba la estructura gramatical."
+        "body": "Arrastra o toca las fichas para montar una frase. El sistema comprueba la estructura gramatical."
       },
       "funbuilder": {
         "eyebrow": "Grammar · Compose Sentence",
         "title": "Compose Sentence",
         "subline": "Variante playful del builder con fichas más ricas.",
-        "body": "Variante del builder con interacción más juguetona: elige fichas, compón la frase, ve el feedback."
+        "body": "Variante del constructor con interacción más lúdica: elige fichas, compón la frase, mira el feedback."
       },
       "clusters": {
         "eyebrow": "Grammar · Clusters",
         "title": "Clusters",
         "subline": "Grupos semánticos y barrios de palabras relacionadas.",
-        "body": "Las palabras se agrupan por significado similar. Ejemplo: todos los verbos de movimiento acaban en el mismo cluster."
+        "body": "Las palabras se agrupan por significado similar. Ejemplo: todos los verbos de movimiento acaban en el mismo clúster."
       },
       "dialects": {
         "eyebrow": "Grammar · Dialects",
         "title": "Dialects",
         "subline": "Variantes regionales del vocabulario.",
-        "body": "Ve cómo una misma palabra puede cambiar en regiones distintas (p. ej. Alemania, Austria, Suiza)."
+        "body": "Mira cómo una misma palabra puede cambiar en distintas regiones (p. ej. Alemania, Austria, Suiza)."
       },
       "sunburst": {
         "eyebrow": "Grammar · Hierarchy",
         "title": "Hierarchy",
         "subline": "Estructura jerárquica de conceptos y categorías.",
-        "body": "Un gráfico en corona que muestra cómo las categorías macro contienen subcategorías y palabras."
+        "body": "Un gráfico en corona que muestra cómo las macrocategorías contienen subcategorías y palabras."
       }
     }
   },
@@ -780,9 +780,9 @@
     "eyebrow": "Explore · Grammar · Hub",
     "title": "Grammar Lab",
     "subline": "Siete herramientas para analizar gramática y vocabulario.",
-    "explainerTitle": "Qué encuentras en el Grammar Lab",
-    "explainerBodyP1": "El Grammar Lab es la caja de herramientas para analizar la lengua objetivo. Cada herramienta responde a una pregunta distinta.",
-    "explainerBodyP2": "Ejemplo: Sentence Graph muestra cómo se enlazan las palabras de una frase; Word Cloud muestra qué palabras aparecen más. Ábrelos uno a la vez.",
+    "explainerTitle": "Qué encontrarás en el Grammar Lab",
+    "explainerBodyP1": "El Grammar Lab es la caja de herramientas para analizar el idioma objetivo. Cada herramienta responde a una pregunta distinta.",
+    "explainerBodyP2": "Ejemplo: Sentence Graph muestra cómo se enlazan las palabras de una frase; Word Cloud muestra qué palabras aparecen más. Ábrelas de una en una.",
     "entries": {
       "graph": {
         "title": "Sentence Graph",
@@ -819,7 +819,7 @@
     "modalAria": "Formulario de feedback tester",
     "eyebrow": "Tester feedback",
     "title": "¿Qué opinas?",
-    "body": "Deja un comentario sobre el diseño, una funcionalidad que te gusta o no. Se guardará para quien desarrolla la app.",
+    "body": "Deja un comentario sobre el diseño, una función que te guste o no. Se guardará de forma persistente para quien desarrolla la app.",
     "closeAria": "Cerrar",
     "like": "Me gusta",
     "dislike": "No me gusta",
@@ -885,7 +885,7 @@
   "bottomNav": {
     "path": "Ruta",
     "learn": "Aprende",
-    "review": "Repaso",
+    "review": "Repasar",
     "explore": "Explorar"
   },
   "library": {
@@ -994,10 +994,10 @@
   "featureHubScreen": {
     "review": {
       "eyebrow": "Review · Hub",
-      "title": "Review y Setup",
-      "subtitle": "Las herramientas se agrupan aquí para mantener la ruta enfocada. Topics {{selected}}/{{total}} activos.",
+      "title": "Repaso y configuración",
+      "subtitle": "Las herramientas se agrupan aquí para mantener el camino enfocado. Temas {{selected}}/{{total}} activos.",
       "sectionTitle": "Review y setup",
-      "sectionBody": "Ajusta el deck, inspecciona palabras conocidas, abre la biblioteca o revisa cómo el learning system puntúa la memoria."
+      "sectionBody": "Ajusta el mazo, inspecciona las palabras conocidas, abre la biblioteca o revisa cómo el sistema de aprendizaje puntúa la memoria."
     },
     "exploreGrammar": {
       "eyebrow": "Explore · Grammar training",
@@ -1016,11 +1016,11 @@
     },
     "grammarTraining": {
       "title": "Grammar training",
-      "body": "Úsalas cuando la ruta necesita lógica frasal, práctica de gramática o herramientas de builder."
+      "body": "Úsalos cuando el camino necesite lógica de frases, práctica de gramática o herramientas de construcción."
     },
     "languageMap": {
       "title": "Mapa lingüístico",
-      "body": "Explora relaciones, clusters, dialectos y jerarquía cuando quieras inspeccionar el sistema."
+      "body": "Explora relaciones, clústeres, dialectos y jerarquía cuando quieras inspeccionar el sistema."
     }
   },
   "learningScreen": {
