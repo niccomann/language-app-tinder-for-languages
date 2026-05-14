@@ -383,23 +383,23 @@
     }
   },
   "yourVocabulary": {
-    "title": "Your Vocabulary",
-    "subtitle": "The words you interact with are ranked by mastery. Strong words rise to the top; weak or unknown words stay visible for review.",
-    "loadingMessage": "Loading your vocabulary...",
-    "errorTitle": "Vocabulary unavailable",
-    "errorMessage": "Failed to load your vocabulary. Try again when the backend is reachable.",
+    "title": "Dein Wortschatz",
+    "subtitle": "Die Wörter, mit denen du interagierst, werden nach Beherrschung sortiert. Starke steigen nach oben; schwache oder unbekannte bleiben zur Wiederholung sichtbar.",
+    "loadingMessage": "Lade deinen Wortschatz...",
+    "errorTitle": "Wortschatz nicht verfügbar",
+    "errorMessage": "Wortschatz konnte nicht geladen werden. Versuche es erneut, wenn das Backend erreichbar ist.",
     "strongStat": "Stark",
     "learningStat": "Ich lerne",
     "weakStat": "Schwach",
-    "logicEyebrow": "How it works",
-    "logicBody": "Every swipe, sentence, and correction updates this memory. The app uses it to avoid over-repeating words you already know and to bring back words that need consolidation.",
-    "continueAction": "Continue training",
-    "emptyTitle": "No vocabulary signals yet",
-    "emptyBody": "Start with the swipe scan. As soon as you interact with words, this section becomes your personal vocabulary map.",
+    "logicEyebrow": "So funktioniert es",
+    "logicBody": "Jeder Swipe, Satz und jede Korrektur aktualisiert dieses Gedächtnis. Die App nutzt es, um Wörter, die du schon kennst, seltener zu wiederholen und Wörter zurückzubringen, die Festigung brauchen.",
+    "continueAction": "Training fortsetzen",
+    "emptyTitle": "Noch keine Signale",
+    "emptyBody": "Beginne mit dem Swipe-Scan. Sobald du mit Wörtern interagierst, wird dieser Bereich zu deiner persönlichen Wortschatzkarte.",
     "emptyAction": "Vokabular-Scan starten",
     "masteredLabel": "5-star",
-    "learningLabel": "3-4 stars",
-    "weakLabel": "1-2 stars",
+    "learningLabel": "3-4 Sterne",
+    "weakLabel": "1-2 Sterne",
     "unknownLabel": "0 stars",
     "levelLabel": "Level"
   },
@@ -471,90 +471,90 @@
     }
   },
   "featureGuideOverlay": {
-    "ariaLabel": "Feature introduction",
-    "closeLabel": "Close introduction",
-    "eyebrow": "Mission briefing",
+    "ariaLabel": "Funktionseinführung",
+    "closeLabel": "Einführung schließen",
+    "eyebrow": "Missions-Briefing",
     "continueAction": "Weiter",
     "dismissAllAction": "Diese Erklärungen nicht mehr zeigen"
   },
   "featureFlow": {
     "vocabularyReview": {
-      "title": "Vocabulary Review",
+      "title": "Wortschatz-Wiederholung",
       "missionLabel": "Mission 1",
-      "description": "Swipe words you know or miss so the system can keep tuning your {{language}} level.",
-      "ctaLabel": "Continue path"
+      "description": "Swipe Wörter, die du kennst oder verfehlst, damit das System dein {{language}}-Niveau weiter feinjustieren kann.",
+      "ctaLabel": "Pfad fortsetzen"
     },
     "sentencePlacement": {
-      "title": "Sentence Placement",
+      "title": "Satzplatzierung",
       "missionLabel": "Mission 2",
-      "description": "Build short sentences from a controlled word bank to test grammar beyond single words.",
-      "ctaLabel": "Open Sentence Placement mission"
+      "description": "Baue kurze Sätze aus einer kontrollierten Wortbank, um Grammatik über einzelne Wörter hinaus zu testen.",
+      "ctaLabel": "Satz-Mission öffnen"
     },
     "grammarLab": {
-      "title": "Grammar Lab",
+      "title": "Grammatik-Labor",
       "missionLabel": "Mission 3",
-      "description": "Inspect sentence logic, grammar relationships, and builder tools when you are ready.",
-      "ctaLabel": "Open Grammar Lab mission"
+      "description": "Untersuche Satzlogik, Grammatikbeziehungen und Builder-Tools, wenn du bereit bist.",
+      "ctaLabel": "Grammatik-Mission öffnen"
     },
     "topicDeck": {
-      "title": "Topic Deck",
+      "title": "Themen-Deck",
       "missionLabel": "Setup",
-      "description": "Tune the packs used in the swipe deck without turning the app into a settings screen.",
-      "ctaLabel": "Open Topics mission"
+      "description": "Stelle die im Swipe-Deck verwendeten Pakete ein, ohne die App in einen Einstellungsbildschirm zu verwandeln.",
+      "ctaLabel": "Themen-Mission öffnen"
     },
     "yourVocabulary": {
-      "title": "Your Vocabulary",
-      "missionLabel": "Collection",
-      "description": "See the words ranked by how strongly the system thinks you know them.",
-      "ctaLabel": "Open Your Vocabulary"
+      "title": "Dein Wortschatz",
+      "missionLabel": "Sammlung",
+      "description": "Sieh die Wörter sortiert danach, wie gut das System glaubt, dass du sie kennst.",
+      "ctaLabel": "Deinen Wortschatz öffnen"
     },
     "wordLibrary": {
-      "title": "Word Library",
-      "missionLabel": "Collection",
-      "description": "Review every saved word, image, translation, example, etymology, and database row.",
-      "ctaLabel": "Open Word Library mission"
+      "title": "Wort-Bibliothek",
+      "missionLabel": "Sammlung",
+      "description": "Sieh dir jedes gespeicherte Wort, Bild, jede Übersetzung, jedes Beispiel, jede Etymologie und Datenbankzeile an.",
+      "ctaLabel": "Wort-Bibliothek öffnen"
     },
     "learningSystem": {
-      "title": "Learning System",
-      "missionLabel": "Science",
-      "description": "See how every swipe updates mastery, level, and the next recommended contexts.",
-      "ctaLabel": "Open Learning System mission"
+      "title": "Lernsystem",
+      "missionLabel": "Wissenschaft",
+      "description": "Sieh, wie jeder Swipe Beherrschung, Level und die nächsten empfohlenen Kontexte aktualisiert.",
+      "ctaLabel": "Lernsystem-Mission öffnen"
     },
     "wordCloud": {
-      "title": "Word Cloud",
+      "title": "Wortwolke",
       "missionLabel": "Erkunden",
-      "description": "Explore the vocabulary space visually after the core practice loop.",
-      "ctaLabel": "Open Word Cloud mission"
+      "description": "Erkunde den Wortschatzraum visuell nach der zentralen Übungsschleife.",
+      "ctaLabel": "Wortwolken-Mission öffnen"
     },
     "buildSentence": {
-      "title": "Build Sentence",
+      "title": "Satz bauen",
       "missionLabel": "Erkunden",
-      "description": "Compose sentence structures with the full grammar word bank.",
-      "ctaLabel": "Open Build Sentence mission"
+      "description": "Komponiere Satzstrukturen mit der gesamten Grammatik-Wortbank.",
+      "ctaLabel": "Satz-bauen-Mission öffnen"
     },
     "composeSentence": {
-      "title": "Compose Sentence",
+      "title": "Satz verfassen",
       "missionLabel": "Erkunden",
-      "description": "Use the alternate composer view while keeping the same sentence-building language.",
-      "ctaLabel": "Open Compose Sentence mission"
+      "description": "Nutze die alternative Composer-Ansicht und behalte dieselbe Satzbau-Sprache bei.",
+      "ctaLabel": "Satz-verfassen-Mission öffnen"
     },
     "clusters": {
-      "title": "Clusters",
+      "title": "Cluster",
       "missionLabel": "Erkunden",
-      "description": "Inspect semantic groups and word-image neighborhoods.",
-      "ctaLabel": "Open Clusters mission"
+      "description": "Untersuche semantische Gruppen und Wort-Bild-Nachbarschaften.",
+      "ctaLabel": "Cluster-Mission öffnen"
     },
     "dialects": {
-      "title": "Dialects",
+      "title": "Dialekte",
       "missionLabel": "Erkunden",
-      "description": "Browse regional language variation once the core path is familiar.",
-      "ctaLabel": "Open Dialects mission"
+      "description": "Durchstöbere regionale Sprachvariation, sobald dir der zentrale Pfad vertraut ist.",
+      "ctaLabel": "Dialekt-Mission öffnen"
     },
     "hierarchy": {
-      "title": "Hierarchy",
+      "title": "Hierarchie",
       "missionLabel": "Erkunden",
-      "description": "See the vocabulary hierarchy and concept structure.",
-      "ctaLabel": "Open Hierarchy mission"
+      "description": "Sieh die Wortschatzhierarchie und Konzeptstruktur.",
+      "ctaLabel": "Hierarchie-Mission öffnen"
     }
   },
   "targetLanguageNames": {
@@ -585,7 +585,7 @@
   },
   "common": {
     "whatIs": "Was ist das?",
-    "whatIsAria": "What is this screen?",
+    "whatIsAria": "Was ist dieser Bildschirm?",
     "dontShowAgain": "Nicht mehr zeigen",
     "close": "Schließen",
     "continue": "Weiter",
@@ -711,9 +711,9 @@
   "grammar": {
     "hubSubline": "Sieben Tools, um Grammatik und Vokabular zu analysieren.",
     "graphSubline": "Grammatische Beziehungen zwischen den Wörtern jedes Satzes.",
-    "cloudBody": "Bigger words are the ones seen or swiped most often. Use cloud density to spot what your eye notices first.",
+    "cloudBody": "Größere Wörter sind die am häufigsten gesehenen oder geswipten. Nutze die Wolkendichte, um zu erkennen, was dein Auge zuerst bemerkt.",
     "playfulSubline": "Spielerische Builder-Variante mit reicheren Tiles.",
-    "dialectsBody": "See how the same word can change in different regions of Germany, Austria, and Switzerland."
+    "dialectsBody": "Sieh, wie sich dasselbe Wort in verschiedenen Regionen Deutschlands, Österreichs und der Schweiz ändern kann."
   },
   "grammarLab": {
     "whatIsViewTitle": "Was ist {{title}}",
@@ -786,31 +786,31 @@
     "entries": {
       "graph": {
         "title": "Sentence Graph",
-        "sub": "Grammar relations between words."
+        "sub": "Grammatische Beziehungen zwischen Wörtern."
       },
       "wordcloud": {
         "title": "Word Cloud",
-        "sub": "Frequency of the words you've met."
+        "sub": "Häufigkeit der Wörter, die du getroffen hast."
       },
       "builder": {
         "title": "Build Sentence",
-        "sub": "Build sentences from a word bank."
+        "sub": "Baue Sätze aus einer Wortbank."
       },
       "funbuilder": {
         "title": "Compose Sentence",
-        "sub": "Playful variant of the builder."
+        "sub": "Verspielte Variante des Builders."
       },
       "clusters": {
         "title": "Clusters",
-        "sub": "Semantic groups of related words."
+        "sub": "Semantische Gruppen verwandter Wörter."
       },
       "dialects": {
         "title": "Dialects",
-        "sub": "Regional variants of the vocabulary."
+        "sub": "Regionale Varianten des Wortschatzes."
       },
       "sunburst": {
         "title": "Hierarchy",
-        "sub": "Hierarchical structure of concepts."
+        "sub": "Hierarchische Struktur der Konzepte."
       }
     }
   },
@@ -901,12 +901,12 @@
     "simpleOnly": "Nur einfache Wörter",
     "compoundOnly": "Nur zusammengesetzte Wörter",
     "allRegisters": "Alle Register",
-    "title": "Word Library",
+    "title": "Wort-Bibliothek",
     "subtitle": "Erkunde dein Vokabular mit reichen linguistischen Daten",
     "badgeCollection": "Collection Quest",
     "badgeMastery": "Mastery Loot",
     "badgeReview": "Review Queue",
-    "statTotal": "Total",
+    "statTotal": "Gesamt",
     "statLearned": "Gelernt",
     "statToReview": "Zu wiederholen",
     "statsSummary": "Total {{total}} · Gelernt {{learned}} · Zu wiederholen {{toReview}}",
@@ -963,7 +963,7 @@
     "noRows": "Keine Zeilen"
   },
   "featureHub": {
-    "grammarEyebrow": "Grammar-Training",
+    "grammarEyebrow": "Grammatiktraining",
     "grammarTitle": "Grammatik",
     "languageMapEyebrow": "Language Map"
   },
@@ -979,15 +979,15 @@
   },
   "cardStack": {
     "masteryLabel": "Beherrschung",
-    "progress": "Progress",
+    "progress": "Fortschritt",
     "known": "Gewusst",
-    "unknown": "Unknown",
-    "swipeHint": "Swipe left: Don't know · Swipe right: Know",
+    "unknown": "Unbekannt",
+    "swipeHint": "Nach links: Weiß nicht · Nach rechts: Weiß",
     "noDeck": "Keine Karten in diesem Deck",
     "buildTopicDeck": "Baue dein Topic Deck",
     "selectedPacks": "Ausgewählte Packs",
     "noCardsInDeck": "Keine Karten in diesem Deck",
-    "noCardsBody": "Try adjusting the topic deck or filters.",
+    "noCardsBody": "Versuche, das Themen-Deck oder die Filter anzupassen.",
     "connectionError": "Verbindungsfehler",
     "unknownError": "Unbekannter Fehler"
   },

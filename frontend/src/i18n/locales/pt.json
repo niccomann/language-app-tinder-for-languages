@@ -383,23 +383,23 @@
     }
   },
   "yourVocabulary": {
-    "title": "Your Vocabulary",
-    "subtitle": "The words you interact with are ranked by mastery. Strong words rise to the top; weak or unknown words stay visible for review.",
-    "loadingMessage": "Loading your vocabulary...",
-    "errorTitle": "Vocabulary unavailable",
-    "errorMessage": "Failed to load your vocabulary. Try again when the backend is reachable.",
+    "title": "Seu vocabulário",
+    "subtitle": "As palavras com que você interage são ordenadas por domínio. As fortes sobem ao topo; as fracas ou desconhecidas ficam visíveis para revisão.",
+    "loadingMessage": "Carregando seu vocabulário...",
+    "errorTitle": "Vocabulário indisponível",
+    "errorMessage": "Não foi possível carregar seu vocabulário. Tente novamente quando o backend estiver acessível.",
     "strongStat": "Fortes",
     "learningStat": "Aprendendo",
     "weakStat": "Fracas",
-    "logicEyebrow": "How it works",
-    "logicBody": "Every swipe, sentence, and correction updates this memory. The app uses it to avoid over-repeating words you already know and to bring back words that need consolidation.",
-    "continueAction": "Continue training",
-    "emptyTitle": "No vocabulary signals yet",
-    "emptyBody": "Start with the swipe scan. As soon as you interact with words, this section becomes your personal vocabulary map.",
+    "logicEyebrow": "Como funciona",
+    "logicBody": "Cada swipe, frase e correção atualiza esta memória. O app a usa para repetir menos as palavras que você já sabe e trazer de volta as que precisam de consolidação.",
+    "continueAction": "Continuar treino",
+    "emptyTitle": "Ainda sem sinais",
+    "emptyBody": "Comece pela varredura de swipe. Assim que você interagir com palavras, esta seção vira seu mapa de vocabulário pessoal.",
     "emptyAction": "Iniciar scan de vocabulário",
     "masteredLabel": "5-star",
-    "learningLabel": "3-4 stars",
-    "weakLabel": "1-2 stars",
+    "learningLabel": "3-4 estrelas",
+    "weakLabel": "1-2 estrelas",
     "unknownLabel": "0 stars",
     "levelLabel": "Nível"
   },
@@ -471,90 +471,90 @@
     }
   },
   "featureGuideOverlay": {
-    "ariaLabel": "Feature introduction",
-    "closeLabel": "Close introduction",
-    "eyebrow": "Mission briefing",
+    "ariaLabel": "Introdução do recurso",
+    "closeLabel": "Fechar introdução",
+    "eyebrow": "Briefing da missão",
     "continueAction": "Continuar",
     "dismissAllAction": "Não me mostre essas explicações novamente"
   },
   "featureFlow": {
     "vocabularyReview": {
-      "title": "Vocabulary Review",
-      "missionLabel": "Mission 1",
-      "description": "Swipe words you know or miss so the system can keep tuning your {{language}} level.",
-      "ctaLabel": "Continue path"
+      "title": "Revisão de vocabulário",
+      "missionLabel": "Missão 1",
+      "description": "Deslize as palavras que você sabe ou erra para o sistema continuar calibrando seu nível de {{language}}.",
+      "ctaLabel": "Continuar caminho"
     },
     "sentencePlacement": {
-      "title": "Sentence Placement",
-      "missionLabel": "Mission 2",
-      "description": "Build short sentences from a controlled word bank to test grammar beyond single words.",
-      "ctaLabel": "Open Sentence Placement mission"
+      "title": "Posicionamento de frases",
+      "missionLabel": "Missão 2",
+      "description": "Construa frases curtas a partir de um banco de palavras controlado para testar a gramática além de palavras isoladas.",
+      "ctaLabel": "Abrir missão de frases"
     },
     "grammarLab": {
-      "title": "Grammar Lab",
-      "missionLabel": "Mission 3",
-      "description": "Inspect sentence logic, grammar relationships, and builder tools when you are ready.",
-      "ctaLabel": "Open Grammar Lab mission"
+      "title": "Laboratório de gramática",
+      "missionLabel": "Missão 3",
+      "description": "Inspecione a lógica das frases, as relações gramaticais e as ferramentas de construção quando estiver pronto.",
+      "ctaLabel": "Abrir missão de gramática"
     },
     "topicDeck": {
-      "title": "Topic Deck",
+      "title": "Baralho de temas",
       "missionLabel": "Configuração",
-      "description": "Tune the packs used in the swipe deck without turning the app into a settings screen.",
-      "ctaLabel": "Open Topics mission"
+      "description": "Ajuste os pacotes usados no baralho de swipe sem transformar o app numa tela de configurações.",
+      "ctaLabel": "Abrir missão de temas"
     },
     "yourVocabulary": {
-      "title": "Your Vocabulary",
-      "missionLabel": "Collection",
-      "description": "See the words ranked by how strongly the system thinks you know them.",
-      "ctaLabel": "Open Your Vocabulary"
+      "title": "Seu vocabulário",
+      "missionLabel": "Coleção",
+      "description": "Veja as palavras ordenadas pelo quanto o sistema acha que você as sabe.",
+      "ctaLabel": "Abrir Seu vocabulário"
     },
     "wordLibrary": {
-      "title": "Word Library",
-      "missionLabel": "Collection",
-      "description": "Review every saved word, image, translation, example, etymology, and database row.",
-      "ctaLabel": "Open Word Library mission"
+      "title": "Biblioteca de palavras",
+      "missionLabel": "Coleção",
+      "description": "Revise cada palavra salva, imagem, tradução, exemplo, etimologia e linha do banco de dados.",
+      "ctaLabel": "Abrir Biblioteca de palavras"
     },
     "learningSystem": {
-      "title": "Learning System",
-      "missionLabel": "Science",
-      "description": "See how every swipe updates mastery, level, and the next recommended contexts.",
-      "ctaLabel": "Open Learning System mission"
+      "title": "Sistema de aprendizado",
+      "missionLabel": "Ciência",
+      "description": "Veja como cada swipe atualiza o domínio, o nível e os próximos contextos recomendados.",
+      "ctaLabel": "Abrir missão Sistema de aprendizado"
     },
     "wordCloud": {
-      "title": "Word Cloud",
+      "title": "Nuvem de palavras",
       "missionLabel": "Explorar",
-      "description": "Explore the vocabulary space visually after the core practice loop.",
-      "ctaLabel": "Open Word Cloud mission"
+      "description": "Explore visualmente o espaço do vocabulário após o loop principal de prática.",
+      "ctaLabel": "Abrir missão Nuvem de palavras"
     },
     "buildSentence": {
-      "title": "Build Sentence",
+      "title": "Construir frase",
       "missionLabel": "Explorar",
-      "description": "Compose sentence structures with the full grammar word bank.",
-      "ctaLabel": "Open Build Sentence mission"
+      "description": "Componha estruturas de frases com todo o banco de palavras gramatical.",
+      "ctaLabel": "Abrir missão Construir frase"
     },
     "composeSentence": {
-      "title": "Compose Sentence",
+      "title": "Compor frase",
       "missionLabel": "Explorar",
-      "description": "Use the alternate composer view while keeping the same sentence-building language.",
-      "ctaLabel": "Open Compose Sentence mission"
+      "description": "Use a visão de compositor alternativa mantendo a mesma linguagem de construção de frases.",
+      "ctaLabel": "Abrir missão Compor frase"
     },
     "clusters": {
       "title": "Clusters",
       "missionLabel": "Explorar",
-      "description": "Inspect semantic groups and word-image neighborhoods.",
-      "ctaLabel": "Open Clusters mission"
+      "description": "Inspecione grupos semânticos e vizinhanças de palavra-imagem.",
+      "ctaLabel": "Abrir missão Clusters"
     },
     "dialects": {
-      "title": "Dialects",
+      "title": "Dialetos",
       "missionLabel": "Explorar",
-      "description": "Browse regional language variation once the core path is familiar.",
-      "ctaLabel": "Open Dialects mission"
+      "description": "Explore a variação regional do idioma quando o caminho principal estiver familiar.",
+      "ctaLabel": "Abrir missão Dialetos"
     },
     "hierarchy": {
-      "title": "Hierarchy",
+      "title": "Hierarquia",
       "missionLabel": "Explorar",
-      "description": "See the vocabulary hierarchy and concept structure.",
-      "ctaLabel": "Open Hierarchy mission"
+      "description": "Veja a hierarquia do vocabulário e a estrutura de conceitos.",
+      "ctaLabel": "Abrir missão Hierarquia"
     }
   },
   "targetLanguageNames": {
@@ -585,7 +585,7 @@
   },
   "common": {
     "whatIs": "O que é isto?",
-    "whatIsAria": "What is this screen?",
+    "whatIsAria": "O que é esta tela?",
     "dontShowAgain": "Não mostrar novamente",
     "close": "Fechar",
     "continue": "Continuar",
@@ -711,9 +711,9 @@
   "grammar": {
     "hubSubline": "Sete ferramentas para analisar gramática e vocabulário.",
     "graphSubline": "Relações gramaticais entre as palavras de cada frase.",
-    "cloudBody": "Bigger words are the ones seen or swiped most often. Use cloud density to spot what your eye notices first.",
+    "cloudBody": "As palavras maiores são as vistas ou deslizadas com mais frequência. Use a densidade da nuvem para perceber o que seu olho nota primeiro.",
     "playfulSubline": "Variante playful do builder com tiles mais ricos.",
-    "dialectsBody": "See how the same word can change in different regions of Germany, Austria, and Switzerland."
+    "dialectsBody": "Veja como a mesma palavra pode mudar em diferentes regiões da Alemanha, Áustria e Suíça."
   },
   "grammarLab": {
     "whatIsViewTitle": "O que é {{title}}",
@@ -786,31 +786,31 @@
     "entries": {
       "graph": {
         "title": "Sentence Graph",
-        "sub": "Grammar relations between words."
+        "sub": "Relações gramaticais entre palavras."
       },
       "wordcloud": {
         "title": "Word Cloud",
-        "sub": "Frequency of the words you've met."
+        "sub": "Frequência das palavras que você encontrou."
       },
       "builder": {
         "title": "Build Sentence",
-        "sub": "Build sentences from a word bank."
+        "sub": "Construa frases a partir de um banco de palavras."
       },
       "funbuilder": {
         "title": "Compose Sentence",
-        "sub": "Playful variant of the builder."
+        "sub": "Variante lúdica do construtor."
       },
       "clusters": {
         "title": "Clusters",
-        "sub": "Semantic groups of related words."
+        "sub": "Grupos semânticos de palavras relacionadas."
       },
       "dialects": {
         "title": "Dialects",
-        "sub": "Regional variants of the vocabulary."
+        "sub": "Variantes regionais do vocabulário."
       },
       "sunburst": {
         "title": "Hierarchy",
-        "sub": "Hierarchical structure of concepts."
+        "sub": "Estrutura hierárquica dos conceitos."
       }
     }
   },
@@ -901,7 +901,7 @@
     "simpleOnly": "Apenas palavras simples",
     "compoundOnly": "Apenas palavras compostas",
     "allRegisters": "Todos os registros",
-    "title": "Word Library",
+    "title": "Biblioteca de palavras",
     "subtitle": "Explore seu vocabulário com dados linguísticos ricos",
     "badgeCollection": "Collection Quest",
     "badgeMastery": "Mastery Loot",
@@ -963,7 +963,7 @@
     "noRows": "Sem linhas"
   },
   "featureHub": {
-    "grammarEyebrow": "Treino de grammar",
+    "grammarEyebrow": "Treino de gramática",
     "grammarTitle": "Gramática",
     "languageMapEyebrow": "Mapa linguístico"
   },
@@ -979,15 +979,15 @@
   },
   "cardStack": {
     "masteryLabel": "Domínio",
-    "progress": "Progress",
+    "progress": "Progresso",
     "known": "Conhecidas",
-    "unknown": "Unknown",
-    "swipeHint": "Swipe left: Don't know · Swipe right: Know",
+    "unknown": "Desconhecida",
+    "swipeHint": "Deslize à esquerda: Não sei · Deslize à direita: Sei",
     "noDeck": "Nenhum cartão neste deck",
     "buildTopicDeck": "Construa seu topic deck",
     "selectedPacks": "Packs selecionados",
     "noCardsInDeck": "Nenhum cartão neste deck",
-    "noCardsBody": "Try adjusting the topic deck or filters.",
+    "noCardsBody": "Tente ajustar o baralho de temas ou os filtros.",
     "connectionError": "Erro de conexão",
     "unknownError": "Erro desconhecido"
   },
