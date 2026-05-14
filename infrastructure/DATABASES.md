@@ -1,81 +1,96 @@
 # Database map — where the data lives
 
-> Last updated: 2026-05-14 18:10
-> **The DB data is hard-won and must never be deleted.** Always `--skip-db` on deploys
-> unless you have explicitly decided to overwrite, and always back up first.
+> Last updated: 2026-05-14 19:00
+> **The DB data is hard-won and must never be deleted.** Always back up before
+> any DB operation. The daily Postgres backup cron + `scripts/backup_pg.sh` are
+> the safety net — use them.
 
 ## TL;DR
 
-There are **four** distinct databases. As of 2026-05-14 the prod `app.db` was
-made the **single canonical source** and pulled down to local — local and prod
-`app.db` are now identical (8069 flashcards). The Postgres instance is empty
-and unused.
+As of 2026-05-14 the main database is a **single centralized Postgres** running
+as the `language-postgres` container on the EC2. Both prod and local connect to
+it — prod directly over the Docker network, local through an SSH tunnel. The old
+per-environment SQLite `app.db` files are now frozen backups, not live.
 
 | DB | Location | Engine | Role | State |
 |---|---|---|---|---|
-| **app.db (prod)** | EC2 `/home/ec2-user/language-deploy/current/backend/app.db`, bind-mounted into `language-backend` at `/app/app.db` | SQLite, 284 MB | What the live site reads/writes — **the canonical** | 8069 flashcards (de 2998 / fr 2515 / it 2556) |
-| **app.db (local)** | `backend/app.db` | SQLite, 284 MB | Local dev backend — synced from prod 2026-05-14 | identical to prod (8069 flashcards) |
-| **tracking.db** | local `backend/tracking.db` (56 KB) · prod volume `language-tracking-data:/app/data/tracking.db` (57 KB) | SQLite | Session/action analytics, separate from main DB | near-empty both sides, NOT synced (independent) |
-| **tinder_languages_db** | local Docker container `tinder-languages-postgres`, `localhost:5433`, user `tinder_user`, db `tinder_languages_db` | Postgres | *Was* the producer source-of-truth | **effectively empty** — 5 sample rows, 0 flashcards. Unused. |
+| **tinder_languages** (the live DB) | `language-postgres` container on the EC2, Docker network `language-app`, also bound to the EC2 host loopback `127.0.0.1:5432`. Volume `language-pgdata`. | Postgres 16 | **The single source of truth.** Prod + local both use it. | 8069 flashcards (de 2998 / fr 2515 / it 2556), 11760 verb_conjugations, ~30k rows / 17 tables |
+| **app.db (frozen)** | prod EC2 `/home/ec2-user/language-deploy/current/backend/app.db` (still bind-mounted but unused); local `backend/app.db` | SQLite | Pre-migration snapshot — instant rollback if Postgres has trouble | 8069 flashcards, identical to what was migrated |
+| **tracking.db** | local `backend/tracking.db` · prod volume `language-tracking-data:/app/data/tracking.db` | SQLite | Session/action analytics — **independent, NOT migrated**, stays SQLite | near-empty both sides |
+| **tinder_languages_db** | local Docker container `tinder-languages-postgres`, `localhost:5433` | Postgres | *Was* the producer source-of-truth — now unused | empty (5 sample rows) |
 
-## How the backend picks a DB
+## How the backend connects
 
-`backend/app/core/config.py`:
-- `USE_SQLITE=true` (default, and what prod runs) → hardcoded `sqlite:///./app.db`
-  — a **relative path**, resolved against the process CWD: `backend/app.db` locally,
-  `/app/app.db` in the container.
-- `USE_SQLITE=false` → Postgres URL from `DB_HOST/DB_PORT/DB_USER/DB_PASSWORD/DB_DATABASE`
-  (`.env` points these at `localhost:5433` / `tinder_languages_db`).
-- Tracking DB is independent: `TRACKING_DB_PATH` env (`./tracking.db` local,
-  `/app/data/tracking.db` in the container, on the `language-tracking-data` volume).
+`backend/app/core/config.py`: `USE_SQLITE=false` → Postgres URL from
+`DB_HOST/DB_PORT/DB_USER/DB_PASSWORD/DB_DATABASE`. `USE_SQLITE=true` → SQLite
+`sqlite:///./app.db` (the frozen file — offline fallback only).
 
-So the backend **already supports Postgres** — switching is a config change
-(`USE_SQLITE=false` + creds), not a code change. But the Postgres instance is
-currently empty.
+- **Prod** (`language-backend` container): `USE_SQLITE=false`, `DB_HOST=language-postgres`,
+  `DB_PORT=5432` — resolves over the `language-app` Docker network.
+- **Local** (`backend/.env`): `USE_SQLITE=false`, `DB_HOST=localhost`, `DB_PORT=5434`
+  — points at the SSH tunnel. **Run `scripts/pg_tunnel.sh` first**, then start the
+  backend. Without the tunnel the backend can't reach the DB; for offline local
+  dev set `USE_SQLITE=true` instead.
+- **Tracking DB** stays independent: `TRACKING_DB_PATH` env, SQLite, not in Postgres.
 
-## The divergence — investigated and resolved (2026-05-14)
+## Local dev workflow
 
-Before the sync, `app.db` local vs prod had diverged in both directions:
-- **Overlap**: 3479 cards (the 2998-card German set had identical ids; 480 fr/it
-  overlapping cards had different ids).
-- **Prod-only**: 4590 fr/it cards (kaikki-expanded set local never had).
-- **Local-only**: 344 fr/it cards (all enriched, only 98 with images).
-- Local `users` were all E2E test garbage ("Nico" ×20, "E2E Tester", "smoke-…").
+```bash
+# terminal 1 — keep open while developing:
+scripts/pg_tunnel.sh            # opens SSH tunnel localhost:5434 -> EC2 Postgres
+# terminal 2:
+cd backend && source .venv/bin/activate && python3 -m app.main
+```
 
-**Decision (project owner):** prod's `app.db` is the canonical; the 344 local-only
-cards were dropped (likely an older curated set superseded by prod's kaikki run).
-Prod was snapshotted via `sqlite3 .backup` (consistent), pulled down, and now is
-`backend/app.db`. The pre-sync local DB is preserved at
-`backend/app.db.before-prod-sync-20260514-175926` (still contains the 344 cards).
-
-**Going forward:** to avoid re-divergence, do NOT let local and prod drift —
-either re-pull prod after prod-side seeding, or pick the centralization model below.
+The tunnel opens the SSH security-group rule for your IP while running and
+revokes it on Ctrl-C. Postgres is bound to the EC2 host loopback only — it is
+NOT exposed to the public internet; the tunnel is the only way in from local.
 
 ## Backups
 
-`backend/app.before-*.db`, `app.db.before-*`, `app.interrupted-*.db` — ~22 files,
-100–300 MB each, ~2 GB total. Pre-operation snapshots. Excluded from the Docker
-image via `backend/.dockerignore`. **Keep them** — they are the safety net.
-Prod also snapshots `app.db.before-deploy-<timestamp>` before any DB swap.
+- **Daily cron on the EC2** (`03:30`, `/home/ec2-user/pg-backup.sh`): `pg_dump`
+  gzipped into `/home/ec2-user/pg-backups/`, 7-day rotation. Protects against
+  corruption / bad ops. Does NOT survive full EC2 loss.
+- **`scripts/backup_pg.sh`** (run locally, on demand): triggers a fresh dump on
+  the EC2 and pulls it down to `./backups/` (gitignored). This is the real
+  off-box copy — run it before risky operations and periodically.
+- **Frozen SQLite `app.db`** files (prod + local) are the pre-migration snapshot.
+- True off-site auto-backup (pg_dump → S3) needs an IAM instance role on the EC2
+  — not set up; the EC2 currently has no IAM role (also why feedback falls back
+  to a local jsonl instead of S3).
 
-## app.db schema (main tables)
+## Schema (17 main tables in Postgres)
 
 `flashcards` (+ child tables FK to flashcard: `example_sentences`, `etymologies`,
 `collocations`, `false_friends`, `proverbs`, `dialect_variants`, `audio_cache`),
 `verb_conjugations`, `user_progress`, `user_word_statistics`, `learning_snapshots`,
 `sentence_challenges`, `grammar_sentences` (+ `_nodes` / `_edges`), `users`.
-(`tracking_*` tables exist in app.db too but the live tracking data goes to the
-separate `tracking.db`.)
+`tracking_*` tables are NOT in Postgres — tracking lives in the separate SQLite.
 
-## Centralization — not done yet, needs a decision
+Note: `verb_conjugations` has no SQLModel model (created via raw SQL by the
+producer) — it was migrated with an explicit DDL, not by `SQLModel.create_all`.
 
-The goal ("one DB, always interface with AWS") is sound but blocked on the
-divergence above. Options, for the record:
-1. **Postgres as single source** (RDS, or a `postgres` container on the EC2):
-   migrate the chosen `app.db` into it, set `USE_SQLITE=false` on both local
-   and prod. Backend already supports it. Cleanest "connect to one DB" model.
-2. **Pick prod's `app.db` as canonical**, pull it to local, deploy *with* the DB
-   from then on. Lower effort, still file-based (SQLite can't be a shared remote DB).
+## Migration history (2026-05-14)
 
-Either way, **step 0 is deciding how to reconcile the diverged rows** — that is
-a data-ownership call for the project owner, not something to automate.
+1. prod & local SQLite `app.db` had diverged; prod chosen as canonical, local
+   synced from a consistent `sqlite3 .backup` snapshot. 344 local-only fr/it
+   cards dropped per owner decision (preserved in
+   `backend/app.db.before-prod-sync-20260514-175926`).
+2. `language-postgres` container started on the EC2 (volume `language-pgdata`).
+3. `app.db` → Postgres: 16 SQLModel tables via `create_all` + copy, plus
+   `verb_conjugations` (11760 rows) via explicit DDL. All row counts verified.
+4. `language-backend` recreated with `USE_SQLITE=false` → Postgres. Old SQLite
+   container kept as `language-backend-sqlite-rollback` for instant rollback.
+5. 37/37 E2E tests pass against the Postgres-backed prod.
+
+## Gotchas
+
+- **Restarting `language-backend` or `language-postgres` changes the container's
+  Docker-network IP** → `language-frontend` (nginx) caches the old IP and starts
+  returning 502. Fix: `docker restart language-frontend` after any backend/db
+  container restart. (Proper fix would be an nginx `resolver` directive.)
+- The `language-backend-sqlite-rollback` container is a stopped fallback. To roll
+  back: `docker rm -f language-backend && docker rename
+  language-backend-sqlite-rollback language-backend && docker start
+  language-backend` then `docker restart language-frontend`. Remove the rollback
+  container once confident.
