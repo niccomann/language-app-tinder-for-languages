@@ -1,21 +1,22 @@
 # Database map — where the data lives
 
-> Last updated: 2026-05-14 18:05
+> Last updated: 2026-05-14 18:10
 > **The DB data is hard-won and must never be deleted.** Always `--skip-db` on deploys
 > unless you have explicitly decided to overwrite, and always back up first.
 
 ## TL;DR
 
-There are **four** distinct databases. They are NOT in sync. The real
-vocabulary data lives in the **two SQLite `app.db` files** (local + prod),
-and they have **diverged in both directions**.
+There are **four** distinct databases. As of 2026-05-14 the prod `app.db` was
+made the **single canonical source** and pulled down to local — local and prod
+`app.db` are now identical (8069 flashcards). The Postgres instance is empty
+and unused.
 
 | DB | Location | Engine | Role | State |
 |---|---|---|---|---|
-| **app.db (prod)** | EC2 `/home/ec2-user/language-deploy/current/backend/app.db`, bind-mounted into `language-backend` at `/app/app.db` | SQLite, 284 MB | What the live site reads/writes | **8069 flashcards** — most complete card set |
-| **app.db (local)** | `backend/app.db` | SQLite, 122 MB | Local dev backend reads/writes | 3823 flashcards, but more example_sentences/etymologies |
-| **tracking.db** | local `backend/tracking.db` (56 KB) · prod volume `language-tracking-data:/app/data/tracking.db` (57 KB) | SQLite | Session/action analytics, separate from main DB | near-empty both sides |
-| **tinder_languages_db** | local Docker container `tinder-languages-postgres`, `localhost:5433`, user `tinder_user`, db `tinder_languages_db` | Postgres | *Was* the producer source-of-truth | **effectively empty** — 5 sample rows, 0 flashcards |
+| **app.db (prod)** | EC2 `/home/ec2-user/language-deploy/current/backend/app.db`, bind-mounted into `language-backend` at `/app/app.db` | SQLite, 284 MB | What the live site reads/writes — **the canonical** | 8069 flashcards (de 2998 / fr 2515 / it 2556) |
+| **app.db (local)** | `backend/app.db` | SQLite, 284 MB | Local dev backend — synced from prod 2026-05-14 | identical to prod (8069 flashcards) |
+| **tracking.db** | local `backend/tracking.db` (56 KB) · prod volume `language-tracking-data:/app/data/tracking.db` (57 KB) | SQLite | Session/action analytics, separate from main DB | near-empty both sides, NOT synced (independent) |
+| **tinder_languages_db** | local Docker container `tinder-languages-postgres`, `localhost:5433`, user `tinder_user`, db `tinder_languages_db` | Postgres | *Was* the producer source-of-truth | **effectively empty** — 5 sample rows, 0 flashcards. Unused. |
 
 ## How the backend picks a DB
 
@@ -32,25 +33,23 @@ So the backend **already supports Postgres** — switching is a config change
 (`USE_SQLITE=false` + creds), not a code change. But the Postgres instance is
 currently empty.
 
-## The divergence problem (as of 2026-05-14)
+## The divergence — investigated and resolved (2026-05-14)
 
-`app.db` local vs prod — neither is a superset:
+Before the sync, `app.db` local vs prod had diverged in both directions:
+- **Overlap**: 3479 cards (the 2998-card German set had identical ids; 480 fr/it
+  overlapping cards had different ids).
+- **Prod-only**: 4590 fr/it cards (kaikki-expanded set local never had).
+- **Local-only**: 344 fr/it cards (all enriched, only 98 with images).
+- Local `users` were all E2E test garbage ("Nico" ×20, "E2E Tester", "smoke-…").
 
-| Table | local | prod |
-|---|---|---|
-| flashcards | 3823 (de 2998 / fr 403 / it 422) | **8069** |
-| example_sentences | 3825 | 3400 |
-| etymologies | 3823 | 3398 |
-| collocations | 3822 | 3397 |
-| verb_conjugations | 11760 | 11760 |
-| users | 24 (mostly E2E test users) | 3 |
-| user_progress | 43 | 61 |
-| user_word_statistics | 65 | 85 |
+**Decision (project owner):** prod's `app.db` is the canonical; the 344 local-only
+cards were dropped (likely an older curated set superseded by prod's kaikki run).
+Prod was snapshotted via `sqlite3 .backup` (consistent), pulled down, and now is
+`backend/app.db`. The pre-sync local DB is preserved at
+`backend/app.db.before-prod-sync-20260514-175926` (still contains the 344 cards).
 
-Cause: deploys have used `--skip-db` (correctly — to avoid clobbering prod),
-so the two files drifted independently. Prod grew the kaikki-expanded card set;
-local kept richer enrichment tables. **Merging requires a human decision** about
-which seeding runs are authoritative — do not auto-merge.
+**Going forward:** to avoid re-divergence, do NOT let local and prod drift —
+either re-pull prod after prod-side seeding, or pick the centralization model below.
 
 ## Backups
 
