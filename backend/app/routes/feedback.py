@@ -17,7 +17,7 @@ router = APIRouter(prefix="/api/feedback", tags=["feedback"])
 Profession = Literal["artist", "humanist", "scientific", "technical", "student", "other"]
 Gender = Literal["woman", "man", "other", "undisclosed"]
 NativeLanguage = Literal["it", "en", "es", "de", "fr", "pt", "other"]
-GermanLevel = Literal["a1", "a2", "b1", "b2", "c1", "c2", "none"]
+ProficiencyLevel = Literal["a1", "a2", "b1", "b2", "c1", "c2", "none"]
 
 
 class FeedbackPayload(BaseModel):
@@ -30,7 +30,7 @@ class FeedbackPayload(BaseModel):
     profession: Optional[Profession] = None
     gender: Optional[Gender] = None
     native_language: Optional[NativeLanguage] = None
-    german_level: Optional[GermanLevel] = None
+    target_level: Optional[ProficiencyLevel] = None
 
 
 class FeedbackResponse(BaseModel):
@@ -47,7 +47,7 @@ async def submit_feedback(payload: FeedbackPayload, request: Request) -> Feedbac
         "profession": payload.profession,
         "gender": payload.gender,
         "native_language": payload.native_language,
-        "german_level": payload.german_level,
+        "target_level": payload.target_level,
     }
     persona = {k: v for k, v in persona.items() if v is not None}
     try:

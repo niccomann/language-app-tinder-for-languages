@@ -670,6 +670,42 @@
       "reviewToolsBody": "Your Vocabulary, Topic Deck, Word Library et Learning System. Sujets {{selected}}/{{total}}.",
       "exploreToolsTitle": "Outils d'explore",
       "exploreToolsBody": "Les outils Grammar et carte-langue sont disponibles quand le parcours demande un travail plus profond."
+    },
+    "milestones": [
+      {
+        "title": "Positionnement",
+        "detail": "Premier signal des mots connus et manqués."
+      },
+      {
+        "title": "Mots essentiels",
+        "detail": "Construis une base stable de vocabulaire quotidien."
+      },
+      {
+        "title": "Prêt pour les phrases",
+        "detail": "Les mots solides commencent à se mêler aux phrases."
+      },
+      {
+        "title": "Constructeur de contexte",
+        "detail": "Révise les mots plus faibles dans des contextes plus simples."
+      },
+      {
+        "title": "Rappel avancé",
+        "detail": "La plupart des mots connus passent à une révision plus poussée."
+      },
+      {
+        "title": "Long terme",
+        "detail": "Le parcours continue de s'étendre sans avoir besoin de centaines de nœuds visibles."
+      },
+      {
+        "title": "Révision de maîtrise",
+        "detail": "Garde les mots à haute confiance actifs dans le temps."
+      }
+    ],
+    "trend": {
+      "new": "Nouveau parcours",
+      "improving": "Maîtrise en hausse +{{delta}}",
+      "declining": "Maîtrise à réviser {{delta}}",
+      "stable": "Maîtrise stable"
     }
   },
   "grammar": {
@@ -833,9 +869,9 @@
         "pt": "Portugais",
         "other": "Autre"
       },
-      "germanLevelLabel": "Niveau d'allemand",
-      "germanLevelPlaceholder": "Sélectionner…",
-      "germanLevelOptions": {
+      "targetLevelLabel": "Ton niveau dans la langue que tu apprends",
+      "targetLevelPlaceholder": "Sélectionner…",
+      "targetLevelOptions": {
         "a1": "A1 — Débutant",
         "a2": "A2 — Élémentaire",
         "b1": "B1 — Intermédiaire",

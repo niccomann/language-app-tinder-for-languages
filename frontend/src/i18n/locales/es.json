@@ -670,6 +670,42 @@
       "reviewToolsBody": "Your Vocabulary, Topic Deck, Word Library y Learning System. Topics {{selected}}/{{total}}.",
       "exploreToolsTitle": "Herramientas de explore",
       "exploreToolsBody": "Las herramientas de Grammar y el mapa de la lengua están disponibles cuando la ruta pide un trabajo más profundo."
+    },
+    "milestones": [
+      {
+        "title": "Nivelación",
+        "detail": "Primera señal de palabras conocidas y falladas."
+      },
+      {
+        "title": "Palabras esenciales",
+        "detail": "Construye una base estable de vocabulario cotidiano."
+      },
+      {
+        "title": "Listo para frases",
+        "detail": "Las palabras sólidas empiezan a combinarse en frases."
+      },
+      {
+        "title": "Constructor de contexto",
+        "detail": "Repasa las palabras más débiles en contextos más fáciles."
+      },
+      {
+        "title": "Recuerdo avanzado",
+        "detail": "La mayoría de las palabras conocidas pasan a un repaso más profundo."
+      },
+      {
+        "title": "Largo plazo",
+        "detail": "El camino sigue expandiéndose sin necesidad de cientos de nodos visibles."
+      },
+      {
+        "title": "Repaso de dominio",
+        "detail": "Mantén activas con el tiempo las palabras de alta confianza."
+      }
+    ],
+    "trend": {
+      "new": "Camino nuevo",
+      "improving": "Dominio mejorando +{{delta}}",
+      "declining": "Dominio a repasar {{delta}}",
+      "stable": "Dominio estable"
     }
   },
   "grammar": {
@@ -833,9 +869,9 @@
         "pt": "Portugués",
         "other": "Otra"
       },
-      "germanLevelLabel": "Nivel de alemán",
-      "germanLevelPlaceholder": "Selecciona…",
-      "germanLevelOptions": {
+      "targetLevelLabel": "Tu nivel en el idioma que aprendes",
+      "targetLevelPlaceholder": "Selecciona…",
+      "targetLevelOptions": {
         "a1": "A1 — Principiante",
         "a2": "A2 — Elemental",
         "b1": "B1 — Intermedio",

@@ -670,6 +670,42 @@
       "reviewToolsBody": "Your Vocabulary, Topic Deck, Word Library und Learning System. Topics {{selected}}/{{total}}.",
       "exploreToolsTitle": "Explore-Tools",
       "exploreToolsBody": "Grammar-Training und Language-Map-Tools sind verfügbar, wenn der Pfad tiefere Arbeit verlangt."
+    },
+    "milestones": [
+      {
+        "title": "Einstufung",
+        "detail": "Erstes Signal aus gewussten und verfehlten Wörtern."
+      },
+      {
+        "title": "Kernwortschatz",
+        "detail": "Baue eine stabile Basis für den Alltagswortschatz auf."
+      },
+      {
+        "title": "Satzbereit",
+        "detail": "Starke Wörter fließen in Sätze ein."
+      },
+      {
+        "title": "Kontext-Builder",
+        "detail": "Wiederhole schwächere Wörter in einfacheren Kontexten."
+      },
+      {
+        "title": "Fortgeschrittenes Abrufen",
+        "detail": "Die meisten bekannten Wörter gehen in eine tiefere Wiederholung."
+      },
+      {
+        "title": "Langer Lauf",
+        "detail": "Der Pfad wächst weiter, ohne Hunderte sichtbarer Knoten zu brauchen."
+      },
+      {
+        "title": "Beherrschungs-Wiederholung",
+        "detail": "Halte Wörter mit hoher Sicherheit langfristig aktiv."
+      }
+    ],
+    "trend": {
+      "new": "Neuer Pfad",
+      "improving": "Beherrschung steigt +{{delta}}",
+      "declining": "Beherrschung braucht Wiederholung {{delta}}",
+      "stable": "Stabile Beherrschung"
     }
   },
   "grammar": {
@@ -833,9 +869,9 @@
         "pt": "Portugiesisch",
         "other": "Andere"
       },
-      "germanLevelLabel": "Deutschniveau",
-      "germanLevelPlaceholder": "Auswählen…",
-      "germanLevelOptions": {
+      "targetLevelLabel": "Dein Niveau in der Sprache, die du lernst",
+      "targetLevelPlaceholder": "Auswählen…",
+      "targetLevelOptions": {
         "a1": "A1 — Anfänger",
         "a2": "A2 — Grundlegend",
         "b1": "B1 — Mittelstufe",

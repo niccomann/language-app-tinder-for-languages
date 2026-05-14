@@ -14,7 +14,7 @@ type Sentiment = 'like' | 'dislike' | 'neutral';
 type Profession = 'artist' | 'humanist' | 'scientific' | 'technical' | 'student' | 'other';
 type Gender = 'woman' | 'man' | 'other' | 'undisclosed';
 type NativeLanguage = 'it' | 'en' | 'es' | 'de' | 'fr' | 'pt' | 'other';
-type GermanLevel = 'a1' | 'a2' | 'b1' | 'b2' | 'c1' | 'c2' | 'none';
+type ProficiencyLevel = 'a1' | 'a2' | 'b1' | 'b2' | 'c1' | 'c2' | 'none';
 
 interface Persona {
   nickname: string;
@@ -22,7 +22,7 @@ interface Persona {
   profession: Profession | '';
   gender: Gender | '';
   nativeLanguage: NativeLanguage | '';
-  germanLevel: GermanLevel | '';
+  targetLevel: ProficiencyLevel | '';
 }
 
 const EMPTY_PERSONA: Persona = {
@@ -31,7 +31,7 @@ const EMPTY_PERSONA: Persona = {
   profession: '',
   gender: '',
   nativeLanguage: '',
-  germanLevel: '',
+  targetLevel: '',
 };
 
 type Status =
@@ -43,7 +43,7 @@ type Status =
 const PROFESSION_OPTIONS: Profession[] = ['artist', 'humanist', 'scientific', 'technical', 'student', 'other'];
 const GENDER_OPTIONS: Gender[] = ['woman', 'man', 'other', 'undisclosed'];
 const NATIVE_LANGUAGE_OPTIONS: NativeLanguage[] = ['it', 'en', 'es', 'de', 'fr', 'pt', 'other'];
-const GERMAN_LEVEL_OPTIONS: GermanLevel[] = ['a1', 'a2', 'b1', 'b2', 'c1', 'c2', 'none'];
+const PROFICIENCY_LEVEL_OPTIONS: ProficiencyLevel[] = ['a1', 'a2', 'b1', 'b2', 'c1', 'c2', 'none'];
 
 const HEADING_CLASS = 'font-display font-normal text-display-sm tracking-[-0.3px] text-ink';
 const FIELD_CLASS = `w-full ${UI_RADIUS.control} border border-hairline bg-canvas px-3 py-2 text-body-sm text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15`;
@@ -94,7 +94,7 @@ export function FeedbackButton({
         profession: persona.profession || undefined,
         gender: persona.gender || undefined,
         native_language: persona.nativeLanguage || undefined,
-        german_level: persona.germanLevel || undefined,
+        target_level: persona.targetLevel || undefined,
       });
       setStatus({ kind: 'success', id: res.id });
     } catch (err) {
@@ -329,16 +329,16 @@ function PersonaForm({
           </select>
         </div>
         <div className="col-span-2 sm:col-span-1">
-          <label className={LABEL_CLASS} htmlFor="fb-german">{p.germanLevelLabel}</label>
+          <label className={LABEL_CLASS} htmlFor="fb-target-level">{p.targetLevelLabel}</label>
           <select
-            id="fb-german"
-            value={persona.germanLevel}
-            onChange={(e) => onChange({ germanLevel: e.target.value as GermanLevel | '' })}
+            id="fb-target-level"
+            value={persona.targetLevel}
+            onChange={(e) => onChange({ targetLevel: e.target.value as ProficiencyLevel | '' })}
             className={FIELD_CLASS}
           >
-            <option value="">{p.germanLevelPlaceholder}</option>
-            {GERMAN_LEVEL_OPTIONS.map((opt) => (
-              <option key={opt} value={opt}>{p.germanLevelOptions[opt]}</option>
+            <option value="">{p.targetLevelPlaceholder}</option>
+            {PROFICIENCY_LEVEL_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>{p.targetLevelOptions[opt]}</option>
             ))}
           </select>
         </div>

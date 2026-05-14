@@ -516,7 +516,7 @@ export const api = {
     profession?: 'artist' | 'humanist' | 'scientific' | 'technical' | 'student' | 'other';
     gender?: 'woman' | 'man' | 'other' | 'undisclosed';
     native_language?: 'it' | 'en' | 'es' | 'de' | 'fr' | 'pt' | 'other';
-    german_level?: 'a1' | 'a2' | 'b1' | 'b2' | 'c1' | 'c2' | 'none';
+    target_level?: 'a1' | 'a2' | 'b1' | 'b2' | 'c1' | 'c2' | 'none';
   }): Promise<{ id: string; created_at: number }> {
     const response = await fetchWithTimeout(`${API_BASE_URL}/api/feedback`, {
       method: 'POST',

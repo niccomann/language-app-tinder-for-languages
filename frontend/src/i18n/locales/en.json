@@ -670,6 +670,42 @@
       "reviewToolsBody": "Your Vocabulary, Topic Deck, Word Library, and Learning System. Topics {{selected}}/{{total}}.",
       "exploreToolsTitle": "Explore tools",
       "exploreToolsBody": "Grammar training and language-map tools are available when the path asks for deeper work."
+    },
+    "milestones": [
+      {
+        "title": "Placement",
+        "detail": "First signal from known and missed words."
+      },
+      {
+        "title": "Core Words",
+        "detail": "Build a stable base for everyday vocabulary."
+      },
+      {
+        "title": "Phrase Ready",
+        "detail": "Strong words can start mixing into sentences."
+      },
+      {
+        "title": "Context Builder",
+        "detail": "Review weaker words inside easier contexts."
+      },
+      {
+        "title": "Advanced Recall",
+        "detail": "Most known words move into deeper review."
+      },
+      {
+        "title": "Long Run",
+        "detail": "The path keeps expanding without needing hundreds of visible nodes."
+      },
+      {
+        "title": "Mastery Review",
+        "detail": "Keep high-confidence words active over time."
+      }
+    ],
+    "trend": {
+      "new": "New path",
+      "improving": "Mastery improving +{{delta}}",
+      "declining": "Mastery needs review {{delta}}",
+      "stable": "Stable mastery"
     }
   },
   "grammar": {
@@ -833,9 +869,9 @@
         "pt": "Portuguese",
         "other": "Other"
       },
-      "germanLevelLabel": "German level",
-      "germanLevelPlaceholder": "Select…",
-      "germanLevelOptions": {
+      "targetLevelLabel": "Your level in the language you're learning",
+      "targetLevelPlaceholder": "Select…",
+      "targetLevelOptions": {
         "a1": "A1 — Beginner",
         "a2": "A2 — Elementary",
         "b1": "B1 — Intermediate",

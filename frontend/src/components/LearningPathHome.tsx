@@ -18,9 +18,10 @@ import type { AdaptiveLearningSummary, UserProgress } from '../types';
 import { GameSignalBadge, StatCard, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
 import { EYEBROW_CLASS, SceneShell } from './scene';
 import {
-  LEARNING_PATH_MILESTONES,
+  type LearningPathMilestone,
   getActiveMilestoneIndex,
   getLearningTrendLabel,
+  getMilestones,
   getPathDisplayValues,
 } from './learningPathMeta';
 import {
@@ -57,6 +58,7 @@ export function LearningPathHome({
   const t = copy.pathHome;
 
   const display = getPathDisplayValues(learningSummary);
+  const milestones = getMilestones(copy);
   const shouldReengage = Boolean(learningSummary?.should_reengage);
   const primaryMission = getPrimaryFeatureFlowItem();
   const upcomingMissions = getFeatureFlowItemsByPhase('upcoming');
@@ -77,7 +79,7 @@ export function LearningPathHome({
         back={back}
         onNavigate={navigate}
       >
-        <FullPath pathLevel={display.pathLevel} levelLabel={t.full.levelLabel} />
+        <FullPath pathLevel={display.pathLevel} levelLabel={t.full.levelLabel} milestones={milestones} />
       </SceneShell>
     );
   }
@@ -139,6 +141,7 @@ export function LearningPathHome({
           progressEyebrow={t.diary.progressEyebrow}
           todayPillTemplate={t.diary.todayPill}
           levelLabel={t.full.levelLabel}
+          milestones={milestones}
         />
       </SceneShell>
     );
@@ -238,7 +241,7 @@ export function LearningPathHome({
         <SurfacePanel padding="lg" className="space-y-2">
           <p className={`${EYEBROW_CLASS} text-muted`}>{t.home.snapshotEyebrow}</p>
           <h2 className="font-display text-display-sm font-normal tracking-[-0.3px] text-ink">
-            {getLearningTrendLabel(learningSummary)}
+            {getLearningTrendLabel(learningSummary, copy)}
           </h2>
         </SurfacePanel>
 
@@ -312,10 +315,18 @@ function PathSectionLink({
   );
 }
 
-function FullPath({ pathLevel, levelLabel }: { pathLevel: number; levelLabel: string }) {
+function FullPath({
+  pathLevel,
+  levelLabel,
+  milestones,
+}: {
+  pathLevel: number;
+  levelLabel: string;
+  milestones: LearningPathMilestone[];
+}) {
   return (
     <ul className="flex flex-col gap-2">
-      {LEARNING_PATH_MILESTONES.map((step) => {
+      {milestones.map((step) => {
         const isComplete = pathLevel >= step.level;
         return (
           <li
@@ -344,6 +355,7 @@ function DiaryTimeline({
   progressEyebrow,
   todayPillTemplate,
   levelLabel,
+  milestones,
 }: {
   pathLevel: number;
   progress: UserProgress;
@@ -352,15 +364,16 @@ function DiaryTimeline({
   progressEyebrow: string;
   todayPillTemplate: string;
   levelLabel: string;
+  milestones: LearningPathMilestone[];
 }) {
-  const activeMilestoneIndex = getActiveMilestoneIndex(pathLevel);
+  const activeMilestoneIndex = getActiveMilestoneIndex(pathLevel, milestones);
   const visibleMilestones =
     variant === 'compact'
-      ? LEARNING_PATH_MILESTONES.slice(
+      ? milestones.slice(
           Math.max(0, activeMilestoneIndex - 1),
-          Math.min(LEARNING_PATH_MILESTONES.length, activeMilestoneIndex + 2),
+          Math.min(milestones.length, activeMilestoneIndex + 2),
         )
-      : LEARNING_PATH_MILESTONES;
+      : milestones;
 
   return (
     <SurfacePanel padding="lg" className="relative overflow-hidden">
@@ -375,7 +388,7 @@ function DiaryTimeline({
       <div className="relative space-y-3">
         <div className="absolute bottom-8 left-6 top-8 w-0.5 bg-hairline" />
         {visibleMilestones.map((step) => {
-          const index = LEARNING_PATH_MILESTONES.indexOf(step);
+          const index = milestones.indexOf(step);
           const isComplete = pathLevel >= step.level;
           const isActive = index === activeMilestoneIndex;
           return (
