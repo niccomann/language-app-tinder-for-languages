@@ -15,7 +15,7 @@ per-environment SQLite `app.db` files are now frozen backups, not live.
 | DB | Location | Engine | Role | State |
 |---|---|---|---|---|
 | **tinder_languages** (the live DB) | `language-postgres` container on the EC2, Docker network `language-app`, also bound to the EC2 host loopback `127.0.0.1:5432`. Volume `language-pgdata`. | Postgres 16 | **The single source of truth.** Prod + local both use it. | 8069 flashcards (de 2998 / fr 2515 / it 2556), 11760 verb_conjugations, ~30k rows / 17 tables |
-| **app.db (frozen)** | prod EC2 `/home/ec2-user/language-deploy/current/backend/app.db` (still bind-mounted but unused); local `backend/app.db` | SQLite | Pre-migration snapshot — instant rollback if Postgres has trouble | 8069 flashcards, identical to what was migrated |
+| **app.db (local dev + frozen prod snapshot)** | local `backend/app.db` — **used for local dev** (`USE_SQLITE=true`); prod EC2 `/home/ec2-user/.../backend/app.db` still bind-mounted but unused | SQLite | Local dev DB + pre-migration rollback snapshot | 8069 flashcards |
 | **tracking.db** | local `backend/tracking.db` · prod volume `language-tracking-data:/app/data/tracking.db` | SQLite | Session/action analytics — **independent, NOT migrated**, stays SQLite | near-empty both sides |
 | **tinder_languages_db** | local Docker container `tinder-languages-postgres`, `localhost:5433` | Postgres | *Was* the producer source-of-truth — now unused | empty (5 sample rows) |
 
@@ -27,24 +27,34 @@ per-environment SQLite `app.db` files are now frozen backups, not live.
 
 - **Prod** (`language-backend` container): `USE_SQLITE=false`, `DB_HOST=language-postgres`,
   `DB_PORT=5432` — resolves over the `language-app` Docker network.
-- **Local** (`backend/.env`): `USE_SQLITE=false`, `DB_HOST=localhost`, `DB_PORT=5434`
-  — points at the SSH tunnel. **Run `scripts/pg_tunnel.sh` first**, then start the
-  backend. Without the tunnel the backend can't reach the DB; for offline local
-  dev set `USE_SQLITE=true` instead.
+- **Local** (`backend/.env`): `USE_SQLITE=true` — local dev uses the SQLite
+  `backend/app.db` file (the synced-from-prod canonical, 8069 cards). Fast.
 - **Tracking DB** stays independent: `TRACKING_DB_PATH` env, SQLite, not in Postgres.
 
 ## Local dev workflow
 
+Local dev uses SQLite (`backend/app.db`):
+
 ```bash
-# terminal 1 — keep open while developing:
-scripts/pg_tunnel.sh            # opens SSH tunnel localhost:5434 -> EC2 Postgres
-# terminal 2:
 cd backend && source .venv/bin/activate && python3 -m app.main
 ```
 
-The tunnel opens the SSH security-group rule for your IP while running and
-revokes it on Ctrl-C. Postgres is bound to the EC2 host loopback only — it is
-NOT exposed to the public internet; the tunnel is the only way in from local.
+**Why not the tunnel?** `scripts/pg_tunnel.sh` works and the tunnel is real, but
+the app's adaptive endpoint (`/api/cards/adaptive`, used by the home page and
+swipe deck) does many DB round-trips per request — over the SSH tunnel each
+round-trip pays the network RTT, pushing the endpoint to ~17s (vs ~2s on prod
+and ~0.07s on local SQLite). Tested and confirmed. So the tunnel is impractical
+for day-to-day local dev. It stays available for one-off inspection / admin
+tasks; `backend/.env` keeps the `DB_*` vars so flipping `USE_SQLITE=false` works
+when the tunnel is up.
+
+To make the tunnel viable for local dev, the adaptive endpoint would need to be
+optimized to batch its queries (fewer round-trips) — a separate backend task.
+
+**Re-syncing local SQLite from prod Postgres** (when prod data changes): dump
+prod and load it, or pull a fresh SQLite via a dedicated script (not built yet —
+the old `sqlite3 .backup` pull worked when prod was SQLite; now prod is Postgres
+so it'd be `pg_dump` → restore into a local Postgres, or a Postgres→SQLite export).
 
 ## Backups
 
