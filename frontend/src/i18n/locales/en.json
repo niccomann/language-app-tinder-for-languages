@@ -1030,6 +1030,12 @@
     "headerTitle": "Learn {{language}}",
     "headerSubtitle": "Just decide: know it or not. The algorithm adapts the learning path from there."
   },
+  "learningFeedback": {
+    "masteryReached": "{{word}} reached Mastery {{level}}",
+    "masteryReachedBody": "Your {{language}} path just moved forward.",
+    "signalUpdatedTitle": "Learning signal updated",
+    "signalUpdatedBody": "The app is recalibrating your next cards from what you knew and missed."
+  },
   "learningFiltersPanel": {
     "title": "Build your topic deck",
     "selectedPacks": "Selected packs"

@@ -1030,6 +1030,12 @@
     "headerTitle": "Aprenda {{language}}",
     "headerSubtitle": "Apenas decida: você sabe ou não. O algoritmo adapta o caminho a partir daí."
   },
+  "learningFeedback": {
+    "masteryReached": "{{word}} alcançou Domínio {{level}}",
+    "masteryReachedBody": "Seu caminho de {{language}} avançou.",
+    "signalUpdatedTitle": "Sinal de aprendizado atualizado",
+    "signalUpdatedBody": "O app está recalibrando seus próximos cartões com base no que você sabia e errou."
+  },
   "learningFiltersPanel": {
     "title": "Construa seu topic deck",
     "selectedPacks": "Packs selecionados"

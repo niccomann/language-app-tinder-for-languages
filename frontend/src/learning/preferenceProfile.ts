@@ -123,18 +123,3 @@ export function readSavedLearningPreferenceProfile(): LearningPreferenceProfile 
   const profile = normalizeOnboardingPreferences(readOnboardingPreferences());
   return hasMeaningfulPreferenceProfile(profile) ? profile : null;
 }
-
-export function buildPreferenceProfileSummary(profile: LearningPreferenceProfile) {
-  const domains = profile.domains.slice(0, 3).join(', ');
-  const tones = profile.tones.slice(0, 2).join(', ');
-  const exercises = profile.exerciseBias.slice(0, 2).join(', ');
-
-  return unique([
-    domains,
-    tones,
-    exercises,
-    profile.difficultyMode === 'adaptive' ? '' : profile.difficultyMode,
-    profile.semanticDiversityMode === 'balanced' ? '' : profile.semanticDiversityMode,
-  ])
-    .join(' / ');
-}

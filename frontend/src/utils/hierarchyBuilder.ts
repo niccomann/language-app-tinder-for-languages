@@ -125,13 +125,6 @@ export function buildHierarchyFromWords(words: WordCloudItem[]): HierarchyNode {
 }
 
 /**
- * Get all unique top-level categories from the hierarchy
- */
-export function getTopLevelCategories(root: HierarchyNode): string[] {
-    return (root.children || []).map(child => child.name);
-}
-
-/**
  * Count total words in a hierarchy node (recursively)
  */
 export function countWordsInNode(node: HierarchyNode): number {

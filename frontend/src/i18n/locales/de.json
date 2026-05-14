@@ -1030,6 +1030,12 @@
     "headerTitle": "{{language}} lernen",
     "headerSubtitle": "Entscheide einfach: kannst du es oder nicht. Der Algorithmus passt den Lernpfad von da aus an."
   },
+  "learningFeedback": {
+    "masteryReached": "{{word}} hat Beherrschung {{level}} erreicht",
+    "masteryReachedBody": "Dein {{language}}-Pfad ist vorangekommen.",
+    "signalUpdatedTitle": "Lernsignal aktualisiert",
+    "signalUpdatedBody": "Die App kalibriert deine nächsten Karten anhand dessen, was du wusstest und verfehlt hast."
+  },
   "learningFiltersPanel": {
     "title": "Baue dein Topic Deck",
     "selectedPacks": "Ausgewählte Packs"

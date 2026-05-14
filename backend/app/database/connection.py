@@ -93,8 +93,6 @@ class DatabaseConnection:
     
     def _initialize_connection(self):
         """Initialize database connection"""
-        self.connect_args = {"check_same_thread": False}
-        
         log.info("Initializing database connection...")
         log.debug(f"Database URL components:")
         log.debug(f"  - Host: {config.database.host}")

@@ -31,7 +31,9 @@ class DatabaseConfig(BaseSettings):
     db_schema: str = Field(default="public", alias="db_schema")
     database: str = "tinder_languages"
     recreate_db: bool = Field(default=False, validation_alias="RECREATE_DB")
-    use_sqlite: bool = Field(default=True, validation_alias="USE_SQLITE")
+    # Postgres is the canonical DB (centralized on the EC2). SQLite is opt-in
+    # for offline local dev via USE_SQLITE=true.
+    use_sqlite: bool = Field(default=False, validation_alias="USE_SQLITE")
 
     model_config = {
         "env_prefix": "db_",

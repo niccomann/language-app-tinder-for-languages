@@ -1030,6 +1030,12 @@
     "headerTitle": "Apprendi {{language}}",
     "headerSubtitle": "Decidi solo: la sai o no. L'algoritmo adatta il percorso da lì in poi."
   },
+  "learningFeedback": {
+    "masteryReached": "{{word}} ha raggiunto Padronanza {{level}}",
+    "masteryReachedBody": "Il tuo percorso di {{language}} è avanzato.",
+    "signalUpdatedTitle": "Segnale di apprendimento aggiornato",
+    "signalUpdatedBody": "L'app sta ricalibrando le prossime carte da ciò che sapevi e hai sbagliato."
+  },
   "learningFiltersPanel": {
     "title": "Costruisci il tuo topic deck",
     "selectedPacks": "Pack selezionati"

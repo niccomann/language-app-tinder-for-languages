@@ -11,10 +11,3 @@ export function getImageSrc(imageBase64?: string): string {
     }
     return `data:image/jpeg;base64,${imageBase64}`;
 }
-
-/**
- * Check if flashcard has a valid base64 image.
- */
-export function hasImage(imageBase64?: string): boolean {
-    return !!imageBase64 && imageBase64.length > 0;
-}

@@ -3,7 +3,8 @@ import { api } from '../services/api';
 import { readSavedLearningPreferenceProfile } from '../learning/preferenceProfile';
 import type { AdaptiveFlashcard, AdaptiveLearningSummary, LearningFeedback, UserProgress } from '../types';
 import { reportClientError } from '../utils/clientError';
-import { useTargetLanguage } from '../i18n/languageContext';
+import { useCopy, useTargetLanguage } from '../i18n/languageContext';
+import { formatCopy } from '../i18n/staticCopy';
 
 const SESSION_CARD_LIMIT = 80;
 
@@ -12,6 +13,7 @@ const SESSION_CARD_LIMIT = 80;
  */
 export const useLearningSession = () => {
   const language = useTargetLanguage();
+  const copy = useCopy();
   const [flashcards, setFlashcards] = useState<AdaptiveFlashcard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState<UserProgress>({
@@ -76,14 +78,19 @@ export const useLearningSession = () => {
         const updatedStatistics = await api.updateWordStatistics(currentCard.word, known, currentCard.language);
         if (updatedStatistics.knowledge_level > currentCard.knowledge_level) {
           setLearningFeedback({
-            title: `${currentCard.word} reached Mastery ${updatedStatistics.knowledge_level}`,
-            message: 'Your German path just moved forward.',
+            title: formatCopy(copy.learningFeedback.masteryReached, {
+              word: currentCard.word,
+              level: updatedStatistics.knowledge_level,
+            }),
+            message: formatCopy(copy.learningFeedback.masteryReachedBody, {
+              language: copy.targetLanguageNames[language],
+            }),
             tone: 'level_up',
           });
         } else if (updatedProgress.cards_reviewed > 0 && updatedProgress.cards_reviewed % 5 === 0) {
           setLearningFeedback({
-            title: 'Learning signal updated',
-            message: 'The app is recalibrating your next cards from what you knew and missed.',
+            title: copy.learningFeedback.signalUpdatedTitle,
+            message: copy.learningFeedback.signalUpdatedBody,
             tone: 'progress',
           });
         }
