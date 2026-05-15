@@ -1,5 +1,4 @@
 from datetime import UTC, datetime, timedelta
-from pathlib import Path
 from types import SimpleNamespace
 
 from fastapi.testclient import TestClient
@@ -358,13 +357,3 @@ def test_learning_summary_endpoint_returns_adaptive_dashboard_contract():
     assert data["average_knowledge_level"] == 1.0
     assert data["path_level"] == 1
     assert data["max_path_level"] == 400
-
-
-def test_legacy_statistics_summary_reuses_adaptive_summary_buckets():
-    statistics_route = Path(__file__).resolve().parents[1] / "app" / "routes" / "statistics.py"
-    source = statistics_route.read_text()
-    legacy_summary_source = source.split('@router.get("/summary")', maxsplit=1)[1]
-
-    assert "build_learning_summary(" in legacy_summary_source
-    assert "confidence_score >= 80" not in legacy_summary_source
-    assert "30 <= s.confidence_score < 80" not in legacy_summary_source

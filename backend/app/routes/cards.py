@@ -38,6 +38,29 @@ def _hydrate_media_for(session, selected):
         card.image_base64 = img
         card.audio_base64 = aud
 
+
+def load_adaptive_candidates(
+    session: SessionDependency,
+    language: str,
+    categories: Optional[List[str]],
+    user_id: str,
+) -> list[tuple[SimpleNamespace, FlashcardEntity, Optional[UserWordStatisticsEntity]]]:
+    """Metadata-only scan of cards + user stats, returned as adaptive candidates.
+
+    image_base64/audio_base64 stay deferred until the caller picks the top-N
+    and hands them to _hydrate_media_for.
+    """
+    query = (
+        select(FlashcardEntity)
+        .where(FlashcardEntity.language == language)
+        .options(defer(FlashcardEntity.image_base64), defer(FlashcardEntity.audio_base64))
+    )
+    if categories:
+        query = query.where(FlashcardEntity.category.in_(categories))
+    cards = session.exec(query).all()
+    stats_by_word = get_user_stats_by_word(session, language, user_id)
+    return build_adaptive_candidates(cards, stats_by_word)
+
 router = APIRouter(prefix="/api", tags=["cards"])
 
 
@@ -197,19 +220,7 @@ async def get_adaptive_flashcards(
     Reuses user_word_statistics as the mastery source:
     struggling seen words first, then new words, learning words, and mastered review cards.
     """
-    query = (
-        select(FlashcardEntity)
-        .where(FlashcardEntity.language == language)
-        .options(defer(FlashcardEntity.image_base64), defer(FlashcardEntity.audio_base64))
-    )
-
-    if category:
-        query = query.where(FlashcardEntity.category.in_(category))
-
-    cards = session.exec(query).all()
-    stats_by_word = get_user_stats_by_word(session, language, user_id)
-    candidates = build_adaptive_candidates(cards, stats_by_word)
-
+    candidates = load_adaptive_candidates(session, language, category, user_id)
     selected = sorted(candidates, key=lambda item: adaptive_sort_key(item[0]))[:limit]
     _hydrate_media_for(session, selected)
 
@@ -231,18 +242,9 @@ async def query_adaptive_flashcards(
     selected domains are prioritized, functional grammar words are preserved,
     and fallback/exploration cards remain available.
     """
-    query = (
-        select(FlashcardEntity)
-        .where(FlashcardEntity.language == request.language)
-        .options(defer(FlashcardEntity.image_base64), defer(FlashcardEntity.audio_base64))
+    candidates = load_adaptive_candidates(
+        session, request.language, request.selected_categories, request.user_id
     )
-
-    if request.selected_categories:
-        query = query.where(FlashcardEntity.category.in_(request.selected_categories))
-
-    cards = session.exec(query).all()
-    stats_by_word = get_user_stats_by_word(session, request.language, request.user_id)
-    candidates = build_adaptive_candidates(cards, stats_by_word)
     selected = select_preference_weighted_candidates(
         candidates,
         request.profile,
