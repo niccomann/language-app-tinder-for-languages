@@ -971,7 +971,8 @@
     "loading": "Caricamento dialetti...",
     "noDataTitle": "Nessun dato sui dialetti",
     "noDataBody": "I dati dialettali regionali devono essere popolati nel database.",
-    "mapTitle": "Mappa dialetti"
+    "mapTitle": "Mappa dialetti",
+    "mapSubtitle": "Esplora le varianti regionali tedesche"
   },
   "sentenceBuilder": {
     "selectPrompt": "Seleziona i nodi sopra per iniziare a costruire",
@@ -1039,5 +1040,14 @@
   "learningFiltersPanel": {
     "title": "Costruisci il tuo topic deck",
     "selectedPacks": "Pack selezionati"
+  },
+  "grammarPlacement": {
+    "title": "Placement grammaticale",
+    "subtitle": "Componi una frase completa in {{language}} per farti valutare grammatica, logica e uso delle parole funzionali oltre alla padronanza delle singole parole.",
+    "badge": "Compito di frase",
+    "checkTitle": "Verifica di livello basata sulla frase",
+    "checkBody": "Usa nomi, verbi, articoli, pronomi, avverbi, preposizioni e congiunzioni. È il primo passo verso un punteggio di placement complessivo.",
+    "libraryButton": "Library",
+    "grammarLabButton": "Grammar Lab"
   }
 }

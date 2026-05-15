@@ -971,7 +971,8 @@
     "loading": "Lade Dialekte...",
     "noDataTitle": "Keine Dialekt-Daten verfügbar",
     "noDataBody": "Regionale Dialekt-Daten müssen in der Datenbank befüllt werden.",
-    "mapTitle": "Dialekt-Karte"
+    "mapTitle": "Dialekt-Karte",
+    "mapSubtitle": "Entdecke regionale deutsche Varianten"
   },
   "sentenceBuilder": {
     "selectPrompt": "Wähle Knoten oben aus, um zu beginnen",
@@ -1039,5 +1040,14 @@
   "learningFiltersPanel": {
     "title": "Baue dein Topic Deck",
     "selectedPacks": "Ausgewählte Packs"
+  },
+  "grammarPlacement": {
+    "title": "Grammatik-Einstufung",
+    "subtitle": "Baue einen vollständigen Satz auf {{language}}, damit die App Grammatik, Logik und Funktionswörter über Einzelwort-Wissen hinaus beurteilen kann.",
+    "badge": "Satzaufgabe",
+    "checkTitle": "Satzbasierter Niveau-Check",
+    "checkBody": "Verwende Nomen, Verben, Artikel, Pronomen, Adverbien, Präpositionen und Konjunktionen. Das ist der erste Schritt zu einer vollständigen Einstufung.",
+    "libraryButton": "Library",
+    "grammarLabButton": "Grammar Lab"
   }
 }

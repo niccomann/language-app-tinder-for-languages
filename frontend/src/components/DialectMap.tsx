@@ -155,7 +155,7 @@ export function DialectMap({ initialWord }: DialectMapProps) {
           </div>
           <div>
             <h2 className="text-lg font-semibold text-on-dark">{dm.mapTitle}</h2>
-            <p className="text-xs text-on-dark-soft">Explore German regional variants</p>
+            <p className="text-xs text-on-dark-soft">{dm.mapSubtitle}</p>
           </div>
         </div>
 

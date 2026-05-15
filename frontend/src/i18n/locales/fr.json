@@ -971,7 +971,8 @@
     "loading": "Chargement des dialectes...",
     "noDataTitle": "Aucune donnée dialectale",
     "noDataBody": "Les données dialectales régionales doivent être populées dans la base.",
-    "mapTitle": "Carte des dialectes"
+    "mapTitle": "Carte des dialectes",
+    "mapSubtitle": "Explore les variantes régionales allemandes"
   },
   "sentenceBuilder": {
     "selectPrompt": "Sélectionne les nœuds ci-dessus pour commencer",
@@ -1039,5 +1040,14 @@
   "learningFiltersPanel": {
     "title": "Construis ton topic deck",
     "selectedPacks": "Packs sélectionnés"
+  },
+  "grammarPlacement": {
+    "title": "Placement grammatical",
+    "subtitle": "Compose une phrase complète en {{language}} pour que l'app évalue grammaire, logique et maîtrise des mots-outils au-delà de la simple connaissance lexicale.",
+    "badge": "Tâche de phrase",
+    "checkTitle": "Test de niveau basé sur la phrase",
+    "checkBody": "Utilise des noms, verbes, articles, pronoms, adverbes, prépositions et conjonctions. C'est la première étape vers un score de placement complet.",
+    "libraryButton": "Library",
+    "grammarLabButton": "Grammar Lab"
   }
 }

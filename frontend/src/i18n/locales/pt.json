@@ -971,7 +971,8 @@
     "loading": "Carregando dialetos...",
     "noDataTitle": "Sem dados de dialetos",
     "noDataBody": "Os dados de dialetos regionais precisam ser populados no banco.",
-    "mapTitle": "Mapa de dialetos"
+    "mapTitle": "Mapa de dialetos",
+    "mapSubtitle": "Explore as variantes regionais alemãs"
   },
   "sentenceBuilder": {
     "selectPrompt": "Selecione nós acima para começar a construir",
@@ -1039,5 +1040,14 @@
   "learningFiltersPanel": {
     "title": "Construa seu topic deck",
     "selectedPacks": "Packs selecionados"
+  },
+  "grammarPlacement": {
+    "title": "Nível de gramática",
+    "subtitle": "Monte uma frase completa em {{language}} para a app avaliar gramática, lógica e palavras funcionais além do vocabulário isolado.",
+    "badge": "Tarefa de frase",
+    "checkTitle": "Verificação de nível por frase",
+    "checkBody": "Use substantivos, verbos, artigos, pronomes, advérbios, preposições e conjunções. É o primeiro passo para um nível completo.",
+    "libraryButton": "Library",
+    "grammarLabButton": "Grammar Lab"
   }
 }

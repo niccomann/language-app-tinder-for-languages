@@ -971,7 +971,8 @@
     "loading": "Loading dialects...",
     "noDataTitle": "No dialect data available",
     "noDataBody": "Regional dialect data needs to be populated in the database.",
-    "mapTitle": "Dialect Map"
+    "mapTitle": "Dialect Map",
+    "mapSubtitle": "Explore German regional variants"
   },
   "sentenceBuilder": {
     "selectPrompt": "Select nodes from above to start building",
@@ -1039,5 +1040,14 @@
   "learningFiltersPanel": {
     "title": "Build your topic deck",
     "selectedPacks": "Selected packs"
+  },
+  "grammarPlacement": {
+    "title": "Grammar Placement",
+    "subtitle": "Build a full {{language}} sentence so the app can evaluate grammar, logic, and function-word control beyond single-word mastery.",
+    "badge": "Sentence task",
+    "checkTitle": "Sentence-based level check",
+    "checkBody": "Use nouns, verbs, articles, pronouns, adverbs, prepositions, and conjunctions. This is the first step toward a total placement score.",
+    "libraryButton": "Library",
+    "grammarLabButton": "Grammar Lab"
   }
 }
