@@ -16,11 +16,13 @@ PORT = 8888
 SCRIPT_DIR = Path(__file__).parent
 DASHBOARD_DIR = SCRIPT_DIR.parent / "dashboard"
 
-# Set AWS credentials
-os.environ["AWS_ACCESS_KEY_ID"] = os.environ.get("AWS_ACCESS_KEY_ID", "***AWS_KEY_ID_REMOVED***")
-os.environ["AWS_SECRET_ACCESS_KEY"] = os.environ.get("AWS_SECRET_ACCESS_KEY", "***AWS_SECRET_REMOVED***")
-os.environ["AWS_REGION"] = os.environ.get("AWS_REGION", "eu-central-1")
-os.environ["AWS_DEFAULT_REGION"] = os.environ.get("AWS_DEFAULT_REGION", "eu-central-1")
+# AWS credentials must come from the environment (or AWS config). Do NOT
+# hardcode them here — this file is in version control.
+for var in ("AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"):
+    if not os.environ.get(var):
+        raise RuntimeError(f"{var} must be set in the environment")
+os.environ.setdefault("AWS_REGION", "eu-central-1")
+os.environ.setdefault("AWS_DEFAULT_REGION", "eu-central-1")
 
 # Configuration
 VPC_ID = "vpc-0c84dfdf3ba8a9c85"

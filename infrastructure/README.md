@@ -315,8 +315,8 @@ aws eks update-kubeconfig --name tinder-languages-cluster --region eu-central-1
 Le credenziali sono in `secrets/.env`:
 
 ```bash
-AWS_ACCESS_KEY_ID=***AWS_KEY_ID_REMOVED***
-AWS_SECRET_ACCESS_KEY=***AWS_SECRET_REMOVED***
+AWS_ACCESS_KEY_ID=<your-aws-access-key-id>
+AWS_SECRET_ACCESS_KEY=<your-aws-secret-access-key>
 AWS_REGION=eu-central-1
 ```
 
