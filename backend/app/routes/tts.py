@@ -118,21 +118,3 @@ async def check_audio_exists(request: TTSCheckRequest, session: SessionDependenc
     
     return TTSCheckResponse(results=results)
 
-
-@router.get("/cached/{text_hash}")
-async def get_cached_audio(text_hash: str, session: SessionDependency):
-    """
-    Get cached audio by its hash (for direct access if needed).
-    """
-    from sqlmodel import select
-    from app.database.models import AudioCacheEntity
-    
-    statement = select(AudioCacheEntity).where(
-        AudioCacheEntity.text_hash == text_hash
-    )
-    cached = session.exec(statement).first()
-    
-    if not cached:
-        raise HTTPException(status_code=404, detail="Audio not found in cache")
-    
-    return TTSResponse(audio_base64=cached.audio_base64, cached=True)

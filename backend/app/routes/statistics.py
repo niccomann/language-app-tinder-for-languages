@@ -300,21 +300,3 @@ async def get_adaptive_learning_summary(
 
     return AdaptiveLearningSummary(**summary)
 
-
-@router.get("/summary")
-async def get_statistics_summary(
-    session: SessionDependency,
-    language: str = Query("de", description="Language code"),
-    user_id: str = Query("default_user", description="User ID"),
-):
-    """Get a summary of user's learning progress."""
-    summary = build_learning_summary(_get_user_stats(session, language, user_id))
-
-    return {
-        "total_words_practiced": summary["total_words_practiced"],
-        "average_confidence": summary["average_confidence"],
-        "words_mastered": summary["words_mastered"],
-        "words_learning": summary["words_learning"],
-        "words_struggling": summary["words_struggling"],
-        "total_practice_sessions": summary["total_practice_sessions"],
-    }
