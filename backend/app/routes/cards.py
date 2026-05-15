@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Query
 from typing import Optional, List
 from sqlmodel import select, func
+from sqlalchemy.orm import defer
 from datetime import datetime, UTC
 from pydantic import BaseModel, ConfigDict, Field
 from types import SimpleNamespace
@@ -14,6 +15,28 @@ from app.services.adaptive_learning import (
     selection_reason,
 )
 from app.services.preference_filter import select_preference_weighted_candidates
+
+
+def _hydrate_media_for(session, selected):
+    """Batch-fetch image_base64 + audio_base64 for only the selected top-N cards.
+
+    The adaptive endpoints first run a metadata-only scan over the language's
+    flashcards (image_base64 is deferred, since it's ~100KB per row × thousands
+    of rows = hundreds of MB pulled per request). After the top-N have been
+    chosen, we hydrate those few rows with their media here.
+    """
+    ids = [card.id for _, card, _ in selected]
+    if not ids:
+        return
+    rows = session.exec(
+        select(FlashcardEntity.id, FlashcardEntity.image_base64, FlashcardEntity.audio_base64)
+        .where(FlashcardEntity.id.in_(ids))
+    ).all()
+    media = {row[0]: (row[1], row[2]) for row in rows}
+    for _, card, _ in selected:
+        img, aud = media.get(card.id, (None, None))
+        card.image_base64 = img
+        card.audio_base64 = aud
 
 router = APIRouter(prefix="/api", tags=["cards"])
 
@@ -174,7 +197,11 @@ async def get_adaptive_flashcards(
     Reuses user_word_statistics as the mastery source:
     struggling seen words first, then new words, learning words, and mastered review cards.
     """
-    query = select(FlashcardEntity).where(FlashcardEntity.language == language)
+    query = (
+        select(FlashcardEntity)
+        .where(FlashcardEntity.language == language)
+        .options(defer(FlashcardEntity.image_base64), defer(FlashcardEntity.audio_base64))
+    )
 
     if category:
         query = query.where(FlashcardEntity.category.in_(category))
@@ -184,6 +211,7 @@ async def get_adaptive_flashcards(
     candidates = build_adaptive_candidates(cards, stats_by_word)
 
     selected = sorted(candidates, key=lambda item: adaptive_sort_key(item[0]))[:limit]
+    _hydrate_media_for(session, selected)
 
     return [
         adaptive_flashcard_from_candidate(candidate, card, stats)
@@ -203,7 +231,11 @@ async def query_adaptive_flashcards(
     selected domains are prioritized, functional grammar words are preserved,
     and fallback/exploration cards remain available.
     """
-    query = select(FlashcardEntity).where(FlashcardEntity.language == request.language)
+    query = (
+        select(FlashcardEntity)
+        .where(FlashcardEntity.language == request.language)
+        .options(defer(FlashcardEntity.image_base64), defer(FlashcardEntity.audio_base64))
+    )
 
     if request.selected_categories:
         query = query.where(FlashcardEntity.category.in_(request.selected_categories))
@@ -217,6 +249,7 @@ async def query_adaptive_flashcards(
         request.limit,
         adaptive_sort_key,
     )
+    _hydrate_media_for(session, selected)
 
     return [
         adaptive_flashcard_from_candidate(candidate, card, stats)
