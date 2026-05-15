@@ -94,9 +94,9 @@ async def generate_speech(request: TTSRequest, session: SessionDependency):
         
         return TTSResponse(audio_base64=audio_base64, cached=False)
         
-    except Exception as e:
-        log.error(f"TTS generation failed: {e}")
-        raise HTTPException(status_code=500, detail=f"TTS generation failed: {str(e)}")
+    except Exception:
+        log.exception("TTS generation failed")
+        raise HTTPException(status_code=500, detail="TTS generation failed")
 
 
 @router.post("/check", response_model=TTSCheckResponse)

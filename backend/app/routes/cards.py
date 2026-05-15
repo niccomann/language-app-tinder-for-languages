@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query
 from typing import Optional, List
-from sqlmodel import select, func
+from sqlmodel import select, func, delete
 from sqlalchemy.orm import defer
 from datetime import datetime, UTC
 from pydantic import BaseModel, ConfigDict, Field
@@ -322,14 +322,7 @@ async def reset_progress(
     """
     Reset progress statistics by deleting all progress records from database
     """
-    # Delete all progress records
-    progress_records = session.exec(
-        select(UserProgressEntity).where(UserProgressEntity.user_id == user_id)
-    ).all()
-    for record in progress_records:
-        session.delete(record)
-    
+    session.exec(delete(UserProgressEntity).where(UserProgressEntity.user_id == user_id))
     session.commit()
-    
     return {"message": "Progress reset successfully"}
 

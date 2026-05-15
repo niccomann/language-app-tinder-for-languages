@@ -111,16 +111,3 @@ def test_sqlite_schema_migration_adds_user_progress_user_id():
 
     columns = {column["name"] for column in inspect(engine).get_columns("user_progress")}
     assert "user_id" in columns
-
-
-def test_main_database_table_list_excludes_tracking_tables_even_when_imported():
-    from app.database import models as _main_models  # noqa: F401
-    from app.database import tracking_models as _tracking_models  # noqa: F401
-
-    engine = create_engine("sqlite:///:memory:")
-    SQLModel.metadata.create_all(engine, tables=main_database_tables())
-
-    table_names = set(inspect(engine).get_table_names())
-    assert "flashcards" in table_names
-    assert "user_progress" in table_names
-    assert not {table for table in table_names if table.startswith("tracking_")}

@@ -13,7 +13,6 @@ from app.core.config import config
 from app.core.user_middleware import attach_user_id_middleware
 from app.database.connection import DatabaseConnection
 from app.database.seed import run_seed
-from app.database.tracking_connection import init_tracking_database
 
 log = logging.getLogger(__name__)
 
@@ -34,10 +33,6 @@ async def lifespan(app: FastAPI):
         run_seed()
 
         log.info("Database initialization completed successfully")
-
-        log.info("Initializing tracking database...")
-        init_tracking_database()
-        log.info("Tracking database initialized")
 
     except Exception as e:
         log.error(f"Failed to initialize database: {e}")
