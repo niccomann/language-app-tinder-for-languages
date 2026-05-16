@@ -1,8 +1,11 @@
 import { useState } from 'react';
-
+import { Button, UI_RADIUS } from '../ui';
+import { WizardShell } from './WizardShell';
 import type { StepProps } from './types';
 
-export function IdentityStep({ draft, onAdvance, onBack }: StepProps) {
+const inputClass = `w-full ${UI_RADIUS.control} border border-hairline bg-canvas px-4 py-3 text-body-sm text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20`;
+
+export function IdentityStep({ draft, onAdvance, onBack, stepIndex, stepCount }: StepProps) {
   const [name, setName] = useState(draft.display_name);
   const [ageStr, setAgeStr] = useState(draft.age?.toString() ?? '');
   const [error, setError] = useState<string | null>(null);
@@ -27,39 +30,42 @@ export function IdentityStep({ draft, onAdvance, onBack }: StepProps) {
   }
 
   return (
-    <div style={{ padding: 24 }}>
-      <h2>Come ti chiami?</h2>
-      <p style={{ color: '#666', marginTop: 8 }}>Solo per personalizzare l'esperienza.</p>
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Il tuo nome"
-        style={{ width: '100%', padding: 12, marginTop: 16, borderRadius: 8, border: '1px solid #ddd' }}
-      />
-      <input
-        type="number"
-        value={ageStr}
-        onChange={(e) => setAgeStr(e.target.value)}
-        placeholder="Età (opzionale)"
-        style={{ width: '100%', padding: 12, marginTop: 12, borderRadius: 8, border: '1px solid #ddd' }}
-      />
-      {error && <p style={{ color: '#dc2626', marginTop: 12 }}>{error}</p>}
-      <button
-        type="button"
-        onClick={submit}
-        style={{ marginTop: 16, padding: '14px 24px', width: '100%', borderRadius: 999 }}
-      >
-        Continua
-      </button>
-      <p style={{ marginTop: 12, fontSize: 11, color: '#999', textAlign: 'center' }}>
-        Salvato sul tuo dispositivo. Nessun login, nessuna mail.
-      </p>
-      {onBack && (
-        <button type="button" onClick={onBack} style={{ marginTop: 16 }}>
-          ← Indietro
-        </button>
-      )}
-    </div>
+    <WizardShell
+      stepIndex={stepIndex}
+      stepCount={stepCount}
+      eyebrow="Passo 4"
+      title="Come ti chiami?"
+      subline="Solo per personalizzare l'esperienza."
+      onBack={onBack}
+    >
+      <div className="flex flex-col gap-3">
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Il tuo nome"
+          autoFocus
+          className={inputClass}
+        />
+        <input
+          type="number"
+          value={ageStr}
+          onChange={(e) => setAgeStr(e.target.value)}
+          placeholder="Età (opzionale)"
+          className={inputClass}
+        />
+        {error && (
+          <p role="alert" className="text-body-sm text-error">
+            {error}
+          </p>
+        )}
+        <Button variant="primary" className="mt-2 w-full" onClick={submit}>
+          Continua
+        </Button>
+        <p className="text-center text-caption text-muted">
+          Salvato sul tuo dispositivo. Nessun login, nessuna mail.
+        </p>
+      </div>
+    </WizardShell>
   );
 }

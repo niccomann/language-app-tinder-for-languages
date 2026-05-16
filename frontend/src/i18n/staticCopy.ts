@@ -4,7 +4,7 @@ import it from './locales/it.json' with { type: 'json' };
 import es from './locales/es.json' with { type: 'json' };
 import de from './locales/de.json' with { type: 'json' };
 import pt from './locales/pt.json' with { type: 'json' };
-import { isSourceLocale, readStoredSource, type SourceLocale } from './languageStorage';
+import { isSourceLocale, readStoredSource, SOURCE_STORAGE_KEY, type SourceLocale } from './languageStorage';
 
 export type StaticCopy = typeof en;
 
@@ -25,7 +25,7 @@ function resolveModuleLocale(): SourceLocale {
   if (typeof window !== 'undefined') {
     const requested = new URLSearchParams(window.location.search).get('locale');
     if (isSourceLocale(requested)) {
-      try { window.localStorage.setItem('languageApp:sourceLocale:v1', requested); } catch { /* ignore */ }
+      try { window.localStorage.setItem(SOURCE_STORAGE_KEY, requested); } catch { /* ignore */ }
       return requested;
     }
   }

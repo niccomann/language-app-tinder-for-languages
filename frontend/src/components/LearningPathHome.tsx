@@ -38,8 +38,6 @@ interface LearningPathHomeProps {
   learningSummary: AdaptiveLearningSummary | null;
   progress: UserProgress;
   totalCards: number;
-  categoriesCount: number;
-  selectedCategoriesCount: number;
   onNavigateToFeature: (path: string) => void;
 }
 
@@ -48,8 +46,6 @@ export function LearningPathHome({
   learningSummary,
   progress,
   totalCards,
-  categoriesCount,
-  selectedCategoriesCount,
   onNavigateToFeature,
 }: LearningPathHomeProps) {
   const copy = useCopy();

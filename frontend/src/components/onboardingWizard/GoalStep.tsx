@@ -1,40 +1,48 @@
+import { UI_INTERACTION, UI_RADIUS } from '../ui';
+import { WizardShell } from './WizardShell';
 import type { StepProps } from './types';
 
-const OPTIONS: Array<{ minutes: number; label: string }> = [
-  { minutes: 5, label: '☕ 5 min — Casual' },
-  { minutes: 10, label: '🎯 10 min — Regolare' },
-  { minutes: 15, label: '🔥 15 min — Serio' },
-  { minutes: 20, label: '🚀 20 min — Intenso' },
+const OPTIONS: Array<{ minutes: number; emoji: string; label: string; hint: string }> = [
+  { minutes: 5, emoji: '☕', label: '5 min', hint: 'Casual' },
+  { minutes: 10, emoji: '🎯', label: '10 min', hint: 'Regolare' },
+  { minutes: 15, emoji: '🔥', label: '15 min', hint: 'Serio' },
+  { minutes: 20, emoji: '🚀', label: '20 min', hint: 'Intenso' },
 ];
 
-export function GoalStep({ draft, onAdvance, onBack }: StepProps) {
+export function GoalStep({ draft, onAdvance, onBack, stepIndex, stepCount }: StepProps) {
   return (
-    <div style={{ padding: 24 }}>
-      <h2>Quanto tempo al giorno?</h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
-        {OPTIONS.map((opt) => (
-          <button
-            key={opt.minutes}
-            type="button"
-            onClick={() => onAdvance({ daily_goal_minutes: opt.minutes })}
-            style={{
-              padding: 14,
-              borderRadius: 12,
-              border: draft.daily_goal_minutes === opt.minutes ? '2px solid #4f46e5' : '1px solid #ddd',
-              background: 'white',
-              textAlign: 'left',
-              cursor: 'pointer',
-            }}
-          >
-            {opt.label}
-          </button>
-        ))}
+    <WizardShell
+      stepIndex={stepIndex}
+      stepCount={stepCount}
+      eyebrow="Passo 3"
+      title="Quanto tempo al giorno?"
+      subline="Puoi cambiarlo in qualsiasi momento."
+      onBack={onBack}
+    >
+      <div className="flex flex-col gap-3">
+        {OPTIONS.map((opt) => {
+          const selected = draft.daily_goal_minutes === opt.minutes;
+          return (
+            <button
+              key={opt.minutes}
+              type="button"
+              onClick={() => onAdvance({ daily_goal_minutes: opt.minutes })}
+              aria-pressed={selected}
+              className={`flex items-center gap-4 ${UI_RADIUS.surface} border bg-canvas p-4 text-left ${UI_INTERACTION.fastTransition} ${
+                selected ? 'border-primary bg-surface-card' : 'border-hairline hover:bg-surface-card'
+              }`}
+            >
+              <span className="text-3xl leading-none" aria-hidden>
+                {opt.emoji}
+              </span>
+              <span className="flex flex-col">
+                <span className="text-body-sm font-medium text-ink">{opt.label}</span>
+                <span className="text-caption text-muted">{opt.hint}</span>
+              </span>
+            </button>
+          );
+        })}
       </div>
-      {onBack && (
-        <button type="button" onClick={onBack} style={{ marginTop: 24 }}>
-          ← Indietro
-        </button>
-      )}
-    </div>
+    </WizardShell>
   );
 }

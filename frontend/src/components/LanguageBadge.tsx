@@ -23,8 +23,11 @@ export function LanguageBadge({ onClick }: LanguageBadgeProps = {}) {
     </>
   );
 
+  // Hidden on mobile: the AppChrome (top-right) already shows the flags via
+  // LanguageSwitcher, and overlapping a centered badge with the fixed chrome
+  // produced unreadable headers on narrow viewports.
   return (
-    <div className="flex justify-center pt-3">
+    <div className="hidden justify-center pt-3 sm:flex">
       {onClick ? (
         <button
           type="button"

@@ -25,6 +25,7 @@ import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
 import { buildOrderedSentence } from '../utils/sentenceBuilderOrder';
 import { GrammarBuilderFrame } from './GrammarBuilderFrame';
 import { useAvailableGrammarNodes } from '../hooks/useAvailableGrammarNodes';
+import { useZoomControls } from '../hooks/useZoomControls';
 import { reportClientError } from '../utils/clientError';
 import { useTargetLanguage } from '../i18n/languageContext';
 
@@ -61,36 +62,78 @@ export function FunSentenceBuilder() {
   const containerRef = useRef<HTMLDivElement>(null);
   const simulationRef = useRef<d3.Simulation<SimNode, undefined> | null>(null);
   const connectionsRef = useRef<SimLink[]>([]);  // Synced copy of connections for D3 callbacks
+  const nodePositionsRef = useRef<Map<string, { x: number; y: number }>>(new Map());
+  const previewRafRef = useRef<number | null>(null);
+  const lastPotentialTargetIdRef = useRef<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const mountedRef = useRef(true);
   const { availableNodes, loading } = useAvailableGrammarNodes();
+
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
   
   const [canvasNodes, setCanvasNodes] = useState<SimNode[]>([]);
   const [connections, setConnections] = useState<SimLink[]>([]);
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
   const [validating, setValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<ValidateSentenceResponse | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [playingAudio, setPlayingAudio] = useState(false);
   const [hoveredNode, setHoveredNode] = useState<SimNode | null>(null);
   const [draggedNode, setDraggedNode] = useState<SimNode | null>(null);
   const [potentialTarget, setPotentialTarget] = useState<SimNode | null>(null);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [currentZoom, setCurrentZoom] = useState(1);
-  const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
-  
+
+  const {
+    isExpanded,
+    setIsExpanded,
+    toggleExpanded,
+    currentZoom,
+    zoomRef,
+    handleZoomIn,
+    handleZoomOut,
+    handleZoomReset,
+    handleFitToView: fitNodesToView,
+    initializeZoom,
+  } = useZoomControls(svgRef, dimensions);
+
+  const handleFitToView = useCallback(() => {
+    const positioned = canvasNodes.map(n => {
+      const pos = nodePositionsRef.current.get(n.id);
+      return { x: pos?.x ?? n.x, y: pos?.y ?? n.y };
+    });
+    fitNodesToView(positioned, NODE_RADIUS);
+  }, [fitNodesToView, canvasNodes]);
+
 
   // ==========================================================================
   // Dimension Tracking
   // ==========================================================================
 
   useEffect(() => {
-    const updateDimensions = () => {
+    const apply = () => {
       if (containerRef.current) {
         const { width, height } = containerRef.current.getBoundingClientRect();
         setDimensions({ width, height });
       }
     };
-    updateDimensions();
-    window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
+    let resizeTimeoutId: ReturnType<typeof setTimeout> | null = null;
+    const debouncedResize = () => {
+      if (resizeTimeoutId !== null) clearTimeout(resizeTimeoutId);
+      resizeTimeoutId = setTimeout(apply, 200);
+    };
+    apply();
+    window.addEventListener('resize', debouncedResize);
+    return () => {
+      window.removeEventListener('resize', debouncedResize);
+      if (resizeTimeoutId !== null) clearTimeout(resizeTimeoutId);
+    };
   }, []);
 
   // ==========================================================================
@@ -100,7 +143,7 @@ export function FunSentenceBuilder() {
   /** Add a new node to the canvas from the available nodes list */
   const addNodeToCanvas = useCallback((sourceNode: GrammarNode) => {
     const newNode: SimNode = {
-      id: `node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `node-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
       label: sourceNode.label,
       type: sourceNode.type,
       image_base64: sourceNode.image_base64,
@@ -115,78 +158,39 @@ export function FunSentenceBuilder() {
 
   const removeNodeFromCanvas = useCallback((nodeId: string) => {
     setCanvasNodes(prev => prev.filter(n => n.id !== nodeId));
-    setConnections(prev => prev.filter(c => c.source !== nodeId && c.target !== nodeId));
+    connectionsRef.current = connectionsRef.current.filter(
+      c => c.source !== nodeId && c.target !== nodeId
+    );
+    setConnections([...connectionsRef.current]);
     setValidationResult(null);
+    nodePositionsRef.current.delete(nodeId);
   }, []);
-
-  // ==========================================================================
-  // Zoom Controls
-  // ==========================================================================
-
-  const handleZoomIn = useCallback(() => {
-    if (svgRef.current && zoomRef.current) {
-      const svg = d3.select(svgRef.current);
-      svg.transition().duration(300).call(zoomRef.current.scaleBy, 1.3);
-    }
-  }, []);
-
-  const handleZoomOut = useCallback(() => {
-    if (svgRef.current && zoomRef.current) {
-      const svg = d3.select(svgRef.current);
-      svg.transition().duration(300).call(zoomRef.current.scaleBy, 0.7);
-    }
-  }, []);
-
-  const handleZoomReset = useCallback(() => {
-    if (svgRef.current && zoomRef.current) {
-      const svg = d3.select(svgRef.current);
-      svg.transition().duration(300).call(zoomRef.current.transform, d3.zoomIdentity);
-    }
-  }, []);
-
-  const handleFitToView = useCallback(() => {
-    if (svgRef.current && zoomRef.current && canvasNodes.length > 0) {
-      const svg = d3.select(svgRef.current);
-      const { width, height } = dimensions;
-      
-      const minX = Math.min(...canvasNodes.map(n => (n.x || 0) - NODE_RADIUS));
-      const maxX = Math.max(...canvasNodes.map(n => (n.x || 0) + NODE_RADIUS));
-      const minY = Math.min(...canvasNodes.map(n => (n.y || 0) - NODE_RADIUS));
-      const maxY = Math.max(...canvasNodes.map(n => (n.y || 0) + NODE_RADIUS));
-      
-      const nodesWidth = maxX - minX + 100;
-      const nodesHeight = maxY - minY + 100;
-      
-      const scale = Math.min(width / nodesWidth, height / nodesHeight, 1.5);
-      const centerX = (minX + maxX) / 2;
-      const centerY = (minY + maxY) / 2;
-      
-      const transform = d3.zoomIdentity
-        .translate(width / 2, height / 2)
-        .scale(scale)
-        .translate(-centerX, -centerY);
-      
-      svg.transition().duration(500).call(zoomRef.current.transform, transform);
-    }
-  }, [canvasNodes, dimensions]);
 
   useEffect(() => {
     if (!svgRef.current || dimensions.width === 0 || canvasNodes.length === 0) {
       if (svgRef.current) {
         d3.select(svgRef.current).selectAll('*').remove();
       }
+      if (simulationRef.current) {
+        simulationRef.current.stop();
+        simulationRef.current = null;
+      }
       return;
     }
 
     try {
     const svg = d3.select(svgRef.current);
+    const previousTransform = d3.zoomTransform(svgRef.current);
     svg.selectAll('*').remove();
 
     const { width, height } = dimensions;
 
-    const nodes: SimNode[] = canvasNodes.map(n => ({ ...n }));
+    const nodes: SimNode[] = canvasNodes.map(n => {
+      const saved = nodePositionsRef.current.get(n.id);
+      return saved ? { ...n, x: saved.x, y: saved.y } : { ...n };
+    });
     
-    const links: { source: SimNode; target: SimNode }[] = connections
+    const links: { source: SimNode; target: SimNode }[] = connectionsRef.current
       .map(c => {
         const sourceNode = nodes.find(n => n.id === c.source);
         const targetNode = nodes.find(n => n.id === c.target);
@@ -201,11 +205,13 @@ export function FunSentenceBuilder() {
       simulationRef.current.stop();
     }
 
+    const linkDistance = Math.max(160, Math.min(260, 140 + nodes.length * 10));
+
     const simulation = d3.forceSimulation(nodes)
-      .force('link', d3.forceLink(links).id((d: any) => d.id).distance(180).strength(0.5))
-      .force('charge', d3.forceManyBody().strength(-400))
-      .force('center', d3.forceCenter(width / 2, height / 2).strength(0.1))
-      .force('collision', d3.forceCollide().radius(NODE_RADIUS + 15).strength(0.8))
+      .force('link', d3.forceLink(links).id((d: any) => d.id).distance(linkDistance).strength(0.5))
+      .force('charge', d3.forceManyBody().strength(-450))
+      .force('center', d3.forceCenter(width / 2, height / 2).strength(0.08))
+      .force('collision', d3.forceCollide().radius(NODE_RADIUS + 15).strength(1))
       .force('x', d3.forceX(width / 2).strength(0.02))
       .force('y', d3.forceY(height / 2).strength(0.02))
       .alphaDecay(0.02)
@@ -213,19 +219,15 @@ export function FunSentenceBuilder() {
 
     simulationRef.current = simulation;
 
-    const zoom = d3.zoom<SVGSVGElement, unknown>()
-      .scaleExtent([0.3, 3])
-      .on('zoom', (event) => {
-        container.attr('transform', event.transform);
-        setCurrentZoom(event.transform.k);
-      });
-
-    svg.call(zoom);
-    zoomRef.current = zoom;
-
     const container = svg.append('g').attr('class', 'zoom-container');
     const defs = svg.append('defs');
-    
+
+    initializeZoom(svgRef.current, container);
+
+    if (zoomRef.current && previousTransform.k !== 1) {
+      svg.call(zoomRef.current.transform, previousTransform);
+    }
+
     defs.append('marker')
       .attr('id', 'arrowhead-fun')
       .attr('viewBox', '-0 -5 10 10')
@@ -250,6 +252,16 @@ export function FunSentenceBuilder() {
       .attr('d', 'M 0,-5 L 10,0 L 0,5')
       .attr('fill', '#e8a55a');
 
+    defs.append('filter')
+      .attr('id', 'glow-preview')
+      .html(`
+        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      `);
+
     nodes.forEach(node => {
       if (node.image_base64) {
         defs.append('pattern')
@@ -268,17 +280,6 @@ export function FunSentenceBuilder() {
     const linkGroup = container.append('g').attr('class', 'links');
     const nodeGroup = container.append('g').attr('class', 'nodes');
     const previewGroup = container.append('g').attr('class', 'preview');
-
-    svg.append('defs')
-      .append('filter')
-      .attr('id', 'glow-preview')
-      .html(`
-        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-        <feMerge>
-          <feMergeNode in="coloredBlur"/>
-          <feMergeNode in="SourceGraphic"/>
-        </feMerge>
-      `);
 
     const linkElements = linkGroup
       .selectAll('g.link')
@@ -353,35 +354,48 @@ export function FunSentenceBuilder() {
         .on('drag', function(event, d) {
           d.fx = event.x;
           d.fy = event.y;
-          
-          // Find closest node for preview (using larger threshold)
-          let closestNode: SimNode | undefined;
-          let closestDistance = Infinity;
-          
-          nodes.forEach(n => {
-            if (n.id === d.id) return;
-            const dx = (n.x || 0) - event.x;
-            const dy = (n.y || 0) - event.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < PREVIEW_THRESHOLD && dist < closestDistance) {
-              closestDistance = dist;
-              closestNode = n;
+
+          const dragX = event.x;
+          const dragY = event.y;
+
+          if (previewRafRef.current !== null) {
+            cancelAnimationFrame(previewRafRef.current);
+          }
+          previewRafRef.current = requestAnimationFrame(() => {
+            previewRafRef.current = null;
+
+            // Find closest node for preview (using larger threshold)
+            let closestNode: SimNode | undefined;
+            let closestDistance = Infinity;
+
+            nodes.forEach(n => {
+              if (n.id === d.id) return;
+              const dx = (n.x || 0) - dragX;
+              const dy = (n.y || 0) - dragY;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist < PREVIEW_THRESHOLD && dist < closestDistance) {
+                closestDistance = dist;
+                closestNode = n;
+              }
+            });
+
+            // Only set as connection target if within connection threshold
+            const nearNode = closestDistance < CONNECTION_THRESHOLD ? closestNode ?? null : null;
+            currentTarget = nearNode || null;
+            const newTargetId = currentTarget?.id ?? null;
+            if (lastPotentialTargetIdRef.current !== newTargetId) {
+              lastPotentialTargetIdRef.current = newTargetId;
+              setPotentialTarget(currentTarget);
             }
-          });
-          
-          // Only set as connection target if within connection threshold
-          const nearNode = closestDistance < CONNECTION_THRESHOLD ? closestNode ?? null : null;
-          currentTarget = nearNode || null;
-          setPotentialTarget(currentTarget);
-          
-          previewGroup.selectAll('*').remove();
-          
-          // Show preview for any node within preview threshold
-          if (closestNode !== undefined) {
-            const sourceX = event.x;
-            const sourceY = event.y;
-            const targetX = closestNode.x || 0;
-            const targetY = closestNode.y || 0;
+
+            previewGroup.selectAll('*').remove();
+
+            // Show preview for any node within preview threshold
+            if (closestNode !== undefined) {
+              const sourceX = dragX;
+              const sourceY = dragY;
+              const targetX = closestNode.x || 0;
+              const targetY = closestNode.y || 0;
             
             // Progress based on preview threshold (0 at edge, 1 at connection threshold)
             const previewProgress = Math.max(0, 1 - closestDistance / PREVIEW_THRESHOLD);
@@ -441,10 +455,16 @@ export function FunSentenceBuilder() {
                 .attr('opacity', connectionProgress)
                 .text('Release to connect.');
             }
-          }
+            }
+          });
         })
         .on('end', function(event, d) {
           if (!event.active) simulation.alphaTarget(0);
+          if (previewRafRef.current !== null) {
+            cancelAnimationFrame(previewRafRef.current);
+            previewRafRef.current = null;
+          }
+          lastPotentialTargetIdRef.current = null;
           
           if (currentTarget) {
             const existsInRef = connectionsRef.current.some(
@@ -652,12 +672,11 @@ export function FunSentenceBuilder() {
 
       nodeElements.attr('transform', d => `translate(${d.x},${d.y})`);
 
-      nodes.forEach((n, i) => {
-        if (canvasNodes[i]) {
-          canvasNodes[i].x = n.x;
-          canvasNodes[i].y = n.y;
+      for (const n of nodes) {
+        if (typeof n.x === 'number' && typeof n.y === 'number') {
+          nodePositionsRef.current.set(n.id, { x: n.x, y: n.y });
         }
-      });
+      }
     });
 
     } catch (error) {
@@ -667,38 +686,50 @@ export function FunSentenceBuilder() {
     return () => {
       if (simulationRef.current) {
         simulationRef.current.stop();
+        simulationRef.current = null;
+      }
+      if (previewRafRef.current !== null) {
+        cancelAnimationFrame(previewRafRef.current);
+        previewRafRef.current = null;
       }
     };
+  // We intentionally exclude `canvasNodes`, `connections`, and `connectionsRef`
+  // from the deps. `canvasNodes` content changes (node add/remove) trigger a
+  // length change which IS in the deps. `connections` is consumed via
+  // `connectionsRef.current` to avoid rebuilding the whole simulation on every
+  // link add/remove (links are synced into the live D3 selection elsewhere).
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canvasNodes.length, dimensions.width, dimensions.height, isExpanded]);
+  }, [canvasNodes.length, dimensions.width, dimensions.height, isExpanded, initializeZoom]);
 
   const handleValidate = async () => {
     if (canvasNodes.length < 2) return;
-    
+
     setValidating(true);
     setValidationResult(null);
-    
+    setValidationError(null);
+
     try {
       const nodesForValidation = canvasNodes.map(node => ({
         id: node.id,
         label: node.label,
         type: node.type
       }));
-      
+
       const connectionsForValidation: ConnectionInfo[] = connections.map(c => ({
         from_id: c.source,
         to_id: c.target
       }));
-      
+
       const result = await api.validateSentence({
         nodes: nodesForValidation,
         connections: connectionsForValidation,
         language,
       });
-      
+
       setValidationResult(result);
     } catch (error) {
       reportClientError('Failed to validate sentence:', error);
+      setValidationError('Validazione fallita. Controlla la connessione e riprova.');
     } finally {
       setValidating(false);
     }
@@ -713,17 +744,30 @@ export function FunSentenceBuilder() {
 
   const handlePlayAudio = async () => {
     if (!validationResult?.sentence || playingAudio) return;
-    
+
     setPlayingAudio(true);
     try {
       const response = await api.generateSpeech(validationResult.sentence, language);
+      if (!mountedRef.current) return;
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
       const audio = new Audio(response.audio_base64);
-      audio.onended = () => setPlayingAudio(false);
-      audio.onerror = () => setPlayingAudio(false);
+      audioRef.current = audio;
+      audio.onended = () => {
+        if (!mountedRef.current) return;
+        setPlayingAudio(false);
+        audioRef.current = null;
+      };
+      audio.onerror = () => {
+        if (!mountedRef.current) return;
+        setPlayingAudio(false);
+        audioRef.current = null;
+      };
       await audio.play();
     } catch (error) {
       reportClientError('Failed to play audio:', error);
-      setPlayingAudio(false);
+      if (mountedRef.current) setPlayingAudio(false);
     }
   };
 
@@ -814,6 +858,21 @@ export function FunSentenceBuilder() {
   };
 
   const renderValidationPanel = (variant: 'floating' | 'inline') => {
+    if (validationError && !validationResult) {
+      const isFloating = variant === 'floating';
+      return (
+        <div
+          role="alert"
+          className={
+            isFloating
+              ? `absolute top-4 right-4 max-w-md ${UI_RADIUS.surface} p-4 border border-error bg-error/10 text-error text-sm`
+              : `${UI_RADIUS.surface} p-4 border mb-4 border-error bg-error/10 text-error text-sm`
+          }
+        >
+          {validationError}
+        </div>
+      );
+    }
     if (!validationResult) return null;
 
     const isFloating = variant === 'floating';

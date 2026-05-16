@@ -1,12 +1,13 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { api } from '../services/api';
 import { readSavedLearningPreferenceProfile } from '../learning/preferenceProfile';
-import type { AdaptiveFlashcard, AdaptiveLearningSummary, LearningFeedback, UserProgress } from '../types';
+import type { AdaptiveFlashcard, AdaptiveLearningSummary, LearningFeedback, MilestoneEvent, UserProgress } from '../types';
 import { reportClientError } from '../utils/clientError';
 import { useCopy, useTargetLanguage } from '../i18n/languageContext';
 import { formatCopy } from '../i18n/staticCopy';
 
 const SESSION_CARD_LIMIT = 80;
+const MILESTONE_STEP = 30;
 
 /**
  * Hook to manage learning session state and actions
@@ -23,14 +24,21 @@ export const useLearningSession = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [recordError, setRecordError] = useState<string | null>(null);
   const [learningSummary, setLearningSummary] = useState<AdaptiveLearningSummary | null>(null);
   const [learningFeedback, setLearningFeedback] = useState<LearningFeedback | null>(null);
+  const [milestoneEvent, setMilestoneEvent] = useState<MilestoneEvent | null>(null);
 
   const loadLearningSummary = useCallback(async () => {
-    const summary = await api.getAdaptiveLearningSummary(language);
-    setLearningSummary(summary);
-    return summary;
-  }, []);
+    try {
+      const summary = await api.getAdaptiveLearningSummary(language);
+      setLearningSummary(summary);
+      return summary;
+    } catch (err) {
+      reportClientError('Failed to refresh learning summary:', err);
+      return null;
+    }
+  }, [language]);
 
   const loadFlashcards = useCallback(async (selectedCategories: string[]) => {
     try {
@@ -64,18 +72,35 @@ export const useLearningSession = () => {
     }
   }, [loadLearningSummary]);
 
+  const swipeTokenRef = useRef(0);
   const handleSwipe = useCallback(async (direction: 'left' | 'right') => {
     const currentCard = flashcards[currentIndex];
     if (!currentCard) return;
 
     const known = direction === 'right';
+    const token = ++swipeTokenRef.current;
+
+    // Advance the deck immediately. Persisting progress is best-effort —
+    // if it fails the user still moves forward and we surface a non-blocking
+    // warning, rather than freezing OR unmounting the session.
+    setCurrentIndex(prev => prev + 1);
 
     try {
       const updatedProgress = await api.recordProgress(currentCard.id, known);
+      // Discard if a newer swipe superseded this one (out-of-order response).
+      if (token !== swipeTokenRef.current) return;
       setProgress(updatedProgress);
-      
+
+      if (
+        updatedProgress.cards_reviewed > 0
+        && updatedProgress.cards_reviewed % MILESTONE_STEP === 0
+      ) {
+        setMilestoneEvent({ count: updatedProgress.cards_reviewed, id: Date.now() });
+      }
+
       try {
         const updatedStatistics = await api.updateWordStatistics(currentCard.word, known, currentCard.language);
+        if (token !== swipeTokenRef.current) return;
         if (updatedStatistics.knowledge_level > currentCard.knowledge_level) {
           setLearningFeedback({
             title: formatCopy(copy.learningFeedback.masteryReached, {
@@ -94,16 +119,24 @@ export const useLearningSession = () => {
             tone: 'progress',
           });
         }
-        await loadLearningSummary();
       } catch (err) {
         reportClientError('Failed to update word statistics:', err);
       }
-      
-      setCurrentIndex(prev => prev + 1);
+
+      if (token === swipeTokenRef.current) {
+        await loadLearningSummary();
+      }
     } catch (err) {
       reportClientError('Failed to record progress:', err);
+      if (token === swipeTokenRef.current) {
+        setRecordError('Progresso non salvato — riprova');
+      }
     }
-  }, [currentIndex, flashcards, loadLearningSummary]);
+  }, [currentIndex, flashcards, loadLearningSummary, copy, language]);
+
+  const clearRecordError = useCallback(() => {
+    setRecordError(null);
+  }, []);
 
   const reset = useCallback(async () => {
     try {
@@ -121,6 +154,10 @@ export const useLearningSession = () => {
     setLearningFeedback(null);
   }, []);
 
+  const clearMilestoneEvent = useCallback(() => {
+    setMilestoneEvent(null);
+  }, []);
+
   const currentCard = flashcards[currentIndex];
   const nextCard = flashcards[currentIndex + 1];
   const isComplete = flashcards.length > 0 && currentIndex >= flashcards.length;
@@ -132,13 +169,17 @@ export const useLearningSession = () => {
     progress,
     learningSummary,
     learningFeedback,
+    milestoneEvent,
     loading,
     error,
+    recordError,
     isComplete,
     loadFlashcards,
     loadLearningSummary,
     handleSwipe,
     reset,
     clearLearningFeedback,
+    clearMilestoneEvent,
+    clearRecordError,
   };
 };

@@ -5,7 +5,8 @@ import { FirstVocabularyOnboarding } from './FirstVocabularyOnboarding';
 import { GrammarPlacementAssessment } from './GrammarPlacementAssessment';
 import { LearningPathHome } from './LearningPathHome';
 import { LearningScreen } from './LearningScreen';
-import { LoadingSpinner, ErrorState } from './ui';
+import { LoadingSpinner, ErrorState, UI_RADIUS } from './ui';
+import { MilestoneCelebration } from './MilestoneCelebration';
 import { YourVocabularyScreen } from './YourVocabularyScreen';
 import { useCategories } from '../hooks/useCategories';
 import { useLearningSession } from '../hooks/useLearningSession';
@@ -49,14 +50,18 @@ export const CardStack = ({
     progress,
     learningSummary,
     learningFeedback,
+    milestoneEvent,
     flashcards,
     loading,
     error,
+    recordError,
     isComplete,
     loadFlashcards,
     handleSwipe,
     reset,
     clearLearningFeedback,
+    clearMilestoneEvent,
+    clearRecordError,
   } = useLearningSession();
 
   useEffect(() => {
@@ -90,11 +95,11 @@ export const CardStack = ({
 
   // Loading state
   if (categories.loading) {
-    return <LoadingSpinner message="Loading..." />;
+    return <LoadingSpinner message={copy.cardStack.loading} />;
   }
 
   if (loading && flashcards.length === 0) {
-    return <LoadingSpinner message="Loading flashcards..." />;
+    return <LoadingSpinner message={copy.cardStack.loadingFlashcards} />;
   }
 
   if (shouldShowFirstVocabularyOnboarding({
@@ -104,14 +109,32 @@ export const CardStack = ({
     progress,
   })) {
     return (
-      <FirstVocabularyOnboarding
-        currentCard={currentCard}
-        nextCard={nextCard}
-        progress={progress}
-        totalCards={flashcards.length}
-        onSwipe={handleSwipe}
-        onComplete={handleCompleteFirstVocabularyOnboarding}
-      />
+      <>
+        <FirstVocabularyOnboarding
+          currentCard={currentCard}
+          nextCard={nextCard}
+          progress={progress}
+          totalCards={flashcards.length}
+          onSwipe={handleSwipe}
+          onComplete={handleCompleteFirstVocabularyOnboarding}
+        />
+        <MilestoneCelebration event={milestoneEvent} onDismiss={clearMilestoneEvent} />
+        {recordError && (
+          <div
+            role="alert"
+            className={`pointer-events-auto fixed bottom-24 left-1/2 z-[200] -translate-x-1/2 ${UI_RADIUS.pill} border border-error bg-error/10 px-4 py-2 text-sm font-medium text-error shadow-lg`}
+          >
+            <span>{recordError}</span>
+            <button
+              type="button"
+              onClick={clearRecordError}
+              className="ml-3 text-xs font-semibold underline"
+            >
+              OK
+            </button>
+          </div>
+        )}
+      </>
     );
   }
 
@@ -159,8 +182,6 @@ export const CardStack = ({
         learningSummary={learningSummary}
         progress={progress}
         totalCards={flashcards.length}
-        categoriesCount={categories.allCategories.length}
-        selectedCategoriesCount={categories.selectedCategories.length}
         onNavigateToFeature={onNavigateToFeature}
       />
     );
@@ -176,39 +197,59 @@ export const CardStack = ({
     );
   }
 
+  const recordErrorToast = recordError ? (
+    <div
+      role="alert"
+      className={`pointer-events-auto fixed bottom-24 left-1/2 z-[200] -translate-x-1/2 ${UI_RADIUS.pill} border border-error bg-error/10 px-4 py-2 text-sm font-medium text-error shadow-lg`}
+    >
+      <span>{recordError}</span>
+      <button
+        type="button"
+        onClick={clearRecordError}
+        className="ml-3 text-xs font-semibold underline"
+      >
+        OK
+      </button>
+    </div>
+  ) : null;
+
   // Learning screen
   return (
-    <LearningScreen
-      currentCard={currentCard}
-      nextCard={nextCard}
-      progress={progress}
-      totalCards={flashcards.length}
-      onSwipe={handleSwipe}
-      onOpenLibrary={onOpenLibrary}
-      onOpenGrammarLab={onOpenGrammarLab}
-      categories={categories.allCategories}
-      selectedCategories={categories.selectedCategories}
-      onToggleCategory={categories.toggleCategory}
-      onSelectAllCategories={categories.selectAll}
-      onDeselectAllCategories={categories.deselectAll}
-      filtersOpen={mode === 'filters'}
-      onFiltersOpenChange={(open) => {
-        if (open) {
-          onOpenLearningFilters();
-        } else {
-          onStartLearning();
-        }
-      }}
-      learningSystemOpen={mode === 'system'}
-      onLearningSystemOpenChange={(open) => {
-        if (open) {
-          onOpenLearningSystem();
-        } else {
-          onStartLearning();
-        }
-      }}
-      learningFeedback={learningFeedback}
-      onClearLearningFeedback={clearLearningFeedback}
-    />
+    <>
+      <LearningScreen
+        currentCard={currentCard}
+        nextCard={nextCard}
+        progress={progress}
+        totalCards={flashcards.length}
+        onSwipe={handleSwipe}
+        onOpenLibrary={onOpenLibrary}
+        onOpenGrammarLab={onOpenGrammarLab}
+        categories={categories.allCategories}
+        selectedCategories={categories.selectedCategories}
+        onToggleCategory={categories.toggleCategory}
+        onSelectAllCategories={categories.selectAll}
+        onDeselectAllCategories={categories.deselectAll}
+        filtersOpen={mode === 'filters'}
+        onFiltersOpenChange={(open) => {
+          if (open) {
+            onOpenLearningFilters();
+          } else {
+            onStartLearning();
+          }
+        }}
+        learningSystemOpen={mode === 'system'}
+        onLearningSystemOpenChange={(open) => {
+          if (open) {
+            onOpenLearningSystem();
+          } else {
+            onStartLearning();
+          }
+        }}
+        learningFeedback={learningFeedback}
+        onClearLearningFeedback={clearLearningFeedback}
+      />
+      <MilestoneCelebration event={milestoneEvent} onDismiss={clearMilestoneEvent} />
+      {recordErrorToast}
+    </>
   );
 };

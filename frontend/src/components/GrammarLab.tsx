@@ -119,6 +119,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
     }
   }, [currentIndex, sentences, checkAudioCache]);
 
+  const audioRequestTokenRef = useRef(0);
   const playAudio = useCallback(async (text: string) => {
     if (loadingAudio || playingAudio === text) return;
 
@@ -127,21 +128,26 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
       audioRef.current = null;
     }
 
+    const token = ++audioRequestTokenRef.current;
     setLoadingAudio(text);
 
     try {
       const response = await api.generateSpeech(text, language);
+      // Discard if a newer request superseded this one.
+      if (token !== audioRequestTokenRef.current) return;
       setAudioCache(prev => ({ ...prev, [text]: true }));
 
       const audio = new Audio(response.audio_base64);
       audioRef.current = audio;
 
       audio.onended = () => {
+        if (token !== audioRequestTokenRef.current) return;
         setPlayingAudio(null);
         audioRef.current = null;
       };
 
       audio.onerror = () => {
+        if (token !== audioRequestTokenRef.current) return;
         setPlayingAudio(null);
         audioRef.current = null;
       };
@@ -152,7 +158,10 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
 
     } catch (error) {
       reportClientError('Failed to play audio:', error);
-      setLoadingAudio(null);
+      if (token === audioRequestTokenRef.current) {
+        setLoadingAudio(null);
+        setPlayingAudio(null);
+      }
     }
   }, [loadingAudio, playingAudio, language]);
 
@@ -194,7 +203,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
       {activeView === 'graph' && currentSentence && (
         <div className="text-center py-4 border-b border-hairline bg-canvas">
           <div className="flex items-center justify-center gap-3">
-            <h1 className="text-2xl font-semibold text-ink">{currentSentence.german}</h1>
+            <h1 className="font-display text-display-sm font-normal tracking-[-0.3px] text-ink">{currentSentence.german}</h1>
             <button
               onClick={() => playAudio(currentSentence.german)}
               disabled={loadingAudio === currentSentence.german}
@@ -213,12 +222,13 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
               )}
             </button>
           </div>
-          <p className="text-base text-muted">{currentSentence.english}</p>
+          <p className="mt-1 text-body-sm text-muted">{currentSentence.english}</p>
         </div>
       )}
 
-      {/* Content Area */}
-      <div className="flex-1 overflow-visible relative">
+      {/* Content Area — explicit min height so embedded D3 views get room
+          and stay above the fixed BottomNav. */}
+      <div className="relative min-h-[calc(100dvh-260px)] overflow-visible">
         <Suspense fallback={<GrammarViewFallback message={gl.loadingView} />}>
           {activeView === 'graph' && loading && !currentSentence && (
             <GrammarDataLoadingPanel message={gl.loadingGraph} />
@@ -227,10 +237,10 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
             <div className="flex h-full items-center justify-center p-6">
               <SurfacePanel className="max-w-md text-center" padding="lg">
                 <Puzzle size={44} className="mx-auto mb-4 text-primary" />
-                <h2 className="text-2xl font-semibold text-ink">
+                <h2 className="font-display text-display-sm font-normal tracking-[-0.3px] text-ink">
                   {gl.noSentencesTitle}
                 </h2>
-                <p className="mt-2 text-sm font-semibold leading-6 text-muted">
+                <p className="mt-2 text-body-sm text-muted">
                   {gl.noSentencesBody}
                 </p>
                 <button

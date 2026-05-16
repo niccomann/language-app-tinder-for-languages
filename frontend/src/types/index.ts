@@ -66,6 +66,11 @@ export interface LearningFeedback {
   tone: 'level_up' | 'progress' | 'review';
 }
 
+export interface MilestoneEvent {
+  count: number;
+  id: number;
+}
+
 export interface FlashcardEnriched extends Flashcard {
   cefr_level?: string;
   frequency_band?: string;

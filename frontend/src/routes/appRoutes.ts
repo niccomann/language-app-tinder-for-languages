@@ -165,11 +165,17 @@ export function libraryWordPath(wordId: number, tab: LibraryDetailTab = DEFAULT_
 export function routeStatePath(route: RouteState) {
   if (route.screen === 'learning') {
     if (route.mode === 'path') return '/';
+    if (route.mode === 'path_full') return '/path/full';
+    if (route.mode === 'path_stats') return '/path/stats';
+    if (route.mode === 'path_diary') return '/path/diary';
+    if (route.mode === 'path_next') return '/path/next';
     if (route.mode === 'filters') return '/learn/filters';
     if (route.mode === 'system') return '/learn/system';
     if (route.mode === 'grammar_placement') return '/placement/sentence';
     if (route.mode === 'vocabulary') return '/vocabulary';
     if (route.mode === 'review') return '/review';
+    if (route.mode === 'explore_grammar') return '/explore/grammar';
+    if (route.mode === 'explore_map') return '/explore/map';
     if (route.mode === 'explore') return '/explore';
     return '/learn';
   }
@@ -179,13 +185,14 @@ export function routeStatePath(route: RouteState) {
   }
 
   if (route.screen === 'developer') {
-    return '/developer';
+    return route.chartSlug ? `/developer/${route.chartSlug}` : '/developer';
   }
 
   if (route.wordId) {
     return libraryWordPath(route.wordId, route.detailTab);
   }
 
+  if (route.statsOnly) return '/library/stats';
   return route.filtersOpen ? '/library/filters' : '/library';
 }
 

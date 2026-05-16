@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCopy, useLanguage } from '../i18n/languageContext';
 import { getStaticCopy } from '../i18n/staticCopy';
 import type { SourceLocale, TargetLanguage } from '../i18n/languageStorage';
@@ -36,6 +36,15 @@ export function OnboardingModal({ initialTarget, initialSource, onClose }: Onboa
   };
 
   const allowCancel = Boolean(onClose && initialTarget && initialSource);
+
+  useEffect(() => {
+    if (!allowCancel || !onClose) return;
+    const handler = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [allowCancel, onClose]);
 
   return (
     <div

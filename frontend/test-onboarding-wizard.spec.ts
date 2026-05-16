@@ -91,7 +91,7 @@ test.describe('Onboarding wizard', () => {
 
     await page.getByRole('button', { name: 'Inizia' }).click();
     await page.getByRole('button', { name: /Tedesco/ }).click();
-    await page.getByRole('button', { name: /principiante/ }).click();
+    await page.getByRole('button', { name: /Principiante/ }).click();
     await page.getByRole('button', { name: /10 min/ }).click();
 
     await page.getByRole('button', { name: 'Continua' }).click();
@@ -105,7 +105,7 @@ test.describe('Onboarding wizard', () => {
 
     await page.getByRole('button', { name: 'Inizia' }).click();
     await page.getByRole('button', { name: /Tedesco/ }).click();
-    await page.getByRole('button', { name: /principiante/ }).click();
+    await page.getByRole('button', { name: /Principiante/ }).click();
     await page.getByRole('button', { name: /10 min/ }).click();
     await page.getByPlaceholder('Il tuo nome').fill('Nico');
     await page.getByPlaceholder('Età (opzionale)').fill('3');
@@ -123,7 +123,7 @@ test.describe('Onboarding wizard', () => {
     await page.getByRole('button', { name: /Tedesco/ }).click();
     await expect(page.getByRole('heading', { name: /Quanto tedesco sai già/ })).toBeVisible();
 
-    await page.getByRole('button', { name: '← Indietro' }).click();
+    await page.getByRole('button', { name: 'Indietro' }).click();
     await expect(page.getByRole('heading', { name: 'Cosa vuoi imparare?' })).toBeVisible();
   });
 
@@ -157,7 +157,7 @@ test.describe('Onboarding wizard', () => {
 
     await page.getByRole('button', { name: 'Inizia' }).click();
     await page.getByRole('button', { name: /Tedesco/ }).click();
-    await page.getByRole('button', { name: /principiante/ }).click();
+    await page.getByRole('button', { name: /Principiante/ }).click();
     await page.getByRole('button', { name: /10 min/ }).click();
     await page.getByPlaceholder('Il tuo nome').fill('Nico');
     await page.getByPlaceholder('Età (opzionale)').fill('30');

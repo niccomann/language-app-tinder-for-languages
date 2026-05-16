@@ -153,23 +153,23 @@ export interface ForceConfig {
 
 export const DEFAULT_FORCE_CONFIG: ForceConfig = {
   clusterStrength: 0.08,
-  chargeStrength: -30,
+  chargeStrength: -120,
   centerStrength: 0.02,
-  collisionStrength: 0.7,
-  alphaDecay: 0.008,
+  collisionStrength: 1.0,
+  alphaDecay: 0.005,
   velocityDecay: 0.4,
 };
 
 export const RHYME_FORCE_CONFIG: ForceConfig = {
   clusterStrength: 0.15,
-  chargeStrength: -60,
+  chargeStrength: -180,
   centerStrength: 0.01,
-  collisionStrength: 0.8,
-  alphaDecay: 0.006,
+  collisionStrength: 1.0,
+  alphaDecay: 0.005,
   velocityDecay: 0.35,
 };
 
-export function getForceConfig(criteria: ClusterCriteria): ForceConfig {
+export function getForceConfig(criteria: string): ForceConfig {
   if (criteria === 'rhyme') {
     return RHYME_FORCE_CONFIG;
   }

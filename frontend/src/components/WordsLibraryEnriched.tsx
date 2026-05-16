@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Search, BookOpen, CheckCircle, XCircle, Filter, ChevronDown, X, Sparkles, Target, Trophy } from 'lucide-react';
 import { api } from '../services/api';
 import type { FlashcardWithProgress, LibraryFilters, LibraryStats } from '../types';
@@ -64,12 +64,16 @@ export function WordsLibraryEnriched({
   const [posFilter, setPosFilter] = useState<string>('');
   const [compoundFilter, setCompoundFilter] = useState<string>('');
 
+  const loadFiltersTokenRef = useRef(0);
   const loadFilters = useCallback(async () => {
+    const token = ++loadFiltersTokenRef.current;
     try {
       const [filtersData, statsData] = await Promise.all([
         api.getLibraryFilters(language),
         api.getLibraryStats(language),
       ]);
+      // Discard if user switched language while this was in flight.
+      if (token !== loadFiltersTokenRef.current) return;
       setFilters(filtersData);
       setLibraryStats(statsData);
     } catch (err) {
@@ -91,18 +95,23 @@ export function WordsLibraryEnriched({
     offset,
   }), [language, searchQuery, categoryFilter, cefrFilter, genderFilter, frequencyFilter, registerFilter, posFilter, compoundFilter]);
 
+  const loadWordsTokenRef = useRef(0);
   const loadWords = useCallback(async () => {
+    const token = ++loadWordsTokenRef.current;
     try {
       setLoading(true);
       setError(null);
       const data = await api.getLibraryWords(getWordQuery(0));
+      // Discard if a newer filter change superseded this fetch.
+      if (token !== loadWordsTokenRef.current) return;
       setWords(data);
       setHasMoreWords(data.length === LIBRARY_PAGE_SIZE);
     } catch (err) {
+      if (token !== loadWordsTokenRef.current) return;
       setError('Error loading words');
       reportClientError('Error loading words:', err);
     } finally {
-      setLoading(false);
+      if (token === loadWordsTokenRef.current) setLoading(false);
     }
   }, [getWordQuery]);
 
@@ -115,6 +124,8 @@ export function WordsLibraryEnriched({
     } catch (err) {
       setError('Error loading more words');
       reportClientError('Error loading more words:', err);
+      // Stop the infinite scroll loop on persistent failure.
+      setHasMoreWords(false);
     } finally {
       setLoadingMore(false);
     }
@@ -129,7 +140,11 @@ export function WordsLibraryEnriched({
     const debounce = setTimeout(() => {
       loadWords();
     }, 300);
-    return () => clearTimeout(debounce);
+    return () => {
+      clearTimeout(debounce);
+      // Invalidate any fetch that may still be in flight for the previous filters.
+      loadWordsTokenRef.current++;
+    };
   }, [loadWords, statsOnly]);
 
   useEffect(() => {

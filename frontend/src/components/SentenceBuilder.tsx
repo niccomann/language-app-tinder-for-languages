@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Check,
   X,
@@ -37,6 +37,7 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
   const [connectingFrom, setConnectingFrom] = useState<string | null>(null);
   const [validating, setValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<ValidateSentenceResponse | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [playingAudio, setPlayingAudio] = useState(false);
 
   const handleNodeClick = (node: GrammarNode) => {
@@ -108,8 +109,10 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
       });
       
       setValidationResult(result);
+      setValidationError(null);
     } catch (error) {
       reportClientError('Failed to validate sentence:', error);
+      setValidationError('Validazione fallita. Controlla la connessione e riprova.');
     } finally {
       setValidating(false);
     }
@@ -122,19 +125,45 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
     setValidationResult(null);
   };
 
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
   const handlePlayAudio = async () => {
     if (!validationResult?.sentence || playingAudio) return;
-    
+
     setPlayingAudio(true);
     try {
       const response = await api.generateSpeech(validationResult.sentence, language);
+      if (!mountedRef.current) return;
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
       const audio = new Audio(response.audio_base64);
-      audio.onended = () => setPlayingAudio(false);
-      audio.onerror = () => setPlayingAudio(false);
+      audioRef.current = audio;
+      audio.onended = () => {
+        if (!mountedRef.current) return;
+        setPlayingAudio(false);
+        audioRef.current = null;
+      };
+      audio.onerror = () => {
+        if (!mountedRef.current) return;
+        setPlayingAudio(false);
+        audioRef.current = null;
+      };
       await audio.play();
     } catch (error) {
       reportClientError('Failed to play audio:', error);
-      setPlayingAudio(false);
+      if (mountedRef.current) setPlayingAudio(false);
     }
   };
 
@@ -288,6 +317,12 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
               </div>
             )}
           </SurfacePanel>
+
+          {validationError && (
+            <div role="alert" className={`${UI_RADIUS.surface} p-4 border border-error bg-error/10 text-error text-sm`}>
+              {validationError}
+            </div>
+          )}
 
           {validationResult && (
             <div className={`${UI_RADIUS.surface} p-4 border ${getStatusColor(validationResult.status)}`}>

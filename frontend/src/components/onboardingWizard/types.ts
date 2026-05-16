@@ -20,4 +20,6 @@ export interface StepProps {
   draft: WizardDraft;
   onAdvance: (patch: Partial<WizardDraft>) => void;
   onBack?: () => void;
+  stepIndex: number;
+  stepCount: number;
 }

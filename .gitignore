@@ -137,3 +137,9 @@ service-account*.json
 # AWS credentials — never commit
 infrastructure/terraform/terraform.tfvars
 infrastructure/terraform/regions/*/terraform.tfvars
+
+# Local screenshot tour output
+frontend/screenshots/
+
+# Local DB snapshots from prod (never commit)
+backend/app.db.canonical-*

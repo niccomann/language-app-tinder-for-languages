@@ -19,7 +19,7 @@ export function LanguageSwitcher({ onOpenSourceModal }: LanguageSwitcherProps) {
   const currentTargetFlag = TARGET_FLAGS[targetLanguage];
   const currentSourceFlag = sourceLocale ? SOURCE_FLAGS[sourceLocale] : null;
 
-  const triggerClass = `inline-flex h-10 items-center gap-1 px-3 ${UI_RADIUS.control} border border-hairline bg-canvas text-body-sm font-medium text-ink ${UI_INTERACTION.fastTransition} hover:bg-surface-card`;
+  const triggerClass = `inline-flex h-10 items-center gap-1 px-2 sm:px-3 ${UI_RADIUS.control} border border-hairline bg-canvas text-body-sm font-medium text-ink ${UI_INTERACTION.fastTransition} hover:bg-surface-card`;
 
   return (
     <div className="relative">
@@ -33,8 +33,8 @@ export function LanguageSwitcher({ onOpenSourceModal }: LanguageSwitcherProps) {
       >
         {currentSourceFlag && (
           <>
-            <span className="text-base leading-none">{currentSourceFlag}</span>
-            <span className="text-caption text-muted-soft">→</span>
+            <span className="hidden text-base leading-none sm:inline">{currentSourceFlag}</span>
+            <span className="hidden text-caption text-muted-soft sm:inline">→</span>
           </>
         )}
         <span className="text-base leading-none">{currentTargetFlag}</span>

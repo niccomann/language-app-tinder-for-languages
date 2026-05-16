@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ReactNode } from 'react';
+import { useState, useEffect, useRef, type FormEvent, type ReactNode } from 'react';
 import { ArrowLeft, ArrowRight, MessageSquarePlus, ThumbsDown, ThumbsUp, X } from 'lucide-react';
 import { api } from '../services/api';
 import { Button, UI_INTERACTION, UI_RADIUS } from './ui';
@@ -23,6 +23,7 @@ interface Persona {
   gender: Gender | '';
   nativeLanguage: NativeLanguage | '';
   targetLevel: ProficiencyLevel | '';
+  learningMotivation: string;
 }
 
 const EMPTY_PERSONA: Persona = {
@@ -32,6 +33,7 @@ const EMPTY_PERSONA: Persona = {
   gender: '',
   nativeLanguage: '',
   targetLevel: '',
+  learningMotivation: '',
 };
 
 type Status =
@@ -73,9 +75,25 @@ export function FeedbackButton({
     setStatus({ kind: 'idle' });
   };
 
+  const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (resetTimeoutRef.current !== null) {
+        clearTimeout(resetTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const closeModal = () => {
     setOpen(false);
-    setTimeout(reset, 200);
+    if (resetTimeoutRef.current !== null) {
+      clearTimeout(resetTimeoutRef.current);
+    }
+    resetTimeoutRef.current = setTimeout(() => {
+      reset();
+      resetTimeoutRef.current = null;
+    }, 200);
   };
 
   const submitNow = async () => {
@@ -95,6 +113,7 @@ export function FeedbackButton({
         gender: persona.gender || undefined,
         native_language: persona.nativeLanguage || undefined,
         target_level: persona.targetLevel || undefined,
+        learning_motivation: persona.learningMotivation.trim() || undefined,
       });
       setStatus({ kind: 'success', id: res.id });
     } catch (err) {
@@ -342,6 +361,19 @@ function PersonaForm({
             ))}
           </select>
         </div>
+      </div>
+
+      <div>
+        <label className={LABEL_CLASS} htmlFor="fb-motivation">{p.learningMotivationLabel}</label>
+        <textarea
+          id="fb-motivation"
+          value={persona.learningMotivation}
+          onChange={(e) => onChange({ learningMotivation: e.target.value })}
+          placeholder={p.learningMotivationPlaceholder}
+          rows={3}
+          maxLength={500}
+          className={`${INPUT_CLASS} resize-none`}
+        />
       </div>
 
       {error && (

@@ -98,9 +98,15 @@ export function useZoomControls(
   }, [svgRef, dimensions]);
 
   const initializeZoom = useCallback((
-    svg: SVGSVGElement, 
+    svg: SVGSVGElement,
     container: d3.Selection<SVGGElement, unknown, null, undefined>
   ) => {
+    // Detach any previously-attached zoom listener on this SVG before
+    // wiring up a fresh one, so handlers don't accumulate across rebuilds.
+    if (zoomRef.current) {
+      zoomRef.current.on('zoom', null);
+    }
+
     const zoom = d3.zoom<SVGSVGElement, unknown>()
       .scaleExtent([minZoom, maxZoom])
       .on('zoom', (event) => {
@@ -110,7 +116,7 @@ export function useZoomControls(
 
     d3.select(svg).call(zoom);
     zoomRef.current = zoom;
-    
+
     return zoom;
   }, [minZoom, maxZoom]);
 

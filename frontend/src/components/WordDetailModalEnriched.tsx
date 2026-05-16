@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, BookOpen, History, AlertTriangle, MessageCircle, Link2, MapPin, Volume2, Database } from 'lucide-react';
 import { api } from '../services/api';
 import type { FlashcardDetail, WordDbRow } from '../types';
@@ -54,23 +54,31 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
   const [dbRow, setDbRow] = useState<WordDbRow | null>(null);
   const [dbRowLoading, setDbRowLoading] = useState(false);
   const [dbRowError, setDbRowError] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
+    let cancelled = false;
     const loadWordDetail = async () => {
       try {
         setLoading(true);
         setError(null);
         const data = await api.getWordDetail(wordId);
+        if (cancelled) return;
         setWord(data);
       } catch (err) {
+        if (cancelled) return;
         setError('Failed to load word details');
         reportClientError('Failed to load word details:', err);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     loadWordDetail();
+    return () => {
+      cancelled = true;
+    };
   }, [wordId]);
 
   useEffect(() => {
@@ -88,21 +96,27 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
   useEffect(() => {
     if (activeTab !== 'db_row' || dbRow || dbRowLoading) return;
 
+    let cancelled = false;
     const loadDbRow = async () => {
       try {
         setDbRowLoading(true);
         setDbRowError(null);
         const data = await api.getWordDbRow(wordId);
+        if (cancelled) return;
         setDbRow(data);
       } catch (err) {
+        if (cancelled) return;
         setDbRowError('Failed to load database row');
         reportClientError('Failed to load database row:', err);
       } finally {
-        setDbRowLoading(false);
+        if (!cancelled) setDbRowLoading(false);
       }
     };
 
     loadDbRow();
+    return () => {
+      cancelled = true;
+    };
   }, [activeTab, dbRow, dbRowLoading, wordId]);
 
   const handlePlayAudio = async () => {
@@ -111,15 +125,40 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
     try {
       setIsPlaying(true);
       const response = await api.generateSpeech(word.word, language);
-      const audio = new Audio(`data:audio/mp3;base64,${response.audio_base64}`);
-      audio.onended = () => setIsPlaying(false);
-      audio.onerror = () => setIsPlaying(false);
+      // Discard if the modal closed (unmounted) mid-flight.
+      if (!mountedRef.current) return;
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      const audio = new Audio(response.audio_base64);
+      audioRef.current = audio;
+      audio.onended = () => {
+        if (!mountedRef.current) return;
+        setIsPlaying(false);
+        audioRef.current = null;
+      };
+      audio.onerror = () => {
+        if (!mountedRef.current) return;
+        setIsPlaying(false);
+        audioRef.current = null;
+      };
       await audio.play();
     } catch (err) {
       reportClientError('Failed to play audio:', err);
-      setIsPlaying(false);
+      if (mountedRef.current) setIsPlaying(false);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   const tabs: { id: LibraryDetailTab; label: string; icon: React.ReactNode; count?: number }[] = [
     { id: 'overview', label: 'Overview', icon: <BookOpen size={16} /> },
@@ -215,7 +254,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
               </div>
 
               <div className="flex items-center gap-3">
-                <h2 className="text-4xl font-semibold text-on-dark">
+                <h2 className="font-display text-display-sm font-normal tracking-[-0.3px] text-on-dark">
                   {word.gender && GENDER_LABELS[word.gender] && (
                     <span className="opacity-70">{GENDER_LABELS[word.gender].article} </span>
                   )}
@@ -235,9 +274,9 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                   </button>
                 )}
               </div>
-              <p className="text-xl text-on-dark/90 mt-1">{word.translation}</p>
+              <p className="mt-1 text-body text-on-dark/90">{word.translation}</p>
               {word.plural_form && (
-                <p className="text-sm text-on-dark/70 mt-1">Plural: {word.plural_form}</p>
+                <p className="mt-1 text-caption text-on-dark/70">Plural: {word.plural_form}</p>
               )}
             </div>
           </div>
@@ -504,7 +543,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                       <span className="text-sm text-muted">({dialect.dialect_name})</span>
                     )}
                   </div>
-                  <p className="text-2xl font-semibold text-primary mb-2">
+                  <p className="mb-2 font-display text-display-sm font-normal tracking-[-0.3px] text-primary">
                     {dialect.variant_word}
                   </p>
                   {dialect.pronunciation && (

@@ -879,7 +879,9 @@
         "c1": "C1 — Avancé",
         "c2": "C2 — Maîtrise",
         "none": "Jamais étudié"
-      }
+      },
+      "learningMotivationLabel": "Pourquoi veux-tu apprendre cette langue ?",
+      "learningMotivationPlaceholder": "Ex. travail à l'étranger, voyages, famille bilingue…"
     }
   },
   "bottomNav": {
@@ -990,7 +992,9 @@
     "noCardsInDeck": "Aucune carte dans ce deck",
     "noCardsBody": "Essaie de modifier le topic deck ou les filtres.",
     "connectionError": "Erreur de connexion",
-    "unknownError": "Erreur inconnue"
+    "unknownError": "Erreur inconnue",
+    "loading": "Chargement…",
+    "loadingFlashcards": "Chargement des cartes…"
   },
   "featureHubScreen": {
     "review": {
@@ -1049,5 +1053,25 @@
     "checkBody": "Utilise des noms, verbes, articles, pronoms, adverbes, prépositions et conjonctions. C'est la première étape vers un score de placement complet.",
     "libraryButton": "Library",
     "grammarLabButton": "Grammar Lab"
+  },
+  "swipeButtons": {
+    "dontKnow": "Je ne sais pas",
+    "know": "Je sais"
+  },
+  "milestone": {
+    "eyebrow": "Bravo !",
+    "count": "{{count}} mots",
+    "subtitle": "Continue comme ça, tu es sur la bonne voie."
+  },
+  "onboardingWizard": {
+    "identityNotReady": "Profil pas encore prêt. Réessaie dans un instant.",
+    "saveFailed": "Échec de l'enregistrement : {{detail}}",
+    "saving": "Enregistrement…"
+  },
+  "pagination": {
+    "label": "Pagination",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "pageStatus": "Page {{current}} sur {{total}}"
   }
 }

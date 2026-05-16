@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { Volume2, Loader2 } from 'lucide-react';
 import type { AdaptiveFlashcard, Flashcard } from '../types';
@@ -17,22 +17,47 @@ interface CardProps {
 
 export const Card = ({ flashcard, onSwipe, swipeDirection = 'left' }: CardProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const mountedRef = useRef(true);
   const adaptiveCard = 'knowledge_level' in flashcard ? flashcard : null;
-  
+
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
   const handlePlayAudio = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isPlaying) return;
-    
+
     setIsPlaying(true);
     try {
       const response = await api.speakText(flashcard.word, flashcard.language);
+      if (!mountedRef.current) return;
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
       const audio = new Audio(response.audio_base64);
-      audio.onended = () => setIsPlaying(false);
-      audio.onerror = () => setIsPlaying(false);
+      audioRef.current = audio;
+      audio.onended = () => {
+        if (!mountedRef.current) return;
+        setIsPlaying(false);
+        audioRef.current = null;
+      };
+      audio.onerror = () => {
+        if (!mountedRef.current) return;
+        setIsPlaying(false);
+        audioRef.current = null;
+      };
       await audio.play();
     } catch (error) {
       reportClientError('Failed to play audio:', error);
-      setIsPlaying(false);
+      if (mountedRef.current) setIsPlaying(false);
     }
   };
   const x = useMotionValue(0);

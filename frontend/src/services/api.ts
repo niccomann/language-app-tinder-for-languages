@@ -65,9 +65,18 @@ async function resolveUserId(): Promise<string> {
   return userIdPromise;
 }
 
-async function fetchWithTimeout(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
+// AI-backed endpoints (TTS, LLM validation, adaptive generation) routinely
+// take 5-20s on cold cache. Use a higher ceiling than the default fast-API
+// timeout to avoid spurious "Request timed out" errors in production.
+const SLOW_AI_TIMEOUT_MS = 30000;
+
+async function fetchWithTimeout(
+  input: RequestInfo | URL,
+  init: RequestInit = {},
+  timeoutMs: number = API_REQUEST_TIMEOUT_MS,
+): Promise<Response> {
   const controller = new AbortController();
-  const timeoutId = globalThis.setTimeout(() => controller.abort(), API_REQUEST_TIMEOUT_MS);
+  const timeoutId = globalThis.setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     if (shouldUseOfflineBackend(input)) {
@@ -85,7 +94,7 @@ async function fetchWithTimeout(input: RequestInfo | URL, init: RequestInit = {}
     return await fetch(input, finalInit);
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
-      throw new Error(`Request timed out after ${API_REQUEST_TIMEOUT_MS}ms`);
+      throw new Error(`Request timed out after ${timeoutMs}ms`);
     }
     throw error;
   } finally {
@@ -149,7 +158,7 @@ export const api = {
           profile: learningPreferenceProfile,
           limit: params?.limit ?? 50,
         }),
-      });
+      }, SLOW_AI_TIMEOUT_MS);
 
       if (!response.ok) {
         throw new Error('Failed to fetch adaptive flashcards');
@@ -239,12 +248,12 @@ export const api = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text, language }),
-    });
-    
+    }, SLOW_AI_TIMEOUT_MS);
+
     if (!response.ok) {
       throw new Error('Failed to generate speech');
     }
-    
+
     return response.json();
   },
 
@@ -269,12 +278,12 @@ export const api = {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ text, language, voice }),
-    });
-    
+    }, SLOW_AI_TIMEOUT_MS);
+
     if (!response.ok) {
       throw new Error('Failed to generate speech');
     }
-    
+
     return response.json();
   },
 
@@ -358,12 +367,12 @@ export const api = {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(request),
-    });
-    
+    }, SLOW_AI_TIMEOUT_MS);
+
     if (!response.ok) {
       throw new Error('Failed to validate sentence');
     }
-    
+
     return response.json();
   },
 
@@ -517,6 +526,7 @@ export const api = {
     gender?: 'woman' | 'man' | 'other' | 'undisclosed';
     native_language?: 'it' | 'en' | 'es' | 'de' | 'fr' | 'pt' | 'other';
     target_level?: 'a1' | 'a2' | 'b1' | 'b2' | 'c1' | 'c2' | 'none';
+    learning_motivation?: string;
   }): Promise<{ id: string; created_at: number }> {
     const response = await fetchWithTimeout(`${API_BASE_URL}/api/feedback`, {
       method: 'POST',

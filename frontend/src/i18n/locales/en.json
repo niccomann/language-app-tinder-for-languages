@@ -879,7 +879,9 @@
         "c1": "C1 — Advanced",
         "c2": "C2 — Mastery",
         "none": "Never studied"
-      }
+      },
+      "learningMotivationLabel": "Why do you want to learn this language?",
+      "learningMotivationPlaceholder": "E.g. moving abroad, travel, bilingual family…"
     }
   },
   "bottomNav": {
@@ -990,7 +992,9 @@
     "noCardsInDeck": "No cards in this deck",
     "noCardsBody": "Try adjusting the topic deck or filters.",
     "connectionError": "Connection Error",
-    "unknownError": "Unknown error"
+    "unknownError": "Unknown error",
+    "loading": "Loading…",
+    "loadingFlashcards": "Loading flashcards…"
   },
   "featureHubScreen": {
     "review": {
@@ -1049,5 +1053,25 @@
     "checkBody": "Use nouns, verbs, articles, pronouns, adverbs, prepositions, and conjunctions. This is the first step toward a total placement score.",
     "libraryButton": "Library",
     "grammarLabButton": "Grammar Lab"
+  },
+  "swipeButtons": {
+    "dontKnow": "Don't know",
+    "know": "Know"
+  },
+  "milestone": {
+    "eyebrow": "Great!",
+    "count": "{{count}} words",
+    "subtitle": "Keep going — you are on the right path."
+  },
+  "onboardingWizard": {
+    "identityNotReady": "Profile not ready yet. Try again in a moment.",
+    "saveFailed": "Save failed: {{detail}}",
+    "saving": "Saving…"
+  },
+  "pagination": {
+    "label": "Pagination",
+    "previous": "Previous",
+    "next": "Next",
+    "pageStatus": "Page {{current}} of {{total}}"
   }
 }

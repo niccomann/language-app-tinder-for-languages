@@ -43,7 +43,11 @@ export function EmbeddedWordCloud({ words, onWordClick }: EmbeddedWordCloudProps
     const updateDimensions = () => {
       if (containerRef.current) {
         const { width, height } = containerRef.current.getBoundingClientRect();
-        setDimensions({ width, height });
+        // Same cap as ClusteredNodes: keep the cloud inside the visible
+        // area so the BottomNav (~88px) does not cover the bottom words.
+        const cap = window.innerHeight - 88 - 64;
+        const safeHeight = Math.max(240, Math.min(height || cap, cap));
+        setDimensions({ width: width || 320, height: safeHeight });
       }
     };
     updateDimensions();

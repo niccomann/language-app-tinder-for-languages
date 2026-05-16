@@ -42,17 +42,24 @@ export function ConfidenceBadge({
   };
 
   useEffect(() => {
+    let cancelled = false;
     const loadStats = async () => {
       try {
         const stats = await api.getWordStatistics(word, language);
+        if (cancelled) return;
         setScore(stats.confidence_score);
       } catch {
-        setScore(0);
+        // Treat both "word never seen" and network errors as 0;
+        // the badge stays informative without a separate error UI.
+        if (!cancelled) setScore(0);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     loadStats();
+    return () => {
+      cancelled = true;
+    };
   }, [word, language]);
 
   if (loading) {

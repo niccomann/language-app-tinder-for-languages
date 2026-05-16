@@ -1,7 +1,6 @@
 import { ArrowLeft } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { SceneHeader } from './SceneHeader';
-import { AppHeaderMenu } from './AppHeaderMenu';
 import { iconButtonClass } from './sceneClasses';
 import { useCopy } from '../../i18n/languageContext';
 
@@ -14,7 +13,9 @@ interface SceneShellProps {
   explainerBody?: ReactNode;
   back?: { onClick: () => void; label?: string };
   action?: ReactNode;
-  onNavigate: (path: string) => void;
+  // Kept for backward compatibility with existing callers; no longer used
+  // here because AppChrome (App.tsx) already renders the kebab menu globally.
+  onNavigate?: (path: string) => void;
   children: ReactNode;
 }
 
@@ -27,14 +28,15 @@ export function SceneShell({
   explainerBody,
   back,
   action,
-  onNavigate,
   children,
 }: SceneShellProps) {
   const copy = useCopy();
+  // Reserve right padding for AppChrome (avatar + language switcher + menu)
+  // fixed in the top-right on mobile.
   return (
-    <div className="mx-auto min-h-dvh max-w-[480px] px-4 pb-24">
-      <div className="sticky top-0 z-[65] -mx-4 flex h-12 items-center justify-between border-b border-hairline bg-canvas/95 px-4 backdrop-blur-sm">
-        <div className="flex items-center gap-2">
+    <div className="mx-auto min-h-dvh max-w-[480px] px-4 pb-28 md:pb-12">
+      <div className="sticky top-0 z-[65] -mx-4 flex h-12 items-center justify-between gap-2 border-b border-hairline bg-canvas/95 px-4 pr-40 backdrop-blur-sm sm:pr-4">
+        <div className="flex min-w-0 items-center gap-2">
           {back && (
             <button
               type="button"
@@ -47,10 +49,7 @@ export function SceneShell({
           )}
           <span className="truncate text-body-sm font-medium text-muted">{title}</span>
         </div>
-        <div className="flex items-center gap-2">
-          {action}
-          <AppHeaderMenu onNavigate={onNavigate} />
-        </div>
+        {action && <div className="flex shrink-0 items-center gap-2">{action}</div>}
       </div>
       <SceneHeader
         eyebrow={eyebrow}

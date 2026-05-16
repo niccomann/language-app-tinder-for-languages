@@ -97,15 +97,28 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
   }, [words]);
 
   useEffect(() => {
-    const updateDimensions = () => {
+    const apply = () => {
       if (containerRef.current) {
         const { width, height } = containerRef.current.getBoundingClientRect();
-        setDimensions({ width, height: height - 80 });
+        // Cap by viewport height minus space for the fixed BottomNav (~88px)
+        // and the top chrome (~64px). Otherwise nodes would render under the
+        // BottomNav on mobile because the container can extend off-screen.
+        const cap = window.innerHeight - 88 - 64;
+        const safeHeight = Math.min(height, cap);
+        setDimensions({ width, height: safeHeight - 80 });
       }
     };
-    updateDimensions();
-    window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
+    let resizeTimeoutId: ReturnType<typeof setTimeout> | null = null;
+    const debouncedResize = () => {
+      if (resizeTimeoutId !== null) clearTimeout(resizeTimeoutId);
+      resizeTimeoutId = setTimeout(apply, 200);
+    };
+    apply();
+    window.addEventListener('resize', debouncedResize);
+    return () => {
+      window.removeEventListener('resize', debouncedResize);
+      if (resizeTimeoutId !== null) clearTimeout(resizeTimeoutId);
+    };
   }, []);
 
   const getGroupFunction = useMemo(() => {
@@ -118,7 +131,7 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
     return getGroupForWord;
   }, [activeCriteria, similarityClusters, rhymeClusters, getGroupForWord]);
 
-  const forceConfig = useMemo(() => getForceConfig(activeCriteria as any), [activeCriteria]);
+  const forceConfig = useMemo(() => getForceConfig(activeCriteria), [activeCriteria]);
 
   useEffect(() => {
     if (!svgRef.current || words.length === 0 || dimensions.width === 0) return;
@@ -126,23 +139,17 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
     const svg = d3.select(svgRef.current);
     const { width, height } = dimensions;
 
-    const nodes: SimulationNode[] = words.map((word, index) => ({
-      id: `node-${index}`,
-      text: word.text,
-      group: getGroupFunction(word),
-      radius: Math.max(20, Math.min(40, 15 + (word.size || 20) / 3)),
-      wordData: word,
-      x: width / 2 + (Math.random() - 0.5) * 100,
-      y: height / 2 + (Math.random() - 0.5) * 100,
-    }));
-
-    const uniqueGroups = [...new Set(nodes.map(node => node.group))];
+    const wordGroups = words.map(word => getGroupFunction(word));
+    const uniqueGroups = [...new Set(wordGroups)];
     setGroups(uniqueGroups);
 
     const groupCenters: Record<string, { x: number; y: number }> = {};
-    const angleStep = (2 * Math.PI) / uniqueGroups.length;
-    const centerRadius = Math.min(width, height) * 0.3;
-    
+    const angleStep = (2 * Math.PI) / Math.max(uniqueGroups.length, 1);
+    // Scale center radius down when there are many groups, so cluster centers
+    // stay close enough to fit on screen but never overlap each other.
+    const groupSpread = Math.max(0.18, Math.min(0.28, 0.4 - uniqueGroups.length * 0.015));
+    const centerRadius = Math.min(width, height) * groupSpread;
+
     uniqueGroups.forEach((group, index) => {
       const angle = index * angleStep - Math.PI / 2;
       groupCenters[group] = {
@@ -151,12 +158,35 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
       };
     });
 
+    // Count nodes per group to scale clusterStrength inversely
+    // (large groups would otherwise collapse onto their center).
+    const groupSizes: Record<string, number> = {};
+    for (const group of wordGroups) {
+      groupSizes[group] = (groupSizes[group] || 0) + 1;
+    }
+
+    const nodes: SimulationNode[] = words.map((word, index) => {
+      const group = wordGroups[index];
+      const center = groupCenters[group];
+      return {
+        id: `node-${index}`,
+        text: word.text,
+        group,
+        radius: Math.max(20, Math.min(40, 15 + (word.size || 20) / 3)),
+        wordData: word,
+        x: center.x + (Math.random() - 0.5) * 60,
+        y: center.y + (Math.random() - 0.5) * 60,
+      };
+    });
+
     function forceCluster(alpha: number) {
       for (const node of nodes) {
         const center = groupCenters[node.group];
         if (center && node.x !== undefined && node.y !== undefined) {
-          node.vx = (node.vx || 0) + (center.x - node.x) * alpha * forceConfig.clusterStrength;
-          node.vy = (node.vy || 0) + (center.y - node.y) * alpha * forceConfig.clusterStrength;
+          const size = groupSizes[node.group] || 1;
+          const scale = Math.min(1, 8 / size);
+          node.vx = (node.vx || 0) + (center.x - node.x) * alpha * forceConfig.clusterStrength * scale;
+          node.vy = (node.vy || 0) + (center.y - node.y) * alpha * forceConfig.clusterStrength * scale;
         }
       }
     }
@@ -168,7 +198,7 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
     const simulation = d3.forceSimulation(nodes)
       .force('charge', d3.forceManyBody().strength(forceConfig.chargeStrength))
       .force('center', d3.forceCenter(width / 2, height / 2).strength(forceConfig.centerStrength))
-      .force('collision', d3.forceCollide<SimulationNode>().radius(node => node.radius + 2).strength(forceConfig.collisionStrength))
+      .force('collision', d3.forceCollide<SimulationNode>().radius(node => node.radius + 8).strength(forceConfig.collisionStrength))
       .force('cluster', (alpha) => forceCluster(alpha))
       .alphaDecay(forceConfig.alphaDecay)
       .velocityDecay(forceConfig.velocityDecay);
@@ -176,6 +206,7 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
     simulationRef.current = simulation;
     nodesRef.current = nodes;
 
+    const previousTransform = svgRef.current ? d3.zoomTransform(svgRef.current) : null;
     svg.selectAll('*').remove();
 
     const defs = svg.append('defs');
@@ -187,6 +218,10 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
       .attr('class', 'zoom-container');
 
     initializeZoom(svgRef.current, mainGroup);
+
+    if (previousTransform && zoomRef.current && previousTransform.k !== 1) {
+      svg.call(zoomRef.current.transform, previousTransform);
+    }
 
     const nodeElements = mainGroup
       .selectAll('g.node')
@@ -288,8 +323,9 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
     });
 
     // Auto fit-to-view after simulation settles
+    let fitTimeoutId: ReturnType<typeof setTimeout> | null = null;
     simulation.on('end', () => {
-      setTimeout(() => {
+      fitTimeoutId = setTimeout(() => {
         if (svgRef.current && zoomRef.current && nodesRef.current.length > 0) {
           const svgEl = d3.select(svgRef.current);
           const nodeRadius = 40;
@@ -319,6 +355,10 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
 
     return () => {
       simulation.stop();
+      if (fitTimeoutId !== null) {
+        clearTimeout(fitTimeoutId);
+        fitTimeoutId = null;
+      }
     };
   }, [words, dimensions, activeCriteria, getGroupFunction, onWordClick, showImages, forceConfig, initializeZoom, isExpanded, zoomRef]);
 

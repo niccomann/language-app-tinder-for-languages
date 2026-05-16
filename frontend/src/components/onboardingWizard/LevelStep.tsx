@@ -1,9 +1,16 @@
+import { UI_INTERACTION, UI_RADIUS } from '../ui';
+import { WizardShell } from './WizardShell';
 import type { StepProps, WizardDraft } from './types';
 
-const OPTIONS: Array<{ value: WizardDraft['proficiency_level']; label: string }> = [
-  { value: 'beginner', label: '🌱 Sono principiante' },
-  { value: 'a1_a2', label: '📖 Conosco qualcosa (A1–A2)' },
-  { value: 'b1_b2', label: '🎓 Livello intermedio (B1–B2)' },
+const OPTIONS: Array<{
+  value: WizardDraft['proficiency_level'];
+  emoji: string;
+  label: string;
+  hint: string;
+}> = [
+  { value: 'beginner', emoji: '🌱', label: 'Principiante', hint: 'Parto da zero' },
+  { value: 'a1_a2', emoji: '📖', label: 'Conosco qualcosa', hint: 'Livello A1–A2' },
+  { value: 'b1_b2', emoji: '🎓', label: 'Intermedio', hint: 'Livello B1–B2' },
 ];
 
 const LANGUAGE_NAMES: Record<string, string> = {
@@ -12,35 +19,41 @@ const LANGUAGE_NAMES: Record<string, string> = {
   fr: 'francese',
 };
 
-export function LevelStep({ draft, onAdvance, onBack }: StepProps) {
+export function LevelStep({ draft, onAdvance, onBack, stepIndex, stepCount }: StepProps) {
   const langName = LANGUAGE_NAMES[draft.target_language] ?? draft.target_language;
   return (
-    <div style={{ padding: 24 }}>
-      <h2>Quanto {langName} sai già?</h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
-        {OPTIONS.map((opt) => (
-          <button
-            key={opt.value}
-            type="button"
-            onClick={() => onAdvance({ proficiency_level: opt.value })}
-            style={{
-              padding: 14,
-              borderRadius: 12,
-              border: draft.proficiency_level === opt.value ? '2px solid #4f46e5' : '1px solid #ddd',
-              background: 'white',
-              textAlign: 'left',
-              cursor: 'pointer',
-            }}
-          >
-            {opt.label}
-          </button>
-        ))}
+    <WizardShell
+      stepIndex={stepIndex}
+      stepCount={stepCount}
+      eyebrow="Passo 2"
+      title={`Quanto ${langName} sai già?`}
+      subline="Scegli ciò che ti rappresenta meglio oggi."
+      onBack={onBack}
+    >
+      <div className="flex flex-col gap-3">
+        {OPTIONS.map((opt) => {
+          const selected = draft.proficiency_level === opt.value;
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => onAdvance({ proficiency_level: opt.value })}
+              aria-pressed={selected}
+              className={`flex items-center gap-4 ${UI_RADIUS.surface} border bg-canvas p-4 text-left ${UI_INTERACTION.fastTransition} ${
+                selected ? 'border-primary bg-surface-card' : 'border-hairline hover:bg-surface-card'
+              }`}
+            >
+              <span className="text-3xl leading-none" aria-hidden>
+                {opt.emoji}
+              </span>
+              <span className="flex flex-col">
+                <span className="text-body-sm font-medium text-ink">{opt.label}</span>
+                <span className="text-caption text-muted">{opt.hint}</span>
+              </span>
+            </button>
+          );
+        })}
       </div>
-      {onBack && (
-        <button type="button" onClick={onBack} style={{ marginTop: 24 }}>
-          ← Indietro
-        </button>
-      )}
-    </div>
+    </WizardShell>
   );
 }

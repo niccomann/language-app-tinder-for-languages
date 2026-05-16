@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { UI_INTERACTION, UI_RADIUS } from '../ui';
+import { useCopy } from '../../i18n/languageContext';
+import { formatCopy } from '../../i18n/staticCopy';
 
 interface PaginatedListProps<T> {
   items: readonly T[];
@@ -35,6 +37,8 @@ export function PaginatedList<T>({
     if (safePage < totalPages) onPageChange(safePage + 1);
   };
 
+  const copy = useCopy();
+  const pg = copy.pagination;
   const btnBase = `inline-flex items-center gap-1 px-3 py-2 ${UI_RADIUS.control} text-body-sm font-medium ${UI_INTERACTION.fastTransition}`;
 
   return (
@@ -44,17 +48,17 @@ export function PaginatedList<T>({
           <li key={start + i}>{renderItem(item, start + i)}</li>
         ))}
       </ul>
-      <nav aria-label="Paginazione" className="flex items-center justify-between gap-2 text-muted">
+      <nav aria-label={pg.label} className="flex items-center justify-between gap-2 text-muted">
         <button
           type="button"
           onClick={goPrev}
           disabled={safePage === 1}
           className={`${btnBase} ${safePage === 1 ? 'opacity-40' : 'hover:bg-surface-card hover:text-ink'}`}
         >
-          <ChevronLeft size={16} /> Precedente
+          <ChevronLeft size={16} /> {pg.previous}
         </button>
         <span className="text-body-sm">
-          Pagina {safePage} di {totalPages}
+          {formatCopy(pg.pageStatus, { current: safePage, total: totalPages })}
         </span>
         <button
           type="button"
@@ -62,7 +66,7 @@ export function PaginatedList<T>({
           disabled={safePage === totalPages}
           className={`${btnBase} ${safePage === totalPages ? 'opacity-40' : 'hover:bg-surface-card hover:text-ink'}`}
         >
-          Successiva <ChevronRight size={16} />
+          {pg.next} <ChevronRight size={16} />
         </button>
       </nav>
     </div>

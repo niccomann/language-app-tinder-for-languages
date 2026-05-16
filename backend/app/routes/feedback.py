@@ -31,6 +31,7 @@ class FeedbackPayload(BaseModel):
     gender: Optional[Gender] = None
     native_language: Optional[NativeLanguage] = None
     target_level: Optional[ProficiencyLevel] = None
+    learning_motivation: Optional[str] = Field(default=None, max_length=500)
 
 
 class FeedbackResponse(BaseModel):
@@ -48,6 +49,7 @@ async def submit_feedback(payload: FeedbackPayload, request: Request) -> Feedbac
         "gender": payload.gender,
         "native_language": payload.native_language,
         "target_level": payload.target_level,
+        "learning_motivation": payload.learning_motivation,
     }
     persona = {k: v for k, v in persona.items() if v is not None}
     try:

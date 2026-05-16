@@ -5,9 +5,12 @@ import { IdentityStep } from './onboardingWizard/IdentityStep';
 import { LanguageStep } from './onboardingWizard/LanguageStep';
 import { LevelStep } from './onboardingWizard/LevelStep';
 import { WelcomeStep } from './onboardingWizard/WelcomeStep';
-import { DEFAULT_DRAFT, type WizardDraft } from './onboardingWizard/types';
+import { DEFAULT_DRAFT, type StepProps, type WizardDraft } from './onboardingWizard/types';
 import { useUser } from '../contexts/useUser';
 import { createUser } from '../services/userApi';
+import { LoadingSpinner, UI_RADIUS } from './ui';
+import { useCopy } from '../i18n/languageContext';
+import { formatCopy } from '../i18n/staticCopy';
 
 export type WizardPhase = 'welcome' | 'language' | 'level' | 'goal' | 'identity';
 
@@ -30,6 +33,8 @@ function prevPhase(p: WizardPhase): WizardPhase {
 
 export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   const { userId, refreshProfile } = useUser();
+  const copy = useCopy();
+  const w = copy.onboardingWizard;
   const [phase, setPhase] = useState<WizardPhase>('welcome');
   const [draft, setDraft] = useState<WizardDraft>(DEFAULT_DRAFT);
   const [posting, setPosting] = useState(false);
@@ -42,7 +47,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
 
       if (phase === 'identity') {
         if (!userId) {
-          setSubmitError('Identità non ancora pronta. Riprova fra un istante.');
+          setSubmitError(w.identityNotReady);
           return;
         }
         setPosting(true);
@@ -60,7 +65,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
           onComplete?.();
         } catch (err) {
           const msg = err instanceof Error ? err.message : String(err);
-          setSubmitError(`Salvataggio fallito: ${msg}`);
+          setSubmitError(formatCopy(w.saveFailed, { detail: msg }));
         } finally {
           setPosting(false);
         }
@@ -69,59 +74,61 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
 
       setPhase(nextPhase(phase));
     },
-    [draft, phase, refreshProfile, userId, onComplete],
+    [draft, phase, refreshProfile, userId, onComplete, w],
   );
 
   const back = useCallback(() => setPhase((p) => prevPhase(p)), []);
 
   if (posting) {
     return (
-      <div style={{ padding: 48, textAlign: 'center' }}>
-        <p>Salvataggio…</p>
+      <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col items-center justify-center bg-canvas px-4">
+        <LoadingSpinner />
+        <p className="mt-4 text-body-sm font-medium text-muted">{w.saving}</p>
       </div>
     );
   }
 
-  const banner = submitError ? (
-    <div
-      role="alert"
-      style={{
-        margin: '0 24px',
-        marginTop: 16,
-        padding: 12,
-        borderRadius: 8,
-        background: '#fef2f2',
-        border: '1px solid #fecaca',
-        color: '#b91c1c',
-        fontSize: 13,
-      }}
-    >
-      {submitError}
-    </div>
-  ) : null;
+  const stepIndex = ORDER.indexOf(phase);
+  const stepCount = ORDER.length;
+  const stepProps: Omit<StepProps, 'onBack'> & { onBack?: () => void } = {
+    draft,
+    onAdvance: advance,
+    onBack: phase === 'welcome' ? undefined : back,
+    stepIndex,
+    stepCount,
+  };
 
   let stepNode: ReactNode = null;
   switch (phase) {
     case 'welcome':
-      stepNode = <WelcomeStep draft={draft} onAdvance={advance} />;
+      stepNode = <WelcomeStep {...stepProps} />;
       break;
     case 'language':
-      stepNode = <LanguageStep draft={draft} onAdvance={advance} onBack={back} />;
+      stepNode = <LanguageStep {...stepProps} />;
       break;
     case 'level':
-      stepNode = <LevelStep draft={draft} onAdvance={advance} onBack={back} />;
+      stepNode = <LevelStep {...stepProps} />;
       break;
     case 'goal':
-      stepNode = <GoalStep draft={draft} onAdvance={advance} onBack={back} />;
+      stepNode = <GoalStep {...stepProps} />;
       break;
     case 'identity':
-      stepNode = <IdentityStep draft={draft} onAdvance={advance} onBack={back} />;
+      stepNode = <IdentityStep {...stepProps} />;
       break;
   }
 
   return (
     <>
-      {banner}
+      {submitError && (
+        <div className="mx-auto max-w-[480px] px-4 pt-4">
+          <div
+            role="alert"
+            className={`${UI_RADIUS.control} border border-error/40 bg-error/10 px-4 py-3 text-body-sm text-error`}
+          >
+            {submitError}
+          </div>
+        </div>
+      )}
       {stepNode}
     </>
   );

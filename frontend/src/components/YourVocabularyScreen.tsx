@@ -106,7 +106,7 @@ export function YourVocabularyScreen({
     return () => {
       cancelled = true;
     };
-  }, [vocabularyCopy.errorMessage]);
+  }, [vocabularyCopy.errorMessage, language]);
 
   const sortedWords = useMemo(() => sortVocabularyByMastery(words), [words]);
   const masteredCount = words.filter((word) => getVocabularyMasteryStars(word) >= 5).length;
