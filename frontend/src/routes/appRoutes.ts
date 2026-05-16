@@ -134,7 +134,10 @@ export function parseAppRoute(pathname: string): RouteState {
   if (section === 'library') {
     if (feature === 'words') {
       const wordId = Number(parts[2]);
-      const validWordId = Number.isFinite(wordId) ? wordId : undefined;
+      // Accept only positive integers — negative IDs / NaN / floats from
+      // hand-crafted URLs are rejected upstream so the modal does not even
+      // try to fetch them.
+      const validWordId = Number.isInteger(wordId) && wordId > 0 ? wordId : undefined;
       return {
         screen: 'library',
         filtersOpen: false,
