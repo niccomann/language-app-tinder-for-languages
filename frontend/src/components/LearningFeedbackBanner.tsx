@@ -29,7 +29,7 @@ export function LearningFeedbackBanner({ feedback, onDismiss }: LearningFeedback
       <MascotSpeechCallout
         testId="learning-feedback-bubble"
         steps={[{
-          eyebrow: feedback.tone === 'level_up' ? 'Level up' : 'Learning signal',
+          eyebrow: feedback.tone === 'level_up' ? copy.learningFeedback.levelUp : copy.learningFeedback.learningSignal,
           title: feedback.title,
           body: feedback.message,
         }]}
@@ -48,7 +48,7 @@ export function LearningFeedbackBanner({ feedback, onDismiss }: LearningFeedback
             <div className={`${UI_RADIUS.touchIcon} flex h-8 w-8 shrink-0 items-center justify-center bg-canvas/70`}>
               <Icon size={16} />
             </div>
-            Signal saved
+            {copy.learningFeedback.signalSaved}
           </div>
           <button
             type="button"

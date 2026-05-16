@@ -585,7 +585,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                       <h3 className="text-lg font-semibold text-ink">words</h3>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {Object.entries(dbRow.word).map(([key, value]) => (
+                      {Object.entries(dbRow.word ?? {}).map(([key, value]) => (
                         <DbField key={key} name={key} value={value} />
                       ))}
                     </div>
@@ -594,7 +594,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                   <section>
                     <h3 className="text-lg font-semibold text-ink mb-3">media</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {Object.entries(dbRow.media).map(([key, value]) => (
+                      {Object.entries(dbRow.media ?? {}).map(([key, value]) => (
                         <DbField key={key} name={key} value={value} />
                       ))}
                     </div>
@@ -603,7 +603,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
                   <section>
                     <h3 className="text-lg font-semibold text-ink mb-3">related tables</h3>
                     <div className="space-y-3">
-                      {Object.entries(dbRow.related).map(([tableName, rows]) => (
+                      {Object.entries(dbRow.related ?? {}).map(([tableName, rows]) => (
                         <details
                           key={tableName}
                           className={`${UI_RADIUS.control} border border-hairline bg-surface-soft`}

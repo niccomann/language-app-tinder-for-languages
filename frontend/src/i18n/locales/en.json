@@ -1039,11 +1039,15 @@
     "masteryReached": "{{word}} reached Mastery {{level}}",
     "masteryReachedBody": "Your {{language}} path just moved forward.",
     "signalUpdatedTitle": "Learning signal updated",
-    "signalUpdatedBody": "The app is recalibrating your next cards from what you knew and missed."
+    "signalUpdatedBody": "The app is recalibrating your next cards from what you knew and missed.",
+    "levelUp": "Level up",
+    "learningSignal": "Learning signal",
+    "signalSaved": "Signal saved"
   },
   "learningFiltersPanel": {
     "title": "Build your topic deck",
-    "selectedPacks": "Selected packs"
+    "selectedPacks": "Selected packs",
+    "subtitle": "Pick the packs you want in the swipe deck. Apply categories without leaving the deck."
   },
   "grammarPlacement": {
     "title": "Grammar Placement",

@@ -7,31 +7,61 @@ function isNative(): boolean {
   return Capacitor.isNativePlatform();
 }
 
+// In-memory fallback for Safari private mode / quota-exceeded / iframe with
+// disabled storage — never throw out of readRaw/writeRaw, just degrade to
+// session-only identity.
+let inMemoryUserId: string | null = null;
+
 async function readRaw(): Promise<string | null> {
   if (isNative()) {
-    const { value } = await Preferences.get({ key: USER_ID_KEY });
-    return value ?? null;
+    try {
+      const { value } = await Preferences.get({ key: USER_ID_KEY });
+      return value ?? null;
+    } catch {
+      return inMemoryUserId;
+    }
   }
-  return typeof window !== 'undefined' ? window.localStorage.getItem(USER_ID_KEY) : null;
+  if (typeof window === 'undefined') return inMemoryUserId;
+  try {
+    return window.localStorage.getItem(USER_ID_KEY) ?? inMemoryUserId;
+  } catch {
+    return inMemoryUserId;
+  }
 }
 
 async function writeRaw(value: string): Promise<void> {
+  inMemoryUserId = value;
   if (isNative()) {
-    await Preferences.set({ key: USER_ID_KEY, value });
+    try {
+      await Preferences.set({ key: USER_ID_KEY, value });
+    } catch (err) {
+      console.warn('userIdentity: Preferences.set failed, falling back to memory', err);
+    }
     return;
   }
-  if (typeof window !== 'undefined') {
+  if (typeof window === 'undefined') return;
+  try {
     window.localStorage.setItem(USER_ID_KEY, value);
+  } catch (err) {
+    console.warn('userIdentity: localStorage.setItem failed, falling back to memory', err);
   }
 }
 
 async function removeRaw(): Promise<void> {
+  inMemoryUserId = null;
   if (isNative()) {
-    await Preferences.remove({ key: USER_ID_KEY });
+    try {
+      await Preferences.remove({ key: USER_ID_KEY });
+    } catch (err) {
+      console.warn('userIdentity: Preferences.remove failed', err);
+    }
     return;
   }
-  if (typeof window !== 'undefined') {
+  if (typeof window === 'undefined') return;
+  try {
     window.localStorage.removeItem(USER_ID_KEY);
+  } catch (err) {
+    console.warn('userIdentity: localStorage.removeItem failed', err);
   }
 }
 

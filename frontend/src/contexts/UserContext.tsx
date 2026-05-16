@@ -28,12 +28,18 @@ export function UserProvider({ children }: UserProviderProps) {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const id = await getOrCreateUserId();
-      if (cancelled) return;
-      setUserId(id);
-      await loadProfile(id);
-      if (cancelled) return;
-      setStatus('ready');
+      try {
+        const id = await getOrCreateUserId();
+        if (cancelled) return;
+        setUserId(id);
+        await loadProfile(id);
+      } catch (err) {
+        // Safari private mode / quota / Capacitor storage failure must not
+        // leave the app stuck on the loading splash forever.
+        console.error('UserContext: identity init failed', err);
+      } finally {
+        if (!cancelled) setStatus('ready');
+      }
     })();
     return () => {
       cancelled = true;
@@ -46,14 +52,23 @@ export function UserProvider({ children }: UserProviderProps) {
   }, [loadProfile, userId]);
 
   const resetIdentity = useCallback(async () => {
-    await clearIdentity();
+    try {
+      await clearIdentity();
+    } catch (err) {
+      console.error('UserContext: clearIdentity failed', err);
+    }
     setProfile(null);
     setUserId(null);
     setStatus('loading');
-    const fresh = await getOrCreateUserId();
-    setUserId(fresh);
-    setProfile(null);
-    setStatus('ready');
+    try {
+      const fresh = await getOrCreateUserId();
+      setUserId(fresh);
+    } catch (err) {
+      console.error('UserContext: resetIdentity getOrCreate failed', err);
+    } finally {
+      setProfile(null);
+      setStatus('ready');
+    }
   }, []);
 
   const value = useMemo(

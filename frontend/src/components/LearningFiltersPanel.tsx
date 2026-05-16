@@ -42,7 +42,7 @@ export function LearningFiltersPanel({
             </div>
             <h2 id="learning-filters-title" className="font-display font-normal text-display-sm tracking-[-0.5px] text-ink">{lfp.title}</h2>
             <p className="mt-1 text-body-sm font-medium leading-6 text-muted">
-              Pick the packs you want in the swipe deck. Apply categories without leaving the deck.
+              {lfp.subtitle}
             </p>
           </div>
           <button

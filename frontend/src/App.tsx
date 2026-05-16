@@ -13,6 +13,7 @@ import { LanguageBadge } from './components/LanguageBadge';
 import { UserAvatar } from './components/UserAvatar';
 import { useUser } from './contexts/useUser';
 import { OnboardingWizard } from './components/OnboardingWizard';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { patchUser } from './services/userApi';
 
 const CardStack = lazy(() => import('./components/CardStack').then((module) => ({ default: module.CardStack })));
@@ -144,6 +145,10 @@ function AppWithLanguage() {
           onOpenSourceModal={() => setShowSourceModal(true)}
         />
         <LanguageBadge onClick={() => setShowSourceModal(true)} />
+        {/* ErrorBoundary inside the LanguageProvider so a chunk-load error or
+            a render-time throw on one screen does not nuke the whole app —
+            the user gets a friendly recovery card instead of a white page. */}
+        <ErrorBoundary>
         <Suspense fallback={<RouteFallback />}>
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
@@ -205,6 +210,7 @@ function AppWithLanguage() {
             </motion.div>
           </AnimatePresence>
         </Suspense>
+        </ErrorBoundary>
         {activeGuideId ? <GameGuideOverlay guideId={activeGuideId} routeKey={activeGuideRouteKey} /> : null}
         {showSourceModal && (
           <OnboardingModal
