@@ -1084,6 +1084,7 @@
     "dismissFeedback": "Descartar comentario",
     "appMenu": "Menú de la app",
     "productNav": "Navegación del producto",
-    "pathSections": "Secciones del camino"
+    "pathSections": "Secciones del camino",
+    "offlineBanner": "Estás sin conexión: los cambios se sincronizarán cuando vuelva."
   }
 }

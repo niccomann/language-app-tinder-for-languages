@@ -14,6 +14,7 @@ import { UserAvatar } from './components/UserAvatar';
 import { useUser } from './contexts/useUser';
 import { OnboardingWizard } from './components/OnboardingWizard';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { NetworkStatusBanner } from './components/NetworkStatusBanner';
 import { patchUser } from './services/userApi';
 
 const CardStack = lazy(() => import('./components/CardStack').then((module) => ({ default: module.CardStack })));
@@ -219,6 +220,7 @@ function AppWithLanguage() {
             onClose={() => setShowSourceModal(false)}
           />
         )}
+        <NetworkStatusBanner />
       </div>
     </ThemeProvider>
   );

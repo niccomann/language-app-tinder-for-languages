@@ -1084,6 +1084,7 @@
     "dismissFeedback": "Dismiss learning feedback",
     "appMenu": "App menu",
     "productNav": "Product navigation",
-    "pathSections": "Path sections"
+    "pathSections": "Path sections",
+    "offlineBanner": "You are offline — changes will sync when the connection returns."
   }
 }

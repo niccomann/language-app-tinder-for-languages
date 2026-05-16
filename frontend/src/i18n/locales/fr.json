@@ -1084,6 +1084,7 @@
     "dismissFeedback": "Fermer la notification",
     "appMenu": "Menu de l'app",
     "productNav": "Navigation produit",
-    "pathSections": "Sections du parcours"
+    "pathSections": "Sections du parcours",
+    "offlineBanner": "Tu es hors ligne — les changements seront synchronisés au retour de la connexion."
   }
 }
