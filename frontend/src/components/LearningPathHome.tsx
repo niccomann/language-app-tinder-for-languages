@@ -269,7 +269,7 @@ export function LearningPathHome({
           </span>
         </button>
 
-        <nav aria-label="Path sections" className="mt-2 flex flex-col gap-2">
+        <nav aria-label={copy.a11y.pathSections} className="mt-2 flex flex-col gap-2">
           <PathSectionLink
             label={t.home.linkFull}
             onClick={() => navigate('/path/full')}

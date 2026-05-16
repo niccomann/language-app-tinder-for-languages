@@ -197,7 +197,6 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
           {gl.nextButton} <Play size={14} />
         </button>
       ) : null}
-      onNavigate={onBack}
     >
       {/* Sentence Display (only for graph view) */}
       {activeView === 'graph' && currentSentence && (
@@ -227,8 +226,9 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
       )}
 
       {/* Content Area — explicit min height so embedded D3 views get room
-          and stay above the fixed BottomNav. */}
-      <div className="relative min-h-[calc(100dvh-260px)] overflow-visible">
+          and stay above the fixed BottomNav on mobile. Desktop has no
+          BottomNav so we use a smaller minimum. */}
+      <div className="relative min-h-[calc(100dvh-260px)] overflow-visible md:min-h-[calc(100dvh-180px)]">
         <Suspense fallback={<GrammarViewFallback message={gl.loadingView} />}>
           {activeView === 'graph' && loading && !currentSentence && (
             <GrammarDataLoadingPanel message={gl.loadingGraph} />

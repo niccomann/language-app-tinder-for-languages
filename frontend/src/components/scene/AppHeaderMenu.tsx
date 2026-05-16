@@ -4,6 +4,7 @@ import { ThemeToggle } from '../ui/ThemeToggle';
 import { FeedbackButton } from '../FeedbackButton';
 import { APP_MODE, SHOW_DEVELOPER_TOOLS } from '../../config/appMode';
 import { UI_INTERACTION, UI_RADIUS } from '../ui';
+import { useCopy } from '../../i18n/languageContext';
 
 const MENU_ITEM_CLASS = `flex w-full items-center gap-2 px-2 py-2 text-left text-body-sm font-medium text-ink ${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} hover:bg-surface-card`;
 
@@ -14,6 +15,7 @@ interface AppHeaderMenuProps {
 export function AppHeaderMenu({ onNavigate }: AppHeaderMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const copy = useCopy();
 
   useEffect(() => {
     if (!open) return;
@@ -29,7 +31,7 @@ export function AppHeaderMenu({ onNavigate }: AppHeaderMenuProps) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-label="App menu"
+        aria-label={copy.a11y.appMenu}
         aria-expanded={open}
         className={`inline-flex h-10 w-10 items-center justify-center ${UI_RADIUS.control} border border-hairline bg-canvas text-ink ${UI_INTERACTION.fastTransition} hover:bg-surface-card`}
       >

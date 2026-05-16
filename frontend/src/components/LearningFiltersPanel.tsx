@@ -48,7 +48,7 @@ export function LearningFiltersPanel({
           <button
             onClick={onClose}
             className={`flex ${UI_SIZE.iconButton} items-center justify-center ${UI_RADIUS.touchIcon} border border-hairline text-muted transition hover:bg-surface-card hover:text-ink`}
-            aria-label="Close filters"
+            aria-label={copy.a11y.closeFilters}
           >
             <X size={20} />
           </button>

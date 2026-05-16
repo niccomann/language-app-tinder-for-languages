@@ -1073,5 +1073,13 @@
     "previous": "Precedente",
     "next": "Successiva",
     "pageStatus": "Pagina {{current}} di {{total}}"
+  },
+  "a11y": {
+    "goBack": "Indietro",
+    "closeFilters": "Chiudi filtri",
+    "dismissFeedback": "Chiudi notifica",
+    "appMenu": "Menu app",
+    "productNav": "Navigazione prodotto",
+    "pathSections": "Sezioni del path"
   }
 }

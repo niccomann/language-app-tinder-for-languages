@@ -2,6 +2,7 @@ import { ArrowUpRight, CheckCircle2, X } from 'lucide-react';
 import type { LearningFeedback } from '../types';
 import { UI_INTERACTION, UI_RADIUS } from './ui';
 import { MascotSpeechCallout } from './MascotSpeechCallout';
+import { useCopy } from '../i18n/languageContext';
 
 interface LearningFeedbackBannerProps {
   feedback: LearningFeedback | null;
@@ -17,6 +18,7 @@ const toneClasses: Record<LearningFeedback['tone'], string> = {
 };
 
 export function LearningFeedbackBanner({ feedback, onDismiss }: LearningFeedbackBannerProps) {
+  const copy = useCopy();
   if (!feedback) return null;
 
   const Icon = feedback.tone === 'level_up' ? ArrowUpRight : CheckCircle2;
@@ -52,7 +54,7 @@ export function LearningFeedbackBanner({ feedback, onDismiss }: LearningFeedback
             type="button"
             onClick={onDismiss}
             className={`${UI_RADIUS.touchIcon} ${UI_INTERACTION.transition} flex h-9 w-9 shrink-0 items-center justify-center hover:bg-canvas/70`}
-            aria-label="Dismiss learning feedback"
+            aria-label={copy.a11y.dismissFeedback}
           >
             <X size={16} />
           </button>

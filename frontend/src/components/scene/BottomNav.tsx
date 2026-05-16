@@ -47,7 +47,7 @@ export function BottomNav({ pathname, onNavigate }: BottomNavProps) {
   const copy = useCopy();
   return (
     <nav
-      aria-label="Product navigation"
+      aria-label={copy.a11y.productNav}
       className="fixed inset-x-0 bottom-0 z-[60] mx-auto max-w-[480px] border-t border-hairline bg-canvas px-2 py-1.5"
     >
       <ul className="grid grid-cols-4 gap-1">

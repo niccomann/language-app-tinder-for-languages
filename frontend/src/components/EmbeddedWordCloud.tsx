@@ -43,9 +43,12 @@ export function EmbeddedWordCloud({ words, onWordClick }: EmbeddedWordCloudProps
     const updateDimensions = () => {
       if (containerRef.current) {
         const { width, height } = containerRef.current.getBoundingClientRect();
-        // Same cap as ClusteredNodes: keep the cloud inside the visible
-        // area so the BottomNav (~88px) does not cover the bottom words.
-        const cap = window.innerHeight - 88 - 64;
+        // In fullscreen (ExpandedViewWrapper) the BottomNav + top chrome are
+        // hidden by the overlay, so use the full viewport. Otherwise reserve
+        // ~152px (88 BottomNav + 64 chrome) so the cloud stays readable.
+        const cap = isExpanded
+          ? window.innerHeight
+          : window.innerHeight - 88 - 64;
         const safeHeight = Math.max(240, Math.min(height || cap, cap));
         setDimensions({ width: width || 320, height: safeHeight });
       }
@@ -53,7 +56,7 @@ export function EmbeddedWordCloud({ words, onWordClick }: EmbeddedWordCloudProps
     updateDimensions();
     window.addEventListener('resize', updateDimensions);
     return () => window.removeEventListener('resize', updateDimensions);
-  }, []);
+  }, [isExpanded]);
 
   useEffect(() => {
     if (!svgRef.current || words.length === 0 || dimensions.width === 0) return;

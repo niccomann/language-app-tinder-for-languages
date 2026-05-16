@@ -3,6 +3,7 @@ import {
   APP_URL,
   clearUserIdentity,
   mockUserApi,
+  seedLanguageSettings,
   seedUserId,
   USER_ID_STORAGE_KEY,
   type MockUserProfile,
@@ -29,6 +30,10 @@ test.describe('Onboarding wizard', () => {
         console.log('[browser console error]', msg.text());
       }
     });
+    // Pin the source locale to Italian so the i18n strings asserted below
+    // ("Inizia", "Indietro", "Salvataggio fallito") are deterministic
+    // regardless of the CI machine's default browser locale.
+    await seedLanguageSettings(page, 'de', 'it');
   });
 
   test('fresh user (no userId, GET 404) sees the welcome step', async ({ page }) => {

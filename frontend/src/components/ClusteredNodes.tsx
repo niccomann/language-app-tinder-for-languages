@@ -100,12 +100,16 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
     const apply = () => {
       if (containerRef.current) {
         const { width, height } = containerRef.current.getBoundingClientRect();
-        // Cap by viewport height minus space for the fixed BottomNav (~88px)
-        // and the top chrome (~64px). Otherwise nodes would render under the
-        // BottomNav on mobile because the container can extend off-screen.
-        const cap = window.innerHeight - 88 - 64;
+        // In fullscreen (ExpandedViewWrapper) the BottomNav + top chrome are
+        // hidden by the overlay; outside it, reserve ~152px so nodes don't
+        // render under the BottomNav on mobile.
+        const cap = isExpanded
+          ? window.innerHeight
+          : window.innerHeight - 88 - 64;
         const safeHeight = Math.min(height, cap);
-        setDimensions({ width, height: safeHeight - 80 });
+        // Guard against very small viewports (rotated landscape on tiny phones):
+        // never drop below 200px usable area.
+        setDimensions({ width, height: Math.max(200, safeHeight - 80) });
       }
     };
     let resizeTimeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -119,7 +123,7 @@ export function ClusteredNodes({ words, onWordClick }: ClusteredNodesProps) {
       window.removeEventListener('resize', debouncedResize);
       if (resizeTimeoutId !== null) clearTimeout(resizeTimeoutId);
     };
-  }, []);
+  }, [isExpanded]);
 
   const getGroupFunction = useMemo(() => {
     if (activeCriteria === 'similarity') {

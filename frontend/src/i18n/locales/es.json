@@ -1073,5 +1073,13 @@
     "previous": "Anterior",
     "next": "Siguiente",
     "pageStatus": "Página {{current}} de {{total}}"
+  },
+  "a11y": {
+    "goBack": "Volver",
+    "closeFilters": "Cerrar filtros",
+    "dismissFeedback": "Descartar comentario",
+    "appMenu": "Menú de la app",
+    "productNav": "Navegación del producto",
+    "pathSections": "Secciones del camino"
   }
 }

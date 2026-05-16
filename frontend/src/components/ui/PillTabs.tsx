@@ -29,8 +29,15 @@ export function PillTabs<T extends string>({
   className = '',
   ariaLabel = 'View tabs',
 }: PillTabsProps<T>) {
+  // Mobile: horizontal scroll on a single row so the tab bar never grows
+  // tall enough to cover the underlying view (e.g. the Hierarchy sunburst).
+  // Right edge fades out so the user notices there is more to scroll.
+  // Desktop: wrap as before — there is room and centered wrap reads better.
   return (
-    <nav aria-label={ariaLabel} className={`flex flex-wrap justify-center gap-2 ${className}`}>
+    <nav
+      aria-label={ariaLabel}
+      className={`flex flex-nowrap items-center gap-2 overflow-x-auto pr-2 sm:flex-wrap sm:justify-center sm:overflow-x-visible sm:pr-0 [scrollbar-width:none] [-ms-overflow-style:none] [mask-image:linear-gradient(to_right,black_calc(100%-20px),transparent)] sm:[mask-image:none] [&::-webkit-scrollbar]:hidden ${className}`}
+    >
       {items.map((item) => {
         const active = item.value === value;
 

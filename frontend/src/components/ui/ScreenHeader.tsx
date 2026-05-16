@@ -1,6 +1,7 @@
 import { ArrowLeft } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { UI_RADIUS } from './geometry';
+import { useCopy } from '../../i18n/languageContext';
 
 interface ScreenHeaderProps {
   title: string;
@@ -23,6 +24,7 @@ export function ScreenHeader({
   density = 'regular',
   className = '',
 }: ScreenHeaderProps) {
+  const copy = useCopy();
   // Mobile always renders a smaller title so it fits next to AppChrome
   // without truncation, even on screens that pass density="regular".
   const titleSize =
@@ -45,16 +47,18 @@ export function ScreenHeader({
               type="button"
               onClick={onBack}
               className={`flex h-10 w-10 shrink-0 items-center justify-center ${UI_RADIUS.touchIcon} border border-hairline bg-canvas text-ink transition-colors duration-150 hover:bg-surface-card`}
-              aria-label="Go back"
+              aria-label={copy.a11y.goBack}
             >
               <ArrowLeft size={21} />
             </button>
           )}
           <div className="min-w-0">
-            <h1 className={`${titleSize} font-display font-normal leading-tight tracking-[-0.5px] text-ink flex items-center gap-2`}>
-              {icon && <span className="hidden sm:inline-flex">{icon}</span>}
-              <span className="truncate">{title}</span>
-            </h1>
+            {title && (
+              <h1 className={`${titleSize} font-display font-normal leading-tight tracking-[-0.5px] text-ink flex items-center gap-2`}>
+                {icon && <span className="hidden sm:inline-flex">{icon}</span>}
+                <span className="truncate">{title}</span>
+              </h1>
+            )}
           </div>
         </div>
         {actions && <div className="shrink-0">{actions}</div>}
