@@ -5,12 +5,16 @@ import { UI_RADIUS } from './ui';
 import { CATEGORY_COLORS } from '../utils/wordDisplayMeta';
 import { useCopy } from '../i18n/languageContext';
 
-interface WordDetailModalProps {
+interface SimpleWordDetailModalProps {
   word: WordCloudItem;
   onClose: () => void;
 }
 
-export function WordDetailModal({ word, onClose }: WordDetailModalProps) {
+// Renamed from `WordDetailModal` to avoid name collision with
+// `WordDetailModalEnriched.tsx` (also exports a `WordDetailModal`).
+// The two are distinct: this one takes a WordCloudItem object and renders a
+// lightweight summary; the enriched one fetches by wordId and renders tabs.
+export function SimpleWordDetailModal({ word, onClose }: SimpleWordDetailModalProps) {
   const copy = useCopy();
   const wd = copy.wordDetail;
   const totalSwipes = (word.swipe_right_count || 0) + (word.swipe_left_count || 0);

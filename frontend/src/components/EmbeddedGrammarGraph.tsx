@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import type { GrammarSentence, GrammarNode } from '../types';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
@@ -258,6 +258,9 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
       }
       zoomRef.current = null;
     };
+  // Intentionally omit `zoomRef`/`initializeZoom` (stable refs from
+  // useZoomControls). Adding initializeZoom would rebuild the entire D3
+  // graph on every render, losing user zoom/drag state.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sentence, dimensions, onNodeSelect, isExpanded]);
 

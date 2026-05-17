@@ -1,13 +1,11 @@
 export { SceneShell } from './SceneShell';
 export { SceneHeader } from './SceneHeader';
 export { ExplainerSheet } from './ExplainerSheet';
-export { BottomNav, matchSection } from './BottomNav';
+export { BottomNav } from './BottomNav';
 export { AppHeaderMenu } from './AppHeaderMenu';
 export { HubGrid } from './HubGrid';
 export type { HubGridItem } from './HubGrid';
 export { SubNav } from './SubNav';
 export type { SubNavItem } from './SubNav';
-export { PaginatedList } from './PaginatedList';
-export { StepFooter } from './StepFooter';
 export { isExplainerDismissed, markExplainerDismissed, explainerKey } from './explainerStorage';
-export { iconButtonClass, STICKY_BAR_CLASS, SURFACE_CARD_CLASS, EYEBROW_CLASS } from './sceneClasses';
+export { iconButtonClass, EYEBROW_CLASS } from './sceneClasses';

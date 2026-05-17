@@ -12,7 +12,7 @@ import { formatCopy } from '../i18n/staticCopy';
 
 const EmbeddedGrammarGraph = lazy(() => import('./EmbeddedGrammarGraph').then((module) => ({ default: module.EmbeddedGrammarGraph })));
 const EmbeddedWordCloud = lazy(() => import('./EmbeddedWordCloud').then((module) => ({ default: module.EmbeddedWordCloud })));
-const WordDetailModal = lazy(() => import('./WordDetailModal').then((module) => ({ default: module.WordDetailModal })));
+const SimpleWordDetailModal = lazy(() => import('./WordDetailModal').then((module) => ({ default: module.SimpleWordDetailModal })));
 const SentenceBuilder = lazy(() => import('./SentenceBuilder').then((module) => ({ default: module.SentenceBuilder })));
 const FunSentenceBuilder = lazy(() => import('./FunSentenceBuilder').then((module) => ({ default: module.FunSentenceBuilder })));
 const ClusteredNodes = lazy(() => import('./ClusteredNodes').then((module) => ({ default: module.ClusteredNodes })));
@@ -363,7 +363,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
       {/* Word Detail Modal */}
       {selectedWord && (
         <Suspense fallback={null}>
-          <WordDetailModal word={selectedWord} onClose={() => setSelectedWord(null)} />
+          <SimpleWordDetailModal word={selectedWord} onClose={() => setSelectedWord(null)} />
         </Suspense>
       )}
     </SceneShell>

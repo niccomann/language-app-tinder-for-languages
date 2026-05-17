@@ -17,7 +17,7 @@ const ITEMS: readonly BottomNavItem[] = [
   { id: 'explore', path: '/explore', icon: Compass },
 ];
 
-export function matchSection(pathname: string): SectionId {
+function matchSection(pathname: string): SectionId {
   if (pathname === '/' || pathname.startsWith('/path')) return 'path';
   if (pathname.startsWith('/learn')) return 'learn';
   if (
