@@ -1,24 +1,24 @@
 import { Button } from '../ui';
+import { useCopy } from '../../i18n/languageContext';
 import { WizardShell } from './WizardShell';
 import type { StepProps } from './types';
 
-export function WelcomeStep({ onAdvance, stepIndex, stepCount }: StepProps) {
+export function WelcomeStep({ onAdvance, onBack, stepIndex, stepCount }: StepProps) {
+  const w = useCopy().onboardingWizard.welcome;
   return (
-    <WizardShell stepIndex={stepIndex} stepCount={stepCount} title="" subline="">
+    <WizardShell stepIndex={stepIndex} stepCount={stepCount} title="" subline="" onBack={onBack}>
       <div className="flex flex-col items-center text-center">
         <div className="text-7xl leading-none" aria-hidden>
           🦉
         </div>
         <h1 className="mt-6 font-display text-display-sm font-normal tracking-[-0.3px] text-ink">
-          Ciao! Sono il tuo coach.
+          {w.title}
         </h1>
-        <p className="mt-3 text-body-sm text-muted">
-          Imparare una lingua, 5 minuti al giorno.
-        </p>
+        <p className="mt-3 text-body-sm text-muted">{w.subline}</p>
         <Button variant="primary" className="mt-8 w-full max-w-xs" onClick={() => onAdvance({})}>
-          Inizia
+          {w.cta}
         </Button>
-        <p className="mt-4 text-caption text-muted">Nessun account richiesto</p>
+        <p className="mt-4 text-caption text-muted">{w.footnote}</p>
       </div>
     </WizardShell>
   );

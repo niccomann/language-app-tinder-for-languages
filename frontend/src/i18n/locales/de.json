@@ -598,7 +598,8 @@
     "zoomOut": "Zoom -",
     "fitToView": "An Ansicht anpassen",
     "resetZoom": "Zoom zurücksetzen",
-    "removeFilter": "Filter entfernen"
+    "removeFilter": "Filter entfernen",
+    "playAudio": "Anhören"
   },
   "feedbackButton": {
     "defaultUser": "Tester-Nutzer",
@@ -929,7 +930,13 @@
   },
   "learningSystemMenu": {
     "title": "Learning System",
-    "subtitle": "Deine Swipes formen die nächste Schwierigkeit."
+    "subtitle": "Deine Swipes formen die nächste Schwierigkeit.",
+    "points": [
+      "Einheitliches Wortgedächtnis: eine Datenbank verfolgt jedes Wort, das du kannst, verfehlst oder noch lernst.",
+      "400-Stufen-Pfad: dein globaler Pfad kann auf 400 Stufen wachsen.",
+      "Wortbeherrschung: jedes Wort hat einen Beherrschungswert von 1 bis 10.",
+      "Kontextschwierigkeit: Sätze mischen starke und schwächere Wörter, nützlich ohne Überlastung."
+    ]
   },
   "completion": {
     "reviewed": "Wiederholt",
@@ -978,7 +985,13 @@
   },
   "sentenceBuilder": {
     "selectPrompt": "Wähle Knoten oben aus, um zu beginnen",
-    "clickHint": "Tippe Knoten an, um sie hinzuzufügen, dann verbinde sie in der Reihenfolge"
+    "clickHint": "Tippe Knoten an, um sie hinzuzufügen, dann verbinde sie in der Reihenfolge",
+    "introTitle": "So funktioniert der Satzbaukasten",
+    "connectHint": "Tippe ein weiteres Wort an zum Verbinden"
+  },
+  "funBuilder": {
+    "introTitle": "So funktioniert der Graph-Baukasten",
+    "introBody": "Tippe auf +, um Wörter hinzuzufügen, ziehe sie zusammen zum Verbinden, scrolle zum Zoomen. Baue einen Satz als Graph."
   },
   "cardStack": {
     "masteryLabel": "Beherrschung",
@@ -1070,7 +1083,58 @@
   "onboardingWizard": {
     "identityNotReady": "Profil noch nicht bereit. Versuche es gleich nochmal.",
     "saveFailed": "Speichern fehlgeschlagen: {{detail}}",
-    "saving": "Speichern…"
+    "saving": "Speichern…",
+    "source": {
+      "title": "Was ist deine Ausgangssprache?",
+      "subline": "Die Sprache, die du schon sprichst. Wir machen in dieser Sprache weiter."
+    },
+    "welcome": {
+      "title": "Hi! Ich bin dein Coach.",
+      "subline": "Eine Sprache lernen, 5 Minuten am Tag.",
+      "cta": "Loslegen",
+      "footnote": "Kein Konto erforderlich"
+    },
+    "language": {
+      "eyebrow": "Schritt 1",
+      "title": "Was möchtest du lernen?",
+      "subline": "Wähle die Sprache, auf die du dich jetzt konzentrieren willst."
+    },
+    "level": {
+      "eyebrow": "Schritt 2",
+      "subline": "Wähle, was heute am besten zu dir passt.",
+      "titleByTarget": {
+        "de": "Wie viel Deutsch kannst du schon?",
+        "it": "Wie viel Italienisch kannst du schon?",
+        "fr": "Wie viel Französisch kannst du schon?"
+      },
+      "options": {
+        "beginner": { "label": "Anfänger", "hint": "Ich fange bei Null an" },
+        "a1_a2": { "label": "Etwas Vorkenntnisse", "hint": "Niveau A1–A2" },
+        "b1_b2": { "label": "Mittelstufe", "hint": "Niveau B1–B2" }
+      }
+    },
+    "goal": {
+      "eyebrow": "Schritt 3",
+      "title": "Wie viel Zeit pro Tag?",
+      "subline": "Du kannst das jederzeit ändern.",
+      "options": {
+        "5": { "label": "5 Min", "hint": "Casual" },
+        "10": { "label": "10 Min", "hint": "Regelmäßig" },
+        "15": { "label": "15 Min", "hint": "Ernsthaft" },
+        "20": { "label": "20 Min", "hint": "Intensiv" }
+      }
+    },
+    "identity": {
+      "eyebrow": "Schritt 4",
+      "title": "Wie heißt du?",
+      "subline": "Nur um die Erfahrung zu personalisieren.",
+      "namePlaceholder": "Dein Name",
+      "agePlaceholder": "Alter (optional)",
+      "submit": "Weiter",
+      "footnote": "Auf deinem Gerät gespeichert. Kein Login, keine E-Mail.",
+      "errorName": "Der Name muss zwischen 1 und 40 Zeichen lang sein.",
+      "errorAge": "Ungültiges Alter (5–120 oder leer lassen)."
+    }
   },
   "pagination": {
     "label": "Seiten",

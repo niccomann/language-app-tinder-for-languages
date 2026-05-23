@@ -3,7 +3,7 @@ import { ArrowDownAZ, BookOpenCheck, CircleAlert, Clock3, Star, Target, Trophy }
 import type { WordStatistics } from '../types';
 import { api } from '../services/api';
 import { copy } from '../i18n/staticCopy';
-import { AppScreen, ErrorState, LoadingSpinner, ScreenHeader, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
+import { AppScreen, ErrorState, LoadingSpinner, ScreenHeader, SurfacePanel, ToolIntroGate, UI_INTERACTION, UI_RADIUS } from './ui';
 import { reportClientError } from '../utils/clientError';
 import { useTargetLanguage } from '../i18n/languageContext';
 
@@ -131,12 +131,16 @@ export function YourVocabularyScreen({
   }
 
   return (
+    <ToolIntroGate
+      storageKey="yourVocabulary"
+      title={vocabularyCopy.title}
+      steps={[vocabularyCopy.subtitle, vocabularyCopy.logicBody]}
+    >
     <AppScreen width="compact" contentClassName="min-h-dvh px-4 py-4">
       <main className="mx-auto flex w-full max-w-3xl flex-col gap-6">
         <section className="space-y-3">
           <ScreenHeader
             title={vocabularyCopy.title}
-            subtitle={vocabularyCopy.subtitle}
             icon={<BookOpenCheck size={30} className="shrink-0 text-primary" />}
             onBack={onBack}
             density="compact"
@@ -147,15 +151,6 @@ export function YourVocabularyScreen({
               <VocabularyStatTile icon={<Trophy size={18} />} label={vocabularyCopy.strongStat} value={masteredCount} tone="success" />
               <VocabularyStatTile icon={<Target size={18} />} label={vocabularyCopy.learningStat} value={learningCount} tone="yellow" />
               <VocabularyStatTile icon={<CircleAlert size={18} />} label={vocabularyCopy.weakStat} value={weakCount} tone="error" />
-            </div>
-
-            <div className={`${UI_RADIUS.control} border border-hairline bg-surface-soft p-4`}>
-              <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-                {vocabularyCopy.logicEyebrow}
-              </p>
-              <p className="mt-2 text-sm font-semibold leading-6 text-body">
-                {vocabularyCopy.logicBody}
-              </p>
             </div>
 
             <button
@@ -197,6 +192,7 @@ export function YourVocabularyScreen({
         </section>
       </main>
     </AppScreen>
+    </ToolIntroGate>
   );
 }
 

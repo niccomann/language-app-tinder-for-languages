@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, type FormEvent, type ReactNode } from 'react';
 import { ArrowLeft, ArrowRight, MessageSquarePlus, ThumbsDown, ThumbsUp, X } from 'lucide-react';
 import { api } from '../services/api';
-import { Button, UI_INTERACTION, UI_RADIUS } from './ui';
+import { BottomSheet, Button, UI_INTERACTION, UI_RADIUS } from './ui';
 import { useCopy } from '../i18n/languageContext';
 
 interface FeedbackButtonProps {
@@ -151,16 +151,8 @@ export function FeedbackButton({
       </button>
 
       {open && (
-        <div
-          className="fixed inset-0 z-[80] flex items-center justify-center bg-ink/40 px-4 py-6"
-          role="dialog"
-          aria-modal="true"
-          aria-label={f.modalAria}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) closeModal();
-          }}
-        >
-          <div className={`relative w-full max-w-lg max-h-[90vh] overflow-y-auto ${UI_RADIUS.surface} border border-hairline bg-canvas p-6`}>
+        <BottomSheet onClose={closeModal} ariaLabel={f.modalAria} maxWidthClass="sm:max-w-lg">
+          <div className="relative p-6">
             <button
               type="button"
               onClick={closeModal}
@@ -248,7 +240,7 @@ export function FeedbackButton({
               />
             )}
           </div>
-        </div>
+      </BottomSheet>
       )}
     </>
   );

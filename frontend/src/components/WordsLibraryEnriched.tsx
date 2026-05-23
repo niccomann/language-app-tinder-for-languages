@@ -238,7 +238,6 @@ export function WordsLibraryEnriched({
     <AppScreen mode="overlay" width="wide" contentClassName="p-6">
         <ScreenHeader
           title={lib.title}
-          subtitle={lib.subtitle}
           icon={<BookOpen size={32} />}
           onBack={onClose}
           className="mb-6"

@@ -27,7 +27,7 @@ export function HubGrid({ items, className = '' }: HubGridProps) {
             className={`flex w-full min-h-[88px] items-center gap-3 ${UI_RADIUS.surface} border border-hairline bg-canvas px-4 py-3 text-left ${UI_INTERACTION.transition} hover:bg-surface-card`}
           >
             <span
-              className={`flex h-11 w-11 shrink-0 items-center justify-center ${UI_RADIUS.control} bg-surface-cream text-ink`}
+              className={`flex h-11 w-11 shrink-0 items-center justify-center ${UI_RADIUS.control} bg-surface-cream-strong text-ink`}
               aria-hidden
             >
               {item.icon}

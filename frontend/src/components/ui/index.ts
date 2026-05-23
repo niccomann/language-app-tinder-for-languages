@@ -14,3 +14,5 @@ export { NavButton } from './NavButton';
 export { ZoomControlBar, ExpandedViewWrapper } from './ZoomControlBar';
 export { Button } from './Button';
 export { CalloutCard } from './CalloutCard';
+export { BottomSheet } from './BottomSheet';
+export { ToolIntroGate } from './ToolIntroGate';

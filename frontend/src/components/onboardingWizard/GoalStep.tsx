@@ -1,27 +1,30 @@
+import { useCopy } from '../../i18n/languageContext';
 import { UI_INTERACTION, UI_RADIUS } from '../ui';
 import { WizardShell } from './WizardShell';
 import type { StepProps } from './types';
 
-const OPTIONS: Array<{ minutes: number; emoji: string; label: string; hint: string }> = [
-  { minutes: 5, emoji: '☕', label: '5 min', hint: 'Casual' },
-  { minutes: 10, emoji: '🎯', label: '10 min', hint: 'Regolare' },
-  { minutes: 15, emoji: '🔥', label: '15 min', hint: 'Serio' },
-  { minutes: 20, emoji: '🚀', label: '20 min', hint: 'Intenso' },
+const OPTIONS: Array<{ minutes: number; emoji: string }> = [
+  { minutes: 5, emoji: '☕' },
+  { minutes: 10, emoji: '🎯' },
+  { minutes: 15, emoji: '🔥' },
+  { minutes: 20, emoji: '🚀' },
 ];
 
 export function GoalStep({ draft, onAdvance, onBack, stepIndex, stepCount }: StepProps) {
+  const g = useCopy().onboardingWizard.goal;
   return (
     <WizardShell
       stepIndex={stepIndex}
       stepCount={stepCount}
-      eyebrow="Passo 3"
-      title="Quanto tempo al giorno?"
-      subline="Puoi cambiarlo in qualsiasi momento."
+      eyebrow={g.eyebrow}
+      title={g.title}
+      subline={g.subline}
       onBack={onBack}
     >
       <div className="flex flex-col gap-3">
         {OPTIONS.map((opt) => {
           const selected = draft.daily_goal_minutes === opt.minutes;
+          const meta = g.options[String(opt.minutes) as keyof typeof g.options];
           return (
             <button
               key={opt.minutes}
@@ -36,8 +39,8 @@ export function GoalStep({ draft, onAdvance, onBack, stepIndex, stepCount }: Ste
                 {opt.emoji}
               </span>
               <span className="flex flex-col">
-                <span className="text-body-sm font-medium text-ink">{opt.label}</span>
-                <span className="text-caption text-muted">{opt.hint}</span>
+                <span className="text-body-sm font-medium text-ink">{meta.label}</span>
+                <span className="text-caption text-muted">{meta.hint}</span>
               </span>
             </button>
           );

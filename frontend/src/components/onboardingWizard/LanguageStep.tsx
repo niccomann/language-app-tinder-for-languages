@@ -1,23 +1,19 @@
+import { useCopy } from '../../i18n/languageContext';
 import { TARGET_FLAGS, TARGET_LANGUAGES } from '../../i18n/languageMeta';
-import type { TargetLanguage } from '../../i18n/languageStorage';
 import { UI_INTERACTION, UI_RADIUS } from '../ui';
 import { WizardShell } from './WizardShell';
 import type { StepProps } from './types';
 
-const LABELS: Record<TargetLanguage, string> = {
-  de: 'Tedesco',
-  it: 'Italiano',
-  fr: 'Francese',
-};
-
 export function LanguageStep({ draft, onAdvance, onBack, stepIndex, stepCount }: StepProps) {
+  const copy = useCopy();
+  const l = copy.onboardingWizard.language;
   return (
     <WizardShell
       stepIndex={stepIndex}
       stepCount={stepCount}
-      eyebrow="Passo 1"
-      title="Cosa vuoi imparare?"
-      subline="Scegli la lingua su cui vuoi concentrarti adesso."
+      eyebrow={l.eyebrow}
+      title={l.title}
+      subline={l.subline}
       onBack={onBack}
     >
       <div className="grid grid-cols-3 gap-3">
@@ -36,7 +32,7 @@ export function LanguageStep({ draft, onAdvance, onBack, stepIndex, stepCount }:
               <span className="text-4xl leading-none" aria-hidden>
                 {TARGET_FLAGS[code]}
               </span>
-              <span className="text-body-sm font-medium text-ink">{LABELS[code]}</span>
+              <span className="text-body-sm font-medium text-ink">{copy.targetLanguageNames[code]}</span>
             </button>
           );
         })}

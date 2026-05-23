@@ -1,4 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react';
+import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Brain, ChartNoAxesColumnIncreasing, CheckCircle2, Sparkles, Target } from 'lucide-react';
 import type { AdaptiveFlashcard, UserProgress } from '../types';
 import { Card } from './Card';
@@ -9,6 +10,7 @@ import { SwipeButtons } from './SwipeButtons';
 import { AppScreen, GameSignalBadge, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
 import { copy, formatCopy } from '../i18n/staticCopy';
 import { useTargetLanguage } from '../i18n/languageContext';
+import { revealContainer, revealItem } from '../utils/animations';
 import { StreamingSpeechBubble, type StreamingSpeechStep } from './StreamingSpeechBubble';
 import {
   MAX_VOCABULARY_SCAN_SWIPES,
@@ -161,22 +163,32 @@ export function FirstVocabularyOnboarding({
         primaryActionLabel={onboardingCopy.analysis.primaryAction}
         onPrimaryAction={() => advanceWithMascot('science')}
       >
-        <div className="grid auto-rows-fr gap-3 sm:grid-cols-3">
-          <SignalSummaryTile icon={<Target size={18} />} label={onboardingCopy.analysis.wordsSeen} value={signals.length} tone="coral" />
-          <SignalSummaryTile icon={<Sparkles size={18} />} label={onboardingCopy.analysis.strongSignals} value={insights.knownEstimate} tone="success" />
-          <SignalSummaryTile icon={<Brain size={18} />} label={onboardingCopy.analysis.toReview} value={insights.reviewEstimate} tone="amber" />
-        </div>
+        <motion.div className="grid auto-rows-fr gap-3 sm:grid-cols-3" variants={revealContainer} initial="hidden" animate="show">
+          <motion.div variants={revealItem}>
+            <SignalSummaryTile icon={<Target size={18} />} label={onboardingCopy.analysis.wordsSeen} value={signals.length} tone="coral" />
+          </motion.div>
+          <motion.div variants={revealItem}>
+            <SignalSummaryTile icon={<Sparkles size={18} />} label={onboardingCopy.analysis.strongSignals} value={insights.knownEstimate} tone="success" />
+          </motion.div>
+          <motion.div variants={revealItem}>
+            <SignalSummaryTile icon={<Brain size={18} />} label={onboardingCopy.analysis.toReview} value={insights.reviewEstimate} tone="amber" />
+          </motion.div>
+        </motion.div>
 
-        <div className="grid auto-rows-fr gap-3 sm:grid-cols-2">
-          <SurfacePanel padding="md" className="border-success/20 bg-success/10">
-            <p className="text-xs font-semibold uppercase tracking-wide text-success">{onboardingCopy.analysis.strongestOn}</p>
-            <p className="mt-2 text-xl font-semibold text-ink">{insights.strongCategory}</p>
-          </SurfacePanel>
-          <SurfacePanel padding="md" className="border-accent-amber/20 bg-accent-amber/10">
-            <p className="text-xs font-semibold uppercase tracking-wide text-accent-amber">{onboardingCopy.analysis.needsReinforcement}</p>
-            <p className="mt-2 text-xl font-semibold text-ink">{insights.weakCategory}</p>
-          </SurfacePanel>
-        </div>
+        <motion.div className="grid auto-rows-fr gap-3 sm:grid-cols-2" variants={revealContainer} initial="hidden" animate="show">
+          <motion.div variants={revealItem}>
+            <SurfacePanel padding="md" className="border-success/20 bg-success/10">
+              <p className="text-xs font-semibold uppercase tracking-wide text-success">{onboardingCopy.analysis.strongestOn}</p>
+              <p className="mt-2 text-xl font-semibold text-ink">{insights.strongCategory}</p>
+            </SurfacePanel>
+          </motion.div>
+          <motion.div variants={revealItem}>
+            <SurfacePanel padding="md" className="border-accent-amber/20 bg-accent-amber/10">
+              <p className="text-xs font-semibold uppercase tracking-wide text-accent-amber">{onboardingCopy.analysis.needsReinforcement}</p>
+              <p className="mt-2 text-xl font-semibold text-ink">{insights.weakCategory}</p>
+            </SurfacePanel>
+          </motion.div>
+        </motion.div>
       </AnimatedExplanationFrame>
     );
   }
@@ -193,11 +205,17 @@ export function FirstVocabularyOnboarding({
         primaryActionLabel={onboardingCopy.science.primaryAction}
         onPrimaryAction={onComplete}
       >
-        <div className="grid auto-rows-fr gap-3 sm:grid-cols-3">
-          <GameSignalBadge icon={<Brain size={14} />} label={onboardingCopy.science.memorySignals} tone="coral" />
-          <GameSignalBadge icon={<ChartNoAxesColumnIncreasing size={14} />} label={onboardingCopy.science.progressScience} tone="teal" />
-          <GameSignalBadge icon={<Sparkles size={14} />} label={onboardingCopy.science.adaptivePath} tone="success" />
-        </div>
+        <motion.div className="grid auto-rows-fr gap-3 sm:grid-cols-3" variants={revealContainer} initial="hidden" animate="show">
+          <motion.div variants={revealItem}>
+            <GameSignalBadge icon={<Brain size={14} />} label={onboardingCopy.science.memorySignals} tone="coral" />
+          </motion.div>
+          <motion.div variants={revealItem}>
+            <GameSignalBadge icon={<ChartNoAxesColumnIncreasing size={14} />} label={onboardingCopy.science.progressScience} tone="teal" />
+          </motion.div>
+          <motion.div variants={revealItem}>
+            <GameSignalBadge icon={<Sparkles size={14} />} label={onboardingCopy.science.adaptivePath} tone="success" />
+          </motion.div>
+        </motion.div>
       </AnimatedExplanationFrame>
     );
   }

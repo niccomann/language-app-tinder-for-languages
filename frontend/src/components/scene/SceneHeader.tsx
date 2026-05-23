@@ -1,8 +1,8 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Info } from 'lucide-react';
 import { UI_INTERACTION, UI_RADIUS } from '../ui';
 import { ExplainerSheet } from './ExplainerSheet';
-import { isExplainerDismissed } from './explainerStorage';
+import { isExplainerDismissed, markExplainerDismissed } from './explainerStorage';
 import { useCopy } from '../../i18n/languageContext';
 
 interface SceneHeaderProps {
@@ -29,6 +29,15 @@ export function SceneHeader({
   const effectiveKey = explainerKey ?? `scene:${title}`;
   const dismissed = isExplainerDismissed(effectiveKey);
   const hasContent = Boolean(subline || explainerBody);
+
+  // First visit: surface the explanation before the tool, then remember so later
+  // visits go straight to the scene (the Info button stays for re-reading).
+  useEffect(() => {
+    if (hasContent && !isExplainerDismissed(effectiveKey)) {
+      setOpen(true);
+      markExplainerDismissed(effectiveKey);
+    }
+  }, [effectiveKey, hasContent]);
 
   return (
     <header className={`flex flex-col gap-2 ${className}`}>

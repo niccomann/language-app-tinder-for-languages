@@ -29,7 +29,9 @@ export function Button({
   children,
   ...rest
 }: ButtonProps) {
-  const cls = `${baseByVariant[variant]} ${className}`.trim();
+  const focusRing =
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-canvas';
+  const cls = `${baseByVariant[variant]} ${focusRing} ${className}`.trim();
   return (
     <button {...rest} className={cls}>
       {leadingIcon}

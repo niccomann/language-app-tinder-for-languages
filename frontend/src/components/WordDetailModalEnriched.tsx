@@ -3,7 +3,7 @@ import { X, BookOpen, History, AlertTriangle, MessageCircle, Link2, MapPin, Volu
 import { api } from '../services/api';
 import type { FlashcardDetail, WordDbRow } from '../types';
 import { isFeatureEnabled } from '../config/appMode';
-import { UI_RADIUS } from './ui';
+import { BottomSheet, UI_RADIUS } from './ui';
 import type { LibraryDetailTab } from '../routes/appRoutes';
 import { reportClientError } from '../utils/clientError';
 import {
@@ -175,19 +175,19 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
 
   if (loading) {
     return (
-      <div className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4">
-        <div className={`bg-canvas border border-hairline ${UI_RADIUS.surface} p-8 text-center`}>
+      <BottomSheet onClose={onClose} ariaLabel={wd.loadingDetails} maxWidthClass="sm:max-w-md">
+        <div className="p-8 text-center">
           <div className={`animate-spin ${UI_RADIUS.pill} h-12 w-12 border-b-2 border-primary mx-auto mb-4`} />
           <p className="text-muted">{wd.loadingDetails}</p>
         </div>
-      </div>
+      </BottomSheet>
     );
   }
 
   if (error || !word) {
     return (
-      <div className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4">
-        <div className={`bg-canvas border border-hairline ${UI_RADIUS.surface} p-8 text-center max-w-md`}>
+      <BottomSheet onClose={onClose} ariaLabel={copy.library.errorTitle} maxWidthClass="sm:max-w-md">
+        <div className="p-8 text-center">
           <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center ${UI_RADIUS.touchIcon} bg-error/10 text-error`}>
             <AlertTriangle size={24} />
           </div>
@@ -200,13 +200,12 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
             {copy.common.close}
           </button>
         </div>
-      </div>
+      </BottomSheet>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4">
-      <div className={`bg-canvas border border-hairline ${UI_RADIUS.surface} w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col`}>
+    <BottomSheet onClose={onClose} ariaLabel={word.word} maxWidthClass="sm:max-w-2xl" handleClassName="bg-on-dark/60" scrollBody={false}>
         <div className="relative">
           <div className="h-48 bg-surface-dark relative overflow-hidden">
             {word.image_base64 ? (
@@ -448,7 +447,7 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
           {activeTab === 'false_friends' && (
             <div className="space-y-4">
               {word.false_friends.map((ff, index) => (
-                <div key={index} className={`bg-accent-amber/10 border-l-4 border-accent-amber ${UI_RADIUS.control} p-5`}>
+                <div key={index} className={`bg-accent-amber/10 border border-accent-amber/30 ${UI_RADIUS.control} p-5`}>
                   <div className="flex items-start justify-between">
                     <div>
                       <p className="text-xl font-semibold text-ink mb-1">
@@ -634,7 +633,6 @@ export function WordDetailModal({ wordId, initialTab = 'overview', onTabChange, 
             </div>
           )}
         </div>
-      </div>
-    </div>
+    </BottomSheet>
   );
 }

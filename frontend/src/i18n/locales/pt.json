@@ -598,7 +598,8 @@
     "zoomOut": "Zoom -",
     "fitToView": "Ajustar à vista",
     "resetZoom": "Resetar zoom",
-    "removeFilter": "Remover filtro"
+    "removeFilter": "Remover filtro",
+    "playAudio": "Ouvir"
   },
   "feedbackButton": {
     "defaultUser": "Usuário tester",
@@ -929,7 +930,13 @@
   },
   "learningSystemMenu": {
     "title": "Learning System",
-    "subtitle": "Seus swipes moldam a próxima dificuldade."
+    "subtitle": "Seus swipes moldam a próxima dificuldade.",
+    "points": [
+      "Memória unificada de palavras: uma base rastreia cada palavra que sabes, erras ou ainda estás a aprender.",
+      "Percurso de 400 níveis: o teu percurso global pode crescer até 400 níveis.",
+      "Domínio por palavra: cada palavra tem uma pontuação de domínio de 1 a 10.",
+      "Dificuldade de contexto: as frases misturam palavras fortes e fracas para serem úteis sem sobrecarga."
+    ]
   },
   "completion": {
     "reviewed": "Revisadas",
@@ -978,7 +985,13 @@
   },
   "sentenceBuilder": {
     "selectPrompt": "Selecione nós acima para começar a construir",
-    "clickHint": "Toque nos nós para adicioná-los e depois conecte-os em ordem"
+    "clickHint": "Toque nos nós para adicioná-los e depois conecte-os em ordem",
+    "introTitle": "Como funciona o construtor de frases",
+    "connectHint": "Toque em outra palavra para conectar"
+  },
+  "funBuilder": {
+    "introTitle": "Como funciona o construtor de grafo",
+    "introBody": "Toque em + para adicionar palavras, arraste-as juntas para conectar, role para dar zoom. Construa uma frase como grafo."
   },
   "cardStack": {
     "masteryLabel": "Domínio",
@@ -1070,7 +1083,58 @@
   "onboardingWizard": {
     "identityNotReady": "Perfil ainda não pronto. Tenta de novo daqui a um instante.",
     "saveFailed": "Falha ao guardar: {{detail}}",
-    "saving": "A guardar…"
+    "saving": "A guardar…",
+    "source": {
+      "title": "Qual é a tua língua base?",
+      "subline": "A língua que já falas. Vamos continuar nessa língua."
+    },
+    "welcome": {
+      "title": "Olá! Sou o teu coach.",
+      "subline": "Aprender uma língua, 5 minutos por dia.",
+      "cta": "Começar",
+      "footnote": "Não é preciso conta"
+    },
+    "language": {
+      "eyebrow": "Passo 1",
+      "title": "O que queres aprender?",
+      "subline": "Escolhe a língua em que te queres concentrar agora."
+    },
+    "level": {
+      "eyebrow": "Passo 2",
+      "subline": "Escolhe o que melhor te representa hoje.",
+      "titleByTarget": {
+        "de": "Quanto alemão já sabes?",
+        "it": "Quanto italiano já sabes?",
+        "fr": "Quanto francês já sabes?"
+      },
+      "options": {
+        "beginner": { "label": "Iniciante", "hint": "Começo do zero" },
+        "a1_a2": { "label": "Sei alguma coisa", "hint": "Nível A1–A2" },
+        "b1_b2": { "label": "Intermédio", "hint": "Nível B1–B2" }
+      }
+    },
+    "goal": {
+      "eyebrow": "Passo 3",
+      "title": "Quanto tempo por dia?",
+      "subline": "Podes mudar a qualquer altura.",
+      "options": {
+        "5": { "label": "5 min", "hint": "Casual" },
+        "10": { "label": "10 min", "hint": "Regular" },
+        "15": { "label": "15 min", "hint": "Sério" },
+        "20": { "label": "20 min", "hint": "Intenso" }
+      }
+    },
+    "identity": {
+      "eyebrow": "Passo 4",
+      "title": "Como te chamas?",
+      "subline": "Só para personalizar a experiência.",
+      "namePlaceholder": "O teu nome",
+      "agePlaceholder": "Idade (opcional)",
+      "submit": "Continuar",
+      "footnote": "Guardado no teu dispositivo. Sem login, sem email.",
+      "errorName": "O nome deve ter entre 1 e 40 caracteres.",
+      "errorAge": "Idade inválida (5–120, ou deixa em branco)."
+    }
   },
   "pagination": {
     "label": "Paginação",

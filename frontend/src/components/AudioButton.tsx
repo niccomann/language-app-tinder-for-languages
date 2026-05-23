@@ -1,7 +1,7 @@
 import { Volume2, Loader2 } from 'lucide-react';
 import { useAudio } from '../hooks/useAudio';
 import { UI_INTERACTION, UI_RADIUS } from './ui';
-import { useTargetLanguage } from '../i18n/languageContext';
+import { useCopy, useTargetLanguage } from '../i18n/languageContext';
 import type { TargetLanguage } from '../i18n/languageStorage';
 
 interface AudioButtonProps {
@@ -25,6 +25,7 @@ export function AudioButton({
 }: AudioButtonProps) {
   const contextLanguage = useTargetLanguage();
   const language = languageProp ?? contextLanguage;
+  const playLabel = useCopy().common.playAudio;
   const { playAudio, isPlayingText, isLoadingText } = useAudio();
   
   const isActive = isPlayingText(text) || isLoadingText(text);
@@ -64,7 +65,8 @@ export function AudioButton({
       onClick={handleClick}
       disabled={isActive}
       className={`${UI_RADIUS.touchIcon} ${UI_INTERACTION.fastTransition} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
-      title={`Play "${text}"`}
+      aria-label={`${playLabel}: ${text}`}
+      title={`${playLabel}: ${text}`}
     >
       {isLoadingText(text) ? (
         <Loader2 size={iconSizes[size]} className="animate-spin" />

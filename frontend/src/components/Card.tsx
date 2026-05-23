@@ -8,6 +8,7 @@ import { api } from '../services/api';
 import { UI_RADIUS } from './ui';
 import { WordMasteryBadge } from './WordMasteryBadge';
 import { reportClientError } from '../utils/clientError';
+import { useCopy } from '../i18n/languageContext';
 
 interface CardProps {
   flashcard: Flashcard | AdaptiveFlashcard;
@@ -20,6 +21,7 @@ export const Card = ({ flashcard, onSwipe, swipeDirection = 'left' }: CardProps)
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const mountedRef = useRef(true);
   const adaptiveCard = 'knowledge_level' in flashcard ? flashcard : null;
+  const copy = useCopy();
 
   useEffect(() => {
     return () => {
@@ -62,6 +64,9 @@ export const Card = ({ flashcard, onSwipe, swipeDirection = 'left' }: CardProps)
   };
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-20, 20]);
+  // Drag distance drives the directional stamps so the gesture confirms intent before release.
+  const knowOpacity = useTransform(x, [30, 110], [0, 1]);
+  const dontKnowOpacity = useTransform(x, [-110, -30], [1, 0]);
 
   const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: { offset: { x: number; y: number } }) => {
     const threshold = 100;
@@ -88,8 +93,26 @@ export const Card = ({ flashcard, onSwipe, swipeDirection = 'left' }: CardProps)
       }}
       className="absolute inset-x-0 top-0 w-full cursor-grab active:cursor-grabbing"
     >
-      <div className={`bg-canvas border border-hairline ${UI_RADIUS.surface} overflow-hidden`}>
+      <div className={`relative bg-canvas border border-hairline ${UI_RADIUS.surface} overflow-hidden`}>
         <div className="aspect-[4/3] relative overflow-hidden bg-surface-card">
+          <motion.div
+            style={{ opacity: knowOpacity }}
+            className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center"
+            aria-hidden
+          >
+            <span className="rotate-[-8deg] rounded-xl border-4 border-success bg-canvas/85 px-6 py-2 text-display-sm font-display font-semibold uppercase tracking-wide text-success">
+              {copy.swipeButtons.know}
+            </span>
+          </motion.div>
+          <motion.div
+            style={{ opacity: dontKnowOpacity }}
+            className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center"
+            aria-hidden
+          >
+            <span className="rotate-[8deg] rounded-xl border-4 border-primary bg-canvas/85 px-6 py-2 text-display-sm font-display font-semibold uppercase tracking-wide text-primary">
+              {copy.swipeButtons.dontKnow}
+            </span>
+          </motion.div>
           {flashcard.image_base64 ? (
             <img
               src={getImageSrc(flashcard.image_base64)}
@@ -124,6 +147,7 @@ export const Card = ({ flashcard, onSwipe, swipeDirection = 'left' }: CardProps)
             <button
               onClick={handlePlayAudio}
               disabled={isPlaying}
+              aria-label={copy.common.playAudio}
               className={`p-3 ${UI_RADIUS.touchIcon} border border-hairline transition-colors duration-150 ${
                 isPlaying
                   ? 'bg-primary text-on-primary'
@@ -134,6 +158,16 @@ export const Card = ({ flashcard, onSwipe, swipeDirection = 'left' }: CardProps)
             </button>
           </div>
         </div>
+        <motion.div
+          style={{ opacity: knowOpacity }}
+          className="pointer-events-none absolute inset-0 z-30 rounded-lg ring-4 ring-inset ring-success"
+          aria-hidden
+        />
+        <motion.div
+          style={{ opacity: dontKnowOpacity }}
+          className="pointer-events-none absolute inset-0 z-30 rounded-lg ring-4 ring-inset ring-primary"
+          aria-hidden
+        />
       </div>
     </motion.div>
   );

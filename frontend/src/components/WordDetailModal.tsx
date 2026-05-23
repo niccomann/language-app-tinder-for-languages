@@ -1,7 +1,7 @@
 import type { WordCloudItem } from '../types';
 import { AudioButton } from './AudioButton';
 import { ConfidenceBadge } from './ConfidenceBadge';
-import { UI_RADIUS } from './ui';
+import { BottomSheet, UI_RADIUS } from './ui';
 import { CATEGORY_COLORS } from '../utils/wordDisplayMeta';
 import { useCopy } from '../i18n/languageContext';
 
@@ -23,14 +23,7 @@ export function SimpleWordDetailModal({ word, onClose }: SimpleWordDetailModalPr
     : 0;
 
   return (
-    <div
-      className="fixed inset-0 z-60 flex items-center justify-center bg-black/50"
-      onClick={onClose}
-    >
-      <div
-        className={`bg-canvas ${UI_RADIUS.surface} border border-hairline max-w-md w-full mx-4 overflow-hidden`}
-        onClick={(e) => e.stopPropagation()}
-      >
+    <BottomSheet onClose={onClose} ariaLabel={word.text} maxWidthClass="sm:max-w-md">
         {word.image_base64 && (
           <div className="h-48 overflow-hidden">
             <img
@@ -106,7 +99,6 @@ export function SimpleWordDetailModal({ word, onClose }: SimpleWordDetailModalPr
             {copy.common.close}
           </button>
         </div>
-      </div>
-    </div>
+    </BottomSheet>
   );
 }

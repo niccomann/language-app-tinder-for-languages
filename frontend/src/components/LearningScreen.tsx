@@ -6,9 +6,8 @@ import { SwipeButtons } from './SwipeButtons';
 import { ProgressBar } from './ProgressBar';
 import { LearningFiltersPanel } from './LearningFiltersPanel';
 import { LearningCategoryStrip } from './LearningCategoryStrip';
-import { LearningSystemMenu } from './LearningSystemMenu';
 import { LearningFeedbackBanner } from './LearningFeedbackBanner';
-import { AppScreen, NavButton, ScreenHeader, SurfacePanel, UI_RADIUS } from './ui';
+import { AppScreen, NavButton, SurfacePanel, ToolIntroGate, UI_RADIUS } from './ui';
 import type { Flashcard, LearningFeedback } from '../types';
 import { useCopy, useTargetLanguage } from '../i18n/languageContext';
 import { formatCopy } from '../i18n/staticCopy';
@@ -53,8 +52,6 @@ export function LearningScreen({
   onDeselectAllCategories,
   filtersOpen,
   onFiltersOpenChange,
-  learningSystemOpen,
-  onLearningSystemOpenChange,
   learningFeedback,
   onClearLearningFeedback,
 }: LearningScreenProps) {
@@ -70,19 +67,19 @@ export function LearningScreen({
   };
 
   return (
+    <ToolIntroGate
+      storageKey="learningScreen"
+      title={formatCopy(ls.headerTitle, { language: targetName })}
+      steps={[ls.headerSubtitle, ...copy.learningSystemMenu.points]}
+    >
     <AppScreen width="compact" contentClassName="min-h-dvh bg-canvas px-4 py-4">
       <main className="mx-auto flex w-full max-w-2xl flex-col gap-4">
         <header className="w-full space-y-3">
-          <ScreenHeader
-            title={formatCopy(ls.headerTitle, { language: targetName })}
-            subtitle={ls.headerSubtitle}
-            density="compact"
-            actions={(
-              <div className={`${UI_RADIUS.pill} bg-surface-card px-3 py-2 text-caption font-medium text-ink border border-hairline`}>
-                {selectedCategories.length}/{categories.length || 0}
-              </div>
-            )}
-          />
+          <div className="flex justify-end pr-40 sm:pr-0">
+            <div className={`${UI_RADIUS.pill} bg-surface-card px-3 py-2 text-caption font-medium text-ink border border-hairline`}>
+              {selectedCategories.length}/{categories.length || 0}
+            </div>
+          </div>
 
           <div className="grid auto-rows-fr grid-cols-3 gap-2">
             <NavButton
@@ -112,11 +109,6 @@ export function LearningScreen({
             categories={categories}
             selectedCategories={selectedCategories}
             onOpenFilters={() => onFiltersOpenChange(true)}
-          />
-
-          <LearningSystemMenu
-            isOpen={learningSystemOpen}
-            onToggle={() => onLearningSystemOpenChange(!learningSystemOpen)}
           />
         </header>
 
@@ -175,7 +167,7 @@ export function LearningScreen({
         <ProgressBar progress={progress} totalCards={totalCards} />
 
         <div className="pb-2 text-center text-caption font-medium text-muted">
-          Swipe left: Don't know · Swipe right: Know
+          ← {copy.swipeButtons.dontKnow} · {copy.swipeButtons.know} →
         </div>
         </section>
       </main>
@@ -190,5 +182,6 @@ export function LearningScreen({
         onClose={() => onFiltersOpenChange(false)}
       />
     </AppScreen>
+    </ToolIntroGate>
   );
 }

@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   Check,
   X,
   AlertTriangle,
+  ArrowUp,
   Loader2,
   RotateCcw,
   Volume2,
@@ -11,13 +13,14 @@ import {
 } from 'lucide-react';
 import { api } from '../services/api';
 import type { GrammarNode, ValidationStatus, ValidateSentenceResponse, ConnectionInfo } from '../types';
-import { LoadingSpinner, SurfacePanel, UI_RADIUS } from './ui';
+import { LoadingSpinner, SurfacePanel, ToolIntroGate, UI_RADIUS } from './ui';
 import { GrammarBuilderFrame } from './GrammarBuilderFrame';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
 import { buildOrderedSentence } from '../utils/sentenceBuilderOrder';
 import { useAvailableGrammarNodes } from '../hooks/useAvailableGrammarNodes';
 import { reportClientError } from '../utils/clientError';
 import { useCopy, useTargetLanguage } from '../i18n/languageContext';
+import { EASE_OUT_EXPO } from '../utils/animations';
 
 interface Connection {
   fromId: string;
@@ -39,6 +42,7 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
   const [validationResult, setValidationResult] = useState<ValidateSentenceResponse | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [playingAudio, setPlayingAudio] = useState(false);
+  const reduce = useReducedMotion();
 
   const handleNodeClick = (node: GrammarNode) => {
     const isAlreadySelected = selectedNodes.some(selectedNode => selectedNode.id === node.id);
@@ -199,6 +203,11 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
   }
 
   return (
+    <ToolIntroGate
+      storageKey="sentenceBuilder"
+      title={copy.sentenceBuilder.introTitle}
+      steps={[copy.sentenceBuilder.selectPrompt, copy.sentenceBuilder.clickHint]}
+    >
     <GrammarBuilderFrame
       nodes={availableNodes}
       selectedNodeIds={selectedNodes.map(node => node.id)}
@@ -216,26 +225,31 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
                   : 'border-error'
               : 'border-hairline'
           }`} padding="md">
-            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2 text-body-strong">
-              Build Area
-              {connectingFrom && (
-                <span className="text-sm font-normal text-primary animate-pulse flex items-center gap-1">
-                  <Link size={14} />
-                  Click another node to connect
-                </span>
-              )}
-            </h2>
-            
+            {connectingFrom && (
+              <div className="mb-3 inline-flex items-center gap-1 text-sm font-medium text-primary animate-pulse">
+                <Link size={14} />
+                {copy.sentenceBuilder.connectHint}
+              </div>
+            )}
+
             {selectedNodes.length === 0 ? (
-              <div className="text-center py-8 text-muted-soft">
-                <p className="text-lg">{copy.sentenceBuilder.selectPrompt}</p>
-                <p className="text-sm mt-2">{copy.sentenceBuilder.clickHint}</p>
+              <div className="flex flex-col items-center justify-center py-10 text-muted-soft">
+                <ArrowUp size={28} strokeWidth={2} />
               </div>
             ) : (
               <div className="space-y-4">
                 <div className="flex flex-wrap gap-4 justify-center py-4">
+                  <AnimatePresence mode="popLayout" initial={false}>
                   {selectedNodes.map((node, index) => (
-                    <div key={node.id} className="flex items-center gap-2">
+                    <motion.div
+                      key={node.id}
+                      layout
+                      initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.8 }}
+                      transition={{ duration: 0.2, ease: EASE_OUT_EXPO }}
+                      className="flex items-center gap-2"
+                    >
                       <button
                         onClick={() => handleBuildAreaNodeClick(node.id)}
                         className={`relative px-4 py-3 ${UI_RADIUS.control} border transition-all flex flex-col items-center gap-2 min-w-[100px] ${
@@ -277,8 +291,9 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
                       ) && (
                         <div className="text-primary font-semibold text-xl">→</div>
                       )}
-                    </div>
+                    </motion.div>
                   ))}
+                  </AnimatePresence>
                 </div>
                 
                 {connections.length > 0 && (
@@ -319,13 +334,25 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
           </SurfacePanel>
 
           {validationError && (
-            <div role="alert" className={`${UI_RADIUS.surface} p-4 border border-error bg-error/10 text-error text-sm`}>
+            <motion.div
+              role="alert"
+              initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, ease: EASE_OUT_EXPO }}
+              className={`${UI_RADIUS.surface} p-4 border border-error bg-error/10 text-error text-sm`}
+            >
               {validationError}
-            </div>
+            </motion.div>
           )}
 
           {validationResult && (
-            <div className={`${UI_RADIUS.surface} p-4 border ${getStatusColor(validationResult.status)}`}>
+            <motion.div
+              key={validationResult.explanation}
+              initial={reduce ? { opacity: 0 } : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, ease: EASE_OUT_EXPO }}
+              className={`${UI_RADIUS.surface} p-4 border ${getStatusColor(validationResult.status)}`}
+            >
               <div className="flex items-start gap-4">
                 <div className={`p-2 ${UI_RADIUS.touchIcon} bg-canvas`}>
                   {getStatusIcon(validationResult.status)}
@@ -367,7 +394,7 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
                   )}
                 </button>
               </div>
-            </div>
+            </motion.div>
           )}
 
           <div className="flex justify-center gap-4">
@@ -401,5 +428,6 @@ export function SentenceBuilder({ layout = 'contained' }: SentenceBuilderProps) 
             </button>
           </div>
     </GrammarBuilderFrame>
+    </ToolIntroGate>
   );
 }

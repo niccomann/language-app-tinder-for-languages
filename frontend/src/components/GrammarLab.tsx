@@ -1,4 +1,5 @@
 import { lazy, Suspense, useState, useEffect, useCallback, useRef } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Play, Info, Volume2, Loader2, Puzzle } from 'lucide-react';
 import { api } from '../services/api';
 import type { GrammarSentence, GrammarNode, FlashcardWithProgress, WordCloudItem } from '../types';
@@ -9,6 +10,7 @@ import { reportClientError } from '../utils/clientError';
 import { CATEGORY_COLORS } from '../utils/wordDisplayMeta';
 import { useCopy, useTargetLanguage } from '../i18n/languageContext';
 import { formatCopy } from '../i18n/staticCopy';
+import { EASE_OUT_EXPO } from '../utils/animations';
 
 const EmbeddedGrammarGraph = lazy(() => import('./EmbeddedGrammarGraph').then((module) => ({ default: module.EmbeddedGrammarGraph })));
 const EmbeddedWordCloud = lazy(() => import('./EmbeddedWordCloud').then((module) => ({ default: module.EmbeddedWordCloud })));
@@ -45,6 +47,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
   const [currentIndex, setCurrentIndex] = useState(0);
   const [words, setWords] = useState<WordCloudItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const reduce = useReducedMotion();
   const [selectedNode, setSelectedNode] = useState<GrammarNode | null>(null);
   const [selectedWord, setSelectedWord] = useState<WordCloudItem | null>(null);
 
@@ -292,7 +295,13 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
 
       {/* Node Info Panel (for graph view) */}
       {activeView === 'graph' && selectedNode && (
-        <div className="bg-canvas border-t border-hairline p-4">
+        <motion.div
+          key={selectedNode.label}
+          initial={reduce ? { opacity: 0 } : { opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: EASE_OUT_EXPO }}
+          className="bg-canvas border-t border-hairline p-4"
+        >
           <div className="max-w-2xl mx-auto flex items-start gap-4">
             <div
               className={`p-3 ${UI_RADIUS.control} border`}
@@ -343,7 +352,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Word Cloud Legend */}

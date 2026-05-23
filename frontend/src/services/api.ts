@@ -257,6 +257,23 @@ export const api = {
     return response.json();
   },
 
+  async speakNarration(text: string, language: string, voice: string = 'nova'): Promise<TTSResponse> {
+    if (!isFeatureEnabled('textToSpeech')) {
+      throw new Error('Text-to-speech is not available in offline mode');
+    }
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/tts/speak`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, language, voice }),
+    }, SLOW_AI_TIMEOUT_MS);
+
+    if (!response.ok) {
+      throw new Error('Failed to generate narration');
+    }
+
+    return response.json();
+  },
+
   async getGrammarSentences(): Promise<GrammarSentence[]> {
     const response = await fetchWithTimeout(`${API_BASE_URL}/api/grammar/sentences`);
     

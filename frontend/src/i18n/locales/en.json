@@ -598,7 +598,8 @@
     "zoomOut": "Zoom out",
     "fitToView": "Fit to view",
     "resetZoom": "Reset zoom",
-    "removeFilter": "Remove filter"
+    "removeFilter": "Remove filter",
+    "playAudio": "Listen"
   },
   "feedbackButton": {
     "defaultUser": "Tester user",
@@ -929,7 +930,13 @@
   },
   "learningSystemMenu": {
     "title": "Learning System",
-    "subtitle": "Your swipes shape the next difficulty."
+    "subtitle": "Your swipes shape the next difficulty.",
+    "points": [
+      "Unified word memory: one database tracks every word you know, miss, or are still learning.",
+      "400-level path: your global path can grow through 400 levels.",
+      "Word mastery: each word has a focused mastery score from 1 to 10.",
+      "Context difficulty: sentences mix strong and weaker words to stay useful without overload."
+    ]
   },
   "completion": {
     "reviewed": "Reviewed",
@@ -978,7 +985,13 @@
   },
   "sentenceBuilder": {
     "selectPrompt": "Select nodes from above to start building",
-    "clickHint": "Click nodes to add them, then connect them in order"
+    "clickHint": "Click nodes to add them, then connect them in order",
+    "introTitle": "How the sentence builder works",
+    "connectHint": "Tap another word to connect"
+  },
+  "funBuilder": {
+    "introTitle": "How the graph builder works",
+    "introBody": "Tap + to add words, drag them together to connect them, scroll to zoom. Build a sentence as a graph."
   },
   "cardStack": {
     "masteryLabel": "Mastery",
@@ -1070,7 +1083,58 @@
   "onboardingWizard": {
     "identityNotReady": "Profile not ready yet. Try again in a moment.",
     "saveFailed": "Save failed: {{detail}}",
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "source": {
+      "title": "What is your base language?",
+      "subline": "The language you already speak. We'll continue in that language."
+    },
+    "welcome": {
+      "title": "Hi! I'm your coach.",
+      "subline": "Learn a language, 5 minutes a day.",
+      "cta": "Start",
+      "footnote": "No account required"
+    },
+    "language": {
+      "eyebrow": "Step 1",
+      "title": "What do you want to learn?",
+      "subline": "Pick the language you want to focus on right now."
+    },
+    "level": {
+      "eyebrow": "Step 2",
+      "subline": "Pick whatever fits you best today.",
+      "titleByTarget": {
+        "de": "How much German do you already know?",
+        "it": "How much Italian do you already know?",
+        "fr": "How much French do you already know?"
+      },
+      "options": {
+        "beginner": { "label": "Beginner", "hint": "Starting from zero" },
+        "a1_a2": { "label": "I know some", "hint": "Level A1–A2" },
+        "b1_b2": { "label": "Intermediate", "hint": "Level B1–B2" }
+      }
+    },
+    "goal": {
+      "eyebrow": "Step 3",
+      "title": "How much time per day?",
+      "subline": "You can change this anytime.",
+      "options": {
+        "5": { "label": "5 min", "hint": "Casual" },
+        "10": { "label": "10 min", "hint": "Regular" },
+        "15": { "label": "15 min", "hint": "Serious" },
+        "20": { "label": "20 min", "hint": "Intense" }
+      }
+    },
+    "identity": {
+      "eyebrow": "Step 4",
+      "title": "What's your name?",
+      "subline": "Just to personalize the experience.",
+      "namePlaceholder": "Your name",
+      "agePlaceholder": "Age (optional)",
+      "submit": "Continue",
+      "footnote": "Saved on your device. No login, no email.",
+      "errorName": "Name must be between 1 and 40 characters.",
+      "errorAge": "Invalid age (5–120, or leave blank)."
+    }
   },
   "pagination": {
     "label": "Pagination",

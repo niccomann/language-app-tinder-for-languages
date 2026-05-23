@@ -4,22 +4,24 @@ import { GoalStep } from './onboardingWizard/GoalStep';
 import { IdentityStep } from './onboardingWizard/IdentityStep';
 import { LanguageStep } from './onboardingWizard/LanguageStep';
 import { LevelStep } from './onboardingWizard/LevelStep';
+import { SourceStep } from './onboardingWizard/SourceStep';
 import { WelcomeStep } from './onboardingWizard/WelcomeStep';
 import { DEFAULT_DRAFT, type StepProps, type WizardDraft } from './onboardingWizard/types';
 import { useUser } from '../contexts/useUser';
 import { createUser } from '../services/userApi';
 import { LoadingSpinner, UI_RADIUS } from './ui';
-import { useCopy } from '../i18n/languageContext';
+import { useCopy, useLanguage } from '../i18n/languageContext';
 import { formatCopy } from '../i18n/staticCopy';
+import { isTargetLanguage } from '../i18n/languageStorage';
 
-export type WizardPhase = 'welcome' | 'language' | 'level' | 'goal' | 'identity';
+export type WizardPhase = 'source' | 'welcome' | 'language' | 'level' | 'goal' | 'identity';
 
 interface OnboardingWizardProps {
   /** Fired after createUser + refreshProfile succeed. The parent then unmounts the wizard. */
   onComplete?: () => void;
 }
 
-const ORDER: WizardPhase[] = ['welcome', 'language', 'level', 'goal', 'identity'];
+const ORDER: WizardPhase[] = ['source', 'welcome', 'language', 'level', 'goal', 'identity'];
 
 function nextPhase(p: WizardPhase): WizardPhase {
   const i = ORDER.indexOf(p);
@@ -33,9 +35,10 @@ function prevPhase(p: WizardPhase): WizardPhase {
 
 export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   const { userId, refreshProfile } = useUser();
+  const { setTarget } = useLanguage();
   const copy = useCopy();
   const w = copy.onboardingWizard;
-  const [phase, setPhase] = useState<WizardPhase>('welcome');
+  const [phase, setPhase] = useState<WizardPhase>('source');
   const [draft, setDraft] = useState<WizardDraft>(DEFAULT_DRAFT);
   const [posting, setPosting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -61,6 +64,11 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
             proficiency_level: next.proficiency_level,
             daily_goal_minutes: next.daily_goal_minutes,
           });
+          // Persist target into localStorage so post-wizard render doesn't
+          // bounce the user into OnboardingModal for missing source/target.
+          if (isTargetLanguage(next.target_language)) {
+            setTarget(next.target_language, { reload: false });
+          }
           await refreshProfile();
           onComplete?.();
         } catch (err) {
@@ -74,7 +82,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
 
       setPhase(nextPhase(phase));
     },
-    [draft, phase, refreshProfile, userId, onComplete, w],
+    [draft, phase, refreshProfile, userId, onComplete, w, setTarget],
   );
 
   const back = useCallback(() => setPhase((p) => prevPhase(p)), []);
@@ -93,13 +101,16 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   const stepProps: Omit<StepProps, 'onBack'> & { onBack?: () => void } = {
     draft,
     onAdvance: advance,
-    onBack: phase === 'welcome' ? undefined : back,
+    onBack: phase === 'source' ? undefined : back,
     stepIndex,
     stepCount,
   };
 
   let stepNode: ReactNode = null;
   switch (phase) {
+    case 'source':
+      stepNode = <SourceStep {...stepProps} />;
+      break;
     case 'welcome':
       stepNode = <WelcomeStep {...stepProps} />;
       break;

@@ -10,11 +10,17 @@ import {
 } from './languageStorage';
 import { getStaticCopy, type StaticCopy } from './staticCopy';
 
+interface LanguageSetterOptions {
+  /** Default true. Set to false when the caller is already inside an unmounting flow
+   *  (e.g. onboarding wizard advancing steps) and a full page reload would lose state. */
+  reload?: boolean;
+}
+
 interface LanguageContextValue {
   targetLanguage: TargetLanguage | null;
   sourceLocale: SourceLocale | null;
-  setTarget: (value: TargetLanguage) => void;
-  setSource: (value: SourceLocale) => void;
+  setTarget: (value: TargetLanguage, options?: LanguageSetterOptions) => void;
+  setSource: (value: SourceLocale, options?: LanguageSetterOptions) => void;
   reset: () => void;
 }
 
@@ -42,16 +48,18 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
     return s;
   });
 
-  const setTarget = useCallback((value: TargetLanguage) => {
+  const setTarget = useCallback((value: TargetLanguage, options?: LanguageSetterOptions) => {
     writeStoredTarget(value);
     setTargetState(value);
     // Reload propaga il nuovo target a ogni consumer senza refactor capillare immediato.
+    if (options?.reload === false) return;
     if (typeof window !== 'undefined') window.location.reload();
   }, []);
 
-  const setSource = useCallback((value: SourceLocale) => {
+  const setSource = useCallback((value: SourceLocale, options?: LanguageSetterOptions) => {
     writeStoredSource(value);
     setSourceState(value);
+    if (options?.reload === false) return;
     if (typeof window !== 'undefined') window.location.reload();
   }, []);
 

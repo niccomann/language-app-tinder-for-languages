@@ -1,38 +1,32 @@
+import { useCopy } from '../../i18n/languageContext';
+import { isTargetLanguage } from '../../i18n/languageStorage';
 import { UI_INTERACTION, UI_RADIUS } from '../ui';
 import { WizardShell } from './WizardShell';
 import type { StepProps, WizardDraft } from './types';
 
-const OPTIONS: Array<{
-  value: WizardDraft['proficiency_level'];
-  emoji: string;
-  label: string;
-  hint: string;
-}> = [
-  { value: 'beginner', emoji: '🌱', label: 'Principiante', hint: 'Parto da zero' },
-  { value: 'a1_a2', emoji: '📖', label: 'Conosco qualcosa', hint: 'Livello A1–A2' },
-  { value: 'b1_b2', emoji: '🎓', label: 'Intermedio', hint: 'Livello B1–B2' },
+const OPTIONS: Array<{ value: WizardDraft['proficiency_level']; emoji: string }> = [
+  { value: 'beginner', emoji: '🌱' },
+  { value: 'a1_a2', emoji: '📖' },
+  { value: 'b1_b2', emoji: '🎓' },
 ];
 
-const LANGUAGE_NAMES: Record<string, string> = {
-  de: 'tedesco',
-  it: 'italiano',
-  fr: 'francese',
-};
-
 export function LevelStep({ draft, onAdvance, onBack, stepIndex, stepCount }: StepProps) {
-  const langName = LANGUAGE_NAMES[draft.target_language] ?? draft.target_language;
+  const l = useCopy().onboardingWizard.level;
+  const target = draft.target_language;
+  const title = isTargetLanguage(target) ? l.titleByTarget[target] : '';
   return (
     <WizardShell
       stepIndex={stepIndex}
       stepCount={stepCount}
-      eyebrow="Passo 2"
-      title={`Quanto ${langName} sai già?`}
-      subline="Scegli ciò che ti rappresenta meglio oggi."
+      eyebrow={l.eyebrow}
+      title={title}
+      subline={l.subline}
       onBack={onBack}
     >
       <div className="flex flex-col gap-3">
         {OPTIONS.map((opt) => {
           const selected = draft.proficiency_level === opt.value;
+          const meta = l.options[opt.value];
           return (
             <button
               key={opt.value}
@@ -47,8 +41,8 @@ export function LevelStep({ draft, onAdvance, onBack, stepIndex, stepCount }: St
                 {opt.emoji}
               </span>
               <span className="flex flex-col">
-                <span className="text-body-sm font-medium text-ink">{opt.label}</span>
-                <span className="text-caption text-muted">{opt.hint}</span>
+                <span className="text-body-sm font-medium text-ink">{meta.label}</span>
+                <span className="text-caption text-muted">{meta.hint}</span>
               </span>
             </button>
           );

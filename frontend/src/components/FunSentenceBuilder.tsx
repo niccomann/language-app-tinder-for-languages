@@ -8,6 +8,7 @@
  * - Zoom/pan the canvas and expand to fullscreen
  */
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import * as d3 from 'd3';
 import { 
   Check, 
@@ -17,17 +18,19 @@ import {
   Volume2,
   X,
   Minimize2,
+  ArrowUp,
 } from 'lucide-react';
 import { api } from '../services/api';
 import type { GrammarNode, ValidateSentenceResponse, ConnectionInfo } from '../types';
-import { LoadingSpinner, UI_RADIUS, ZoomControlBar } from './ui';
+import { LoadingSpinner, ToolIntroGate, UI_RADIUS, ZoomControlBar } from './ui';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
 import { buildOrderedSentence } from '../utils/sentenceBuilderOrder';
 import { GrammarBuilderFrame } from './GrammarBuilderFrame';
 import { useAvailableGrammarNodes } from '../hooks/useAvailableGrammarNodes';
 import { useZoomControls } from '../hooks/useZoomControls';
 import { reportClientError } from '../utils/clientError';
-import { useTargetLanguage } from '../i18n/languageContext';
+import { useCopy, useTargetLanguage } from '../i18n/languageContext';
+import { EASE_OUT_EXPO } from '../utils/animations';
 
 // ============================================================================
 // Types
@@ -58,6 +61,8 @@ const PREVIEW_THRESHOLD = 250;     // Distance to show preview arrow (larger for
 
 export function FunSentenceBuilder() {
   const language = useTargetLanguage();
+  const fb = useCopy().funBuilder;
+  const reduce = useReducedMotion();
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const simulationRef = useRef<d3.Simulation<SimNode, undefined> | null>(null);
@@ -878,7 +883,11 @@ export function FunSentenceBuilder() {
     const isFloating = variant === 'floating';
 
     return (
-      <div
+      <motion.div
+        key={validationResult.explanation}
+        initial={reduce ? { opacity: 0 } : { opacity: 0, y: isFloating ? -8 : 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.28, ease: EASE_OUT_EXPO }}
         className={
           isFloating
             ? `absolute top-4 right-4 max-w-md ${UI_RADIUS.surface} p-4 border ${getStatusColor(validationResult.status)}`
@@ -928,7 +937,7 @@ export function FunSentenceBuilder() {
             </button>
           )}
         </div>
-      </div>
+      </motion.div>
     );
   };
 
@@ -969,6 +978,11 @@ export function FunSentenceBuilder() {
   }
 
   return (
+    <ToolIntroGate
+      storageKey="funBuilder"
+      title={fb.introTitle}
+      steps={[fb.introBody]}
+    >
     <GrammarBuilderFrame
         nodes={availableNodes}
         selectedNodeIds={canvasNodes.map(node => node.sourceId)}
@@ -998,17 +1012,7 @@ export function FunSentenceBuilder() {
 
         {canvasNodes.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className={`text-center p-8 ${UI_RADIUS.surface} bg-surface-dark-elevated`}>
-              <p className="text-lg font-medium text-on-dark">
-                Click the + buttons to add nodes.
-              </p>
-              <p className="text-sm mt-2 text-on-dark-soft">
-                Then drag them onto each other to connect them.
-              </p>
-              <p className="text-xs mt-4 text-on-dark-soft">
-                Scroll to zoom · drag to move
-              </p>
-            </div>
+            <ArrowUp size={32} strokeWidth={2} className="text-on-dark-soft" />
           </div>
         )}
 
@@ -1044,5 +1048,6 @@ export function FunSentenceBuilder() {
         {renderSentenceActions({ compact: false })}
       </div>
     </GrammarBuilderFrame>
+    </ToolIntroGate>
   );
 }
