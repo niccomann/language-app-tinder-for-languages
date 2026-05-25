@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:strict": "tsc -b && vite build",
+    "build:mobile": "vite build --mode mobile",
     "lint": "eslint .",
     "preview": "vite preview",
     "cap:sync": "cap sync",

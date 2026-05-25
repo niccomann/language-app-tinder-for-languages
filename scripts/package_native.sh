@@ -89,8 +89,8 @@ get_first_iphone_id() {
 }
 
 build_and_run_ios() {
-  log_info "Building web app..."
-  npm run build
+  log_info "Building web app for mobile..."
+  npm run build:mobile
   
   log_info "Ensuring iOS platform..."
   ensure_ios_platform
@@ -153,9 +153,9 @@ get_first_emulator_id() {
 build_and_run_android() {
   setup_java
   setup_android_env
-  
-  log_info "Building web app..."
-  npm run build
+
+  log_info "Building web app for mobile..."
+  npm run build:mobile
   
   log_info "Ensuring Android platform..."
   ensure_android_platform
