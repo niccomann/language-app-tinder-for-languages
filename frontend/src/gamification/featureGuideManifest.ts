@@ -58,6 +58,28 @@ export const featureGuides = {
       { key: 'guide_vocabulary_scan_b', src: guideVocabularyScanB },
     ],
   },
+  wordMatch: {
+    id: 'wordMatch',
+    title: copy.featureGuides.wordMatch.title,
+    body: copy.featureGuides.wordMatch.body,
+    actionLabel: copy.featureGuides.wordMatch.actionLabel,
+    tone: 'practice',
+    frames: [
+      { key: 'guide_vocabulary_scan_a', src: guideVocabularyScanA },
+      { key: 'guide_vocabulary_scan_b', src: guideVocabularyScanB },
+    ],
+  },
+  listenSentences: {
+    id: 'listenSentences',
+    title: copy.featureGuides.listenSentences.title,
+    body: copy.featureGuides.listenSentences.body,
+    actionLabel: copy.featureGuides.listenSentences.actionLabel,
+    tone: 'practice',
+    frames: [
+      { key: 'guide_vocabulary_scan_a', src: guideVocabularyScanA },
+      { key: 'guide_vocabulary_scan_b', src: guideVocabularyScanB },
+    ],
+  },
   learningPath: {
     id: 'learningPath',
     title: copy.featureGuides.learningPath.title,

@@ -98,7 +98,6 @@ export function FunSentenceBuilder() {
   const {
     isExpanded,
     setIsExpanded,
-    toggleExpanded,
     currentZoom,
     zoomRef,
     handleZoomIn,
@@ -113,33 +112,50 @@ export function FunSentenceBuilder() {
       const pos = nodePositionsRef.current.get(n.id);
       return { x: pos?.x ?? n.x, y: pos?.y ?? n.y };
     });
-    fitNodesToView(positioned, NODE_RADIUS);
+    // Cap zoom at 1 so a tight cluster is never zoomed past actual size (which
+    // would push outer nodes off the small mobile canvas).
+    fitNodesToView(positioned, NODE_RADIUS, 1);
   }, [fitNodesToView, canvasNodes]);
+
+  // After a node is added/removed or the canvas resizes, wait for the force
+  // simulation to settle then frame all nodes, so they are never left squished
+  // or clipped offscreen. A drag does not change the node count, so it won't
+  // trigger a refit and fight the user.
+  useEffect(() => {
+    if (canvasNodes.length === 0) return;
+    const timeoutId = setTimeout(() => handleFitToView(), 2200);
+    return () => clearTimeout(timeoutId);
+  }, [canvasNodes.length, dimensions.width, dimensions.height, isExpanded, handleFitToView]);
 
 
   // ==========================================================================
   // Dimension Tracking
   // ==========================================================================
 
-  useEffect(() => {
-    const apply = () => {
-      if (containerRef.current) {
-        const { width, height } = containerRef.current.getBoundingClientRect();
-        setDimensions({ width, height });
-      }
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  // A callback ref (not a mount-time effect) measures the canvas whenever its
+  // container actually mounts — including after the intro gate is dismissed.
+  // A plain effect would run once with a null ref (the container is gated behind
+  // the intro), leaving `dimensions` stuck at its initial guess so the force
+  // simulation centers off-screen and nodes look clipped / squished.
+  const setContainerRef = useCallback((el: HTMLDivElement | null) => {
+    containerRef.current = el;
+    resizeObserverRef.current?.disconnect();
+    if (!el) return;
+    const measure = () => {
+      const { width, height } = el.getBoundingClientRect();
+      if (width <= 0 || height <= 0) return;
+      setDimensions((prev) =>
+        prev.width === width && prev.height === height ? prev : { width, height },
+      );
     };
-    let resizeTimeoutId: ReturnType<typeof setTimeout> | null = null;
-    const debouncedResize = () => {
-      if (resizeTimeoutId !== null) clearTimeout(resizeTimeoutId);
-      resizeTimeoutId = setTimeout(apply, 200);
-    };
-    apply();
-    window.addEventListener('resize', debouncedResize);
-    return () => {
-      window.removeEventListener('resize', debouncedResize);
-      if (resizeTimeoutId !== null) clearTimeout(resizeTimeoutId);
-    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    resizeObserverRef.current = observer;
   }, []);
+
+  useEffect(() => () => resizeObserverRef.current?.disconnect(), []);
 
   // ==========================================================================
   // Node & Connection Management
@@ -153,8 +169,8 @@ export function FunSentenceBuilder() {
       type: sourceNode.type,
       image_base64: sourceNode.image_base64,
       sourceId: sourceNode.id,
-      x: dimensions.width / 2 + (Math.random() - 0.5) * 200,
-      y: dimensions.height / 2 + (Math.random() - 0.5) * 200,
+      x: dimensions.width / 2 + (Math.random() - 0.5) * 120,
+      y: dimensions.height / 2 + (Math.random() - 0.5) * 120,
     };
     
     setCanvasNodes(prev => [...prev, newNode]);
@@ -210,17 +226,20 @@ export function FunSentenceBuilder() {
       simulationRef.current.stop();
     }
 
-    const linkDistance = Math.max(160, Math.min(260, 140 + nodes.length * 10));
+    const linkDistance = Math.max(140, Math.min(220, 120 + nodes.length * 10));
 
+    // Weaker repulsion + stronger centering keeps unconnected nodes from flying
+    // apart past the edges of a small (mobile) canvas; faster alpha decay lets
+    // the layout settle in ~2s so the auto-fit-on-settle kicks in promptly.
     const simulation = d3.forceSimulation(nodes)
       .force('link', d3.forceLink(links).id((d: any) => d.id).distance(linkDistance).strength(0.5))
-      .force('charge', d3.forceManyBody().strength(-450))
-      .force('center', d3.forceCenter(width / 2, height / 2).strength(0.08))
+      .force('charge', d3.forceManyBody().strength(-220))
+      .force('center', d3.forceCenter(width / 2, height / 2).strength(0.12))
       .force('collision', d3.forceCollide().radius(NODE_RADIUS + 15).strength(1))
-      .force('x', d3.forceX(width / 2).strength(0.02))
-      .force('y', d3.forceY(height / 2).strength(0.02))
-      .alphaDecay(0.02)
-      .velocityDecay(0.3);
+      .force('x', d3.forceX(width / 2).strength(0.06))
+      .force('y', d3.forceY(height / 2).strength(0.06))
+      .alphaDecay(0.05)
+      .velocityDecay(0.35);
 
     simulationRef.current = simulation;
 
@@ -948,10 +967,14 @@ export function FunSentenceBuilder() {
   if (isExpanded) {
     return (
       <div 
-        ref={containerRef}
+        ref={setContainerRef}
         className="fixed inset-0 z-50 bg-surface-dark"
       >
-        <svg ref={svgRef} width="100%" height="100%" style={{ cursor: 'grab' }} />
+        <svg
+          ref={svgRef}
+          className="absolute inset-0 h-full w-full"
+          style={{ cursor: 'grab' }}
+        />
 
         <ZoomControlBar
           currentZoom={currentZoom}
@@ -988,15 +1011,20 @@ export function FunSentenceBuilder() {
         selectedNodeIds={canvasNodes.map(node => node.sourceId)}
         onWordClick={addNodeToCanvas}
         actionLabel="Add word to graph"
-        contentClassName="flex min-h-[560px] flex-col"
+        fitViewport
+        contentClassName="flex min-h-0 flex-col"
       >
 
       <div 
-        ref={containerRef}
+        ref={setContainerRef}
         className={`relative overflow-hidden bg-surface-dark ${isExpanded ? 'fixed inset-0 z-50' : ''}`}
-        style={{ minHeight: '400px', flex: 1 }}
+        style={{ minHeight: '220px', flex: 1 }}
       >
-        <svg ref={svgRef} width="100%" height="100%" style={{ cursor: 'grab' }} />
+        <svg
+          ref={svgRef}
+          className="absolute inset-0 h-full w-full"
+          style={{ cursor: 'grab' }}
+        />
 
         <ZoomControlBar
           currentZoom={currentZoom}

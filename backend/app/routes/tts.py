@@ -72,11 +72,24 @@ async def generate_speech(request: TTSRequest, session: SessionDependency):
                 log.info(f"Audio found in grammar_sentence for: '{request.text}'")
                 return TTSResponse(audio_base64=grammar_sentence.audio_base64, cached=True)
         
-        # 3. Genera audio con OpenAI TTS
+        # 3. Per testi liberi (es. narrazione), controlla la cache audio PRIMA di
+        #    pagare la generazione OpenAI. Senza questo ogni richiesta rigenera (costo)
+        #    e un secondo salvataggio dello stesso testo andava in errore (500).
+        if not flashcard and not grammar_sentence:
+            cached_audio = tts_service.get_cached_audio(
+                session, request.text, request.language, request.voice
+            )
+            if cached_audio:
+                log.info(f"Audio cache HIT for: '{request.text[:30]}'")
+                return TTSResponse(audio_base64=cached_audio, cached=True)
+
+        # 4. Genera audio con OpenAI TTS (la lingua guida la pronuncia del modello)
         log.info(f"Generating TTS audio for: '{request.text}'")
-        audio_base64 = tts_service.generate_audio_only(request.text, request.voice)
-        
-        # 4. Salva audio nell'entità corrispondente
+        audio_base64 = tts_service.generate_audio_only(
+            request.text, request.language, request.voice
+        )
+
+        # 5. Salva audio nell'entità corrispondente
         if flashcard:
             flashcard.audio_base64 = audio_base64
             session.add(flashcard)

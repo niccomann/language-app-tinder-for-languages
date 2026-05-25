@@ -28,6 +28,7 @@ export function LearningFeedbackBanner({ feedback, onDismiss }: LearningFeedback
     <div className={`${UI_RADIUS.surface} ${toneClasses[feedback.tone]} p-2`}>
       <MascotSpeechCallout
         testId="learning-feedback-bubble"
+        narrate={false}
         steps={[{
           eyebrow: feedback.tone === 'level_up' ? copy.learningFeedback.levelUp : copy.learningFeedback.learningSignal,
           title: feedback.title,

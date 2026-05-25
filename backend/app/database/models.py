@@ -223,6 +223,25 @@ class LearningSnapshotEntity(BaseEntity, table=True):
     words_mastered: int = Field(default=0, nullable=False)
 
 
+class UserMissionProgressEntity(BaseEntity, table=True):
+    """
+    User-specific mission state for the 400-level learning path.
+
+    Mission definitions are deterministic code data; this table only stores the
+    learner's path state so locked/available/completed nodes survive reloads.
+    """
+    __tablename__ = "user_mission_progress"
+
+    user_id: str = Field(default="default_user", nullable=False, index=True)
+    language: str = Field(default="de", nullable=False, index=True)
+    mission_id: str = Field(nullable=False, index=True)
+    level: int = Field(nullable=False, index=True)
+    status: str = Field(default="available", nullable=False, index=True)
+    progress_value: int = Field(default=0, nullable=False)
+    target_value: int = Field(default=1, nullable=False)
+    completed_at: Optional[datetime] = Field(default=None)
+
+
 class GrammarSentenceEntity(BaseEntity, table=True):
     """
     Grammar sentences for the Sentence Graph feature.

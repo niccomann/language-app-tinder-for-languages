@@ -404,6 +404,16 @@
     "levelLabel": "Level"
   },
   "featureGuides": {
+    "listenSentences": {
+      "title": "Listen to sentences",
+      "body": "Each of your words appears in a full example sentence, read aloud with a natural voice. Use the speed buttons to slow it down, and move through one sentence at a time.",
+      "actionLabel": "Start listening"
+    },
+    "wordMatch": {
+      "title": "Match the words",
+      "body": "Tap a word in your language, then tap its translation in the other column. Correct pairs turn green; a wrong tap turns red so you can try again. Clear all four pairs to move on.",
+      "actionLabel": "Let's match"
+    },
     "vocabularyScan": {
       "title": "First we learn what you know",
       "body": "Swipe through words: the ones you recognize and the ones to review become your initial profile.",
@@ -478,6 +488,18 @@
     "dismissAllAction": "Don't show me these explanations again"
   },
   "featureFlow": {
+    "listenSentences": {
+      "title": "Listen to Sentences",
+      "missionLabel": "Practice",
+      "description": "Hear your words used in real example sentences, read aloud one at a time.",
+      "ctaLabel": "Open Listen to Sentences"
+    },
+    "wordMatch": {
+      "title": "Word Match",
+      "missionLabel": "Practice",
+      "description": "Match words in your language with their translations in the language you're learning.",
+      "ctaLabel": "Play Word Match"
+    },
     "vocabularyReview": {
       "title": "Vocabulary Review",
       "missionLabel": "Mission 1",
@@ -556,6 +578,34 @@
       "description": "See the vocabulary hierarchy and concept structure.",
       "ctaLabel": "Open Hierarchy mission"
     }
+  },
+  "wordMatch": {
+    "title": "Word Match",
+    "subtitle": "Connect each word to its correct translation.",
+    "baseColumn": "Your language",
+    "targetColumn": "To learn",
+    "round": "Round {{current}} of {{total}}",
+    "loading": "Getting the words ready...",
+    "hint": "Tap a word, then its translation.",
+    "correct": "Correct!",
+    "wrong": "Try again, that's wrong.",
+    "notEnoughTitle": "Not enough words yet",
+    "notEnoughBody": "Keep learning new words and come back to play.",
+    "finishedTitle": "Game complete!",
+    "accuracyLabel": "Accuracy",
+    "mistakesLabel": "Mistakes",
+    "replay": "Play again",
+    "back": "Go back",
+    "listenSentences": "Listen to sentences",
+    "sentencesTitle": "Example sentences",
+    "sentencesSubtitle": "Hear how the words are used.",
+    "noSentences": "No sentences for these words yet.",
+    "sentencesLoading": "Preparing the sentences...",
+    "roundsLabel": "Rounds",
+    "slower": "Slower",
+    "faster": "Faster",
+    "previousSentence": "Previous sentence",
+    "nextSentence": "Next sentence"
   },
   "targetLanguageNames": {
     "de": "German",
@@ -778,9 +828,9 @@
     }
   },
   "grammarHub": {
-    "eyebrow": "Explore · Grammar · Hub",
+    "eyebrow": "Visualize · Grammar",
     "title": "Grammar Lab",
-    "subline": "Seven tools to analyse grammar and vocabulary.",
+    "subline": "Five tools to analyse grammar and vocabulary.",
     "explainerTitle": "What you'll find in the Grammar Lab",
     "explainerBodyP1": "The Grammar Lab is the toolbox to analyse the target language. Every tool answers a different question.",
     "explainerBodyP2": "Example: Sentence Graph shows how the words of a sentence are linked; Word Cloud shows which words appear most often. Open them one at a time.",
@@ -887,9 +937,9 @@
   },
   "bottomNav": {
     "path": "Path",
-    "learn": "Learn",
-    "review": "Review",
-    "explore": "Explore"
+    "learn": "Learn with Swipe",
+    "review": "Review with Games",
+    "explore": "Visualize"
   },
   "library": {
     "statsTitle": "Library stats",
@@ -1108,9 +1158,18 @@
         "fr": "How much French do you already know?"
       },
       "options": {
-        "beginner": { "label": "Beginner", "hint": "Starting from zero" },
-        "a1_a2": { "label": "I know some", "hint": "Level A1–A2" },
-        "b1_b2": { "label": "Intermediate", "hint": "Level B1–B2" }
+        "beginner": {
+          "label": "Beginner",
+          "hint": "Starting from zero"
+        },
+        "a1_a2": {
+          "label": "I know some",
+          "hint": "Level A1–A2"
+        },
+        "b1_b2": {
+          "label": "Intermediate",
+          "hint": "Level B1–B2"
+        }
       }
     },
     "goal": {
@@ -1118,10 +1177,22 @@
       "title": "How much time per day?",
       "subline": "You can change this anytime.",
       "options": {
-        "5": { "label": "5 min", "hint": "Casual" },
-        "10": { "label": "10 min", "hint": "Regular" },
-        "15": { "label": "15 min", "hint": "Serious" },
-        "20": { "label": "20 min", "hint": "Intense" }
+        "5": {
+          "label": "5 min",
+          "hint": "Casual"
+        },
+        "10": {
+          "label": "10 min",
+          "hint": "Regular"
+        },
+        "15": {
+          "label": "15 min",
+          "hint": "Serious"
+        },
+        "20": {
+          "label": "20 min",
+          "hint": "Intense"
+        }
       }
     },
     "identity": {
@@ -1150,5 +1221,41 @@
     "productNav": "Product navigation",
     "pathSections": "Path sections",
     "offlineBanner": "You are offline — changes will sync when the connection returns."
+  },
+  "pathRoadmap": {
+    "statPath": "400-level path",
+    "statMissions": "Missions",
+    "statXp": "XP to next level",
+    "statProgress": "Progress",
+    "infoLine": "{total} levels total · {count} mission nodes · tap a node to inspect it",
+    "syncing": "Syncing missions…",
+    "reviewTitle": "Review tools",
+    "reviewEyebrow": "Review",
+    "exploreTitle": "Explore tools",
+    "exploreEyebrow": "Explore",
+    "nodeOf": "Node {level} of {max}",
+    "phaseFallback": "Path phase",
+    "complexityA1": "Base words, short patterns, high-frequency sentences.",
+    "complexityA2": "More precise words and everyday sentence chains.",
+    "complexityB1": "Structured phrases, connectors, and longer ideas.",
+    "complexityB2": "Complex vocabulary, nuance, and argument-level sentences.",
+    "stateCompleted": "Cleared. This step strengthens the foundation for later nodes.",
+    "stateAvailable": "You are here. Complete this mission to move forward.",
+    "stateLocked": "Locked for now. Complete previous missions before this step opens.",
+    "checkpointTitle": "Checkpoint details",
+    "statusCompleted": "Completed mission",
+    "statusAvailable": "Available mission",
+    "statusLocked": "Locked mission",
+    "metricStatus": "Status",
+    "metricPhase": "Phase",
+    "metricTotalPath": "Total path",
+    "metricMap": "Map",
+    "levelsTotal": "{max} levels total",
+    "missionsTotal": "{count} missions total",
+    "openMission": "Open mission",
+    "continuePath": "Continue path",
+    "completeMission": "Complete mission",
+    "completing": "Completing…",
+    "lockedHint": "Complete the current mission first"
   }
 }

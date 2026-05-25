@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { Volume2 } from 'lucide-react';
+import { useStepNarration } from '../hooks/useStepNarration';
+import { useLanguage } from '../i18n/languageContext';
 
 export interface StreamingSpeechStep {
   eyebrow: string;
@@ -24,6 +27,9 @@ interface StreamingSpeechBubbleProps {
   manualStepControl?: boolean;
   skipSpeechLabel?: string;
   nextStepLabel?: string;
+  /** Narrate each step's body via backend TTS (source-locale voice). On by default;
+   *  set false for transient/high-frequency bubbles where audio would be noise. */
+  narrate?: boolean;
   onStepChange?: (stepIndex: number) => void;
   onTypingChange?: (isTyping: boolean) => void;
 }
@@ -42,9 +48,11 @@ export function StreamingSpeechBubble({
   manualStepControl = false,
   skipSpeechLabel = 'Skip',
   nextStepLabel = 'Next page',
+  narrate = true,
   onStepChange,
   onTypingChange,
 }: StreamingSpeechBubbleProps) {
+  const { sourceLocale } = useLanguage();
   const normalizedSteps = useMemo<StreamingSpeechStep[]>(() => (
     steps.length
       ? steps
@@ -55,6 +63,21 @@ export function StreamingSpeechBubble({
   const [speechPlayback, setSpeechPlayback] = useState({ stepIndex: 0, visibleCharacters: 0 });
   const activeStepIndex = Math.min(speechPlayback.stepIndex, normalizedSteps.length - 1);
   const activeStep = normalizedSteps[activeStepIndex];
+
+  const narration = useStepNarration(
+    normalizedSteps.map((step) => step.body),
+    sourceLocale ?? 'en',
+    activeStepIndex,
+    narrate,
+    // When a step's narration finishes, flow on to the next step automatically.
+    (idx) => {
+      setSpeechPlayback((current) => {
+        if (current.stepIndex !== idx) return current;
+        const next = Math.min(idx + 1, normalizedSteps.length - 1);
+        return next === current.stepIndex ? current : { stepIndex: next, visibleCharacters: 0 };
+      });
+    },
+  );
   const fullSpeechText = `${activeStep.title}\n${activeStep.body}`;
   const visibleCharacters = shouldStreamSpeech
     ? Math.min(speechPlayback.visibleCharacters, fullSpeechText.length)
@@ -156,6 +179,18 @@ export function StreamingSpeechBubble({
         <div className="flex items-center justify-between gap-3">
           <p className={eyebrowClassName}>{activeStep.eyebrow}</p>
           <div className="flex shrink-0 items-center gap-2">
+            {narrate && (
+              <button
+                type="button"
+                onClick={narration.replay}
+                aria-label="Listen"
+                className={`flex h-9 w-9 items-center justify-center rounded-full border text-primary transition hover:bg-surface-soft ${
+                  narration.blocked ? 'animate-pulse border-primary bg-primary/10' : 'border-hairline bg-canvas'
+                }`}
+              >
+                <Volume2 size={16} />
+              </button>
+            )}
             {showSkipSpeech && (
               <button
                 type="button"

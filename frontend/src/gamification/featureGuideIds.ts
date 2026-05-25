@@ -1,5 +1,7 @@
 export const featureGuideIds = [
   'vocabularyScan',
+  'wordMatch',
+  'listenSentences',
   'learningPath',
   'learningFilters',
   'learningSystem',

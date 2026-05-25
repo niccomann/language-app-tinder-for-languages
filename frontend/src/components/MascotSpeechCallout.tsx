@@ -20,6 +20,8 @@ interface MascotSpeechCalloutProps {
   bodyClassName?: string;
   showStepIndicator?: boolean;
   stream?: boolean;
+  /** Narrate each step via backend TTS (on by default; false to silence). */
+  narrate?: boolean;
   children?: ReactNode;
 }
 
@@ -40,6 +42,7 @@ export function MascotSpeechCallout({
   bodyClassName = 'mt-2 min-h-[3.2rem] text-sm font-semibold leading-6 text-muted',
   showStepIndicator = false,
   stream = true,
+  narrate = true,
   children,
 }: MascotSpeechCalloutProps) {
   const [speechState, setSpeechState] = useState({ playbackKey, stepIndex: 0, isTyping: stream });
@@ -68,6 +71,7 @@ export function MascotSpeechCallout({
         steps={steps}
         playbackKey={playbackKey}
         stream={stream}
+        narrate={narrate}
         showStepIndicator={showStepIndicator}
         contentClassName={bubbleContentClassName}
         titleClassName={titleClassName}

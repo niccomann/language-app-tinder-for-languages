@@ -9,6 +9,7 @@ import { reportClientError } from '../utils/clientError';
 import { MascotSpeechCallout } from './MascotSpeechCallout';
 import type { StreamingSpeechStep } from './StreamingSpeechBubble';
 import { useTargetLanguage } from '../i18n/languageContext';
+import { usePathDifficulty } from '../hooks/usePathDifficulty';
 
 interface PlacementOption {
   id: string;
@@ -19,6 +20,7 @@ type AnswerStatus = 'idle' | 'correct' | 'wrong';
 
 export function SentencePlacementChallenge() {
   const language = useTargetLanguage();
+  const pathDifficulty = usePathDifficulty();
   const [challenges, setChallenges] = useState<SentenceChallenge[]>([]);
   const [currentChallengeIndex, setCurrentChallengeIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -33,6 +35,7 @@ export function SentencePlacementChallenge() {
         const preferenceProfile = readSavedLearningPreferenceProfile();
         const sentenceChallenges = await api.getSentenceChallenges({
           language,
+          difficulty: pathDifficulty.currentCefrLevel,
           limit: 20,
           learningPreferenceProfile: preferenceProfile,
         });
@@ -45,7 +48,7 @@ export function SentencePlacementChallenge() {
     };
 
     loadChallenges();
-  }, []);
+  }, [language, pathDifficulty.currentCefrLevel]);
 
   const challenge = challenges[currentChallengeIndex];
   const placementOptions = useMemo(() => (
@@ -160,8 +163,8 @@ export function SentencePlacementChallenge() {
               Tap the words in the right order.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
+              <GameSignalBadge icon={<Sparkles size={14} />} label={`Path ${pathDifficulty.pathLevel} · ${pathDifficulty.currentCefrLevel}`} tone="teal" />
               <GameSignalBadge icon={<Star size={14} />} label="Quest" tone="amber" />
-              <GameSignalBadge icon={<Sparkles size={14} />} label="Combo" tone="teal" />
               <GameSignalBadge
                 icon={<Trophy size={14} />}
                 label={status === 'correct' ? 'XP unlocked' : 'XP ready'}

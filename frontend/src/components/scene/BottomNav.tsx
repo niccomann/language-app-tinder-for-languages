@@ -14,7 +14,7 @@ const ITEMS: readonly BottomNavItem[] = [
   { id: 'path', path: '/', icon: Home },
   { id: 'learn', path: '/learn', icon: BookOpen },
   { id: 'review', path: '/review', icon: Sparkles },
-  { id: 'explore', path: '/explore', icon: Compass },
+  { id: 'explore', path: '/grammar', icon: Compass },
 ];
 
 function matchSection(pathname: string): SectionId {
@@ -23,6 +23,8 @@ function matchSection(pathname: string): SectionId {
   if (
     pathname.startsWith('/review') ||
     pathname.startsWith('/vocabulary') ||
+    pathname.startsWith('/word-match') ||
+    pathname.startsWith('/sentence-practice') ||
     pathname.startsWith('/library')
   ) {
     return 'review';

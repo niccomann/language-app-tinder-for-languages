@@ -172,7 +172,7 @@ export function GrammarWordBank({
       <div className={`mt-3 grid gap-2 ${
         isFullLayout
           ? 'md:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-8'
-          : 'md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8'
+          : 'grid-cols-1'
       }`}>
         {wordGroups.map((group) => (
           <div key={group.id} className={`${UI_RADIUS.control} border p-2 ${group.panelClass}`}>

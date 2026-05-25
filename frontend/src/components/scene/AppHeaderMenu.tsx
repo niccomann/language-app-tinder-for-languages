@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { Code2, MessageSquarePlus, MoreVertical } from 'lucide-react';
+import { Code2, LogOut, MessageSquarePlus, MoreVertical } from 'lucide-react';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { FeedbackButton } from '../FeedbackButton';
-import { APP_MODE, SHOW_DEVELOPER_TOOLS } from '../../config/appMode';
+import { GoogleLoginButton } from '../GoogleLoginButton';
+import { APP_MODE, GOOGLE_CLIENT_ID, SHOW_DEVELOPER_TOOLS } from '../../config/appMode';
+import { clearAuthSession, readAuthSession } from '../../services/authSession';
 import { UI_INTERACTION, UI_RADIUS } from '../ui';
 import { useCopy } from '../../i18n/languageContext';
 
@@ -16,6 +18,7 @@ export function AppHeaderMenu({ onNavigate }: AppHeaderMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const copy = useCopy();
+  const session = readAuthSession();
 
   useEffect(() => {
     if (!open) return;
@@ -59,6 +62,28 @@ export function AppHeaderMenu({ onNavigate }: AppHeaderMenuProps) {
               <Code2 size={16} />
               Sviluppatore
             </button>
+          )}
+          {(session || GOOGLE_CLIENT_ID) && (
+            <div className="mt-1 border-t border-hairline pt-1">
+              {session ? (
+                <>
+                  <p className="truncate px-2 pt-1 text-caption text-muted">{session.email}</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      clearAuthSession();
+                      window.location.reload();
+                    }}
+                    className={`mt-1 ${MENU_ITEM_CLASS}`}
+                  >
+                    <LogOut size={16} />
+                    Esci
+                  </button>
+                </>
+              ) : (
+                <GoogleLoginButton />
+              )}
+            </div>
           )}
           <div className="mt-1 border-t border-hairline pt-1">
             <div className="flex items-center justify-between px-2 py-1.5">

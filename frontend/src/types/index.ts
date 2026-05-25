@@ -27,6 +27,68 @@ export interface AdaptiveFlashcard extends Flashcard {
   selection_reason: 'struggling' | 'new' | 'learning' | 'review';
 }
 
+export interface MatchPair {
+  id: number;
+  target_word: string;
+  base_word: string;
+  audio_base64?: string | null;
+}
+
+export interface ExampleSentenceLite {
+  sentence: string;
+  translation?: string | null;
+}
+
+export interface WordSentences {
+  id: number;
+  word: string;
+  sentences: ExampleSentenceLite[];
+}
+
+export type CefrLevel = 'A1' | 'A2' | 'B1' | 'B2';
+export const CEFR_LEVELS: CefrLevel[] = ['A1', 'A2', 'B1', 'B2'];
+
+export type PathMissionStatus = 'locked' | 'available' | 'completed';
+export type CefrPathPhaseCode = CefrLevel;
+
+export interface CefrPathPhase {
+  code: CefrPathPhaseCode;
+  start_level: number;
+  end_level: number;
+  label: string;
+  completed_count: number;
+  total_count: number;
+  status: 'locked' | 'active' | 'completed';
+}
+
+export interface PathMission {
+  mission_id: string;
+  level: number;
+  title: string;
+  detail: string;
+  objective: string;
+  action: string;
+  route: string;
+  cefr_phase: CefrPathPhaseCode;
+  phase_label: string;
+  phase_start_level: number;
+  phase_end_level: number;
+  status: PathMissionStatus;
+  completed_at?: string | null;
+  progress_value: number;
+  target_value: number;
+  is_checkpoint: boolean;
+}
+
+export interface PathMissionsResponse {
+  total_levels: number;
+  completed_count: number;
+  current_level: number;
+  current_mission_id?: string | null;
+  phases: CefrPathPhase[];
+  missions: PathMission[];
+}
+
 export type AdaptiveLearningTrend = 'new' | 'improving' | 'stable' | 'declining';
 
 export interface AdaptiveLearningSummary {

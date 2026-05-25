@@ -16,6 +16,17 @@ from app.services.adaptive_learning import (
 )
 from app.services.preference_filter import select_preference_weighted_candidates
 
+CEFR_ORDER = ("A1", "A2", "B1", "B2")
+
+
+def allowed_cefr_levels(max_cefr_level: Optional[str]) -> Optional[tuple[str, ...]]:
+    if not max_cefr_level:
+        return None
+    normalized = max_cefr_level.strip().upper()
+    if normalized not in CEFR_ORDER:
+        return None
+    return CEFR_ORDER[: CEFR_ORDER.index(normalized) + 1]
+
 
 def _hydrate_media_for(session, selected):
     """Batch-fetch image_base64 + audio_base64 for only the selected top-N cards.
@@ -44,6 +55,7 @@ def load_adaptive_candidates(
     language: str,
     categories: Optional[List[str]],
     user_id: str,
+    max_cefr_level: Optional[str] = None,
 ) -> list[tuple[SimpleNamespace, FlashcardEntity, Optional[UserWordStatisticsEntity]]]:
     """Metadata-only scan of cards + user stats, returned as adaptive candidates.
 
@@ -57,6 +69,9 @@ def load_adaptive_candidates(
     )
     if categories:
         query = query.where(FlashcardEntity.category.in_(categories))
+    levels = allowed_cefr_levels(max_cefr_level)
+    if levels:
+        query = query.where(FlashcardEntity.cefr_level.in_(levels))
     cards = session.exec(query).all()
     stats_by_word = get_user_stats_by_word(session, language, user_id)
     return build_adaptive_candidates(cards, stats_by_word)
@@ -163,13 +178,13 @@ def progress_response_for_user(session: SessionDependency, user_id: str) -> Prog
     known_count = session.exec(
         select(func.count(UserProgressEntity.id)).where(
             UserProgressEntity.user_id == user_id,
-            UserProgressEntity.known == True,
+            UserProgressEntity.known.is_(True),
         )
     ).one()
     unknown_count = session.exec(
         select(func.count(UserProgressEntity.id)).where(
             UserProgressEntity.user_id == user_id,
-            UserProgressEntity.known == False,
+            UserProgressEntity.known.is_(False),
         )
     ).one()
 
@@ -213,6 +228,7 @@ async def get_adaptive_flashcards(
     category: Optional[List[str]] = Query(None, description="Repeated category filters"),
     limit: int = Query(50, ge=1, le=500, description="Maximum number of adaptive cards"),
     user_id: str = Query("default_user", description="User ID"),
+    max_cefr_level: Optional[str] = Query(None, description="Hard cap for path-unlocked CEFR level"),
 ):
     """
     Get flashcards ordered by adaptive learning usefulness.
@@ -220,7 +236,7 @@ async def get_adaptive_flashcards(
     Reuses user_word_statistics as the mastery source:
     struggling seen words first, then new words, learning words, and mastered review cards.
     """
-    candidates = load_adaptive_candidates(session, language, category, user_id)
+    candidates = load_adaptive_candidates(session, language, category, user_id, max_cefr_level)
     selected = sorted(candidates, key=lambda item: adaptive_sort_key(item[0]))[:limit]
     _hydrate_media_for(session, selected)
 
@@ -243,7 +259,7 @@ async def query_adaptive_flashcards(
     and fallback/exploration cards remain available.
     """
     candidates = load_adaptive_candidates(
-        session, request.language, request.selected_categories, request.user_id
+        session, request.language, request.selected_categories, request.user_id, request.max_cefr_level
     )
     selected = select_preference_weighted_candidates(
         candidates,
@@ -325,4 +341,3 @@ async def reset_progress(
     session.exec(delete(UserProgressEntity).where(UserProgressEntity.user_id == user_id))
     session.commit()
     return {"message": "Progress reset successfully"}
-

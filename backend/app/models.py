@@ -175,3 +175,4 @@ class AdaptiveFlashcardQueryRequest(BaseModel):
     profile: LearningPreferenceProfile = Field(default_factory=LearningPreferenceProfile)
     limit: int = Field(default=50, ge=1, le=500)
     user_id: str = "default_user"
+    max_cefr_level: Optional[str] = None

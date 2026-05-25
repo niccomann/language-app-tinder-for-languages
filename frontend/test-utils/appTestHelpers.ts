@@ -44,6 +44,92 @@ export const MOCK_SENTENCE_CHALLENGE = {
   validation_mode: 'ground_truth',
 };
 
+const PATH_PHASES = [
+  { code: 'A1', start: 1, end: 100, label: 'A1 · Levels 1-100' },
+  { code: 'A2', start: 101, end: 200, label: 'A2 · Levels 101-200' },
+  { code: 'B1', start: 201, end: 300, label: 'B1 · Levels 201-300' },
+  { code: 'B2', start: 301, end: 400, label: 'B2 · Levels 301-400' },
+] as const;
+
+const PATH_CHECKPOINTS: Record<number, { title: string; detail: string }> = {
+  1: { title: 'Placement', detail: 'First signal from known and missed words.' },
+  25: { title: 'Core Words', detail: 'Build a stable base for everyday vocabulary.' },
+  50: { title: 'Phrase Ready', detail: 'Strong words can start mixing into sentences.' },
+  100: { title: 'Context Builder', detail: 'Review weaker words inside easier contexts.' },
+  200: { title: 'Advanced Recall', detail: 'Most known words move into deeper review.' },
+  300: { title: 'Long Run', detail: 'The path keeps expanding without needing hundreds of visible nodes.' },
+  400: { title: 'Mastery Review', detail: 'Keep high-confidence words active over time.' },
+};
+
+function pathMissionId(level: number) {
+  return `de-path-level-${String(level).padStart(3, '0')}`;
+}
+
+function pathPhaseForLevel(level: number) {
+  return PATH_PHASES.find((phase) => level >= phase.start && level <= phase.end) ?? PATH_PHASES[0];
+}
+
+function buildMockPathMissions(completedCount: number) {
+  const boundedCompleted = Math.max(0, Math.min(400, completedCount));
+  const currentLevel = boundedCompleted >= 400 ? 400 : boundedCompleted + 1;
+  const missions = Array.from({ length: 400 }, (_, index) => {
+    const level = index + 1;
+    const phase = pathPhaseForLevel(level);
+    const checkpoint = PATH_CHECKPOINTS[level];
+    const status = level <= boundedCompleted
+      ? 'completed'
+      : level === currentLevel
+        ? 'available'
+        : 'locked';
+    return {
+      mission_id: pathMissionId(level),
+      level,
+      title: checkpoint?.title ?? `Mission ${level}`,
+      detail: checkpoint?.detail ?? `Complete the level ${level} practice mission.`,
+      objective: `Complete level ${level} to unlock level ${Math.min(400, level + 1)}.`,
+      action: 'practice',
+      route: '/learn',
+      cefr_phase: phase.code,
+      phase_label: phase.label,
+      phase_start_level: phase.start,
+      phase_end_level: phase.end,
+      status,
+      completed_at: status === 'completed' ? '2026-05-24T10:00:00Z' : null,
+      progress_value: status === 'completed' ? 1 : 0,
+      target_value: 1,
+      is_checkpoint: Boolean(checkpoint) || level % 25 === 0,
+    };
+  });
+
+  return {
+    total_levels: 400,
+    completed_count: boundedCompleted,
+    current_level: currentLevel,
+    current_mission_id: boundedCompleted >= 400 ? null : pathMissionId(currentLevel),
+    phases: PATH_PHASES.map((phase) => {
+      const phaseCompleted = missions.filter(
+        (mission) => mission.status === 'completed'
+          && mission.level >= phase.start
+          && mission.level <= phase.end,
+      ).length;
+      return {
+        code: phase.code,
+        start_level: phase.start,
+        end_level: phase.end,
+        label: phase.label,
+        completed_count: phaseCompleted,
+        total_count: phase.end - phase.start + 1,
+        status: phaseCompleted >= phase.end - phase.start + 1
+          ? 'completed'
+          : currentLevel >= phase.start && currentLevel <= phase.end
+            ? 'active'
+            : 'locked',
+      };
+    }),
+    missions,
+  };
+}
+
 const MOCK_CARDS = [
   {
     id: 1,
@@ -117,6 +203,7 @@ export async function mockLearningApi(
   summaryOverrides: Partial<typeof DEFAULT_LEARNING_SUMMARY> = {},
 ) {
   const summary = { ...DEFAULT_LEARNING_SUMMARY, ...summaryOverrides };
+  let completedPathMissions = Math.max(0, (summary.path_level ?? 1) - 1);
 
   await page.route('**/api/library/filters?**', async (route) => {
     await route.fulfill({
@@ -148,6 +235,29 @@ export async function mockLearningApi(
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify(summary),
+    });
+  });
+
+  await page.route('**/api/missions/path**', async (route) => {
+    const url = new URL(route.request().url());
+    if (route.request().method() === 'POST' && url.pathname.endsWith('/complete')) {
+      const missionId = url.pathname.split('/').at(-2);
+      const expectedMissionId = pathMissionId(Math.min(400, completedPathMissions + 1));
+      if (missionId !== expectedMissionId) {
+        await route.fulfill({
+          status: 409,
+          contentType: 'application/json',
+          body: JSON.stringify({ detail: 'Complete the current mission first' }),
+        });
+        return;
+      }
+      completedPathMissions = Math.min(400, completedPathMissions + 1);
+    }
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(buildMockPathMissions(completedPathMissions)),
     });
   });
 

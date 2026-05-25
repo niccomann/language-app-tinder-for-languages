@@ -404,6 +404,16 @@
     "levelLabel": "Niveau"
   },
   "featureGuides": {
+    "listenSentences": {
+      "title": "Écouter les phrases",
+      "body": "Chacun de tes mots apparaît dans une phrase d'exemple complète, lue à voix haute. Utilise les boutons de vitesse pour ralentir et avance une phrase à la fois.",
+      "actionLabel": "Commencer à écouter"
+    },
+    "wordMatch": {
+      "title": "Associe les mots",
+      "body": "Touche un mot dans ta langue, puis touche sa traduction dans l'autre colonne. Les bonnes paires deviennent vertes ; une erreur devient rouge et tu peux réessayer. Termine les quatre paires pour continuer.",
+      "actionLabel": "C'est parti"
+    },
     "vocabularyScan": {
       "title": "D'abord, voyons ce que vous savez",
       "body": "Faites défiler les mots : ceux que vous reconnaissez et ceux à revoir deviennent votre profil initial.",
@@ -478,6 +488,18 @@
     "dismissAllAction": "Ne plus me montrer ces explications"
   },
   "featureFlow": {
+    "listenSentences": {
+      "title": "Écouter les phrases",
+      "missionLabel": "Entraînement",
+      "description": "Écoute tes mots dans de vraies phrases d'exemple, lues une à une.",
+      "ctaLabel": "Ouvrir Écouter les phrases"
+    },
+    "wordMatch": {
+      "title": "Associe les mots",
+      "missionLabel": "Entraînement",
+      "description": "Associe les mots de ta langue à leur traduction dans la langue que tu apprends.",
+      "ctaLabel": "Jouer à Associe les mots"
+    },
     "vocabularyReview": {
       "title": "Révision du vocabulaire",
       "missionLabel": "Mission 1",
@@ -556,6 +578,34 @@
       "description": "Voyez la hiérarchie du vocabulaire et la structure des concepts.",
       "ctaLabel": "Ouvrir la hiérarchie"
     }
+  },
+  "wordMatch": {
+    "title": "Associe les mots",
+    "subtitle": "Relie chaque mot à sa traduction correcte.",
+    "baseColumn": "Ta langue",
+    "targetColumn": "À apprendre",
+    "round": "Manche {{current}} sur {{total}}",
+    "loading": "Préparation des mots...",
+    "hint": "Touche un mot, puis sa traduction.",
+    "correct": "Correct !",
+    "wrong": "Réessaie, c'est faux.",
+    "notEnoughTitle": "Pas encore assez de mots",
+    "notEnoughBody": "Continue à apprendre de nouveaux mots et reviens jouer.",
+    "finishedTitle": "Partie terminée !",
+    "accuracyLabel": "Précision",
+    "mistakesLabel": "Erreurs",
+    "replay": "Rejouer",
+    "back": "Retour",
+    "listenSentences": "Écouter les phrases",
+    "sentencesTitle": "Phrases d'exemple",
+    "sentencesSubtitle": "Écoute comment les mots sont utilisés.",
+    "noSentences": "Pas encore de phrases pour ces mots.",
+    "sentencesLoading": "Préparation des phrases...",
+    "roundsLabel": "Manches",
+    "slower": "Plus lent",
+    "faster": "Plus rapide",
+    "previousSentence": "Phrase précédente",
+    "nextSentence": "Phrase suivante"
   },
   "targetLanguageNames": {
     "de": "allemand",
@@ -778,9 +828,9 @@
     }
   },
   "grammarHub": {
-    "eyebrow": "Explore · Grammar · Hub",
+    "eyebrow": "Visualiser · Grammaire",
     "title": "Grammar Lab",
-    "subline": "Sept outils pour analyser grammaire et vocabulaire.",
+    "subline": "Cinq outils pour analyser grammaire et vocabulaire.",
     "explainerTitle": "Ce que tu trouves dans le Grammar Lab",
     "explainerBodyP1": "Le Grammar Lab est la boîte à outils pour analyser la langue cible. Chaque outil répond à une question différente.",
     "explainerBodyP2": "Exemple : Sentence Graph montre comment les mots d'une phrase sont liés ; Word Cloud montre quels mots apparaissent le plus souvent. Ouvre-les un à la fois.",
@@ -887,9 +937,9 @@
   },
   "bottomNav": {
     "path": "Parcours",
-    "learn": "Apprendre",
-    "review": "Réviser",
-    "explore": "Explorer"
+    "learn": "Apprends avec Swipe",
+    "review": "Révise avec Games",
+    "explore": "Visualiser"
   },
   "library": {
     "statsTitle": "Stats de la bibliothèque",
@@ -1108,9 +1158,18 @@
         "fr": "Combien de français sais-tu déjà ?"
       },
       "options": {
-        "beginner": { "label": "Débutant", "hint": "Je pars de zéro" },
-        "a1_a2": { "label": "Je connais un peu", "hint": "Niveau A1–A2" },
-        "b1_b2": { "label": "Intermédiaire", "hint": "Niveau B1–B2" }
+        "beginner": {
+          "label": "Débutant",
+          "hint": "Je pars de zéro"
+        },
+        "a1_a2": {
+          "label": "Je connais un peu",
+          "hint": "Niveau A1–A2"
+        },
+        "b1_b2": {
+          "label": "Intermédiaire",
+          "hint": "Niveau B1–B2"
+        }
       }
     },
     "goal": {
@@ -1118,10 +1177,22 @@
       "title": "Combien de temps par jour ?",
       "subline": "Tu peux le changer à tout moment.",
       "options": {
-        "5": { "label": "5 min", "hint": "Casual" },
-        "10": { "label": "10 min", "hint": "Régulier" },
-        "15": { "label": "15 min", "hint": "Sérieux" },
-        "20": { "label": "20 min", "hint": "Intense" }
+        "5": {
+          "label": "5 min",
+          "hint": "Casual"
+        },
+        "10": {
+          "label": "10 min",
+          "hint": "Régulier"
+        },
+        "15": {
+          "label": "15 min",
+          "hint": "Sérieux"
+        },
+        "20": {
+          "label": "20 min",
+          "hint": "Intense"
+        }
       }
     },
     "identity": {
@@ -1150,5 +1221,41 @@
     "productNav": "Navigation produit",
     "pathSections": "Sections du parcours",
     "offlineBanner": "Tu es hors ligne — les changements seront synchronisés au retour de la connexion."
+  },
+  "pathRoadmap": {
+    "statPath": "Parcours 400 niveaux",
+    "statMissions": "Missions",
+    "statXp": "XP avant le prochain niveau",
+    "statProgress": "Progression",
+    "infoLine": "{total} niveaux au total · {count} nœuds de mission · touche un nœud pour les détails",
+    "syncing": "Synchronisation des missions…",
+    "reviewTitle": "Outils de révision",
+    "reviewEyebrow": "Réviser",
+    "exploreTitle": "Outils de visualisation",
+    "exploreEyebrow": "Visualiser",
+    "nodeOf": "Nœud {level} sur {max}",
+    "phaseFallback": "Phase du parcours",
+    "complexityA1": "Mots de base, structures courtes, phrases fréquentes.",
+    "complexityA2": "Mots plus précis et enchaînements de phrases du quotidien.",
+    "complexityB1": "Phrases structurées, connecteurs et idées plus longues.",
+    "complexityB2": "Vocabulaire complexe, nuances et phrases argumentées.",
+    "stateCompleted": "Réussi. Cette étape renforce les bases des nœuds suivants.",
+    "stateAvailable": "Tu es ici. Termine cette mission pour avancer.",
+    "stateLocked": "Verrouillé pour l'instant. Termine d'abord les missions précédentes.",
+    "checkpointTitle": "Détails du checkpoint",
+    "statusCompleted": "Mission terminée",
+    "statusAvailable": "Mission disponible",
+    "statusLocked": "Mission verrouillée",
+    "metricStatus": "Statut",
+    "metricPhase": "Phase",
+    "metricTotalPath": "Parcours total",
+    "metricMap": "Carte",
+    "levelsTotal": "{max} niveaux au total",
+    "missionsTotal": "{count} missions au total",
+    "openMission": "Ouvrir la mission",
+    "continuePath": "Continuer le parcours",
+    "completeMission": "Terminer la mission",
+    "completing": "Validation…",
+    "lockedHint": "Termine d'abord la mission en cours"
   }
 }

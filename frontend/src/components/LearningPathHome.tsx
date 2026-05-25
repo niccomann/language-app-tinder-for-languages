@@ -1,13 +1,11 @@
-import type { ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import {
   BookOpen,
   BookOpenCheck,
   ChevronRight,
   Clock3,
   Compass,
-  Flame,
   Gauge,
-  Play,
   Puzzle,
   ShieldCheck,
   Sparkles,
@@ -18,16 +16,14 @@ import type { AdaptiveLearningSummary, UserProgress } from '../types';
 import { GameSignalBadge, StatCard, SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
 import { EYEBROW_CLASS, SceneShell } from './scene';
 import {
-  type LearningPathMilestone,
-  getActiveMilestoneIndex,
+  buildLearningRoadmapStepsFromMissions,
   getLearningTrendLabel,
   getMilestones,
   getPathDisplayValues,
 } from './learningPathMeta';
-import {
-  getFeatureFlowItemsByPhase,
-  getPrimaryFeatureFlowItem,
-} from '../gamification/featureFlowRegistry';
+import { LearningRoadmap } from './LearningRoadmap';
+import { usePathMissions } from '../hooks/usePathMissions';
+import { getFeatureFlowItemsByPhase } from '../gamification/featureFlowRegistry';
 import { useCopy, useTargetLanguage } from '../i18n/languageContext';
 import { formatCopy } from '../i18n/staticCopy';
 
@@ -54,11 +50,16 @@ export function LearningPathHome({
   const t = copy.pathHome;
 
   const display = getPathDisplayValues(learningSummary);
-  const milestones = getMilestones(copy);
+  const milestones = useMemo(() => getMilestones(copy), [copy]);
+  const pathMissionState = usePathMissions(display.pathLevel, milestones);
+  const pathMissions = pathMissionState.missions;
   const shouldReengage = Boolean(learningSummary?.should_reengage);
-  const primaryMission = getPrimaryFeatureFlowItem();
   const upcomingMissions = getFeatureFlowItemsByPhase('upcoming');
   const nextMission = upcomingMissions[0];
+  const roadmapSteps = useMemo(
+    () => buildLearningRoadmapStepsFromMissions(pathMissions.missions),
+    [pathMissions.missions],
+  );
 
   const navigate = (path: string) => onNavigateToFeature(path);
   const back = pathView === 'home' ? undefined : { onClick: () => navigate('/') };
@@ -75,7 +76,20 @@ export function LearningPathHome({
         back={back}
         onNavigate={navigate}
       >
-        <FullPath pathLevel={display.pathLevel} levelLabel={t.full.levelLabel} milestones={milestones} />
+        <LearningRoadmap
+          variant="full"
+          steps={roadmapSteps}
+          pathLevel={pathMissions.current_level}
+          maxPathLevel={pathMissions.total_levels}
+          xpToNextLevel={display.xpToNextLevel}
+          pathLevelProgress={display.pathLevelProgress}
+          levelLabel={t.full.levelLabel}
+          missionSummary={pathMissions}
+          missionLoading={pathMissionState.loading}
+          missionError={pathMissionState.error}
+          onCompleteMission={pathMissionState.completeMission}
+          onNavigate={navigate}
+        />
       </SceneShell>
     );
   }
@@ -129,15 +143,23 @@ export function LearningPathHome({
         back={back}
         onNavigate={navigate}
       >
-        <DiaryTimeline
-          pathLevel={display.pathLevel}
+        <LearningRoadmap
+          variant="diary"
+          steps={roadmapSteps}
+          pathLevel={pathMissions.current_level}
+          maxPathLevel={pathMissions.total_levels}
+          xpToNextLevel={display.xpToNextLevel}
+          pathLevelProgress={display.pathLevelProgress}
           progress={progress}
           totalCards={totalCards}
-          variant="full"
           progressEyebrow={t.diary.progressEyebrow}
           todayPillTemplate={t.diary.todayPill}
           levelLabel={t.full.levelLabel}
-          milestones={milestones}
+          missionSummary={pathMissions}
+          missionLoading={pathMissionState.loading}
+          missionError={pathMissionState.error}
+          onCompleteMission={pathMissionState.completeMission}
+          onNavigate={navigate}
         />
       </SceneShell>
     );
@@ -184,7 +206,7 @@ export function LearningPathHome({
           <PathToolButton
             icon={<Compass size={18} />}
             title={t.next.exploreToolsTitle}
-            onOpen={() => navigate('/explore')}
+            onOpen={() => navigate('/grammar')}
           />
         </div>
       </SceneShell>
@@ -241,33 +263,21 @@ export function LearningPathHome({
           </h2>
         </SurfacePanel>
 
-        <button
-          type="button"
-          onClick={() => navigate(primaryMission.route)}
-          aria-label={primaryMission.ctaLabel}
-          className={`${UI_RADIUS.surface} ${UI_INTERACTION.transition} flex w-full flex-col items-start gap-3 bg-primary px-5 py-5 text-left text-on-primary`}
-        >
-          <span className="flex w-full items-center gap-3">
-            <span
-              className={`${UI_RADIUS.touchIcon} flex h-11 w-11 shrink-0 items-center justify-center bg-canvas/15`}
-            >
-              <Play size={20} />
-            </span>
-            <span className="min-w-0">
-              <span className={`block ${EYEBROW_CLASS} text-on-primary/70`}>
-                {primaryMission.missionLabel}
-              </span>
-              <span className="mt-0.5 block font-sans text-title-sm font-semibold text-on-primary">
-                {primaryMission.title}
-              </span>
-            </span>
-          </span>
-          <span
-            className={`${UI_RADIUS.pill} bg-canvas px-3 py-2 text-caption font-medium text-primary`}
-          >
-            {t.home.primaryCtaPill}
-          </span>
-        </button>
+        <LearningRoadmap
+          variant="home"
+          steps={roadmapSteps}
+          pathLevel={pathMissions.current_level}
+          maxPathLevel={pathMissions.total_levels}
+          xpToNextLevel={display.xpToNextLevel}
+          pathLevelProgress={display.pathLevelProgress}
+          levelLabel={t.full.levelLabel}
+          nextMission={nextMission}
+          missionSummary={pathMissions}
+          missionLoading={pathMissionState.loading}
+          missionError={pathMissionState.error}
+          onCompleteMission={pathMissionState.completeMission}
+          onNavigate={navigate}
+        />
 
         <nav aria-label={copy.a11y.pathSections} className="mt-2 flex flex-col gap-2">
           <PathSectionLink
@@ -308,114 +318,6 @@ function PathSectionLink({
       <span className="block text-title-sm font-semibold text-ink truncate">{label}</span>
       <ChevronRight size={18} className="text-muted-soft shrink-0" />
     </button>
-  );
-}
-
-function FullPath({
-  pathLevel,
-  levelLabel,
-  milestones,
-}: {
-  pathLevel: number;
-  levelLabel: string;
-  milestones: LearningPathMilestone[];
-}) {
-  return (
-    <ul className="flex flex-col gap-2">
-      {milestones.map((step) => {
-        const isComplete = pathLevel >= step.level;
-        return (
-          <li
-            key={step.title}
-            className={`${UI_RADIUS.control} border border-hairline px-4 py-3 ${
-              isComplete ? 'bg-surface-cream-strong' : 'bg-canvas'
-            }`}
-          >
-            <div className="flex items-center justify-between gap-2">
-              <h3 className="text-body-sm font-semibold text-ink">{step.title}</h3>
-              <span className="text-caption font-medium text-muted">{formatCopy(levelLabel, { level: step.level })}</span>
-            </div>
-            <p className="mt-1 text-body-sm font-medium text-muted">{step.detail}</p>
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
-
-function DiaryTimeline({
-  pathLevel,
-  progress,
-  totalCards,
-  variant,
-  progressEyebrow,
-  todayPillTemplate,
-  levelLabel,
-  milestones,
-}: {
-  pathLevel: number;
-  progress: UserProgress;
-  totalCards: number;
-  variant: 'full' | 'compact';
-  progressEyebrow: string;
-  todayPillTemplate: string;
-  levelLabel: string;
-  milestones: LearningPathMilestone[];
-}) {
-  const activeMilestoneIndex = getActiveMilestoneIndex(pathLevel, milestones);
-  const visibleMilestones =
-    variant === 'compact'
-      ? milestones.slice(
-          Math.max(0, activeMilestoneIndex - 1),
-          Math.min(milestones.length, activeMilestoneIndex + 2),
-        )
-      : milestones;
-
-  return (
-    <SurfacePanel padding="lg" className="relative overflow-hidden">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <p className={`${EYEBROW_CLASS} text-muted`}>{progressEyebrow}</p>
-        <div
-          className={`${UI_RADIUS.pill} border border-hairline bg-surface-card px-3 py-2 text-caption font-medium text-muted`}
-        >
-          {formatCopy(todayPillTemplate, { reviewed: progress.cards_reviewed, total: totalCards || 0 })}
-        </div>
-      </div>
-      <div className="relative space-y-3">
-        <div className="absolute bottom-8 left-6 top-8 w-0.5 bg-hairline" />
-        {visibleMilestones.map((step) => {
-          const index = milestones.indexOf(step);
-          const isComplete = pathLevel >= step.level;
-          const isActive = index === activeMilestoneIndex;
-          return (
-            <div key={step.title} className="relative flex gap-4">
-              <div
-                className={`z-10 flex h-12 w-12 shrink-0 items-center justify-center ${UI_RADIUS.touchIcon} border ${
-                  isComplete
-                    ? 'border-hairline bg-success text-ink'
-                    : isActive
-                    ? 'border-hairline bg-primary text-on-primary'
-                    : 'border-hairline bg-surface-card text-muted'
-                }`}
-              >
-                {isComplete ? <Trophy size={20} /> : isActive ? <Flame size={20} /> : <Target size={18} />}
-              </div>
-              <div
-                className={`${UI_RADIUS.control} flex-1 border px-4 py-3 ${
-                  isActive ? 'border-hairline bg-surface-card' : 'border-hairline bg-canvas'
-                }`}
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="text-body-sm font-semibold text-ink">{step.title}</h3>
-                  <span className="text-caption font-medium text-muted">{formatCopy(levelLabel, { level: step.level })}</span>
-                </div>
-                <p className="mt-1 text-body-sm font-medium text-muted">{step.detail}</p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </SurfacePanel>
   );
 }
 

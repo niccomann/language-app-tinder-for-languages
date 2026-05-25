@@ -13,6 +13,8 @@ import { LoadingSpinner, UI_RADIUS } from './ui';
 import { useCopy, useLanguage } from '../i18n/languageContext';
 import { formatCopy } from '../i18n/staticCopy';
 import { isTargetLanguage } from '../i18n/languageStorage';
+import { GoogleLoginButton } from './GoogleLoginButton';
+import { GOOGLE_CLIENT_ID } from '../config/appMode';
 
 export type WizardPhase = 'source' | 'welcome' | 'language' | 'level' | 'goal' | 'identity';
 
@@ -138,6 +140,12 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
           >
             {submitError}
           </div>
+        </div>
+      )}
+      {GOOGLE_CLIENT_ID && (
+        <div className="mx-auto flex max-w-[480px] flex-wrap items-center justify-center gap-2 px-4 pt-3 text-center">
+          <span className="text-caption font-medium text-muted">Hai già un account?</span>
+          <GoogleLoginButton />
         </div>
       )}
       {stepNode}

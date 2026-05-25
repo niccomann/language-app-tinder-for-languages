@@ -26,7 +26,7 @@ export interface ZoomControlsReturn {
   handleZoomIn: () => void;
   handleZoomOut: () => void;
   handleZoomReset: () => void;
-  handleFitToView: (nodes: { x?: number; y?: number }[], nodeRadius: number) => void;
+  handleFitToView: (nodes: { x?: number; y?: number }[], nodeRadius: number, maxScale?: number) => void;
   initializeZoom: (svg: SVGSVGElement, container: d3.Selection<SVGGElement, unknown, null, undefined>) => void;
 }
 
@@ -71,20 +71,20 @@ export function useZoomControls(
     }
   }, [svgRef]);
 
-  const handleFitToView = useCallback((nodes: { x?: number; y?: number }[], nodeRadius: number) => {
+  const handleFitToView = useCallback((nodes: { x?: number; y?: number }[], nodeRadius: number, maxScale = 1.5) => {
     if (svgRef.current && zoomRef.current && nodes.length > 0) {
       const svg = d3.select(svgRef.current);
       const { width, height } = dimensions;
-      
+
       const minX = Math.min(...nodes.map(n => (n.x || 0) - nodeRadius));
       const maxX = Math.max(...nodes.map(n => (n.x || 0) + nodeRadius));
       const minY = Math.min(...nodes.map(n => (n.y || 0) - nodeRadius));
       const maxY = Math.max(...nodes.map(n => (n.y || 0) + nodeRadius));
-      
+
       const nodesWidth = maxX - minX + 100;
       const nodesHeight = maxY - minY + 100;
-      
-      const scale = Math.min(width / nodesWidth, height / nodesHeight, 1.5);
+
+      const scale = Math.min(width / nodesWidth, height / nodesHeight, maxScale);
       const centerX = (minX + maxX) / 2;
       const centerY = (minY + maxY) / 2;
       

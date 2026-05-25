@@ -42,6 +42,9 @@ export const APP_MODE: AppMode = (import.meta.env.VITE_APP_MODE as AppMode) || '
 export const FEATURES: FeatureFlags = APP_MODE === 'offline' ? OFFLINE_FEATURES : ONLINE_FEATURES;
 export const SHOW_DEVELOPER_TOOLS = import.meta.env.DEV || import.meta.env.VITE_SHOW_DEVELOPER_TOOLS === 'true';
 
+// Public Google OAuth Client ID for optional sign-in. Empty = login hidden.
+export const GOOGLE_CLIENT_ID = (import.meta.env.VITE_GOOGLE_CLIENT_ID as string) || '';
+
 // Use relative URLs in production (empty string), localhost for development
 const getApiBaseUrl = (): string => {
   if (APP_MODE === 'offline') {

@@ -65,10 +65,32 @@ class DatabaseConfig(BaseSettings):
             raise
 
 
+class AuthConfig(BaseSettings):
+    """Optional Google login configuration.
+
+    Empty `google_client_id` keeps login disabled (the endpoint returns 503),
+    so the app stays fully usable anonymously until these are set in the env.
+    """
+    google_client_id: str = Field(default="", validation_alias="GOOGLE_CLIENT_ID")
+    owner_emails_raw: str = Field(default="", validation_alias="OWNER_EMAILS")
+
+    model_config = {
+        "env_prefix": "",
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "extra": "ignore",
+    }
+
+    @property
+    def owner_emails(self) -> set[str]:
+        return {e.strip().lower() for e in self.owner_emails_raw.split(",") if e.strip()}
+
+
 class Config(BaseSettings):
     """Main application configuration"""
     server: ServerSettings
     database: DatabaseConfig
+    auth: AuthConfig
 
     def __init__(self, **kwargs):
         # Initialize nested settings
@@ -76,7 +98,9 @@ class Config(BaseSettings):
             kwargs["database"] = DatabaseConfig()
         if "server" not in kwargs:
             kwargs["server"] = ServerSettings()
-        
+        if "auth" not in kwargs:
+            kwargs["auth"] = AuthConfig()
+
         super().__init__(**kwargs)
         self.__configure_logging()
         

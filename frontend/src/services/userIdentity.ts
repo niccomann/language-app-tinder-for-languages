@@ -1,5 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
+import { sessionUserId } from './authSession';
 
 const USER_ID_KEY = 'languageApp:userId:v1';
 
@@ -75,6 +76,11 @@ function newUuid(): string {
 }
 
 export async function getOrCreateUserId(): Promise<string> {
+  // A signed-in account takes over the identity app-wide (profile, progress,
+  // X-User-Id), so data follows the account across devices. The anonymous id
+  // stays stored and is restored on logout.
+  const session = sessionUserId();
+  if (session) return session;
   const existing = await readRaw();
   if (existing && existing.length > 0) return existing;
   const fresh = newUuid();

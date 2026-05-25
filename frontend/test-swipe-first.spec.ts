@@ -120,6 +120,16 @@ async function skipIntroNarration(page: Page) {
   return intro;
 }
 
+async function enterDeckAfterToolIntro(page: Page) {
+  const bubble = page.getByTestId('mascot-speech-bubble');
+  await expect(bubble).toBeVisible({ timeout: 15000 });
+  const skip = bubble.getByRole('button', { name: 'Skip', exact: true });
+  if (await skip.count()) {
+    await skip.click();
+  }
+  await bubble.getByRole('button', { name: 'Continue', exact: true }).click();
+}
+
 test('home starts on the learning path and enters the swipe deck', async ({ page }) => {
   await mockLearningApi(page);
   await markFirstVocabularyOnboardingDone(page);
@@ -127,16 +137,24 @@ test('home starts on the learning path and enters the swipe deck', async ({ page
   await page.goto(APP_URL);
 
   await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText('Lv 7 · A1')).toBeVisible();
   await expect(page.getByText("Today's snapshot")).toBeVisible();
   await expect(page.getByText('400-level path', { exact: true })).toBeVisible();
   await expect(page.getByText('XP to next level', { exact: true })).toBeVisible();
+  const roadmap = page.getByTestId('path-focus-flow');
+  await expect(roadmap).toBeVisible();
+  await expect(roadmap.getByTestId('learning-roadmap-road')).toBeVisible();
+  await expect(roadmap.getByTestId('learning-roadmap-road-base')).toBeVisible();
+  await expect(roadmap.getByTestId('learning-roadmap-road-lane')).toBeVisible();
+  await expect(roadmap.getByTestId('learning-roadmap-road-progress')).toBeVisible();
+  await expect(roadmap.getByTestId('learning-roadmap-node-active')).toBeVisible();
+  await expect(roadmap.getByTestId('learning-roadmap-node-locked').first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Continue path' })).toBeVisible();
   await expect(page.getByRole('button', { name: /Open Sentence Placement mission/i })).toBeVisible();
 
   await page.getByRole('button', { name: 'Continue path' }).click();
+  await enterDeckAfterToolIntro(page);
 
-  await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
-  await expect(page.getByText('Just decide: know it or not.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Filters', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Know', exact: true })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('button', { name: /Start Learning/i })).toHaveCount(0);
@@ -234,6 +252,90 @@ test('home opens sentence placement from the learning path', async ({ page }) =>
   await expect(page.getByRole('heading', { name: 'Translate this sentence' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByText('Tap the words in the right order.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Check' })).toBeVisible();
+});
+
+test('full path and diary use the gamified roadmap surface', async ({ page }) => {
+  await mockLearningApi(page);
+  await markFirstVocabularyOnboardingDone(page);
+  await markFeatureGuidesSeen(page);
+  await page.goto(APP_URL);
+
+  await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: 'See full path' }).click();
+
+  await expect(page).toHaveURL(`${APP_URL}/path/full`);
+  await expect(page.getByRole('heading', { name: 'Full path' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByTestId('learning-roadmap-road')).toBeVisible();
+  await expect(page.getByTestId('learning-roadmap-road-base')).toBeVisible();
+  await expect(page.getByTestId('learning-roadmap-road-lane')).toBeVisible();
+  await expect(page.getByTestId('learning-roadmap-road-progress')).toBeVisible();
+  await expect(page.getByTestId('learning-roadmap-node-active')).toBeVisible();
+  await expect(page.getByText('Checkpoint details')).toBeVisible();
+
+  await page.goto(APP_URL);
+  await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: 'Learning diary' }).click();
+
+  await expect(page).toHaveURL(`${APP_URL}/path/diary`);
+  await expect(page.getByRole('heading', { name: 'Learning diary' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByTestId('learning-roadmap-road')).toBeVisible();
+  await expect(page.getByText('Current progress')).toBeVisible();
+  await expect(page.getByText('Phrase Ready')).toBeVisible();
+});
+
+test('full path nodes explain the selected checkpoint', async ({ page }) => {
+  await mockLearningApi(page);
+  await markFirstVocabularyOnboardingDone(page);
+  await markFeatureGuidesSeen(page);
+  await page.goto(`${APP_URL}/path/full`);
+
+  await expect(page.getByRole('heading', { name: 'Full path' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: /Core Words/i }).click();
+
+  const nodeBubble = page.getByTestId('learning-roadmap-node-bubble');
+  await expect(nodeBubble).toBeVisible();
+  await expect(nodeBubble).toHaveAttribute('data-node-level', '25');
+  await expect(nodeBubble.getByText('Node 25 of 400')).toBeVisible();
+  await expect(nodeBubble.getByText('A1 · Levels 1-100')).toBeVisible();
+  await expect(nodeBubble.getByText('Base words, short patterns, high-frequency sentences.')).toBeVisible();
+  await expect(nodeBubble.getByText('Locked for now. Complete previous missions before this step opens.')).toBeVisible();
+
+  const details = page.getByRole('region', { name: 'Roadmap checkpoint details' });
+  await expect(details).toBeVisible();
+  await expect(details.getByText('Core Words')).toBeVisible();
+  await expect(details.getByText('400 missions total', { exact: true })).toBeVisible();
+  await expect(details.getByText('A1 · Levels 1-100', { exact: true })).toBeVisible();
+  await expect(details.getByText('Level 25', { exact: true })).toBeVisible();
+});
+
+test('full path is a scrollable gated mission map with CEFR phases', async ({ page }) => {
+  await mockLearningApi(page);
+  await markFirstVocabularyOnboardingDone(page);
+  await markFeatureGuidesSeen(page);
+  await page.goto(`${APP_URL}/path/full`);
+
+  await expect(page.getByRole('heading', { name: 'Full path' })).toBeVisible({ timeout: 15000 });
+  const scrollArea = page.getByTestId('learning-roadmap-scroll');
+  await expect(scrollArea).toBeVisible();
+  await expect(scrollArea).toHaveAttribute('data-scroll-mode', 'page');
+  const scrollMetrics = await page.evaluate(() => ({
+    clientHeight: window.innerHeight,
+    scrollHeight: document.documentElement.scrollHeight,
+  }));
+  expect(scrollMetrics.scrollHeight).toBeGreaterThan(scrollMetrics.clientHeight + 1000);
+  await expect(scrollArea.getByText('A1 · Levels 1-100').first()).toBeVisible();
+  await expect(page.getByTestId('learning-roadmap-avatar')).toHaveAttribute('data-current-level', '7');
+  await page.evaluate(() => window.scrollTo(0, 7600));
+  await expectInViewport(page, scrollArea.getByText('A2 · Levels 101-200'));
+
+  await page.getByTestId('learning-roadmap-node-active').click();
+  const details = page.getByRole('region', { name: 'Roadmap checkpoint details' });
+  await expect(details.getByText('Available mission', { exact: true })).toBeVisible();
+  await expect(details.getByText('Mission 7')).toBeVisible();
+  await details.getByRole('button', { name: 'Complete mission' }).click();
+
+  await expect(page.getByTestId('learning-roadmap-avatar')).toHaveAttribute('data-current-level', '8');
+  await expect(details.getByText('Mission 8')).toBeVisible();
 });
 
 test('review hub keeps gamified topic filters one step away from the path', async ({ page }) => {

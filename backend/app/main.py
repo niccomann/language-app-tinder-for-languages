@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from app.routes import cards, grammar, tts, library, statistics, feedback, users
+from app.routes import cards, grammar, tts, library, statistics, feedback, users, games, missions, auth
 import logging
 
 from shared_fastapi_bootstrap import create_app, run
@@ -63,6 +63,9 @@ app.include_router(library.router)
 app.include_router(statistics.router)
 app.include_router(feedback.router)
 app.include_router(users.router)
+app.include_router(games.router)
+app.include_router(missions.router)
+app.include_router(auth.router)
 
 app.middleware("http")(attach_user_id_middleware)
 

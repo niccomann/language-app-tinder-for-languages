@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { BookOpen, BookOpenCheck, Compass, FlaskConical, Puzzle } from 'lucide-react';
+import { BookOpen, BookOpenCheck, Compass, FlaskConical, Gamepad2, Puzzle } from 'lucide-react';
 import { SurfacePanel, UI_INTERACTION, UI_RADIUS } from './ui';
 import { SceneShell, EYEBROW_CLASS } from './scene';
 import {
@@ -9,6 +9,7 @@ import {
 } from '../gamification/featureFlowRegistry';
 import { useCopy, useTargetLanguage } from '../i18n/languageContext';
 import { formatCopy } from '../i18n/staticCopy';
+import { isOwnerMode, OWNER_ONLY_FEATURE_IDS } from '../config/ownerMode';
 
 type FeatureHubKind = 'review' | 'explore' | 'explore_grammar' | 'explore_map';
 
@@ -38,7 +39,10 @@ export function FeatureHubScreen({
   const copy = useCopy();
   const target = useTargetLanguage();
   const fhs = copy.featureHubScreen;
-  const collectionItems = getFeatureFlowItemsByPhase('collection');
+  const ownerMode = isOwnerMode();
+  const collectionItems = getFeatureFlowItemsByPhase('collection').filter(
+    (item) => ownerMode || !OWNER_ONLY_FEATURE_IDS.has(item.id),
+  );
   const upcomingItems = getFeatureFlowItemsByPhase('upcoming');
   const advancedItems = getFeatureFlowItemsByPhase('advanced');
   const grammarTrainingItems = [
@@ -202,6 +206,8 @@ const hubToneClasses: Record<FeatureFlowTone, {
 function getHubIcon(itemId: string) {
   if (itemId === 'sentence-placement') return <Puzzle size={18} />;
   if (itemId === 'grammar-lab') return <FlaskConical size={18} />;
+  if (itemId === 'build-sentence') return <Puzzle size={18} />;
+  if (itemId === 'compose-sentence') return <Gamepad2 size={18} />;
   if (itemId === 'your-vocabulary') return <BookOpenCheck size={18} />;
   if (itemId === 'word-library') return <BookOpen size={18} />;
   return <Compass size={18} />;

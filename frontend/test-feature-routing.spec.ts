@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import {
   APP_URL,
   MOCK_SENTENCE_CHALLENGE,
@@ -21,6 +21,16 @@ const WIZARD_BYPASS_PROFILE: MockUserProfile = {
   daily_goal_minutes: 10,
   onboarding_completed: true,
 };
+
+async function enterFeatureAfterToolIntro(page: Page) {
+  const bubble = page.getByTestId('mascot-speech-bubble');
+  await expect(bubble).toBeVisible({ timeout: 15000 });
+  const skip = bubble.getByRole('button', { name: 'Skip', exact: true });
+  if (await skip.count()) {
+    await skip.click();
+  }
+  await bubble.getByRole('button', { name: 'Continue', exact: true }).click();
+}
 
 test.beforeEach(async ({ page }) => {
   await seedUserId(page, WIZARD_BYPASS_UUID);
@@ -172,22 +182,27 @@ test('sentence placement gives dynamic mascot feedback while preserving the comp
   await expect(challenge.getByRole('heading', { name: 'Good job.' })).toBeVisible();
 });
 
-test('learning swipe feedback uses the same streaming mascot speech pattern', async ({ page }) => {
+test('learning swipe keeps progress saving quiet without mascot level-up feedback', async ({ page }) => {
   await mockLearningApi(page);
   await markFirstVocabularyOnboardingDone(page);
   await page.setViewportSize({ width: 1440, height: 900 });
 
   await page.goto(`${APP_URL}/learn`);
   await expect(page.getByRole('heading', { name: 'Learn German' })).toBeVisible({ timeout: 15000 });
+  await enterFeatureAfterToolIntro(page);
 
+  const statisticsSaved = page.waitForResponse((response) =>
+    response.url().includes('/api/statistics/update') && response.request().method() === 'POST',
+  );
   await page.getByRole('button', { name: 'Know', exact: true }).click();
+  await statisticsSaved;
+  await page.waitForTimeout(250);
 
-  const feedbackBubble = page.getByTestId('learning-feedback-bubble');
-  await expect(feedbackBubble.getByTestId('mascot-reaction')).toBeVisible({ timeout: 15000 });
-  await expect(feedbackBubble.getByTestId('mascot-speech-bubble')).toBeVisible();
-  await expect(feedbackBubble.getByTestId('streaming-speech-text')).toHaveAttribute('data-typewriter-interval-ms', '24');
-  await expect(feedbackBubble.getByTestId('streaming-speech-text')).toHaveAttribute('data-typing-state', 'complete', { timeout: 10000 });
-  await expect(feedbackBubble.getByText('Katze reached Mastery 3')).toBeVisible();
+  await expect(page.getByTestId('learning-feedback-bubble')).toHaveCount(0);
+  await expect(page.getByText('Level up')).toHaveCount(0);
+  await expect(page.getByText('Katze reached Mastery 3')).toHaveCount(0);
+  await expect(page.getByText('Signal saved')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Know', exact: true })).toBeVisible({ timeout: 15000 });
 });
 
 test('grammar lab feature tabs have direct routes', async ({ page }) => {

@@ -1,9 +1,10 @@
 import { Capacitor, registerPlugin } from '@capacitor/core';
-import type { AdaptiveFlashcard, AdaptiveLearningSummary, Flashcard, UserProgress, FlashcardWithProgress, GrammarSentence, GrammarNode, SentenceChallenge, TTSResponse, TTSCheckResponse, ValidateSentenceRequest, ValidateSentenceResponse, LibraryFilters, LibraryStats, FlashcardDetail, DialectWord, WordDbRow, WordStatistics } from '../types';
+import type { AdaptiveFlashcard, AdaptiveLearningSummary, Flashcard, UserProgress, FlashcardWithProgress, GrammarSentence, GrammarNode, SentenceChallenge, MatchPair, WordSentences, TTSResponse, TTSCheckResponse, ValidateSentenceRequest, ValidateSentenceResponse, LibraryFilters, LibraryStats, FlashcardDetail, DialectWord, WordDbRow, WordStatistics, PathMissionsResponse } from '../types';
 import { API_BASE_URL, API_REQUEST_TIMEOUT_MS, APP_MODE, isFeatureEnabled } from '../config/appMode';
 import type { LearningPreferenceProfile } from '../learning/preferenceProfile';
 import type { TargetLanguage } from '../i18n/languageStorage';
 import { getOrCreateUserId } from './userIdentity';
+import { sessionUserId, type AuthSession } from './authSession';
 
 interface OfflineBackendPlugin {
   request(options: {
@@ -55,6 +56,9 @@ let cachedUserId: string | null = null;
 let userIdPromise: Promise<string> | null = null;
 
 async function resolveUserId(): Promise<string> {
+  // A signed-in account overrides the anonymous id so data follows the account.
+  const accountUserId = sessionUserId();
+  if (accountUserId) return accountUserId;
   if (cachedUserId) return cachedUserId;
   if (!userIdPromise) {
     userIdPromise = getOrCreateUserId().then((id) => {
@@ -117,6 +121,23 @@ function appendLearningPreferenceProfile(
   }
 }
 
+// Single POST to the TTS endpoint. The backend resolves cache vs. generation and
+// uses `language` to steer pronunciation. Callers decide whether to feature-gate
+// (word audio stays available offline via the native plugin; narration does not).
+async function postSpeech(text: string, language: string, voice: string): Promise<TTSResponse> {
+  const response = await fetchWithTimeout(`${API_BASE_URL}/api/tts/speak`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text, language, voice }),
+  }, SLOW_AI_TIMEOUT_MS);
+
+  if (!response.ok) {
+    throw new Error('Failed to generate speech');
+  }
+
+  return response.json();
+}
+
 export const api = {
   async getFlashcards(params?: {
     language?: string;
@@ -144,6 +165,7 @@ export const api = {
     selectedCategories?: string[];
     learningPreferenceProfile?: LearningPreferenceProfile | null;
     limit?: number;
+    maxCefrLevel?: string;
   }): Promise<AdaptiveFlashcard[]> {
     const learningPreferenceProfile = params?.learningPreferenceProfile;
     if (learningPreferenceProfile) {
@@ -157,6 +179,7 @@ export const api = {
           selected_categories: params?.selectedCategories ?? [],
           profile: learningPreferenceProfile,
           limit: params?.limit ?? 50,
+          max_cefr_level: params?.maxCefrLevel,
         }),
       }, SLOW_AI_TIMEOUT_MS);
 
@@ -172,6 +195,7 @@ export const api = {
     if (params?.language) queryParams.append('language', params.language);
     params?.selectedCategories?.forEach((category) => queryParams.append('category', category));
     if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.maxCefrLevel) queryParams.append('max_cefr_level', params.maxCefrLevel);
 
     const url = `${API_BASE_URL}/api/cards/adaptive${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
     const response = await fetchWithTimeout(url);
@@ -188,6 +212,29 @@ export const api = {
 
     if (!response.ok) {
       throw new Error('Failed to fetch adaptive learning summary');
+    }
+
+    return response.json();
+  },
+
+  async getPathMissions(language: TargetLanguage): Promise<PathMissionsResponse> {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/missions/path?language=${language}`);
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch path missions');
+    }
+
+    return response.json();
+  },
+
+  async completePathMission(missionId: string, language: TargetLanguage): Promise<PathMissionsResponse> {
+    const response = await fetchWithTimeout(
+      `${API_BASE_URL}/api/missions/path/${encodeURIComponent(missionId)}/complete?language=${language}`,
+      { method: 'POST' },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to complete path mission');
     }
 
     return response.json();
@@ -243,35 +290,18 @@ export const api = {
     }
   },
 
-  async speakText(text: string, language: TargetLanguage): Promise<TTSResponse> {
-    const response = await fetchWithTimeout(`${API_BASE_URL}/api/tts/speak`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, language }),
-    }, SLOW_AI_TIMEOUT_MS);
-
-    if (!response.ok) {
-      throw new Error('Failed to generate speech');
-    }
-
-    return response.json();
+  // Word/flashcard audio (target language). Not feature-gated: stays available
+  // offline via the native plugin serving pre-generated DB cache.
+  async speakText(text: string, language: TargetLanguage, voice: string = 'nova'): Promise<TTSResponse> {
+    return postSpeech(text, language, voice);
   },
 
+  // Narration of animated explanation text (source locale).
   async speakNarration(text: string, language: string, voice: string = 'nova'): Promise<TTSResponse> {
     if (!isFeatureEnabled('textToSpeech')) {
       throw new Error('Text-to-speech is not available in offline mode');
     }
-    const response = await fetchWithTimeout(`${API_BASE_URL}/api/tts/speak`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, language, voice }),
-    }, SLOW_AI_TIMEOUT_MS);
-
-    if (!response.ok) {
-      throw new Error('Failed to generate narration');
-    }
-
-    return response.json();
+    return postSpeech(text, language, voice);
   },
 
   async getGrammarSentences(): Promise<GrammarSentence[]> {
@@ -288,20 +318,7 @@ export const api = {
     if (!isFeatureEnabled('textToSpeech')) {
       throw new Error('Text-to-speech is not available in offline mode');
     }
-    
-    const response = await fetchWithTimeout(`${API_BASE_URL}/api/tts/speak`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ text, language, voice }),
-    }, SLOW_AI_TIMEOUT_MS);
-
-    if (!response.ok) {
-      throw new Error('Failed to generate speech');
-    }
-
-    return response.json();
+    return postSpeech(text, language, voice);
   },
 
   async checkAudioExists(texts: string[], language?: TargetLanguage, voice: string = 'nova'): Promise<TTSCheckResponse> {
@@ -361,6 +378,75 @@ export const api = {
 
     if (!response.ok) {
       throw new Error('Failed to fetch sentence challenges');
+    }
+
+    return response.json();
+  },
+
+  async getMatchPairs(params: {
+    target: string;
+    base: string;
+    limit?: number;
+    maxCefrLevel?: string;
+  }): Promise<MatchPair[]> {
+    const queryParams = new URLSearchParams();
+    queryParams.append('target', params.target);
+    queryParams.append('base', params.base);
+    if (params.limit) queryParams.append('limit', params.limit.toString());
+    if (params.maxCefrLevel) queryParams.append('max_cefr_level', params.maxCefrLevel);
+
+    const url = `${API_BASE_URL}/api/games/match-pairs?${queryParams.toString()}`;
+    const response = await fetchWithTimeout(url);
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch match pairs');
+    }
+
+    return response.json();
+  },
+
+  async getSentencePractice(params: {
+    target: string;
+    level?: string;
+    limit?: number;
+  }): Promise<number[]> {
+    const queryParams = new URLSearchParams();
+    queryParams.append('target', params.target);
+    if (params.level) queryParams.append('level', params.level);
+    if (params.limit) queryParams.append('limit', params.limit.toString());
+
+    const url = `${API_BASE_URL}/api/games/sentence-practice?${queryParams.toString()}`;
+    const response = await fetchWithTimeout(url);
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch sentence practice words');
+    }
+
+    return response.json();
+  },
+
+  async getWordImage(id: number): Promise<string | null> {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/games/word-image?id=${id}`);
+    if (!response.ok) return null;
+    const data = await response.json();
+    return data.image_base64 ?? null;
+  },
+
+  async getExampleSentences(params: {
+    ids: number[];
+    level?: string;
+    perWord?: number;
+  }): Promise<WordSentences[]> {
+    const queryParams = new URLSearchParams();
+    queryParams.append('ids', params.ids.join(','));
+    if (params.level) queryParams.append('level', params.level);
+    if (params.perWord) queryParams.append('per_word', params.perWord.toString());
+
+    const url = `${API_BASE_URL}/api/games/example-sentences?${queryParams.toString()}`;
+    const response = await fetchWithTimeout(url);
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch example sentences');
     }
 
     return response.json();
@@ -555,6 +641,27 @@ export const api = {
       throw new Error(`Failed to submit feedback (${response.status}) ${detail}`);
     }
     return response.json();
+  },
+
+  async loginWithGoogle(idToken: string): Promise<AuthSession> {
+    // Pass the current anonymous id so a brand-new account adopts this device's
+    // existing progress.
+    const currentUserId = await getOrCreateUserId();
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/auth/google`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id_token: idToken, current_user_id: currentUserId }),
+    });
+    if (!response.ok) {
+      const detail = await response.text().catch(() => '');
+      throw new Error(`Login failed (${response.status}) ${detail}`);
+    }
+    const data = await response.json();
+    return {
+      canonicalUserId: data.canonical_user_id,
+      email: data.email,
+      isOwner: data.is_owner === true,
+    };
   },
 
 };

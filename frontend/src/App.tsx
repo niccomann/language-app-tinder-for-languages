@@ -4,6 +4,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { GameGuideOverlay } from './components/GameGuideOverlay';
 import { AppHeaderMenu, BottomNav } from './components/scene';
 import { grammarPath, libraryWordPath, parseAppRoute, type RouteState } from './routes/appRoutes';
+import { isOwnerMode, OWNER_ONLY_GRAMMAR_VIEWS } from './config/ownerMode';
 import { featureGuideRouteKey, resolveFeatureGuideForRoute } from './gamification/featureGuideResolver';
 import { readFirstVocabularyOnboardingDone } from './components/firstVocabularyOnboardingMeta';
 import { LanguageProvider, useLanguage } from './i18n/languageContext';
@@ -11,6 +12,7 @@ import { OnboardingModal } from './components/OnboardingModal';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { LanguageBadge } from './components/LanguageBadge';
 import { UserAvatar } from './components/UserAvatar';
+import { PathStatusBadge } from './components/PathStatusBadge';
 import { useUser } from './contexts/useUser';
 import { OnboardingWizard } from './components/OnboardingWizard';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -18,6 +20,8 @@ import { NetworkStatusBanner } from './components/NetworkStatusBanner';
 import { patchUser } from './services/userApi';
 
 const CardStack = lazy(() => import('./components/CardStack').then((module) => ({ default: module.CardStack })));
+const WordMatchingGame = lazy(() => import('./components/WordMatchingGame').then((module) => ({ default: module.WordMatchingGame })));
+const SentencePracticeScreen = lazy(() => import('./components/SentencesReview').then((module) => ({ default: module.SentencePracticeScreen })));
 const GrammarLab = lazy(() => import('./components/GrammarLab').then((module) => ({ default: module.GrammarLab })));
 const GrammarHub = lazy(() => import('./components/GrammarHub').then((module) => ({ default: module.GrammarHub })));
 const WordsLibraryEnriched = lazy(() => import('./components/WordsLibraryEnriched').then((module) => ({ default: module.WordsLibraryEnriched })));
@@ -179,7 +183,8 @@ function AppWithLanguage() {
                   onWordTabChange={(wordId, tab) => navigateTo(libraryWordPath(wordId, tab))}
                 />
               ) : route.screen === 'grammar' ? (
-                route.view === 'hub' ? (
+                route.view === 'hub' ||
+                (!isOwnerMode() && OWNER_ONLY_GRAMMAR_VIEWS.has(route.view)) ? (
                   <GrammarHub onNavigate={navigateTo} />
                 ) : (
                   <GrammarLab
@@ -188,6 +193,10 @@ function AppWithLanguage() {
                     onBack={() => navigateTo(grammarPath('hub'))}
                   />
                 )
+              ) : route.screen === 'learning' && route.mode === 'word_match' ? (
+                <WordMatchingGame onBack={() => navigateTo('/')} />
+              ) : route.screen === 'learning' && route.mode === 'sentence_practice' ? (
+                <SentencePracticeScreen onBack={() => navigateTo('/')} />
               ) : (
                 <CardStack
                   mode={route.mode}
@@ -238,6 +247,7 @@ function AppChrome({ routePath, navigateTo, productNavigationHidden, onOpenSourc
     <>
       {!productNavigationHidden && <BottomNav pathname={routePath} onNavigate={navigateTo} />}
       <div className="fixed right-3 top-3 z-[70] flex items-center gap-2 sm:right-4 sm:top-4">
+        <PathStatusBadge />
         <UserAvatar />
         <LanguageSwitcher onOpenSourceModal={onOpenSourceModal} />
         <AppHeaderMenu onNavigate={navigateTo} />

@@ -5,6 +5,7 @@ import type { AdaptiveFlashcard, AdaptiveLearningSummary, LearningFeedback, Mile
 import { reportClientError } from '../utils/clientError';
 import { useCopy, useTargetLanguage } from '../i18n/languageContext';
 import { formatCopy } from '../i18n/staticCopy';
+import { getCefrLevelForPathLevel } from '../components/learningPathMeta';
 
 const SESSION_CARD_LIMIT = 80;
 const MILESTONE_STEP = 30;
@@ -28,6 +29,7 @@ export const useLearningSession = () => {
   const [learningSummary, setLearningSummary] = useState<AdaptiveLearningSummary | null>(null);
   const [learningFeedback, setLearningFeedback] = useState<LearningFeedback | null>(null);
   const [milestoneEvent, setMilestoneEvent] = useState<MilestoneEvent | null>(null);
+  const currentPathLevel = learningSummary?.path_level ?? 1;
 
   const loadLearningSummary = useCallback(async () => {
     try {
@@ -52,12 +54,14 @@ export const useLearningSession = () => {
       }
 
       const preferenceProfile = readSavedLearningPreferenceProfile();
+      const maxCefrLevel = getCefrLevelForPathLevel(currentPathLevel);
       const [cards] = await Promise.all([
         api.getAdaptiveFlashcards({
           language,
           selectedCategories,
           learningPreferenceProfile: preferenceProfile,
           limit: SESSION_CARD_LIMIT,
+          maxCefrLevel,
         }),
         loadLearningSummary(),
       ]);
@@ -70,7 +74,7 @@ export const useLearningSession = () => {
     } finally {
       setLoading(false);
     }
-  }, [loadLearningSummary]);
+  }, [language, currentPathLevel, loadLearningSummary]);
 
   const swipeTokenRef = useRef(0);
   const handleSwipe = useCallback(async (direction: 'left' | 'right') => {

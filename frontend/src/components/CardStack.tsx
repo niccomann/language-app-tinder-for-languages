@@ -49,7 +49,6 @@ export const CardStack = ({
     nextCard,
     progress,
     learningSummary,
-    learningFeedback,
     milestoneEvent,
     flashcards,
     loading,
@@ -59,7 +58,6 @@ export const CardStack = ({
     loadFlashcards,
     handleSwipe,
     reset,
-    clearLearningFeedback,
     clearMilestoneEvent,
     clearRecordError,
   } = useLearningSession();
@@ -245,8 +243,6 @@ export const CardStack = ({
             onStartLearning();
           }
         }}
-        learningFeedback={learningFeedback}
-        onClearLearningFeedback={clearLearningFeedback}
       />
       <MilestoneCelebration event={milestoneEvent} onDismiss={clearMilestoneEvent} />
       {recordErrorToast}
