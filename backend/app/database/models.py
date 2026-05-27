@@ -304,9 +304,66 @@ class GrammarSentenceEdgeEntity(BaseEntity, table=True):
     Edges connecting nodes within a grammar sentence.
     """
     __tablename__ = "grammar_sentence_edges"
-    
+
     sentence_id: int = Field(foreign_key=GRAMMAR_SENTENCE_REFERENCE, index=True)
     source_node_id: str = Field(nullable=False)
     target_node_id: str = Field(nullable=False)
     label: str = Field(nullable=False)
     extra_data: Optional[str] = Field(default=None, sa_column=Column(Text))
+
+
+from sqlalchemy import JSON
+from sqlalchemy.dialects.postgresql import ARRAY
+
+
+class MovieEntity(BaseEntity, table=True):
+    """A film identified by IMDb ID. One movie → many subtitles (per language/source)."""
+    __tablename__ = "movies"
+
+    imdb_id: str = Field(nullable=False, unique=True, index=True)
+    title: str = Field(nullable=False)
+    year: Optional[int] = Field(default=None, index=True)
+    genres: Optional[list[str]] = Field(
+        default=None,
+        sa_column=Column(
+            ARRAY(String) if not config.database.use_sqlite else JSON
+        ),
+    )
+
+
+class SubtitleEntity(BaseEntity, table=True):
+    """Full-text subtitles for a movie in one language from one source."""
+    __tablename__ = "subtitles"
+
+    movie_id: int = Field(nullable=False, index=True)
+    language: str = Field(nullable=False, index=True)
+    full_text: str = Field(sa_column=Column(Text, nullable=False))
+    raw_blob: Optional[str] = Field(default=None, sa_column=Column(Text))
+    source: str = Field(nullable=False, index=True)
+    license: str = Field(nullable=False)
+    external_id: Optional[str] = Field(default=None)
+    validated_at: Optional[datetime] = Field(default=None, index=True)
+
+
+class SubtitleStatsEntity(BaseEntity, table=True):
+    """Pre-computed token stats per subtitle for fast retrieval."""
+    __tablename__ = "subtitle_stats"
+
+    subtitle_id: int = Field(nullable=False, unique=True, index=True)
+    word_count: int = Field(nullable=False)
+    unique_words: int = Field(nullable=False)
+    word_freq_top: Optional[dict[str, int]] = Field(default=None, sa_column=Column(JSON))
+    lda_topics: Optional[list[float]] = Field(default=None, sa_column=Column(JSON))
+
+
+class IngestionLogEntity(BaseEntity, table=True):
+    """Audit trail: every ingestion run records what came in and what was rejected."""
+    __tablename__ = "ingestion_log"
+
+    source: str = Field(nullable=False, index=True)
+    finished_at: Optional[datetime] = Field(default=None)
+    rows_in: int = Field(default=0)
+    rows_kept: int = Field(default=0)
+    rows_rejected: int = Field(default=0)
+    rejection_reasons: Optional[dict[str, int]] = Field(default=None, sa_column=Column(JSON))
+    notes: Optional[str] = Field(default=None, sa_column=Column(Text))
