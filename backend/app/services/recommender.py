@@ -119,6 +119,8 @@ class Recommender:
         tfidf_scores = np.clip(tfidf_scores, 0.0, 1.0)
 
         combined = np.clip((0.55 * bm25_scores) + (0.45 * tfidf_scores), 0.0, 1.0)
+        if not np.any(combined > 0.0):
+            return []
         query_vocab = frozenset(query_weights)
 
         ranked_positions = sorted(

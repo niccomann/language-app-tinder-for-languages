@@ -39,3 +39,8 @@ def test_empty_vocab_returns_empty(cache):
 def test_unknown_language_returns_empty(cache):
     rec = Recommender(cache)
     assert rec.recommend(user_vocab={"x": 1.0}, language="zh", limit=10) == []
+
+
+def test_no_vocab_overlap_returns_empty(cache):
+    rec = Recommender(cache)
+    assert rec.recommend(user_vocab={"rakete": 1.0}, language="de", limit=10) == []
