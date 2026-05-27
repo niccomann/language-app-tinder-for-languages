@@ -2,7 +2,8 @@ import logging
 from datetime import UTC, date, datetime
 from typing import Optional, Any
 
-from sqlalchemy import Column, String, Text
+from sqlalchemy import CheckConstraint, Column, JSON, String, Text, UniqueConstraint
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlmodel import Field, SQLModel
 
 from app.core.config import config
@@ -18,6 +19,8 @@ def table_reference(table_name: str) -> str:
 
 FLASHCARD_REFERENCE = table_reference("flashcards")
 GRAMMAR_SENTENCE_REFERENCE = table_reference("grammar_sentences")
+MOVIE_REFERENCE = table_reference("movies")
+SUBTITLE_REFERENCE = table_reference("subtitles")
 
 
 class BaseEntity(SQLModel):
@@ -312,10 +315,6 @@ class GrammarSentenceEdgeEntity(BaseEntity, table=True):
     extra_data: Optional[str] = Field(default=None, sa_column=Column(Text))
 
 
-from sqlalchemy import JSON
-from sqlalchemy.dialects.postgresql import ARRAY
-
-
 class MovieEntity(BaseEntity, table=True):
     """A film identified by IMDb ID. One movie → many subtitles (per language/source)."""
     __tablename__ = "movies"
@@ -335,7 +334,23 @@ class SubtitleEntity(BaseEntity, table=True):
     """Full-text subtitles for a movie in one language from one source."""
     __tablename__ = "subtitles"
 
-    movie_id: int = Field(nullable=False, index=True)
+    _use_sqlite = config.database.use_sqlite
+    _schema = str(config.database.db_schema)
+    _constraints = (
+        UniqueConstraint("movie_id", "language", "source", name="uq_subtitles_movie_lang_source"),
+        CheckConstraint("language IN ('de','fr','it','en')", name="ck_subtitles_language"),
+    )
+    if not _use_sqlite:
+        __table_args__ = (*_constraints, {"schema": _schema})
+    else:
+        __table_args__ = _constraints
+
+    movie_id: int = Field(
+        foreign_key=MOVIE_REFERENCE,
+        ondelete="CASCADE",
+        nullable=False,
+        index=True,
+    )
     language: str = Field(nullable=False, index=True)
     full_text: str = Field(sa_column=Column(Text, nullable=False))
     raw_blob: Optional[str] = Field(default=None, sa_column=Column(Text))
@@ -349,7 +364,13 @@ class SubtitleStatsEntity(BaseEntity, table=True):
     """Pre-computed token stats per subtitle for fast retrieval."""
     __tablename__ = "subtitle_stats"
 
-    subtitle_id: int = Field(nullable=False, unique=True, index=True)
+    subtitle_id: int = Field(
+        foreign_key=SUBTITLE_REFERENCE,
+        ondelete="CASCADE",
+        nullable=False,
+        unique=True,
+        index=True,
+    )
     word_count: int = Field(nullable=False)
     unique_words: int = Field(nullable=False)
     word_freq_top: Optional[dict[str, int]] = Field(default=None, sa_column=Column(JSON))
@@ -362,8 +383,8 @@ class IngestionLogEntity(BaseEntity, table=True):
 
     source: str = Field(nullable=False, index=True)
     finished_at: Optional[datetime] = Field(default=None)
-    rows_in: int = Field(default=0)
-    rows_kept: int = Field(default=0)
-    rows_rejected: int = Field(default=0)
+    rows_in: int = Field(default=0, nullable=False)
+    rows_kept: int = Field(default=0, nullable=False)
+    rows_rejected: int = Field(default=0, nullable=False)
     rejection_reasons: Optional[dict[str, int]] = Field(default=None, sa_column=Column(JSON))
     notes: Optional[str] = Field(default=None, sa_column=Column(Text))
