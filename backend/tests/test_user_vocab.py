@@ -1,3 +1,5 @@
+from math import log1p
+
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
 
@@ -56,6 +58,18 @@ def test_extract_user_vocab_returns_normalized_weights_for_known_flashcard_words
     assert set(vocab) == {"hund", "katze", "haus"}
     assert sum(vocab.values()) == pytest.approx(1.0)
     assert vocab["hund"] > vocab["katze"] > vocab["haus"]
+
+    raw_hund = log1p(12) * 0.9
+    raw_katze = log1p(2) * 0.4
+    raw_haus = 0.05
+    total = raw_hund + raw_katze + raw_haus
+    assert vocab == pytest.approx(
+        {
+            "hund": raw_hund / total,
+            "katze": raw_katze / total,
+            "haus": raw_haus / total,
+        }
+    )
 
 
 def test_extract_user_vocab_returns_empty_dict_for_unknown_user(session):
