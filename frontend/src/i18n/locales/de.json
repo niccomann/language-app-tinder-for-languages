@@ -1275,5 +1275,17 @@
     "emptyError": "Füge mindestens ein Wort ein.",
     "close": "Schließen",
     "importMore": "Mehr importieren"
+  },
+  "movieRecommendations": {
+    "title": "Empfohlene Filme",
+    "subtitle": "Basierend auf den Wörtern, die du bereits kennst",
+    "menuLabel": "Filmempfehlungen",
+    "loading": "Suche die passendsten Filme…",
+    "empty": "Lerne noch ein paar Wörter und komm zurück — die Engine braucht Vokabular.",
+    "errorTitle": "Laden fehlgeschlagen",
+    "errorRetry": "Erneut versuchen",
+    "score": "Übereinstimmung",
+    "youKnow": "Du kennst schon:",
+    "noPoster": "Poster nicht verfügbar"
   }
 }

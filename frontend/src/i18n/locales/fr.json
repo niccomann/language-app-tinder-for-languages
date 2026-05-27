@@ -1275,5 +1275,17 @@
     "emptyError": "Colle au moins un mot.",
     "close": "Fermer",
     "importMore": "Importer plus"
+  },
+  "movieRecommendations": {
+    "title": "Films sélectionnés pour vous",
+    "subtitle": "À partir des mots que vous connaissez déjà",
+    "menuLabel": "Recommandations de films",
+    "loading": "Recherche des films les plus adaptés…",
+    "empty": "Apprenez encore quelques mots et revenez — le moteur a besoin de vocabulaire.",
+    "errorTitle": "Chargement impossible",
+    "errorRetry": "Réessayer",
+    "score": "Correspondance",
+    "youKnow": "Vous connaissez déjà :",
+    "noPoster": "Affiche indisponible"
   }
 }

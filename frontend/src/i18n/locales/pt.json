@@ -1275,5 +1275,17 @@
     "emptyError": "Cole pelo menos uma palavra.",
     "close": "Fechar",
     "importMore": "Importar mais"
+  },
+  "movieRecommendations": {
+    "title": "Filmes escolhidos para ti",
+    "subtitle": "Baseados nas palavras que já conheces",
+    "menuLabel": "Recomendações de filmes",
+    "loading": "À procura dos filmes mais adequados…",
+    "empty": "Aprende mais algumas palavras e volta — o motor precisa de vocabulário.",
+    "errorTitle": "Não foi possível carregar",
+    "errorRetry": "Tentar novamente",
+    "score": "Compatibilidade",
+    "youKnow": "Já conheces:",
+    "noPoster": "Cartaz indisponível"
   }
 }

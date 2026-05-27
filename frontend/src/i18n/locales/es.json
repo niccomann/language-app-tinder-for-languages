@@ -1275,5 +1275,17 @@
     "emptyError": "Pega al menos una palabra.",
     "close": "Cerrar",
     "importMore": "Importar más"
+  },
+  "movieRecommendations": {
+    "title": "Películas elegidas para ti",
+    "subtitle": "Basadas en las palabras que ya conoces",
+    "menuLabel": "Recomendaciones de películas",
+    "loading": "Buscando las películas más adecuadas…",
+    "empty": "Aprende unas cuantas palabras más y vuelve — el motor necesita vocabulario.",
+    "errorTitle": "No se pudo cargar",
+    "errorRetry": "Reintentar",
+    "score": "Coincidencia",
+    "youKnow": "Ya conoces:",
+    "noPoster": "Póster no disponible"
   }
 }

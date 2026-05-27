@@ -1275,5 +1275,17 @@
     "emptyError": "Paste at least one word.",
     "close": "Close",
     "importMore": "Import more"
+  },
+  "movieRecommendations": {
+    "title": "Films picked for you",
+    "subtitle": "Based on words you already know",
+    "menuLabel": "Film recommendations",
+    "loading": "Finding the best films for you…",
+    "empty": "Study a few more words and come back — the engine needs vocabulary to recommend.",
+    "errorTitle": "Couldn't load",
+    "errorRetry": "Retry",
+    "score": "Match",
+    "youKnow": "You already know:",
+    "noPoster": "Poster unavailable"
   }
 }

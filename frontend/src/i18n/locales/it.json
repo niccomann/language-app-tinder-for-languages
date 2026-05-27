@@ -1275,5 +1275,17 @@
     "emptyError": "Incolla almeno una parola.",
     "close": "Chiudi",
     "importMore": "Importa altre"
+  },
+  "movieRecommendations": {
+    "title": "Film consigliati per te",
+    "subtitle": "Basati sulle parole che già conosci",
+    "menuLabel": "Film consigliati",
+    "loading": "Sto cercando i film più adatti…",
+    "empty": "Studia ancora un po' di parole e tornaci: il motore ha bisogno di vocabolario per consigliarti.",
+    "errorTitle": "Non riesco a caricare",
+    "errorRetry": "Riprova",
+    "score": "Match",
+    "youKnow": "Conosci già:",
+    "noPoster": "Locandina non disponibile"
   }
 }
