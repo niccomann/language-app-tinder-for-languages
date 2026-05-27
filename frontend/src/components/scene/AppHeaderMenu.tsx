@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Code2, LogOut, MessageSquarePlus, MoreVertical } from 'lucide-react';
+import { Code2, FileUp, LogOut, MessageSquarePlus, MoreVertical } from 'lucide-react';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { FeedbackButton } from '../FeedbackButton';
 import { GoogleLoginButton } from '../GoogleLoginButton';
@@ -50,6 +50,17 @@ export function AppHeaderMenu({ onNavigate }: AppHeaderMenuProps) {
             triggerIcon={<MessageSquarePlus size={16} />}
             triggerLabel="Feedback"
           />
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              onNavigate('/import-words');
+            }}
+            className={`mt-1 ${MENU_ITEM_CLASS}`}
+          >
+            <FileUp size={16} />
+            {copy.importKnown.menuLabel}
+          </button>
           {SHOW_DEVELOPER_TOOLS && (
             <button
               type="button"

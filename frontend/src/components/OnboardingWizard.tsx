@@ -15,6 +15,7 @@ import { formatCopy } from '../i18n/staticCopy';
 import { isTargetLanguage } from '../i18n/languageStorage';
 import { GoogleLoginButton } from './GoogleLoginButton';
 import { GOOGLE_CLIENT_ID } from '../config/appMode';
+import { ImportKnownWords } from './ImportKnownWords';
 
 export type WizardPhase = 'source' | 'welcome' | 'language' | 'level' | 'goal' | 'identity';
 
@@ -44,6 +45,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   const [draft, setDraft] = useState<WizardDraft>(DEFAULT_DRAFT);
   const [posting, setPosting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showImport, setShowImport] = useState(false);
 
   const advance = useCallback(
     async (patch: Partial<WizardDraft>) => {
@@ -148,7 +150,17 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
           <GoogleLoginButton />
         </div>
       )}
+      <div className="mx-auto max-w-[480px] px-4 pt-2 text-center">
+        <button
+          type="button"
+          onClick={() => setShowImport(true)}
+          className="text-caption font-semibold text-primary underline-offset-2 hover:underline"
+        >
+          {copy.importKnown.onboardingCta}
+        </button>
+      </div>
       {stepNode}
+      {showImport && <ImportKnownWords onClose={() => setShowImport(false)} />}
     </>
   );
 }

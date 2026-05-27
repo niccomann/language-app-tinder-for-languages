@@ -422,3 +422,12 @@ export interface WordDbRow {
   media: Record<string, boolean | number>;
   related: Record<string, Record<string, unknown>[]>;
 }
+
+export interface ImportKnownResult {
+  submitted: number;
+  matched: number;
+  added: number;
+  already_known: number;
+  matched_words: string[];
+  unmatched_words: string[];
+}

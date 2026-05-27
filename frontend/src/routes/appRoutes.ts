@@ -11,6 +11,7 @@ export type LearningRouteMode =
   | 'vocabulary'
   | 'word_match'
   | 'sentence_practice'
+  | 'import_words'
   | 'review'
   | 'explore'
   | 'explore_grammar'
@@ -116,6 +117,10 @@ export function parseAppRoute(pathname: string): RouteState {
     return { screen: 'learning', mode: 'sentence_practice' };
   }
 
+  if (section === 'import-words') {
+    return { screen: 'learning', mode: 'import_words' };
+  }
+
   if (section === 'review') {
     return { screen: 'learning', mode: 'review' };
   }
@@ -188,6 +193,7 @@ export function routeStatePath(route: RouteState) {
     if (route.mode === 'vocabulary') return '/vocabulary';
     if (route.mode === 'word_match') return '/word-match';
     if (route.mode === 'sentence_practice') return '/sentence-practice';
+    if (route.mode === 'import_words') return '/import-words';
     if (route.mode === 'review') return '/review';
     if (route.mode === 'explore_grammar') return '/explore/grammar';
     if (route.mode === 'explore_map') return '/explore/map';

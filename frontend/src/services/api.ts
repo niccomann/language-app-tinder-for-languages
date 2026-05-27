@@ -1,5 +1,5 @@
 import { Capacitor, registerPlugin } from '@capacitor/core';
-import type { AdaptiveFlashcard, AdaptiveLearningSummary, Flashcard, UserProgress, FlashcardWithProgress, GrammarSentence, GrammarNode, SentenceChallenge, MatchPair, WordSentences, TTSResponse, TTSCheckResponse, ValidateSentenceRequest, ValidateSentenceResponse, LibraryFilters, LibraryStats, FlashcardDetail, DialectWord, WordDbRow, WordStatistics, PathMissionsResponse } from '../types';
+import type { AdaptiveFlashcard, AdaptiveLearningSummary, Flashcard, UserProgress, FlashcardWithProgress, GrammarSentence, GrammarNode, SentenceChallenge, MatchPair, WordSentences, TTSResponse, TTSCheckResponse, ValidateSentenceRequest, ValidateSentenceResponse, LibraryFilters, LibraryStats, FlashcardDetail, DialectWord, WordDbRow, WordStatistics, PathMissionsResponse, ImportKnownResult } from '../types';
 import { API_BASE_URL, API_REQUEST_TIMEOUT_MS, APP_MODE, isFeatureEnabled } from '../config/appMode';
 import type { LearningPreferenceProfile } from '../learning/preferenceProfile';
 import type { TargetLanguage } from '../i18n/languageStorage';
@@ -662,6 +662,19 @@ export const api = {
       email: data.email,
       isOwner: data.is_owner === true,
     };
+  },
+
+  async importKnownWords(language: TargetLanguage, text: string): Promise<ImportKnownResult> {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/vocabulary/import-known`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ language, text }),
+    }, SLOW_AI_TIMEOUT_MS);
+    if (!response.ok) {
+      const detail = await response.text().catch(() => '');
+      throw new Error(`Import failed (${response.status}) ${detail}`);
+    }
+    return response.json();
   },
 
 };

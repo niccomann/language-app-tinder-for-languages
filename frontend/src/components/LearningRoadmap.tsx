@@ -203,6 +203,7 @@ export function LearningRoadmap({
   onCompleteMission,
   onNavigate,
 }: LearningRoadmapProps) {
+  const t = useCopy().pathRoadmap;
   const activeStep = steps.find((step) => step.state === 'active') ?? steps[0];
   const [selectedStepIndex, setSelectedStepIndex] = useState(activeStep?.index ?? 0);
   const [completingMissionId, setCompletingMissionId] = useState<string | null>(null);
@@ -266,14 +267,14 @@ export function LearningRoadmap({
     >
       <div className="absolute inset-x-0 top-0 h-40 bg-canvas" aria-hidden="true" />
       <div className="relative z-10 flex flex-wrap gap-2 p-4 pb-0">
-        <RoadStat icon={<Sparkles size={14} />} label="400-level path" value={`${pathLevel}/${maxPathLevel}`} />
-        <RoadStat icon={<Trophy size={14} />} label="Missions" value={`${completedCount}/${missionCount}`} />
-        <RoadStat icon={<Flame size={14} />} label="XP to next level" value={xpToNextLevel} />
-        <RoadStat icon={<ShieldCheck size={14} />} label="Progress" value={`${progressLabel}%`} />
+        <RoadStat icon={<Sparkles size={14} />} label={t.statPath} value={`${pathLevel}/${maxPathLevel}`} />
+        <RoadStat icon={<Trophy size={14} />} label={t.statMissions} value={`${completedCount}/${missionCount}`} />
+        <RoadStat icon={<Flame size={14} />} label={t.statXp} value={xpToNextLevel} />
+        <RoadStat icon={<ShieldCheck size={14} />} label={t.statProgress} value={`${progressLabel}%`} />
       </div>
       <div className="relative z-10 mx-4 mt-3 rounded-md border border-hairline bg-canvas px-3 py-2 text-caption font-semibold text-muted">
-        400 levels total · {missionCount} mission nodes · tap a node to inspect it
-        {missionLoading ? <span className="ml-2 text-primary">Syncing missions…</span> : null}
+        {formatCopy(t.infoLine, { total: maxPathLevel, count: missionCount })}
+        {missionLoading ? <span className="ml-2 text-primary">{t.syncing}</span> : null}
       </div>
       {missionError ? (
         <div className="relative z-10 mx-4 mt-2 rounded-md border border-accent-amber/50 bg-accent-amber/10 px-3 py-2 text-caption font-semibold text-ink">
@@ -460,14 +461,14 @@ export function LearningRoadmap({
             <div className="grid grid-cols-2 gap-2">
               <MissionButton
                 icon={<BookOpenCheck size={18} />}
-                title="Review tools"
-                eyebrow="Review"
+                title={t.reviewTitle}
+                eyebrow={t.reviewEyebrow}
                 onClick={() => onNavigate('/review')}
               />
               <MissionButton
                 icon={<Compass size={18} />}
-                title="Explore tools"
-                eyebrow="Explore"
+                title={t.exploreTitle}
+                eyebrow={t.exploreEyebrow}
                 onClick={() => onNavigate('/grammar')}
               />
             </div>
@@ -487,6 +488,7 @@ function RoadmapNodeBubble({
   maxPathLevel: number;
   prefersReducedMotion: boolean;
 }) {
+  const t = useCopy().pathRoadmap;
   const placement =
     step.x > 58
       ? 'left'
@@ -531,22 +533,22 @@ function RoadmapNodeBubble({
             <MapPin size={15} />
           </span>
           <span className="min-w-0">
-            <span className={`${EYEBROW_CLASS} block text-primary`}>Node {step.level} of {maxPathLevel}</span>
+            <span className={`${EYEBROW_CLASS} block text-primary`}>{formatCopy(t.nodeOf, { level: step.level, max: maxPathLevel })}</span>
             <span className="mt-0.5 block text-body-sm font-black leading-tight text-ink">{step.title}</span>
           </span>
         </div>
         <div className="mt-2 flex flex-wrap gap-1.5">
           <span className={`${UI_RADIUS.pill} bg-surface-soft px-2 py-1 text-caption font-bold text-muted`}>
-            {step.phaseLabel ?? 'Path phase'}
+            {step.phaseLabel ?? t.phaseFallback}
           </span>
           <span className={`${UI_RADIUS.pill} bg-primary/10 px-2 py-1 text-caption font-bold text-primary`}>
             {step.missionStatus ?? step.state}
           </span>
         </div>
         <p className="mt-2 text-caption font-semibold leading-snug text-ink">{step.detail}</p>
-        <p className="mt-1.5 text-caption font-medium leading-snug text-muted">{nodeComplexityText(step)}</p>
+        <p className="mt-1.5 text-caption font-medium leading-snug text-muted">{nodeComplexityText(step, t)}</p>
         <p className="mt-2 border-t border-hairline pt-2 text-caption font-semibold leading-snug text-body">
-          {nodeStateText(step)}
+          {nodeStateText(step, t)}
         </p>
       </div>
     </motion.aside>
@@ -622,6 +624,7 @@ function RoadmapCheckpointDetails({
   onNavigate: (path: string) => void;
   onCompleteMission?: (missionId: string) => void;
 }) {
+  const t = useCopy().pathRoadmap;
   const missionStatus = step.missionStatus ?? (
     step.state === 'complete'
       ? 'completed'
@@ -630,13 +633,13 @@ function RoadmapCheckpointDetails({
         : 'locked'
   );
   const statusLabel = {
-    completed: 'Completed mission',
-    available: 'Available mission',
-    locked: 'Locked mission',
+    completed: t.statusCompleted,
+    available: t.statusAvailable,
+    locked: t.statusLocked,
   }[missionStatus];
   const canOpen = missionStatus !== 'locked' && step.route;
   const canComplete = missionStatus === 'available' && step.missionId && onCompleteMission;
-  const openMissionLabel = missionStatus === 'available' ? 'Continue path' : 'Open mission';
+  const openMissionLabel = missionStatus === 'available' ? t.continuePath : t.openMission;
 
   return (
     <section
@@ -644,7 +647,7 @@ function RoadmapCheckpointDetails({
       aria-label="Roadmap checkpoint details"
       className={`${sticky ? 'sticky top-12' : 'relative'} z-40 border-y border-hairline bg-canvas/95 p-4 backdrop-blur-sm`}
     >
-      <p className={`${EYEBROW_CLASS} text-primary`}>Checkpoint details</p>
+      <p className={`${EYEBROW_CLASS} text-primary`}>{t.checkpointTitle}</p>
       <div className="mt-1 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="text-title-sm font-semibold text-ink">{step.title}</h3>
@@ -658,10 +661,10 @@ function RoadmapCheckpointDetails({
         </span>
       </div>
       <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4">
-        <DetailMetric label="Status" value={statusLabel} />
-        <DetailMetric label="Phase" value={step.phaseLabel ?? 'Path phase'} />
-        <DetailMetric label="Total path" value={`${maxPathLevel} levels total`} />
-        <DetailMetric label="Map" value={`${checkpointCount} missions total`} />
+        <DetailMetric label={t.metricStatus} value={statusLabel} />
+        <DetailMetric label={t.metricPhase} value={step.phaseLabel ?? t.phaseFallback} />
+        <DetailMetric label={t.metricTotalPath} value={formatCopy(t.levelsTotal, { max: maxPathLevel })} />
+        <DetailMetric label={t.metricMap} value={formatCopy(t.missionsTotal, { count: checkpointCount })} />
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         {canOpen ? (
@@ -681,13 +684,13 @@ function RoadmapCheckpointDetails({
             onClick={() => onCompleteMission(step.missionId!)}
             className={`${UI_RADIUS.control} ${UI_INTERACTION.fastTransition} inline-flex min-h-11 items-center gap-2 bg-primary px-4 py-2 text-body-sm font-semibold text-on-primary hover:bg-primary-active disabled:cursor-wait disabled:opacity-70`}
           >
-            {isCompleting ? 'Completing…' : 'Complete mission'}
+            {isCompleting ? t.completing : t.completeMission}
             <CheckCircle2 size={17} />
           </button>
         ) : null}
         {missionStatus === 'locked' ? (
           <span className={`${UI_RADIUS.pill} inline-flex min-h-11 items-center bg-surface-soft px-4 py-2 text-body-sm font-semibold text-muted`}>
-            Complete the current mission first
+            {t.lockedHint}
           </span>
         ) : null}
       </div>
