@@ -1,5 +1,5 @@
 import { Capacitor, registerPlugin } from '@capacitor/core';
-import type { AdaptiveFlashcard, AdaptiveLearningSummary, Flashcard, UserProgress, FlashcardWithProgress, GrammarSentence, GrammarNode, SentenceChallenge, MatchPair, WordSentences, TTSResponse, TTSCheckResponse, ValidateSentenceRequest, ValidateSentenceResponse, LibraryFilters, LibraryStats, FlashcardDetail, DialectWord, WordDbRow, WordStatistics, PathMissionsResponse, ImportKnownResult } from '../types';
+import type { AdaptiveFlashcard, AdaptiveLearningSummary, Flashcard, UserProgress, FlashcardWithProgress, GrammarSentence, GrammarNode, SentenceChallenge, MatchPair, WordSentences, TTSResponse, TTSCheckResponse, ValidateSentenceRequest, ValidateSentenceResponse, LibraryFilters, LibraryStats, FlashcardDetail, DialectWord, WordDbRow, WordStatistics, PathMissionsResponse, ImportKnownResult, MovieRecommendation } from '../types';
 import { API_BASE_URL, API_REQUEST_TIMEOUT_MS, APP_MODE, isFeatureEnabled } from '../config/appMode';
 import type { LearningPreferenceProfile } from '../learning/preferenceProfile';
 import type { TargetLanguage } from '../i18n/languageStorage';
@@ -673,6 +673,17 @@ export const api = {
     if (!response.ok) {
       const detail = await response.text().catch(() => '');
       throw new Error(`Import failed (${response.status}) ${detail}`);
+    }
+    return response.json();
+  },
+
+  async getMovieRecommendations(language: TargetLanguage, limit = 20): Promise<MovieRecommendation[]> {
+    const response = await fetchWithTimeout(
+      `${API_BASE_URL}/api/movies/recommendations?language=${language}&limit=${limit}`,
+      { method: 'GET' },
+    );
+    if (!response.ok) {
+      throw new Error(`Failed to load recommendations (${response.status})`);
     }
     return response.json();
   },

@@ -122,6 +122,15 @@ export interface WordStatistics {
   last_practiced?: string | null;
 }
 
+export interface MovieRecommendation {
+  imdb_id: string;
+  title: string;
+  year: number | null;
+  score: number;
+  shared_vocab_count: number;
+  sample_known_words: string[];
+}
+
 export interface LearningFeedback {
   title: string;
   message: string;
