@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Code2, FileUp, LogOut, MessageSquarePlus, MoreVertical } from 'lucide-react';
+import { Code2, FileUp, Film, LogOut, MessageSquarePlus, MoreVertical } from 'lucide-react';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { FeedbackButton } from '../FeedbackButton';
 import { GoogleLoginButton } from '../GoogleLoginButton';
@@ -60,6 +60,17 @@ export function AppHeaderMenu({ onNavigate }: AppHeaderMenuProps) {
           >
             <FileUp size={16} />
             {copy.importKnown.menuLabel}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              onNavigate('/movie-recommendations');
+            }}
+            className={`mt-1 ${MENU_ITEM_CLASS}`}
+          >
+            <Film size={16} />
+            {copy.movieRecommendations.menuLabel}
           </button>
           {SHOW_DEVELOPER_TOOLS && (
             <button

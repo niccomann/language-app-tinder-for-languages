@@ -22,6 +22,7 @@ import { patchUser } from './services/userApi';
 const CardStack = lazy(() => import('./components/CardStack').then((module) => ({ default: module.CardStack })));
 const WordMatchingGame = lazy(() => import('./components/WordMatchingGame').then((module) => ({ default: module.WordMatchingGame })));
 const ImportKnownWords = lazy(() => import('./components/ImportKnownWords').then((module) => ({ default: module.ImportKnownWords })));
+const MovieRecommendations = lazy(() => import('./components/MovieRecommendations').then((module) => ({ default: module.MovieRecommendations })));
 const SentencePracticeScreen = lazy(() => import('./components/SentencesReview').then((module) => ({ default: module.SentencePracticeScreen })));
 const GrammarLab = lazy(() => import('./components/GrammarLab').then((module) => ({ default: module.GrammarLab })));
 const GrammarHub = lazy(() => import('./components/GrammarHub').then((module) => ({ default: module.GrammarHub })));
@@ -196,6 +197,8 @@ function AppWithLanguage() {
                 )
               ) : route.screen === 'learning' && route.mode === 'import_words' ? (
                 <ImportKnownWords onClose={() => navigateTo('/')} />
+              ) : route.screen === 'learning' && route.mode === 'movie_recommendations' ? (
+                <MovieRecommendations onBack={() => navigateTo('/')} />
               ) : route.screen === 'learning' && route.mode === 'word_match' ? (
                 <WordMatchingGame onBack={() => navigateTo('/')} />
               ) : route.screen === 'learning' && route.mode === 'sentence_practice' ? (
