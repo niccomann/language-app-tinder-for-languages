@@ -128,6 +128,7 @@ export interface MovieRecommendation {
   year: number | null;
   score: number;
   shared_vocab_count: number;
+  subtitle_unique_word_count: number;
   sample_known_words: string[];
 }
 

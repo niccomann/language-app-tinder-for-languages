@@ -939,6 +939,7 @@
     "path": "Pfad",
     "learn": "Lernen mit Swipe",
     "review": "Üben mit Games",
+    "movies": "Filme",
     "explore": "Visualisieren"
   },
   "library": {
@@ -1281,11 +1282,39 @@
     "subtitle": "Basierend auf den Wörtern, die du bereits kennst",
     "menuLabel": "Filmempfehlungen",
     "loading": "Suche die passendsten Filme…",
-    "empty": "Lerne noch ein paar Wörter und komm zurück — die Engine braucht Vokabular.",
+    "empty": "Lerne noch ein paar Wörter oder lade vollständige Untertiteldaten — die Engine braucht Vokabular und echte Filmuntertitel.",
     "errorTitle": "Laden fehlgeschlagen",
     "errorRetry": "Erneut versuchen",
     "score": "Übereinstimmung",
+    "coverageCount": "Eindeutige Treffer",
+    "uniqueSubtitleWords": "Eindeutige Untertitelwörter",
     "youKnow": "Du kennst schon:",
-    "noPoster": "Poster nicht verfügbar"
+    "noPoster": "Poster nicht verfügbar",
+    "algorithmGuide": {
+      "title": "So funktioniert das Matching",
+      "summary": "Filme werden sortiert, indem dein bekanntes Vokabular mit validierten Untertiteln verglichen wird.",
+      "points": [
+        {
+          "label": "Match",
+          "description": "Der Match ist der Anteil des eindeutigen Untertitelvokabulars, den bekannte Wörter nach Normalisierung abdecken."
+        },
+        {
+          "label": "Prozent",
+          "description": "Die angezeigte Prozentzahl ist bekannte eindeutige Untertitelwörter geteilt durch alle eindeutigen Untertitelwörter: 100 bekannte Wörter von 1000 eindeutigen Wörtern sind 10%."
+        },
+        {
+          "label": "Wortformen",
+          "description": "Der Matcher normalisiert Konjugationen, Plurale und flektierte Formen vor dem Vergleich, sodass andare zu andato und Hund zu Hunde passen kann."
+        },
+        {
+          "label": "Gemeinsame Wörter",
+          "description": "Die Zahl zeigt eindeutige bekannte Wörterbuchwörter, deren Stamm oder Lemma in den Untertiteln vorkommt."
+        },
+        {
+          "label": "Bekanntes Vokabular",
+          "description": "Swipes und Importe geben jedem Wort Sicherheit und Übungsgewicht."
+        }
+      ]
+    }
   }
 }

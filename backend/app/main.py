@@ -1,5 +1,7 @@
-from fastapi import FastAPI
 from contextlib import asynccontextmanager
+import os
+
+from fastapi import FastAPI
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -72,5 +74,15 @@ app.include_router(recommendations.router)
 app.middleware("http")(attach_user_id_middleware)
 
 
+def backend_reload_enabled() -> bool:
+    """Keep local SQLite writes from constantly restarting the dev server.
+
+    Uvicorn's reload watcher sees app.db/app.db-wal changes as source changes,
+    so every swipe or audio-cache write can briefly drop requests. Opt in only
+    when actively editing backend code.
+    """
+    return os.getenv("BACKEND_RELOAD", "").strip().lower() in {"1", "true", "yes", "on"}
+
+
 if __name__ == "__main__":
-    run("app.main:app", port=8500, reload=True)
+    run("app.main:app", port=8500, reload=backend_reload_enabled())

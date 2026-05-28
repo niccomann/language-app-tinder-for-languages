@@ -15,6 +15,9 @@ pip install -r requirements.txt
 # Run
 python -m app.main
 # Server: http://localhost:8500
+
+# Optional while editing backend Python files:
+BACKEND_RELOAD=true python -m app.main
 ```
 
 ## Database Architecture

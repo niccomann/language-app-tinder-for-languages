@@ -939,6 +939,7 @@
     "path": "Ruta",
     "learn": "Aprende con Swipe",
     "review": "Repasa con Games",
+    "movies": "Cine",
     "explore": "Visualizar"
   },
   "library": {
@@ -1281,11 +1282,39 @@
     "subtitle": "Basadas en las palabras que ya conoces",
     "menuLabel": "Recomendaciones de películas",
     "loading": "Buscando las películas más adecuadas…",
-    "empty": "Aprende unas cuantas palabras más y vuelve — el motor necesita vocabulario.",
+    "empty": "Aprende algunas palabras más o carga subtítulos completos — el motor necesita tu vocabulario y subtítulos reales de películas.",
     "errorTitle": "No se pudo cargar",
     "errorRetry": "Reintentar",
     "score": "Coincidencia",
+    "coverageCount": "Coincidencias únicas",
+    "uniqueSubtitleWords": "Palabras únicas en subtítulos",
     "youKnow": "Ya conoces:",
-    "noPoster": "Póster no disponible"
+    "noPoster": "Póster no disponible",
+    "algorithmGuide": {
+      "title": "Cómo funciona la coincidencia",
+      "summary": "Las películas se ordenan comparando tu vocabulario conocido con subtítulos validados.",
+      "points": [
+        {
+          "label": "Match",
+          "description": "El match es la proporción del vocabulario único de los subtítulos cubierta por palabras que conoces, después de normalizar."
+        },
+        {
+          "label": "Porcentaje",
+          "description": "El porcentaje mostrado es palabras únicas conocidas en los subtítulos dividido por palabras únicas totales: 100 palabras conocidas de 1000 palabras únicas es 10%."
+        },
+        {
+          "label": "Formas de palabra",
+          "description": "El matcher normaliza conjugaciones, plurales y formas flexionadas antes de comparar el texto, así andare puede coincidir con andato y Hund con Hunde."
+        },
+        {
+          "label": "Palabras compartidas",
+          "description": "El conteo muestra palabras conocidas de diccionario cuya raíz o lema aparece en los subtítulos."
+        },
+        {
+          "label": "Vocabulario conocido",
+          "description": "Swipes e importaciones dan confianza y peso de práctica a cada palabra."
+        }
+      ]
+    }
   }
 }

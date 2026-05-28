@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Film, Loader2, RotateCw } from 'lucide-react';
+import { Film, Info, Loader2, RotateCw } from 'lucide-react';
 import { api } from '../services/api';
 import type { MovieRecommendation } from '../types';
 import { useCopy, useTargetLanguage } from '../i18n/languageContext';
@@ -55,6 +55,8 @@ export function MovieRecommendations({ onBack }: MovieRecommendationsProps) {
         onBack={onBack}
       />
 
+      <AlgorithmGuide guide={copy.algorithmGuide} />
+
       {state.status === 'loading' ? (
         <LoadingState message={copy.loading} />
       ) : state.status === 'error' ? (
@@ -75,6 +77,41 @@ export function MovieRecommendations({ onBack }: MovieRecommendationsProps) {
         </ul>
       )}
     </AppScreen>
+  );
+}
+
+function AlgorithmGuide({
+  guide,
+}: {
+  guide: ReturnType<typeof useCopy>['movieRecommendations']['algorithmGuide'];
+}) {
+  return (
+    <section
+      aria-labelledby="movie-algorithm-guide-title"
+      className={`${UI_RADIUS.control} border border-hairline bg-surface-soft p-3 sm:p-4`}
+    >
+      <div className="flex items-start gap-3">
+        <div className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center ${UI_RADIUS.touchIcon} bg-canvas text-primary`}>
+          <Info size={18} aria-hidden="true" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h2 id="movie-algorithm-guide-title" className="text-title-sm font-semibold text-ink">
+            {guide.title}
+          </h2>
+          <p className="mt-1 max-w-3xl text-body-sm leading-6 text-muted">
+            {guide.summary}
+          </p>
+          <dl className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+            {guide.points.map((point) => (
+              <div key={point.label} className={`${UI_RADIUS.control} bg-canvas px-3 py-2`}>
+                <dt className="text-caption font-semibold text-body-strong">{point.label}</dt>
+                <dd className="mt-1 text-caption leading-5 text-muted">{point.description}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -153,6 +190,11 @@ function MovieCard({
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
               <Metric label={copy.score} value={formatScore(movie.score)} />
+              <Metric
+                label={copy.coverageCount}
+                value={`${movie.shared_vocab_count} / ${movie.subtitle_unique_word_count}`}
+              />
+              <Metric label={copy.uniqueSubtitleWords} value={movie.subtitle_unique_word_count.toString()} />
               <Metric label={copy.youKnow} value={movie.shared_vocab_count.toString()} />
             </div>
           </div>
@@ -228,5 +270,11 @@ function getOmdbPosterUrl(imdbId: string) {
 
 function formatScore(score: number) {
   const percent = score <= 1 ? score * 100 : score;
+  if (percent > 0 && percent < 1) {
+    return `${percent.toFixed(2)}%`;
+  }
+  if (percent > 0 && percent < 10) {
+    return `${percent.toFixed(1)}%`;
+  }
   return `${Math.round(percent)}%`;
 }

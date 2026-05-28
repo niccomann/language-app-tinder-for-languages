@@ -29,6 +29,7 @@ def _seed_recommendations_data(engine):
                 translation="dog",
                 image_url="x",
                 language="de",
+                plural_form="Hunde",
             )
         )
         session.add(
@@ -53,7 +54,7 @@ def _seed_recommendations_data(engine):
                 SubtitleEntity(
                     movie_id=dog_movie.id,
                     language="de",
-                    full_text="hund hund hund hund hund spielt im park",
+                    full_text="hunde hunde hunde hunde hunde spielen im park",
                     source="opensubtitles",
                     license="test",
                     validated_at=validated_at,
@@ -61,7 +62,7 @@ def _seed_recommendations_data(engine):
                 SubtitleEntity(
                     movie_id=dog_movie.id,
                     language="de",
-                    full_text="der hund ist freundlich",
+                    full_text="die hunde sind freundlich",
                     source="secondary",
                     license="test",
                     validated_at=validated_at,
@@ -91,6 +92,8 @@ def _client_with_seeded_engine(tmp_path, monkeypatch):
     engine = _make_engine(tmp_path)
     _seed_recommendations_data(engine)
     monkeypatch.setattr(recommendations, "_get_engine", lambda: engine)
+    monkeypatch.setattr(recommendations, "MIN_SUBTITLE_TOKEN_COUNT", 1)
+    monkeypatch.setattr(recommendations, "MIN_SUBTITLE_UNIQUE_WORD_COUNT", 1)
     monkeypatch.setitem(app.dependency_overrides, get_database_session, _session_override(engine))
     recommendations._reset_cache()
     return TestClient(app)
@@ -110,6 +113,7 @@ def test_recommendations_rank_matching_dog_movie_first(tmp_path, monkeypatch):
     assert body[0]["imdb_id"] == "ttdog"
     assert body[0]["title"] == "Dog Movie"
     assert body[0]["shared_vocab_count"] >= 1
+    assert body[0]["subtitle_unique_word_count"] >= body[0]["shared_vocab_count"]
 
 
 def test_recommendations_empty_vocab_returns_empty_list(tmp_path, monkeypatch):
@@ -175,6 +179,8 @@ def test_recommendations_aggregate_duplicate_subtitle_sources(tmp_path, monkeypa
         session.commit()
 
     monkeypatch.setattr(recommendations, "_get_engine", lambda: engine)
+    monkeypatch.setattr(recommendations, "MIN_SUBTITLE_TOKEN_COUNT", 1)
+    monkeypatch.setattr(recommendations, "MIN_SUBTITLE_UNIQUE_WORD_COUNT", 1)
     monkeypatch.setitem(app.dependency_overrides, get_database_session, _session_override(engine))
     recommendations._reset_cache()
     client = TestClient(app)
@@ -189,3 +195,50 @@ def test_recommendations_aggregate_duplicate_subtitle_sources(tmp_path, monkeypa
     assert len(body) == 1
     assert body[0]["imdb_id"] == "ttdupe"
     assert body[0]["sample_known_words"] == ["bonuswort"]
+
+
+def test_recommendations_exclude_tiny_subtitle_stubs(tmp_path, monkeypatch):
+    engine = create_engine(f"sqlite:///{tmp_path / 'tiny-stubs.db'}")
+    SQLModel.metadata.create_all(engine)
+    validated_at = datetime.now(UTC)
+    with Session(engine) as session:
+        session.add(FlashcardEntity(word="hund", translation="dog", image_url="x", language="de"))
+        session.add(
+            UserWordStatisticsEntity(
+                user_id="u1",
+                word="hund",
+                language="de",
+                confidence_score=100,
+                times_seen=4,
+            )
+        )
+        movie = MovieEntity(imdb_id="ttstub", title="Stub Movie", year=2024)
+        session.add(movie)
+        session.commit()
+        session.refresh(movie)
+        session.add(
+            SubtitleEntity(
+                movie_id=movie.id,
+                language="de",
+                full_text="hund hund katze baum",
+                source="opensubtitles",
+                license="test",
+                validated_at=validated_at,
+            )
+        )
+        session.commit()
+
+    monkeypatch.setattr(recommendations, "_get_engine", lambda: engine)
+    monkeypatch.setattr(recommendations, "MIN_SUBTITLE_TOKEN_COUNT", 1000)
+    monkeypatch.setattr(recommendations, "MIN_SUBTITLE_UNIQUE_WORD_COUNT", 200)
+    monkeypatch.setitem(app.dependency_overrides, get_database_session, _session_override(engine))
+    recommendations._reset_cache()
+    client = TestClient(app)
+
+    response = client.get(
+        "/api/movies/recommendations?language=de&limit=5",
+        headers={"X-User-Id": "u1"},
+    )
+
+    assert response.status_code == 200
+    assert response.json() == []

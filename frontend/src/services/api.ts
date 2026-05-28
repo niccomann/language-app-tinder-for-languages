@@ -250,17 +250,21 @@ export const api = {
     return response.json();
   },
 
-  async recordProgress(cardId: number, known: boolean, userId: string = 'default_user'): Promise<UserProgress> {
+  async recordProgress(cardId: number, known: boolean, userId?: string): Promise<UserProgress> {
+    const body: { card_id: string; known: boolean; user_id?: string } = {
+      card_id: String(cardId),
+      known,
+    };
+    if (userId) {
+      body.user_id = userId;
+    }
+
     const response = await fetchWithTimeout(`${API_BASE_URL}/api/progress`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        card_id: String(cardId),
-        known,
-        user_id: userId,
-      }),
+      body: JSON.stringify(body),
     });
     
     if (!response.ok) {
@@ -270,8 +274,11 @@ export const api = {
     return response.json();
   },
 
-  async getProgress(userId: string = 'default_user'): Promise<UserProgress> {
-    const response = await fetchWithTimeout(`${API_BASE_URL}/api/progress?user_id=${encodeURIComponent(userId)}`);
+  async getProgress(userId?: string): Promise<UserProgress> {
+    const url = userId
+      ? `${API_BASE_URL}/api/progress?user_id=${encodeURIComponent(userId)}`
+      : `${API_BASE_URL}/api/progress`;
+    const response = await fetchWithTimeout(url);
     
     if (!response.ok) {
       throw new Error('Failed to fetch progress');
@@ -280,8 +287,11 @@ export const api = {
     return response.json();
   },
 
-  async resetProgress(userId: string = 'default_user'): Promise<void> {
-    const response = await fetchWithTimeout(`${API_BASE_URL}/api/progress/reset?user_id=${encodeURIComponent(userId)}`, {
+  async resetProgress(userId?: string): Promise<void> {
+    const url = userId
+      ? `${API_BASE_URL}/api/progress/reset?user_id=${encodeURIComponent(userId)}`
+      : `${API_BASE_URL}/api/progress/reset`;
+    const response = await fetchWithTimeout(url, {
       method: 'POST',
     });
     

@@ -939,6 +939,7 @@
     "path": "Parcours",
     "learn": "Apprends avec Swipe",
     "review": "Révise avec Games",
+    "movies": "Films",
     "explore": "Visualiser"
   },
   "library": {
@@ -1281,11 +1282,39 @@
     "subtitle": "À partir des mots que vous connaissez déjà",
     "menuLabel": "Recommandations de films",
     "loading": "Recherche des films les plus adaptés…",
-    "empty": "Apprenez encore quelques mots et revenez — le moteur a besoin de vocabulaire.",
+    "empty": "Apprenez encore quelques mots ou chargez des sous-titres complets — le moteur a besoin de votre vocabulaire et de vrais sous-titres de films.",
     "errorTitle": "Chargement impossible",
     "errorRetry": "Réessayer",
     "score": "Correspondance",
+    "coverageCount": "Correspondances uniques",
+    "uniqueSubtitleWords": "Mots uniques des sous-titres",
     "youKnow": "Vous connaissez déjà :",
-    "noPoster": "Affiche indisponible"
+    "noPoster": "Affiche indisponible",
+    "algorithmGuide": {
+      "title": "Fonctionnement du match",
+      "summary": "Les films sont classés en comparant votre vocabulaire connu avec des sous-titres validés.",
+      "points": [
+        {
+          "label": "Match",
+          "description": "Le match est la part du vocabulaire unique des sous-titres couverte par les mots que vous connaissez, après normalisation."
+        },
+        {
+          "label": "Pourcentage",
+          "description": "Le pourcentage affiché correspond aux mots uniques connus dans les sous-titres divisés par les mots uniques totaux : 100 mots connus sur 1000 mots uniques font 10%."
+        },
+        {
+          "label": "Formes des mots",
+          "description": "Le matcher normalise les conjugaisons, pluriels et formes fléchies avant de comparer le texte, donc andare peut correspondre à andato et Hund à Hunde."
+        },
+        {
+          "label": "Mots communs",
+          "description": "Le compteur montre les mots connus du dictionnaire dont la racine ou le lemme apparaît dans les sous-titres."
+        },
+        {
+          "label": "Vocabulaire connu",
+          "description": "Les swipes et imports donnent une confiance et un poids de pratique à chaque mot."
+        }
+      ]
+    }
   }
 }

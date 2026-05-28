@@ -55,19 +55,17 @@ def test_extract_user_vocab_returns_normalized_weights_for_known_flashcard_words
 
     vocab = extract_user_vocab(session, user_id="u1", language="de")
 
-    assert set(vocab) == {"hund", "katze", "haus"}
+    assert set(vocab) == {"hund", "katze"}
     assert sum(vocab.values()) == pytest.approx(1.0)
-    assert vocab["hund"] > vocab["katze"] > vocab["haus"]
+    assert vocab["hund"] > vocab["katze"]
 
     raw_hund = log1p(12) * 0.9
     raw_katze = log1p(2) * 0.4
-    raw_haus = 0.05
-    total = raw_hund + raw_katze + raw_haus
+    total = raw_hund + raw_katze
     assert vocab == pytest.approx(
         {
             "hund": raw_hund / total,
             "katze": raw_katze / total,
-            "haus": raw_haus / total,
         }
     )
 
@@ -77,3 +75,35 @@ def test_extract_user_vocab_returns_empty_dict_for_unknown_user(session):
     session.commit()
 
     assert extract_user_vocab(session, user_id="unknown", language="de") == {}
+
+
+def test_extract_user_vocab_excludes_zero_confidence_words(session):
+    session.add_all(
+        [
+            FlashcardEntity(word="Hund", translation="dog", image_url="", language="de"),
+            FlashcardEntity(word="Katze", translation="cat", image_url="", language="de"),
+            UserWordStatisticsEntity(
+                user_id="u1",
+                word="Hund",
+                language="de",
+                confidence_score=12,
+                times_seen=1,
+                times_correct=1,
+                times_incorrect=0,
+            ),
+            UserWordStatisticsEntity(
+                user_id="u1",
+                word="Katze",
+                language="de",
+                confidence_score=0,
+                times_seen=1,
+                times_correct=0,
+                times_incorrect=1,
+            ),
+        ]
+    )
+    session.commit()
+
+    vocab = extract_user_vocab(session, user_id="u1", language="de")
+
+    assert set(vocab) == {"hund"}

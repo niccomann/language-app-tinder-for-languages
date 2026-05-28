@@ -939,6 +939,7 @@
     "path": "Path",
     "learn": "Learn with Swipe",
     "review": "Review with Games",
+    "movies": "Films",
     "explore": "Visualize"
   },
   "library": {
@@ -1281,11 +1282,39 @@
     "subtitle": "Based on words you already know",
     "menuLabel": "Film recommendations",
     "loading": "Finding the best films for you…",
-    "empty": "Study a few more words and come back — the engine needs vocabulary to recommend.",
+    "empty": "Study a few more words or load complete subtitle data — the engine needs both vocabulary and real film subtitles.",
     "errorTitle": "Couldn't load",
     "errorRetry": "Retry",
     "score": "Match",
+    "coverageCount": "Distinct match",
+    "uniqueSubtitleWords": "Distinct subtitle words",
     "youKnow": "You already know:",
-    "noPoster": "Poster unavailable"
+    "noPoster": "Poster unavailable",
+    "algorithmGuide": {
+      "title": "How matching works",
+      "summary": "Films are ranked by comparing your known vocabulary with validated subtitle text.",
+      "points": [
+        {
+          "label": "Match",
+          "description": "Match is the share of distinct subtitle vocabulary covered by words you know, after normalization."
+        },
+        {
+          "label": "Percent",
+          "description": "The displayed percent is distinct known subtitle words divided by total distinct subtitle words, so 100 known words out of 1000 distinct subtitle words is 10%."
+        },
+        {
+          "label": "Word forms",
+          "description": "The matcher normalizes conjugations, plurals, and inflected forms before comparing text, so andare can match andato and Hund can match Hunde."
+        },
+        {
+          "label": "Shared words",
+          "description": "The count shows unique known dictionary words whose root or lemma appears in the subtitles."
+        },
+        {
+          "label": "Known vocabulary",
+          "description": "Swipe and import history provide confidence and practice weight for each word."
+        }
+      ]
+    }
   }
 }

@@ -150,7 +150,7 @@ class LibraryStats(BaseModel):
 class ProgressRequest(BaseModel):
     card_id: str
     known: bool
-    user_id: str = "default_user"
+    user_id: Optional[str] = None
 
 
 class ProgressResponse(BaseModel):
@@ -174,5 +174,5 @@ class AdaptiveFlashcardQueryRequest(BaseModel):
     selected_categories: List[str] = []
     profile: LearningPreferenceProfile = Field(default_factory=LearningPreferenceProfile)
     limit: int = Field(default=50, ge=1, le=500)
-    user_id: str = "default_user"
+    user_id: Optional[str] = None
     max_cefr_level: Optional[str] = None

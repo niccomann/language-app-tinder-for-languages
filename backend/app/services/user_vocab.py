@@ -1,8 +1,8 @@
 """Extract a normalized weighted vocabulary for a user in a target language.
 
 Output: dict[str, float] where keys are lowercased lemmas and values sum to 1.
-Weight per word = log(1 + times_seen) * (confidence_score / 100.0);
-missing confidence falls back to 0.5.
+Only words with positive confidence are considered known enough to influence
+recommendations. Weight per word = log(1 + times_seen) * (confidence / 100.0).
 """
 
 from math import log1p
@@ -39,12 +39,12 @@ def extract_user_vocab(session: Session, *, user_id: str, language: str) -> dict
         if word not in flashcard_words:
             continue
 
+        confidence_score = 0 if stats.confidence_score is None else float(stats.confidence_score)
+        if confidence_score <= 0:
+            continue
+
         times_seen = int(stats.times_seen or 0)
-        confidence_weight = (
-            0.5
-            if stats.confidence_score is None
-            else float(stats.confidence_score) / 100.0
-        )
+        confidence_weight = confidence_score / 100.0
         weight = log1p(times_seen) * confidence_weight
         if weight <= 0:
             weight = WEIGHT_FLOOR

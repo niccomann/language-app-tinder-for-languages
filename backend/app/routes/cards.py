@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Request
 from typing import Optional, List
 from sqlmodel import select, func, delete
 from sqlalchemy.orm import defer
@@ -7,6 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from types import SimpleNamespace
 
 from app.models import AdaptiveFlashcardQueryRequest, Flashcard, ProgressRequest, ProgressResponse
+from app.core.user_middleware import resolve_user_id
 from app.database import SessionDependency
 from app.database.models import FlashcardEntity, UserProgressEntity, UserWordStatisticsEntity
 from app.services.adaptive_learning import (
@@ -224,10 +225,11 @@ async def get_flashcards(
 @router.get("/cards/adaptive", response_model=List[AdaptiveFlashcard])
 async def get_adaptive_flashcards(
     session: SessionDependency,
+    request: Request,
     language: str = Query("de", description="Language code"),
     category: Optional[List[str]] = Query(None, description="Repeated category filters"),
     limit: int = Query(50, ge=1, le=500, description="Maximum number of adaptive cards"),
-    user_id: str = Query("default_user", description="User ID"),
+    user_id: Optional[str] = Query(None, description="User ID"),
     max_cefr_level: Optional[str] = Query(None, description="Hard cap for path-unlocked CEFR level"),
 ):
     """
@@ -236,7 +238,8 @@ async def get_adaptive_flashcards(
     Reuses user_word_statistics as the mastery source:
     struggling seen words first, then new words, learning words, and mastered review cards.
     """
-    candidates = load_adaptive_candidates(session, language, category, user_id, max_cefr_level)
+    resolved_user_id = resolve_user_id(request, user_id)
+    candidates = load_adaptive_candidates(session, language, category, resolved_user_id, max_cefr_level)
     selected = sorted(candidates, key=lambda item: adaptive_sort_key(item[0]))[:limit]
     _hydrate_media_for(session, selected)
 
@@ -249,7 +252,8 @@ async def get_adaptive_flashcards(
 @router.post("/cards/adaptive/query", response_model=List[AdaptiveFlashcard])
 async def query_adaptive_flashcards(
     session: SessionDependency,
-    request: AdaptiveFlashcardQueryRequest,
+    http_request: Request,
+    query_request: AdaptiveFlashcardQueryRequest,
 ):
     """
     Get adaptive flashcards through a soft preference profile.
@@ -258,13 +262,18 @@ async def query_adaptive_flashcards(
     selected domains are prioritized, functional grammar words are preserved,
     and fallback/exploration cards remain available.
     """
+    user_id = resolve_user_id(http_request, query_request.user_id)
     candidates = load_adaptive_candidates(
-        session, request.language, request.selected_categories, request.user_id, request.max_cefr_level
+        session,
+        query_request.language,
+        query_request.selected_categories,
+        user_id,
+        query_request.max_cefr_level,
     )
     selected = select_preference_weighted_candidates(
         candidates,
-        request.profile,
-        request.limit,
+        query_request.profile,
+        query_request.limit,
         adaptive_sort_key,
     )
     _hydrate_media_for(session, selected)
@@ -278,15 +287,17 @@ async def query_adaptive_flashcards(
 @router.post("/progress", response_model=ProgressResponse)
 async def record_progress(
     session: SessionDependency,
+    request: Request,
     progress_request: ProgressRequest
 ):
     """
     Record user's swipe action (known/unknown) in database
     """
+    user_id = resolve_user_id(request, progress_request.user_id)
     # Check if progress already exists for this card
     existing_progress = session.exec(
         select(UserProgressEntity).where(
-            UserProgressEntity.user_id == progress_request.user_id,
+            UserProgressEntity.user_id == user_id,
             UserProgressEntity.card_id == progress_request.card_id,
         )
     ).first()
@@ -304,7 +315,7 @@ async def record_progress(
     else:
         # Create new progress entry
         new_progress = UserProgressEntity(
-            user_id=progress_request.user_id,
+            user_id=user_id,
             card_id=progress_request.card_id,
             known=progress_request.known,
             review_count=1,
@@ -316,28 +327,31 @@ async def record_progress(
     
     session.commit()
     
-    return progress_response_for_user(session, progress_request.user_id)
+    return progress_response_for_user(session, user_id)
 
 
 @router.get("/progress", response_model=ProgressResponse)
 async def get_progress(
     session: SessionDependency,
-    user_id: str = Query("default_user", description="User ID"),
+    request: Request,
+    user_id: Optional[str] = Query(None, description="User ID"),
 ):
     """
     Get current progress statistics from database
     """
-    return progress_response_for_user(session, user_id)
+    return progress_response_for_user(session, resolve_user_id(request, user_id))
 
 
 @router.post("/progress/reset")
 async def reset_progress(
     session: SessionDependency,
-    user_id: str = Query("default_user", description="User ID"),
+    request: Request,
+    user_id: Optional[str] = Query(None, description="User ID"),
 ):
     """
     Reset progress statistics by deleting all progress records from database
     """
-    session.exec(delete(UserProgressEntity).where(UserProgressEntity.user_id == user_id))
+    resolved_user_id = resolve_user_id(request, user_id)
+    session.exec(delete(UserProgressEntity).where(UserProgressEntity.user_id == resolved_user_id))
     session.commit()
     return {"message": "Progress reset successfully"}

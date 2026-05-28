@@ -939,6 +939,7 @@
     "path": "Caminho",
     "learn": "Aprenda com Swipe",
     "review": "Revise com Games",
+    "movies": "Filmes",
     "explore": "Visualizar"
   },
   "library": {
@@ -1281,11 +1282,39 @@
     "subtitle": "Baseados nas palavras que já conheces",
     "menuLabel": "Recomendações de filmes",
     "loading": "À procura dos filmes mais adequados…",
-    "empty": "Aprende mais algumas palavras e volta — o motor precisa de vocabulário.",
+    "empty": "Aprende mais algumas palavras ou carrega legendas completas — o motor precisa do teu vocabulário e de legendas reais de filmes.",
     "errorTitle": "Não foi possível carregar",
     "errorRetry": "Tentar novamente",
     "score": "Compatibilidade",
+    "coverageCount": "Matches únicos",
+    "uniqueSubtitleWords": "Palavras únicas das legendas",
     "youKnow": "Já conheces:",
-    "noPoster": "Cartaz indisponível"
+    "noPoster": "Cartaz indisponível",
+    "algorithmGuide": {
+      "title": "Como funciona a compatibilidade",
+      "summary": "Os filmes são ordenados comparando o teu vocabulário conhecido com legendas validadas.",
+      "points": [
+        {
+          "label": "Match",
+          "description": "O match é a proporção do vocabulário único das legendas coberta pelas palavras que conheces, depois da normalização."
+        },
+        {
+          "label": "Percentagem",
+          "description": "A percentagem mostrada é palavras únicas conhecidas nas legendas divididas por palavras únicas totais: 100 palavras conhecidas em 1000 palavras únicas é 10%."
+        },
+        {
+          "label": "Formas das palavras",
+          "description": "O matcher normaliza conjugações, plurais e formas flexionadas antes de comparar o texto, por isso andare pode corresponder a andato e Hund a Hunde."
+        },
+        {
+          "label": "Palavras em comum",
+          "description": "A contagem mostra palavras conhecidas de dicionário cuja raiz ou lema aparece nas legendas."
+        },
+        {
+          "label": "Vocabulário conhecido",
+          "description": "Swipes e importações dão confiança e peso de prática a cada palavra."
+        }
+      ]
+    }
   }
 }

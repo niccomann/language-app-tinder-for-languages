@@ -9,6 +9,34 @@ import { getCefrLevelForPathLevel } from '../components/learningPathMeta';
 
 const SESSION_CARD_LIMIT = 80;
 const MILESTONE_STEP = 30;
+const TRANSIENT_LOAD_RETRY_DELAYS_MS = [250, 750];
+
+function isTransientLoadError(error: unknown) {
+  if (error instanceof TypeError) return true;
+  if (error instanceof DOMException && error.name === 'AbortError') return true;
+  const message = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
+  return message.includes('request timed out') || message.includes('networkerror');
+}
+
+async function wait(ms: number) {
+  await new Promise((resolve) => globalThis.setTimeout(resolve, ms));
+}
+
+async function retryTransientLoad<T>(operation: () => Promise<T>): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= TRANSIENT_LOAD_RETRY_DELAYS_MS.length; attempt += 1) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error;
+      if (!isTransientLoadError(error) || attempt === TRANSIENT_LOAD_RETRY_DELAYS_MS.length) {
+        break;
+      }
+      await wait(TRANSIENT_LOAD_RETRY_DELAYS_MS[attempt]);
+    }
+  }
+  throw lastError;
+}
 
 /**
  * Hook to manage learning session state and actions
@@ -56,13 +84,13 @@ export const useLearningSession = () => {
       const preferenceProfile = readSavedLearningPreferenceProfile();
       const maxCefrLevel = getCefrLevelForPathLevel(currentPathLevel);
       const [cards] = await Promise.all([
-        api.getAdaptiveFlashcards({
+        retryTransientLoad(() => api.getAdaptiveFlashcards({
           language,
           selectedCategories,
           learningPreferenceProfile: preferenceProfile,
           limit: SESSION_CARD_LIMIT,
           maxCefrLevel,
-        }),
+        })),
         loadLearningSummary(),
       ]);
       setFlashcards(cards);

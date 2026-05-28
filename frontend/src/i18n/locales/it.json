@@ -939,6 +939,7 @@
     "path": "Path",
     "learn": "Impara con Swipe",
     "review": "Ripassa con Games",
+    "movies": "Film",
     "explore": "Visualizza"
   },
   "library": {
@@ -1281,11 +1282,39 @@
     "subtitle": "Basati sulle parole che già conosci",
     "menuLabel": "Film consigliati",
     "loading": "Sto cercando i film più adatti…",
-    "empty": "Studia ancora un po' di parole e tornaci: il motore ha bisogno di vocabolario per consigliarti.",
+    "empty": "Studia ancora qualche parola oppure carica sottotitoli completi: il motore ha bisogno sia del tuo vocabolario sia di testi reali dei film.",
     "errorTitle": "Non riesco a caricare",
     "errorRetry": "Riprova",
     "score": "Match",
+    "coverageCount": "Match distinte",
+    "uniqueSubtitleWords": "Parole distinte sottotitoli",
     "youKnow": "Conosci già:",
-    "noPoster": "Locandina non disponibile"
+    "noPoster": "Locandina non disponibile",
+    "algorithmGuide": {
+      "title": "Come funziona il match",
+      "summary": "I film vengono ordinati confrontando il tuo vocabolario noto con i sottotitoli validati.",
+      "points": [
+        {
+          "label": "Match",
+          "description": "Il match è la quota di vocabolario distinto dei sottotitoli coperta dalle parole che conosci, dopo normalizzazione."
+        },
+        {
+          "label": "Percentuale",
+          "description": "La percentuale mostrata è parole distinte note nei sottotitoli diviso parole distinte totali nei sottotitoli: 100 parole note su 1000 parole distinte fa 10%."
+        },
+        {
+          "label": "Forme delle parole",
+          "description": "Il matcher normalizza coniugazioni, plurali e forme flesse prima del confronto, quindi andare può corrispondere ad andato e Hund a Hunde."
+        },
+        {
+          "label": "Parole in comune",
+          "description": "Il conteggio mostra parole note di dizionario la cui radice o lemma compare nei sottotitoli."
+        },
+        {
+          "label": "Vocabolario noto",
+          "description": "Swipe e import parole danno confidenza e peso di pratica a ogni parola."
+        }
+      ]
+    }
   }
 }

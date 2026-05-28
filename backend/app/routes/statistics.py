@@ -2,7 +2,7 @@
 Routes for user word statistics.
 Tracks how well each user knows each word with a confidence score (0-100).
 """
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Request
 from typing import Literal, Optional, List
 from datetime import datetime, UTC
 from pydantic import BaseModel
@@ -10,6 +10,7 @@ from sqlmodel import Session, select
 
 from app.database import SessionDependency
 from app.database.models import LearningSnapshotEntity, UserWordStatisticsEntity
+from app.core.user_middleware import resolve_user_id
 from app.services.adaptive_learning import (
     build_learning_summary,
     knowledge_level_from_confidence,
@@ -36,7 +37,7 @@ class UpdateStatisticsRequest(BaseModel):
     word: str
     language: str = "de"
     correct: bool
-    user_id: str = "default_user"
+    user_id: Optional[str] = None
 
 
 class UpdateStatisticsResponse(BaseModel):
@@ -145,15 +146,17 @@ def _upsert_today_snapshot(
 @router.get("/word/{word}", response_model=WordStatistics)
 async def get_word_statistics(
     session: SessionDependency,
+    request: Request,
     word: str,
     language: str = Query("de", description="Language code"),
-    user_id: str = Query("default_user", description="User ID"),
+    user_id: Optional[str] = Query(None, description="User ID"),
 ) -> WordStatistics:
     """Get statistics for a specific word."""
+    resolved_user_id = resolve_user_id(request, user_id)
     query = select(UserWordStatisticsEntity).where(
         UserWordStatisticsEntity.word == word,
         UserWordStatisticsEntity.language == language,
-        UserWordStatisticsEntity.user_id == user_id,
+        UserWordStatisticsEntity.user_id == resolved_user_id,
     )
     stats = session.exec(query).first()
     
@@ -175,15 +178,17 @@ async def get_word_statistics(
 @router.get("/all", response_model=List[WordStatistics])
 async def get_all_statistics(
     session: SessionDependency,
+    request: Request,
     language: str = Query("de", description="Language code"),
-    user_id: str = Query("default_user", description="User ID"),
+    user_id: Optional[str] = Query(None, description="User ID"),
     min_confidence: Optional[int] = Query(None, description="Minimum confidence score"),
     max_confidence: Optional[int] = Query(None, description="Maximum confidence score"),
 ) -> List[WordStatistics]:
     """Get statistics for all words the user has practiced."""
+    resolved_user_id = resolve_user_id(request, user_id)
     query = select(UserWordStatisticsEntity).where(
         UserWordStatisticsEntity.language == language,
-        UserWordStatisticsEntity.user_id == user_id,
+        UserWordStatisticsEntity.user_id == resolved_user_id,
     )
     
     if min_confidence is not None:
@@ -198,6 +203,7 @@ async def get_all_statistics(
 @router.post("/update", response_model=UpdateStatisticsResponse)
 async def update_word_statistics(
     session: SessionDependency,
+    http_request: Request,
     request: UpdateStatisticsRequest,
 ) -> UpdateStatisticsResponse:
     """
@@ -205,10 +211,11 @@ async def update_word_statistics(
     - correct=true (swipe right/like): adaptive confidence increase
     - correct=false (swipe left/dislike): adaptive confidence decrease
     """
+    user_id = resolve_user_id(http_request, request.user_id)
     query = select(UserWordStatisticsEntity).where(
         UserWordStatisticsEntity.word == request.word,
         UserWordStatisticsEntity.language == request.language,
-        UserWordStatisticsEntity.user_id == request.user_id,
+        UserWordStatisticsEntity.user_id == user_id,
     )
     stats = session.exec(query).first()
     
@@ -216,7 +223,7 @@ async def update_word_statistics(
         stats = UserWordStatisticsEntity(
             word=request.word,
             language=request.language,
-            user_id=request.user_id,
+            user_id=user_id,
             confidence_score=0,
             times_seen=0,
             times_correct=0,
@@ -238,11 +245,11 @@ async def update_word_statistics(
     session.commit()
     session.refresh(stats)
 
-    all_stats = _get_user_stats(session, request.language, request.user_id)
+    all_stats = _get_user_stats(session, request.language, user_id)
     previous_snapshot = _get_previous_snapshot(
         session,
         language=request.language,
-        user_id=request.user_id,
+        user_id=user_id,
         now=now,
     )
     summary = build_learning_summary(
@@ -256,7 +263,7 @@ async def update_word_statistics(
     )
     _upsert_today_snapshot(
         session,
-        user_id=request.user_id,
+        user_id=user_id,
         language=request.language,
         summary=summary,
         now=now,
@@ -276,16 +283,18 @@ async def update_word_statistics(
 @router.get("/adaptive-summary", response_model=AdaptiveLearningSummary)
 async def get_adaptive_learning_summary(
     session: SessionDependency,
+    request: Request,
     language: str = Query("de", description="Language code"),
-    user_id: str = Query("default_user", description="User ID"),
+    user_id: Optional[str] = Query(None, description="User ID"),
 ) -> AdaptiveLearningSummary:
     """Get adaptive dashboard metrics for the learning path home."""
     now = datetime.now(UTC)
-    all_stats = _get_user_stats(session, language, user_id)
+    resolved_user_id = resolve_user_id(request, user_id)
+    all_stats = _get_user_stats(session, language, resolved_user_id)
     previous_snapshot = _get_previous_snapshot(
         session,
         language=language,
-        user_id=user_id,
+        user_id=resolved_user_id,
         now=now,
     )
     summary = build_learning_summary(
@@ -299,4 +308,3 @@ async def get_adaptive_learning_summary(
     )
 
     return AdaptiveLearningSummary(**summary)
-
