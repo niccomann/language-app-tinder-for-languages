@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Dev-only WebView CDP driver used during mobile testing.
+_drive.mjs
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
