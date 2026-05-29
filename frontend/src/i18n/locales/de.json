@@ -884,9 +884,22 @@
     "continueButton": "Weiter",
     "backButton": "Zurück",
     "skipButton": "Überspringen",
+    "history": {
+      "tabWrite": "Schreiben",
+      "tabHistory": "Historie",
+      "title": "Feedback-Historie",
+      "loading": "Feedback wird geladen…",
+      "empty": "Noch kein Feedback.",
+      "errorTitle": "Feedback-Historie konnte nicht geladen werden.",
+      "retryButton": "Erneut versuchen",
+      "sourceLabel": "Seite",
+      "anonymousPersona": "Tester-Details nicht angegeben",
+      "personaLevelLabel": "Level",
+      "motivationLabel": "Motivation"
+    },
     "persona": {
       "sectionTitle": "Über dich",
-      "sectionHint": "Hilf uns zu verstehen, von wem das Feedback kommt (optional).",
+      "sectionHint": "Optional: Diese öffentlichen Details helfen uns zu verstehen, von wem das Feedback kommt.",
       "nicknameLabel": "Spitzname",
       "nicknamePlaceholder": "z. B. Luca, NerdyArtist…",
       "ageLabel": "Alter",
@@ -1282,14 +1295,18 @@
     "subtitle": "Basierend auf den Wörtern, die du bereits kennst",
     "menuLabel": "Filmempfehlungen",
     "loading": "Suche die passendsten Filme…",
-    "empty": "Lerne noch ein paar Wörter oder lade vollständige Untertiteldaten — die Engine braucht Vokabular und echte Filmuntertitel.",
+    "empty": "Lerne noch ein paar Wörter oder lade validierte Untertiteltexte — die Engine braucht dein Vokabular und Filmtexte für das Ranking.",
     "errorTitle": "Laden fehlgeschlagen",
     "errorRetry": "Erneut versuchen",
     "score": "Übereinstimmung",
     "coverageCount": "Eindeutige Treffer",
+    "userVocabulary": "Dein Vokabular",
     "uniqueSubtitleWords": "Eindeutige Untertitelwörter",
+    "subtitleTotalWords": "Untertitelwörter gesamt",
+    "subtitleVocabularySummary": "Untertitel: {{distinct}} eindeutige Wörter von {{total}} Wörtern insgesamt",
     "youKnow": "Du kennst schon:",
     "noPoster": "Poster nicht verfügbar",
+    "algorithmChartTitle": "Film-Matching-Ablauf",
     "algorithmGuide": {
       "title": "So funktioniert das Matching",
       "summary": "Filme werden sortiert, indem dein bekanntes Vokabular mit validierten Untertiteln verglichen wird.",
@@ -1304,11 +1321,11 @@
         },
         {
           "label": "Wortformen",
-          "description": "Der Matcher normalisiert Konjugationen, Plurale und flektierte Formen vor dem Vergleich, sodass andare zu andato und Hund zu Hunde passen kann."
+          "description": "Der Matcher nutzt gespeicherte lexikalische Aliasse und einfache Stemming-Regeln für verfügbare Sprachen; er ist kein vollständiger grammatischer Lemmatisierer."
         },
         {
           "label": "Gemeinsame Wörter",
-          "description": "Die Zahl zeigt eindeutige bekannte Wörterbuchwörter, deren Stamm oder Lemma in den Untertiteln vorkommt."
+          "description": "Die Zahl zeigt bekannte Wörter, deren normalisierter Schlüssel in den Untertiteln vorkommt."
         },
         {
           "label": "Bekanntes Vokabular",

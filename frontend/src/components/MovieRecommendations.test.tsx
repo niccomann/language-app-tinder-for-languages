@@ -18,6 +18,15 @@ vi.mock('../i18n/languageContext', async () => {
   };
 });
 
+vi.mock('./MermaidChart', () => ({
+  MermaidChart: ({ title, chart }: { title: string; chart: string }) => (
+    <section aria-label={title}>
+      <h2>{title}</h2>
+      <pre>{chart}</pre>
+    </section>
+  ),
+}));
+
 import { MovieRecommendations } from './MovieRecommendations';
 
 const movieCopy = getStaticCopy('en').movieRecommendations;
@@ -27,8 +36,10 @@ const recommendation = {
   title: 'The Godfather',
   year: 1972,
   score: 0.008696,
+  user_vocab_count: 400,
   shared_vocab_count: 3,
   subtitle_unique_word_count: 345,
+  subtitle_token_count: 7000,
   sample_known_words: ['famiglia', 'tempo', 'vendetta lunga lunga lunga'],
 };
 
@@ -50,16 +61,20 @@ describe('MovieRecommendations', () => {
     screen.getByText(movieCopy.loading);
     await screen.findByText('The Godfather');
 
-    expect(getMovieRecommendations).toHaveBeenCalledWith('de', 20);
+    expect(getMovieRecommendations).toHaveBeenCalledWith('de', 100);
     screen.getByText('1972');
     screen.getByText('0.87%');
     screen.getByText('3 / 345');
+    screen.getByText('400');
     screen.getByText('345');
+    screen.getByText('7,000');
+    screen.getByText('Subtitles: 345 distinct words out of 7,000 total words');
     screen.getByText('3');
     screen.getByText('famiglia');
     screen.getByText('tempo');
     screen.getByText('vendetta lunga lunga lunga');
-    screen.getByText(movieCopy.noPoster);
+    const poster = screen.getByRole('img', { name: 'The Godfather poster' });
+    expect((poster as HTMLImageElement).src).toContain('/api/movies/poster/tt0068646');
   });
 
   it('explains how the movie matching algorithm works', async () => {
@@ -72,7 +87,22 @@ describe('MovieRecommendations', () => {
     screen.getByText('How matching works');
     screen.getByText('Match is the share of distinct subtitle vocabulary covered by words you know, after normalization.');
     screen.getByText('The displayed percent is distinct known subtitle words divided by total distinct subtitle words, so 100 known words out of 1000 distinct subtitle words is 10%.');
-    screen.getByText('The matcher normalizes conjugations, plurals, and inflected forms before comparing text, so andare can match andato and Hund can match Hunde.');
+    screen.getByText('The matcher uses saved lexical aliases plus lightweight stemming rules for available languages; it is not a full grammatical lemmatizer.');
+    expect(screen.queryByText(/normalizes conjugations, plurals, and inflected forms/i)).toBeNull();
+  });
+
+  it('renders a Mermaid chart for the matching algorithm flow', async () => {
+    getMovieRecommendations.mockResolvedValue([recommendation]);
+
+    render(<MovieRecommendations onBack={() => {}} />);
+
+    await screen.findByText('The Godfather');
+
+    screen.getByRole('heading', { name: 'Movie matching flow' });
+    screen.getByText(/flowchart LR/);
+    screen.getByText(/Apply lexical aliases and stemming rules/);
+    screen.getByText(/Count total subtitle words/);
+    screen.getByText(/score = known distinct words \/ total distinct subtitle words/);
   });
 
   it('shows the localized empty state when no movies are recommended', async () => {

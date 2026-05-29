@@ -44,8 +44,8 @@ The endpoint returns the most recent feedback items, defaulting to a bounded lim
 
 The feedback service gets a read function that combines records from both storage paths:
 
-- S3 objects under `FEEDBACK_PREFIX/YYYY/MM/DD/*.json`
-- local fallback JSONL at `FEEDBACK_LOCAL_DIR/feedback.jsonl`
+- the application database in production and normal local development
+- local fallback JSONL at `FEEDBACK_LOCAL_DIR/feedback.jsonl` only when a development database is unavailable
 
 Records are normalized into one response shape and sorted by `created_at` descending. Malformed records are skipped instead of failing the whole response.
 
@@ -72,8 +72,8 @@ History errors should not block submission. If loading history fails, the modal 
 Backend tests:
 
 - `POST /api/feedback` still stores persona data.
-- `GET /api/feedback` returns S3/local feedback sorted newest first.
-- malformed local/S3 records are ignored.
+- `GET /api/feedback` returns database/local feedback sorted newest first.
+- malformed local records are ignored.
 - `limit` is capped.
 
 Frontend tests:

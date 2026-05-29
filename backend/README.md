@@ -100,6 +100,43 @@ USE_SQLITE=True
 # USE_SQLITE=False
 # DB_HOST=localhost
 # DB_PORT=5433
+
+# Movie recommendations importer/cache
+OPENSUBTITLES_USER_AGENT=customizeyourlingua/1.0 contact@example.com
+OPENSUBTITLES_REQUEST_DELAY_SECONDS=1.0
+OPENSUBTITLES_MIN_WORD_COUNT=1000
+OPENSUBTITLES_REQUEST_RETRY_COUNT=2
+OPENSUBTITLES_REQUEST_RETRY_DELAY_SECONDS=1.0
+OPENSUBTITLES_ALLOWED_DOWNLOAD_HOSTS=dl.opensubtitles.org,www.opensubtitles.org,opensubtitles.org
+OPENSUBTITLES_MAX_DOWNLOAD_BYTES=5000000
+OPENSUBTITLES_MAX_DECOMPRESSED_BYTES=20000000
+MOVIE_RECOMMENDER_CACHE_TTL_SECONDS=1800
+MOVIE_RECOMMENDER_CACHE_RESET_MIN_INTERVAL_SECONDS=60
+MOVIE_RECOMMENDER_ADMIN_TOKEN=<random-token-at-least-32-chars>
+```
+
+## Movie Subtitle Imports
+
+The default German movie corpus manifest is versioned at
+`app/data/movie_manifest_de.json`. The importer writes through the SQLModel
+application models for both local SQLite and Postgres-backed production.
+
+Local SQLite import:
+
+```bash
+python scripts/import_opensubtitles_movies.py \
+  --db app.db \
+  --manifest app/data/movie_manifest_de.json \
+  --language de
+```
+
+Postgres/prod import through the configured app engine:
+
+```bash
+python scripts/import_opensubtitles_movies.py \
+  --app-database \
+  --manifest app/data/movie_manifest_de.json \
+  --language de
 ```
 
 ## Action Types for Tracking

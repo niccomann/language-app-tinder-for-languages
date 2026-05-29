@@ -1,12 +1,13 @@
-"""Tester feedback endpoints — persisted to AWS DynamoDB."""
+"""Tester feedback endpoints."""
 from __future__ import annotations
 
 import logging
-from typing import Literal, Optional
+from typing import Any, Literal, Optional
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 
+from app.services.feedback_service import list_feedback as read_feedback_history
 from app.services.feedback_service import save_feedback
 
 log = logging.getLogger(__name__)
@@ -39,6 +40,21 @@ class FeedbackResponse(BaseModel):
     created_at: int
 
 
+class FeedbackHistoryItem(BaseModel):
+    id: str
+    created_at: int
+    created_at_iso: Optional[str] = None
+    message: str
+    sentiment: Optional[Literal["like", "dislike", "neutral"]] = None
+    source_url: Optional[str] = None
+    app_version: Optional[str] = None
+    persona: Optional[dict[str, Any]] = None
+
+
+class FeedbackHistoryResponse(BaseModel):
+    items: list[FeedbackHistoryItem]
+
+
 @router.post("", response_model=FeedbackResponse)
 async def submit_feedback(payload: FeedbackPayload, request: Request) -> FeedbackResponse:
     user_agent = request.headers.get("user-agent")
@@ -66,3 +82,14 @@ async def submit_feedback(payload: FeedbackPayload, request: Request) -> Feedbac
         raise HTTPException(status_code=502, detail=f"feedback storage failed: {exc}") from exc
 
     return FeedbackResponse(id=item["id"], created_at=item["created_at"])
+
+
+@router.get("", response_model=FeedbackHistoryResponse, response_model_exclude_none=True)
+async def list_feedback(limit: int = Query(default=100, ge=1)) -> FeedbackHistoryResponse:
+    try:
+        items = read_feedback_history(limit=limit)
+    except Exception as exc:  # noqa: BLE001 — surface unexpected storage failures to caller
+        log.exception("Failed to list feedback")
+        raise HTTPException(status_code=502, detail=f"feedback history failed: {exc}") from exc
+
+    return FeedbackHistoryResponse(items=items)

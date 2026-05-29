@@ -5,18 +5,31 @@
 The movie recommender ranks films by comparing the learner's known vocabulary
 against validated subtitle text.
 
-Current local smoke data:
+There is no artificial minimum subtitle length in the recommendation route.
+If a validated subtitle row exists, it can be ranked.
+Films with no known-word overlap are still returned with `score = 0`, so the
+UI can show the full available catalogue as a ranked list instead of hiding
+zero-match candidates.
 
-- `movies`: 3
-- `subtitles`: 3
-- `validated_subtitles`: 3
+Current local data:
+
+- `movies`: 104
+- `subtitles`: 104
+- `validated_subtitles`: 104
+- subtitle source: OpenSubtitles REST metadata/downloads for German subtitles
+- reproducible corpus input: `backend/app/data/movie_manifest_de.json`
+- current raw subtitle word count range: 1,893 to 20,964 words
+- average raw subtitle word count: about 7,801 words
+- reusable importer: `backend/scripts/import_opensubtitles_movies.py`
 
 The current UI shows:
 
 - `Match`: distinct subtitle vocabulary coverage after lexical normalization.
 - `Distinct match`: known distinct subtitle words divided by total distinct
   subtitle words after tokenization, stopword removal, and normalization.
+- `Your vocabulary`: total distinct known learner words used as the query.
 - `Distinct subtitle words`: denominator used by the percentage.
+- `Total subtitle words`: raw subtitle word occurrences before matcher filtering.
 - `You already know`: the number of unique known words shared between the
   learner vocabulary and the subtitle document after lexical normalization.
 - `sample_known_words`: a short sample of shared words.
@@ -27,13 +40,16 @@ Example:
 Forrest Gump
 Match: 10%
 Distinct match: 100 / 1000
+Your vocabulary: 400
 Distinct subtitle words: 1000
+Total subtitle words: 7000
 You already know: 13
 ```
 
 This means 100 normalized distinct subtitle words match words the learner
 knows, out of 1000 normalized distinct subtitle words. The percentage uses
-distinct vocabulary, not repeated occurrences.
+distinct vocabulary, not repeated occurrences. `Total subtitle words` is context
+for the size of the subtitle corpus and is not the score denominator.
 
 ## Current Backend Flow
 
@@ -46,17 +62,20 @@ distinct vocabulary, not repeated occurrences.
 weight = log(1 + times_seen) * (confidence_score / 100)
 ```
 
-5. The recommender tokenizes subtitle text and normalizes word forms.
+5. The recommender tokenizes subtitle text and applies lexical normalization.
    - Flashcard `plural_form` maps plurals back to the dictionary word.
    - `verb_conjugations` maps known conjugated forms back to the infinitive
      when the table is available.
    - Conservative language rules handle common suffixes such as Italian
      infinitives and participles (`andare` / `andato`).
+   - This is alias/stemming based matching, not a full grammatical
+     lemmatizer.
 6. It computes:
 
 ```text
 shared_vocab_count = distinct subtitle words whose normalized form is known
 subtitle_unique_word_count = all distinct normalized subtitle words
+subtitle_token_count = raw subtitle word occurrences before matcher filtering
 score = shared_vocab_count / subtitle_unique_word_count
 ```
 
@@ -68,8 +87,10 @@ score = shared_vocab_count / subtitle_unique_word_count
 - `title`
 - `year`
 - `score` (coverage ratio from 0 to 1)
+- `user_vocab_count`
 - `shared_vocab_count`
 - `subtitle_unique_word_count`
+- `subtitle_token_count`
 - `sample_known_words`
 
 ## Current Limitation
@@ -96,6 +117,68 @@ Expected: forms normalize toward gehen when verb_conjugations has the rows
 
 The local SQLite database has a German `verb_conjugations` table with 11760
 forms. The recommender uses it when present.
+
+## Production Data Pipeline
+
+`backend/app.db` is intentionally ignored by Git, so local subtitle rows are not
+deployed automatically. Production or staging must either receive a WAL-safe DB
+backup or run the importer against its own database.
+
+Default German corpus manifest:
+
+```text
+backend/app/data/movie_manifest_de.json
+```
+
+Local SQLite importer command from the `backend` directory:
+
+```bash
+OPENSUBTITLES_USER_AGENT="customizeyourlingua/1.0 contact@example.com" \
+OPENSUBTITLES_REQUEST_DELAY_SECONDS=1.0 \
+OPENSUBTITLES_MIN_WORD_COUNT=1000 \
+python scripts/import_opensubtitles_movies.py \
+  --db app.db \
+  --manifest app/data/movie_manifest_de.json \
+  --language de
+```
+
+Postgres/prod importer command from inside the backend container or an
+environment with the app DB variables configured:
+
+```bash
+OPENSUBTITLES_USER_AGENT="customizeyourlingua/1.0 contact@example.com" \
+OPENSUBTITLES_REQUEST_DELAY_SECONDS=1.0 \
+OPENSUBTITLES_MIN_WORD_COUNT=1000 \
+python scripts/import_opensubtitles_movies.py \
+  --app-database \
+  --manifest app/data/movie_manifest_de.json \
+  --language de
+```
+
+Runtime configuration:
+
+- `OPENSUBTITLES_REST_BASE_URL`: defaults to `https://rest.opensubtitles.org/search`.
+- `OPENSUBTITLES_USER_AGENT`: should identify the app/operator in production.
+- `OPENSUBTITLES_MIN_WORD_COUNT`: rejects tiny or malformed subtitles.
+- `OPENSUBTITLES_REQUEST_DELAY_SECONDS`: delay between movie imports.
+- `OPENSUBTITLES_REQUEST_TIMEOUT_SECONDS`: search request timeout.
+- `OPENSUBTITLES_DOWNLOAD_TIMEOUT_SECONDS`: subtitle download timeout.
+- `OPENSUBTITLES_REQUEST_RETRY_COUNT`: retry count for transient HTTP errors
+  such as 429 or 5xx responses.
+- `OPENSUBTITLES_REQUEST_RETRY_DELAY_SECONDS`: delay between transient HTTP
+  retries.
+- `MOVIE_RECOMMENDER_CACHE_TTL_SECONDS`: recommendation index cache TTL.
+- `MOVIE_RECOMMENDER_ADMIN_TOKEN`: required for cache reset.
+
+After importing into a running backend, reset the recommender cache:
+
+```bash
+curl -X POST "$BASE/api/movies/recommendations/cache/reset" \
+  -H "X-Admin-Token: $MOVIE_RECOMMENDER_ADMIN_TOKEN"
+```
+
+Before running production imports, confirm the current OpenSubtitles terms/API
+requirements and keep an audit trail of subtitle source/license metadata.
 
 ## Desired Algorithm
 
@@ -179,7 +262,9 @@ Each movie card should show:
 - `Match`: estimated subtitle vocabulary coverage.
 - `Distinct match`: known distinct subtitle words divided by total distinct
   subtitle words.
+- `Your vocabulary`: total distinct known words in the learner query.
 - `Distinct subtitle words`: total distinct normalized words in the subtitle.
+- `Total subtitle words`: raw word occurrences in the subtitle text.
 - `Known words`: unique known lemmas in the film.
 - `Why this film?`: expandable explanation.
 
@@ -189,7 +274,9 @@ Suggested card fields:
 Forrest Gump
 Match: 18%
 Distinct match: 42 / 233
+Your vocabulary: 400
 Distinct subtitle words: 233
+Total subtitle words: 7000
 Known words: 13
 
 Why this film?
@@ -217,8 +304,10 @@ Extend `MovieRecommendationOut`:
   "title": "Forrest Gump",
   "year": 1994,
   "score": 0.18,
+  "user_vocab_count": 400,
   "shared_vocab_count": 13,
   "subtitle_unique_word_count": 233,
+  "subtitle_token_count": 7000,
   "sample_known_words": ["freund", "familie"],
   "matched_words": [
     {
@@ -248,8 +337,9 @@ Extend `MovieRecommendationOut`:
 
 ### Phase 2: Explainable Recommendation Output
 
-- Keep returning `score`, `shared_vocab_count`,
-  `subtitle_unique_word_count`, and `sample_known_words`.
+- Keep returning `score`, `user_vocab_count`, `shared_vocab_count`,
+  `subtitle_unique_word_count`, `subtitle_token_count`, and
+  `sample_known_words`.
 - Add optional `matched_words` rows when the UI needs per-lemma details.
 - Add route tests for the expanded contract.
 

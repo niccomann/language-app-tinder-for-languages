@@ -138,6 +138,27 @@ async function postSpeech(text: string, language: string, voice: string): Promis
   return response.json();
 }
 
+export interface FeedbackPersona {
+  nickname?: string;
+  age?: number;
+  profession?: 'artist' | 'humanist' | 'scientific' | 'technical' | 'student' | 'other';
+  gender?: 'woman' | 'man' | 'other' | 'undisclosed';
+  native_language?: 'it' | 'en' | 'es' | 'de' | 'fr' | 'pt' | 'other';
+  target_level?: 'a1' | 'a2' | 'b1' | 'b2' | 'c1' | 'c2' | 'none';
+  learning_motivation?: string;
+}
+
+export interface FeedbackHistoryItem {
+  id: string;
+  created_at: number;
+  created_at_iso?: string;
+  message: string;
+  sentiment?: 'like' | 'dislike' | 'neutral';
+  source_url?: string;
+  app_version?: string;
+  persona?: FeedbackPersona;
+}
+
 export const api = {
   async getFlashcards(params?: {
     language?: string;
@@ -651,6 +672,17 @@ export const api = {
       throw new Error(`Failed to submit feedback (${response.status}) ${detail}`);
     }
     return response.json();
+  },
+
+  async listFeedback(limit = 100): Promise<FeedbackHistoryItem[]> {
+    const safeLimit = Math.max(1, Math.min(Math.trunc(limit), 100));
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/feedback?limit=${safeLimit}`);
+    if (!response.ok) {
+      const detail = await response.text().catch(() => '');
+      throw new Error(`Failed to fetch feedback (${response.status}) ${detail}`);
+    }
+    const data = await response.json();
+    return Array.isArray(data.items) ? data.items : [];
   },
 
   async loginWithGoogle(idToken: string): Promise<AuthSession> {

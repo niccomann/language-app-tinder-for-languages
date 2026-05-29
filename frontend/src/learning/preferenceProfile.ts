@@ -119,6 +119,18 @@ export function hasMeaningfulPreferenceProfile(profile: LearningPreferenceProfil
   );
 }
 
+export function buildPreferenceProfileSummary(profile: LearningPreferenceProfile) {
+  return {
+    domains: profile.domains.join(', '),
+    tones: profile.tones.join(', '),
+    wordStyles: profile.wordStyles.join(', '),
+    preferredPartsOfSpeech: profile.preferredPartsOfSpeech.join(', '),
+    difficultyMode: profile.difficultyMode,
+    semanticDiversityMode: profile.semanticDiversityMode,
+    exerciseBias: profile.exerciseBias.join(', '),
+  };
+}
+
 export function readSavedLearningPreferenceProfile(): LearningPreferenceProfile | null {
   const profile = normalizeOnboardingPreferences(readOnboardingPreferences());
   return hasMeaningfulPreferenceProfile(profile) ? profile : null;

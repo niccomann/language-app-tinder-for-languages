@@ -55,10 +55,11 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
   }, []);
 
   useEffect(() => {
-    if (!svgRef.current || dimensions.width === 0) return;
+    const svgElement = svgRef.current;
+    if (!svgElement || dimensions.width === 0) return;
 
-    const svg = d3.select(svgRef.current);
-    const previousTransform = d3.zoomTransform(svgRef.current);
+    const svg = d3.select(svgElement);
+    const previousTransform = d3.zoomTransform(svgElement);
     svg.selectAll('*').remove();
 
     const { width, height } = dimensions;
@@ -91,7 +92,7 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
 
     const container = svg.append('g').attr('class', 'zoom-container');
 
-    initializeZoom(svgRef.current, container);
+    initializeZoom(svgElement, container);
 
     if (zoomRef.current && previousTransform.k !== 1) {
       svg.call(zoomRef.current.transform, previousTransform);
@@ -222,7 +223,7 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
     let fitTimeoutId: ReturnType<typeof setTimeout> | null = null;
     simulation.on('end', () => {
       fitTimeoutId = setTimeout(() => {
-        if (svgRef.current && zoomRef.current && nodes.length > 0) {
+        if (svgElement && zoomRef.current && nodes.length > 0) {
           const padding = 80;
 
           const minX = Math.min(...nodes.map(n => (n.x || 0) - nodeRadius - 50));
@@ -253,9 +254,7 @@ export function EmbeddedGrammarGraph({ sentence, onNodeSelect }: EmbeddedGrammar
         clearTimeout(fitTimeoutId);
         fitTimeoutId = null;
       }
-      if (svgRef.current) {
-        d3.select(svgRef.current).on('click', null);
-      }
+      d3.select(svgElement).on('click', null);
       zoomRef.current = null;
     };
   // Intentionally omit `zoomRef`/`initializeZoom` (stable refs from

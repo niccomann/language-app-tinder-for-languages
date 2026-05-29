@@ -55,9 +55,12 @@ export const useLearningSession = () => {
   const [error, setError] = useState<string | null>(null);
   const [recordError, setRecordError] = useState<string | null>(null);
   const [learningSummary, setLearningSummary] = useState<AdaptiveLearningSummary | null>(null);
+  const [learningSummaryLoaded, setLearningSummaryLoaded] = useState(false);
   const [learningFeedback, setLearningFeedback] = useState<LearningFeedback | null>(null);
   const [milestoneEvent, setMilestoneEvent] = useState<MilestoneEvent | null>(null);
   const currentPathLevel = learningSummary?.path_level ?? 1;
+  const [swipeInFlight, setSwipeInFlight] = useState(false);
+  const swipeInFlightRef = useRef(false);
 
   const loadLearningSummary = useCallback(async () => {
     try {
@@ -66,7 +69,10 @@ export const useLearningSession = () => {
       return summary;
     } catch (err) {
       reportClientError('Failed to refresh learning summary:', err);
+      setLearningSummary(null);
       return null;
+    } finally {
+      setLearningSummaryLoaded(true);
     }
   }, [language]);
 
@@ -96,6 +102,8 @@ export const useLearningSession = () => {
       setFlashcards(cards);
       setCurrentIndex(0);
       setLearningFeedback(null);
+      swipeInFlightRef.current = false;
+      setSwipeInFlight(false);
     } catch (err) {
       setError('Failed to load flashcards. Make sure the backend is running.');
       reportClientError('Failed to load flashcards:', err);
@@ -108,14 +116,13 @@ export const useLearningSession = () => {
   const handleSwipe = useCallback(async (direction: 'left' | 'right') => {
     const currentCard = flashcards[currentIndex];
     if (!currentCard) return;
+    if (swipeInFlightRef.current) return;
 
     const known = direction === 'right';
     const token = ++swipeTokenRef.current;
-
-    // Advance the deck immediately. Persisting progress is best-effort —
-    // if it fails the user still moves forward and we surface a non-blocking
-    // warning, rather than freezing OR unmounting the session.
-    setCurrentIndex(prev => prev + 1);
+    let shouldAdvance = false;
+    swipeInFlightRef.current = true;
+    setSwipeInFlight(true);
 
     try {
       const updatedProgress = await api.recordProgress(currentCard.id, known);
@@ -155,14 +162,22 @@ export const useLearningSession = () => {
         reportClientError('Failed to update word statistics:', err);
       }
 
-      if (token === swipeTokenRef.current) {
-        await loadLearningSummary();
-      }
+      shouldAdvance = true;
     } catch (err) {
       reportClientError('Failed to record progress:', err);
       if (token === swipeTokenRef.current) {
         setRecordError('Progresso non salvato — riprova');
+        shouldAdvance = true;
       }
+    }
+
+    if (token === swipeTokenRef.current && shouldAdvance) {
+      setCurrentIndex(prev => prev + 1);
+      await loadLearningSummary();
+    }
+    if (token === swipeTokenRef.current) {
+      swipeInFlightRef.current = false;
+      setSwipeInFlight(false);
     }
   }, [currentIndex, flashcards, loadLearningSummary, copy, language]);
 
@@ -176,6 +191,8 @@ export const useLearningSession = () => {
       setProgress({ cards_reviewed: 0, known_count: 0, unknown_count: 0 });
       setCurrentIndex(0);
       setLearningFeedback(null);
+      swipeInFlightRef.current = false;
+      setSwipeInFlight(false);
       await loadLearningSummary();
     } catch (err) {
       reportClientError('Failed to reset progress:', err);
@@ -200,8 +217,10 @@ export const useLearningSession = () => {
     nextCard,
     progress,
     learningSummary,
+    learningSummaryLoaded,
     learningFeedback,
     milestoneEvent,
+    swipeInFlight,
     loading,
     error,
     recordError,

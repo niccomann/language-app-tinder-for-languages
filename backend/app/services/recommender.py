@@ -29,6 +29,7 @@ LexicalAliases = dict[str, dict[str, str]]
 class _LanguageIndex:
     imdb_ids: tuple[str, ...]
     tokenized_docs: tuple[tuple[str, ...], ...]
+    document_word_counts: tuple[int, ...]
     document_vocab: tuple[frozenset[str], ...]
     metadata: dict[str, dict[str, Any]]
     lexical_aliases: dict[str, str]
@@ -54,11 +55,12 @@ class RecommenderCache:
         min_unique_tokens: int = 1,
     ) -> "RecommenderCache":
         normalized_aliases = _normalize_lexical_aliases(lexical_aliases or {})
-        grouped: dict[str, list[tuple[str, tuple[str, ...]]]] = {}
+        grouped: dict[str, list[tuple[str, tuple[str, ...], int]]] = {}
         for (language, imdb_id), text in corpus.items():
             if language not in SUPPORTED_LANGUAGES:
                 continue
 
+            raw_word_count = _raw_word_count(text)
             tokens = tuple(
                 tokenize(
                     text,
@@ -69,12 +71,13 @@ class RecommenderCache:
             if len(tokens) < min_document_tokens or len(frozenset(tokens)) < min_unique_tokens:
                 continue
 
-            grouped.setdefault(language, []).append((imdb_id, tokens))
+            grouped.setdefault(language, []).append((imdb_id, tokens, raw_word_count))
 
         languages: dict[str, _LanguageIndex] = {}
         for language, documents in grouped.items():
-            imdb_ids = tuple(imdb_id for imdb_id, _tokens in documents)
-            tokenized_docs = tuple(tokens for _imdb_id, tokens in documents)
+            imdb_ids = tuple(imdb_id for imdb_id, _tokens, _raw_word_count in documents)
+            tokenized_docs = tuple(tokens for _imdb_id, tokens, _raw_word_count in documents)
+            document_word_counts = tuple(raw_word_count for _imdb_id, _tokens, raw_word_count in documents)
             document_vocab = tuple(frozenset(tokens) for tokens in tokenized_docs)
             bm25 = BM25Okapi([list(tokens) for tokens in tokenized_docs])
 
@@ -88,6 +91,7 @@ class RecommenderCache:
             languages[language] = _LanguageIndex(
                 imdb_ids=imdb_ids,
                 tokenized_docs=tokenized_docs,
+                document_word_counts=document_word_counts,
                 document_vocab=document_vocab,
                 metadata=metadata,
                 lexical_aliases=normalized_aliases.get(language, {}),
@@ -137,6 +141,7 @@ class Recommender:
         tfidf_scores = np.clip(tfidf_scores, 0.0, 1.0)
 
         query_vocab = frozenset(query_weights)
+        user_vocab_count = len(query_vocab)
         retrieval_scores = np.clip((0.55 * bm25_scores) + (0.45 * tfidf_scores), 0.0, 1.0)
         known_word_keys = tuple(
             sorted(document_vocab & query_vocab)
@@ -146,11 +151,9 @@ class Recommender:
             (len(known_keys) / len(document_vocab)) if document_vocab else 0.0
             for known_keys, document_vocab in zip(known_word_keys, index.document_vocab)
         )
-        if not any(known_word_keys):
-            return []
 
         ranked_positions = sorted(
-            (position for position, known_keys in enumerate(known_word_keys) if known_keys),
+            range(len(index.imdb_ids)),
             key=lambda position: (
                 -coverage_scores[position],
                 -retrieval_scores[position],
@@ -172,8 +175,10 @@ class Recommender:
                     "title": item_metadata.get("title"),
                     "year": item_metadata.get("year"),
                     "score": round(float(coverage_scores[position]), 6),
+                    "user_vocab_count": user_vocab_count,
                     "shared_vocab_count": len(known_words),
                     "subtitle_unique_word_count": len(index.document_vocab[position]),
+                    "subtitle_token_count": index.document_word_counts[position],
                     "sample_known_words": known_words[:_SAMPLE_WORD_LIMIT],
                 }
             )
@@ -195,6 +200,10 @@ def tokenize(
             continue
         tokens.append(_lexical_key(token, language=language, lexical_aliases=lexical_aliases))
     return tokens
+
+
+def _raw_word_count(text: str) -> int:
+    return sum(1 for _match in _WORD_RE.finditer(text or ""))
 
 
 def _stopwords_for(language: str) -> frozenset[str]:

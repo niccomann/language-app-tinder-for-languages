@@ -40,6 +40,7 @@ interface FirstVocabularyOnboardingProps {
   progress: UserProgress;
   totalCards: number;
   onSwipe: (direction: 'left' | 'right') => void;
+  swipeInFlight: boolean;
   onComplete: () => void;
 }
 
@@ -49,6 +50,7 @@ export function FirstVocabularyOnboarding({
   progress,
   totalCards,
   onSwipe,
+  swipeInFlight,
   onComplete,
 }: FirstVocabularyOnboardingProps) {
   const [phase, setPhase] = useState<OnboardingPhase>('intro');
@@ -77,7 +79,7 @@ export function FirstVocabularyOnboarding({
   };
 
   const handleSwipe = (direction: 'left' | 'right') => {
-    if (!currentCard || phase !== 'scan') return;
+    if (!currentCard || phase !== 'scan' || swipeInFlight) return;
 
     const nextSignals = [
       ...signals,
@@ -309,7 +311,7 @@ export function FirstVocabularyOnboarding({
           )}
         </div>
 
-        <SwipeButtons onSwipe={handleSwipe} disabled={!currentCard} />
+        <SwipeButtons onSwipe={handleSwipe} disabled={!currentCard || swipeInFlight} />
         <ProgressBar progress={progress} totalCards={totalCards} />
 
         {canPersonalize && (

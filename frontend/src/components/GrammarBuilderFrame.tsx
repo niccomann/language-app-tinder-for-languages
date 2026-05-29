@@ -35,7 +35,7 @@ export function GrammarBuilderFrame({
       className={`min-h-0 transition-colors duration-300 ${
         fitViewport
           ? 'flex h-[calc(100dvh-9rem)] min-h-[30rem] flex-col overflow-hidden'
-          : 'h-full overflow-y-auto'
+          : 'h-full min-h-0 overflow-y-auto'
       } ${isFullLayout ? 'px-0 py-2 sm:px-1' : 'p-3 sm:p-4'} bg-canvas`}
     >
       <div

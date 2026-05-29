@@ -884,9 +884,22 @@
     "continueButton": "Continuer",
     "backButton": "Retour",
     "skipButton": "Passer",
+    "history": {
+      "tabWrite": "Écrire",
+      "tabHistory": "Historique",
+      "title": "Historique des feedbacks",
+      "loading": "Chargement des feedbacks…",
+      "empty": "Aucun feedback pour l'instant.",
+      "errorTitle": "Impossible de charger l'historique des feedbacks.",
+      "retryButton": "Réessayer",
+      "sourceLabel": "Page",
+      "anonymousPersona": "Détails testeur non fournis",
+      "personaLevelLabel": "Niveau",
+      "motivationLabel": "Motivation"
+    },
     "persona": {
       "sectionTitle": "À propos de toi",
-      "sectionHint": "Aide-nous à comprendre de qui vient le feedback (facultatif).",
+      "sectionHint": "Facultatif : ces détails publics nous aident à comprendre de qui vient le feedback.",
       "nicknameLabel": "Pseudo",
       "nicknamePlaceholder": "ex. Luca, NerdyArtist…",
       "ageLabel": "Âge",
@@ -1282,14 +1295,18 @@
     "subtitle": "À partir des mots que vous connaissez déjà",
     "menuLabel": "Recommandations de films",
     "loading": "Recherche des films les plus adaptés…",
-    "empty": "Apprenez encore quelques mots ou chargez des sous-titres complets — le moteur a besoin de votre vocabulaire et de vrais sous-titres de films.",
+    "empty": "Apprenez encore quelques mots ou chargez des sous-titres validés — le moteur a besoin de votre vocabulaire et des textes des films pour classer.",
     "errorTitle": "Chargement impossible",
     "errorRetry": "Réessayer",
     "score": "Correspondance",
     "coverageCount": "Correspondances uniques",
+    "userVocabulary": "Votre vocabulaire",
     "uniqueSubtitleWords": "Mots uniques des sous-titres",
+    "subtitleTotalWords": "Mots totaux des sous-titres",
+    "subtitleVocabularySummary": "Sous-titres : {{distinct}} mots uniques sur {{total}} mots au total",
     "youKnow": "Vous connaissez déjà :",
     "noPoster": "Affiche indisponible",
+    "algorithmChartTitle": "Flux de correspondance des films",
     "algorithmGuide": {
       "title": "Fonctionnement du match",
       "summary": "Les films sont classés en comparant votre vocabulaire connu avec des sous-titres validés.",
@@ -1304,11 +1321,11 @@
         },
         {
           "label": "Formes des mots",
-          "description": "Le matcher normalise les conjugaisons, pluriels et formes fléchies avant de comparer le texte, donc andare peut correspondre à andato et Hund à Hunde."
+          "description": "Le matcher utilise des alias lexicaux enregistrés et des règles légères de stemming pour les langues disponibles ; ce n'est pas un lemmatiseur grammatical complet."
         },
         {
           "label": "Mots communs",
-          "description": "Le compteur montre les mots connus du dictionnaire dont la racine ou le lemme apparaît dans les sous-titres."
+          "description": "Le compteur montre les mots connus dont la clé normalisée apparaît dans les sous-titres."
         },
         {
           "label": "Vocabulaire connu",

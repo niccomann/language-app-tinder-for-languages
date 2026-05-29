@@ -80,7 +80,6 @@ async function seedGrammarLab(page: Page) {
 test.describe('D3 force-based views', () => {
   test.beforeEach(async ({ page }) => {
     page.on('pageerror', (err) => {
-      // eslint-disable-next-line no-console
       console.log('[browser pageerror]', err.message);
     });
     await seedGrammarLab(page);

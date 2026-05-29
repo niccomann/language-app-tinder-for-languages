@@ -49,7 +49,10 @@ export const CardStack = ({
     nextCard,
     progress,
     learningSummary,
+    learningSummaryLoaded,
+    learningFeedback,
     milestoneEvent,
+    swipeInFlight,
     flashcards,
     loading,
     error,
@@ -58,6 +61,7 @@ export const CardStack = ({
     loadFlashcards,
     handleSwipe,
     reset,
+    clearLearningFeedback,
     clearMilestoneEvent,
     clearRecordError,
   } = useLearningSession();
@@ -103,6 +107,7 @@ export const CardStack = ({
   if (shouldShowFirstVocabularyOnboarding({
     mode,
     firstVocabularyOnboardingDone,
+    learningSummaryLoaded,
     learningSummary,
     progress,
   })) {
@@ -114,6 +119,7 @@ export const CardStack = ({
           progress={progress}
           totalCards={flashcards.length}
           onSwipe={handleSwipe}
+          swipeInFlight={swipeInFlight}
           onComplete={handleCompleteFirstVocabularyOnboarding}
         />
         <MilestoneCelebration event={milestoneEvent} onDismiss={clearMilestoneEvent} />
@@ -243,6 +249,9 @@ export const CardStack = ({
             onStartLearning();
           }
         }}
+        learningFeedback={learningFeedback}
+        onDismissLearningFeedback={clearLearningFeedback}
+        swipeInFlight={swipeInFlight}
       />
       <MilestoneCelebration event={milestoneEvent} onDismiss={clearMilestoneEvent} />
       {recordErrorToast}

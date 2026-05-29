@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef, type FormEvent, type ReactNode } from 'react';
-import { ArrowLeft, ArrowRight, MessageSquarePlus, ThumbsDown, ThumbsUp, X } from 'lucide-react';
-import { api } from '../services/api';
+import { useState, useEffect, useRef, useCallback, type FormEvent, type ReactNode } from 'react';
+import { ArrowLeft, ArrowRight, MessageSquarePlus, RefreshCw, ThumbsDown, ThumbsUp, X } from 'lucide-react';
+import { api, type FeedbackHistoryItem, type FeedbackPersona } from '../services/api';
 import { BottomSheet, Button, UI_INTERACTION, UI_RADIUS } from './ui';
 import { useCopy } from '../i18n/languageContext';
 
@@ -41,6 +41,12 @@ type Status =
   | { kind: 'sending' }
   | { kind: 'success'; id: string }
   | { kind: 'error'; message: string };
+type ModalView = 'write' | 'history';
+type HistoryStatus =
+  | { kind: 'idle' }
+  | { kind: 'loading' }
+  | { kind: 'success'; items: FeedbackHistoryItem[] }
+  | { kind: 'error'; message: string };
 
 const PROFESSION_OPTIONS: Profession[] = ['artist', 'humanist', 'scientific', 'technical', 'student', 'other'];
 const GENDER_OPTIONS: Gender[] = ['woman', 'man', 'other', 'undisclosed'];
@@ -66,6 +72,8 @@ export function FeedbackButton({
   const [sentiment, setSentiment] = useState<Sentiment>('neutral');
   const [persona, setPersona] = useState<Persona>(EMPTY_PERSONA);
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
+  const [view, setView] = useState<ModalView>('write');
+  const [historyStatus, setHistoryStatus] = useState<HistoryStatus>({ kind: 'idle' });
 
   const reset = () => {
     setStep(1);
@@ -73,6 +81,7 @@ export function FeedbackButton({
     setSentiment('neutral');
     setPersona(EMPTY_PERSONA);
     setStatus({ kind: 'idle' });
+    setView('write');
   };
 
   const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -84,6 +93,25 @@ export function FeedbackButton({
       }
     };
   }, []);
+
+  const loadHistory = useCallback(async () => {
+    setHistoryStatus({ kind: 'loading' });
+    try {
+      const items = await api.listFeedback(100);
+      setHistoryStatus({ kind: 'success', items });
+    } catch (err) {
+      const detail = err instanceof Error ? err.message : 'Unexpected error';
+      setHistoryStatus({ kind: 'error', message: detail });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const timer = globalThis.setTimeout(() => {
+      void loadHistory();
+    }, 0);
+    return () => globalThis.clearTimeout(timer);
+  }, [open, loadHistory]);
 
   const closeModal = () => {
     setOpen(false);
@@ -116,6 +144,7 @@ export function FeedbackButton({
         learning_motivation: persona.learningMotivation.trim() || undefined,
       });
       setStatus({ kind: 'success', id: res.id });
+      void loadHistory();
     } catch (err) {
       const detail = err instanceof Error ? err.message : 'Unexpected error';
       setStatus({ kind: 'error', message: detail });
@@ -151,7 +180,7 @@ export function FeedbackButton({
       </button>
 
       {open && (
-        <BottomSheet onClose={closeModal} ariaLabel={f.modalAria} maxWidthClass="sm:max-w-lg">
+        <BottomSheet onClose={closeModal} ariaLabel={f.modalAria} maxWidthClass="sm:max-w-2xl">
           <div className="relative p-6">
             <button
               type="button"
@@ -165,10 +194,23 @@ export function FeedbackButton({
             <div className="flex items-center gap-2 text-caption-uppercase tracking-[1.5px] font-medium uppercase text-primary">
               <span>{f.eyebrow}</span>
               <span className="text-muted-soft">·</span>
-              <span className="text-muted">{step} / 2</span>
+              <span className="text-muted">{view === 'write' ? `${step} / 2` : f.history.title}</span>
             </div>
 
-            {status.kind === 'success' ? (
+            <ViewTabs
+              view={view}
+              onChange={setView}
+              writeLabel={f.history.tabWrite}
+              historyLabel={f.history.tabHistory}
+            />
+
+            {view === 'history' ? (
+              <FeedbackHistoryPanel
+                status={historyStatus}
+                copy={f}
+                onRetry={loadHistory}
+              />
+            ) : status.kind === 'success' ? (
               <>
                 <h2 className={`mt-2 ${HEADING_CLASS}`}>{f.title}</h2>
                 <p className="mt-4 text-body-sm font-medium text-success">{f.successMessage}</p>
@@ -268,7 +310,10 @@ function PersonaForm({
   const p = f.persona;
   return (
     <form onSubmit={onSubmit} className="mt-3 flex flex-col gap-4">
-      <h2 className={HEADING_CLASS}>{p.sectionTitle}</h2>
+      <div>
+        <h2 className={HEADING_CLASS}>{p.sectionTitle}</h2>
+        <p className="mt-1 text-body-sm text-muted">{p.sectionHint}</p>
+      </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div className="col-span-2 sm:col-span-1">
@@ -392,6 +437,175 @@ function PersonaForm({
       </div>
     </form>
   );
+}
+
+function ViewTabs({
+  view,
+  onChange,
+  writeLabel,
+  historyLabel,
+}: {
+  view: ModalView;
+  onChange: (view: ModalView) => void;
+  writeLabel: string;
+  historyLabel: string;
+}) {
+  return (
+    <div className={`mt-4 grid grid-cols-2 gap-1 ${UI_RADIUS.control} bg-surface-card p-1`}>
+      <button
+        type="button"
+        onClick={() => onChange('write')}
+        className={`${UI_RADIUS.control} px-3 py-2 text-caption font-medium ${UI_INTERACTION.fastTransition} ${
+          view === 'write' ? 'bg-canvas text-ink shadow-sm' : 'text-muted hover:text-ink'
+        }`}
+      >
+        {writeLabel}
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange('history')}
+        className={`${UI_RADIUS.control} px-3 py-2 text-caption font-medium ${UI_INTERACTION.fastTransition} ${
+          view === 'history' ? 'bg-canvas text-ink shadow-sm' : 'text-muted hover:text-ink'
+        }`}
+      >
+        {historyLabel}
+      </button>
+    </div>
+  );
+}
+
+function FeedbackHistoryPanel({
+  status,
+  copy: f,
+  onRetry,
+}: {
+  status: HistoryStatus;
+  copy: ReturnType<typeof useCopy>['feedbackForm'];
+  onRetry: () => void;
+}) {
+  if (status.kind === 'idle' || status.kind === 'loading') {
+    return <p className="mt-5 text-body-sm text-muted">{f.history.loading}</p>;
+  }
+
+  if (status.kind === 'error') {
+    return (
+      <div className="mt-5 flex flex-col gap-3">
+        <p className="text-body-sm font-medium text-error">{f.history.errorTitle}</p>
+        <p className="text-caption text-muted">{status.message}</p>
+        <div>
+          <Button variant="secondary" type="button" onClick={onRetry}>
+            <span className="inline-flex items-center gap-1.5">
+              <RefreshCw size={14} />
+              {f.history.retryButton}
+            </span>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (status.items.length === 0) {
+    return <p className="mt-5 text-body-sm text-muted">{f.history.empty}</p>;
+  }
+
+  return (
+    <div className="mt-5 flex flex-col gap-3">
+      <h2 className="font-display text-title-md font-normal text-ink">{f.history.title}</h2>
+      <div className="flex flex-col gap-3">
+        {status.items.map((item) => (
+          <FeedbackHistoryItemCard key={item.id} item={item} copy={f} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FeedbackHistoryItemCard({
+  item,
+  copy: f,
+}: {
+  item: FeedbackHistoryItem;
+  copy: ReturnType<typeof useCopy>['feedbackForm'];
+}) {
+  const sourcePath = formatSourcePath(item.source_url);
+  const personaDetails = buildPersonaDetails(item.persona, f);
+  return (
+    <article className={`${UI_RADIUS.surface} border border-hairline bg-surface-card p-3`}>
+      <div className="flex flex-wrap items-center gap-2 text-caption text-muted">
+        <span>{formatFeedbackDate(item)}</span>
+        {item.sentiment && <span className="font-medium text-body-strong">{sentimentLabel(item.sentiment, f)}</span>}
+        {sourcePath && <span>{`${f.history.sourceLabel}: ${sourcePath}`}</span>}
+      </div>
+      <p className="mt-2 whitespace-pre-wrap text-body-sm text-ink">{item.message}</p>
+      {personaDetails.length > 0 ? (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {personaDetails.map((detail) => (
+            <span
+              key={detail}
+              className={`inline-flex max-w-full items-center ${UI_RADIUS.control} bg-canvas px-2 py-1 text-caption text-muted`}
+            >
+              {detail}
+            </span>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-3 text-caption text-muted">{f.history.anonymousPersona}</p>
+      )}
+    </article>
+  );
+}
+
+function formatFeedbackDate(item: FeedbackHistoryItem): string {
+  const timestamp = item.created_at_iso ? Date.parse(item.created_at_iso) : item.created_at;
+  const date = Number.isFinite(timestamp) ? new Date(timestamp) : new Date(item.created_at);
+  if (Number.isNaN(date.getTime())) return '';
+  return new Intl.DateTimeFormat(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date);
+}
+
+function formatSourcePath(sourceUrl?: string): string | null {
+  if (!sourceUrl) return null;
+  try {
+    const url = new URL(sourceUrl);
+    return `${url.pathname}${url.search}` || sourceUrl;
+  } catch {
+    return sourceUrl;
+  }
+}
+
+function sentimentLabel(sentiment: Sentiment, f: ReturnType<typeof useCopy>['feedbackForm']): string {
+  if (sentiment === 'like') return f.like;
+  if (sentiment === 'dislike') return f.dislike;
+  return f.neutral;
+}
+
+function buildPersonaDetails(
+  persona: FeedbackPersona | undefined,
+  f: ReturnType<typeof useCopy>['feedbackForm'],
+): string[] {
+  if (!persona) return [];
+  const p = f.persona;
+  const details: string[] = [];
+
+  if (persona.nickname) details.push(`${p.nicknameLabel}: ${persona.nickname}`);
+  if (typeof persona.age === 'number') details.push(`${p.ageLabel}: ${persona.age}`);
+  if (persona.profession) details.push(`${p.professionLabel}: ${p.professionOptions[persona.profession]}`);
+  if (persona.gender) details.push(`${p.genderLabel}: ${p.genderOptions[persona.gender]}`);
+  if (persona.native_language) details.push(`${p.nativeLanguageLabel}: ${p.nativeLanguageOptions[persona.native_language]}`);
+  if (persona.target_level) {
+    const level = p.targetLevelOptions[persona.target_level].replace(/\s+—\s+/g, ' - ');
+    details.push(`${f.history.personaLevelLabel}: ${level}`);
+  }
+  if (persona.learning_motivation) {
+    details.push(`${f.history.motivationLabel}: ${persona.learning_motivation}`);
+  }
+
+  return details;
 }
 
 function SentimentChip({

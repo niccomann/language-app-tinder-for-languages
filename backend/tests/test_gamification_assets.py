@@ -124,6 +124,7 @@ def test_static_game_signals_are_centralized_and_used_across_core_views():
     path_home = (FRONTEND_SRC / "components" / "LearningPathHome.tsx").read_text()
     library = (FRONTEND_SRC / "components" / "WordsLibraryEnriched.tsx").read_text()
     grammar_lab = (FRONTEND_SRC / "components" / "GrammarLab.tsx").read_text()
+    en_locale = (FRONTEND_SRC / "i18n" / "locales" / "en.json").read_text()
 
     assert badge.exists()
     badge_source = badge.read_text()
@@ -136,10 +137,10 @@ def test_static_game_signals_are_centralized_and_used_across_core_views():
     for source in [placement, path_home, library, grammar_lab]:
         assert "GameSignalBadge" in source
 
-    assert "Daily Quest" in path_home
-    assert "Streak Shield" in path_home
-    assert "Collection Quest" in library
-    assert "Mastery Loot" in library
+    assert "Daily Quest" in en_locale
+    assert "Streak Shield" in en_locale
+    assert "Collection Quest" in en_locale
+    assert "Mastery Loot" in en_locale
     assert "Grammar Quest" in grammar_lab
     assert "Combo Lab" in grammar_lab
 

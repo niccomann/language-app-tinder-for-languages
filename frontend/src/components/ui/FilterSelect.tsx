@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { UI_RADIUS } from './geometry';
 
 interface FilterSelectProps {
   value: string;
@@ -27,7 +28,7 @@ export function FilterSelect({
       aria-label={ariaLabel}
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className={`${sizeClasses[size]} rounded-md cursor-pointer border border-hairline bg-canvas font-medium text-ink transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 ${className}`}
+      className={`${sizeClasses[size]} ${UI_RADIUS.control} cursor-pointer border border-hairline bg-canvas font-medium text-ink transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 ${className}`}
     >
       {children}
     </select>

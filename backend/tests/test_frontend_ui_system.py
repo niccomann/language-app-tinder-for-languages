@@ -11,6 +11,7 @@ def test_primary_views_share_common_ui_scaffolding():
     learning_screen = (FRONTEND_SRC / "components" / "LearningScreen.tsx").read_text()
     learning_path_home = (FRONTEND_SRC / "components" / "LearningPathHome.tsx").read_text()
     grammar_lab = (FRONTEND_SRC / "components" / "GrammarLab.tsx").read_text()
+    scene_shell = (FRONTEND_SRC / "components" / "scene" / "SceneShell.tsx").read_text()
     words_library = (FRONTEND_SRC / "components" / "WordsLibraryEnriched.tsx").read_text()
     completion_screen = (FRONTEND_SRC / "components" / "CompletionScreen.tsx").read_text()
 
@@ -19,16 +20,20 @@ def test_primary_views_share_common_ui_scaffolding():
     assert "PillTabs" in ui_index
     assert "SurfacePanel" in ui_index
 
-    for view in (learning_screen, learning_path_home, grammar_lab, words_library):
+    for view in (learning_screen, words_library):
         assert "AppScreen" in view
         assert "ScreenHeader" in view
+
+    for view in (learning_path_home, grammar_lab):
+        assert "SceneShell" in view
+    assert "SceneHeader" in scene_shell
 
     assert "PillTabs" in grammar_lab
     assert "SurfacePanel" in learning_screen
     assert "SurfacePanel" in learning_path_home
     assert "SurfacePanel" in words_library
     assert "AppScreen" in completion_screen
-    assert "ScreenHeader" in completion_screen
+    assert "CalloutCard" in completion_screen
     assert "SurfacePanel" in completion_screen
 
 
@@ -43,9 +48,11 @@ def test_grammar_lab_uses_shared_tabs_instead_of_duplicate_button_blocks():
 
 def test_grammar_lab_has_empty_state_for_missing_sentence_data():
     grammar_lab = (FRONTEND_SRC / "components" / "GrammarLab.tsx").read_text()
+    en_locale = (FRONTEND_SRC / "i18n" / "locales" / "en.json").read_text()
 
-    assert "No grammar sentences yet" in grammar_lab
-    assert "Build Sentence" in grammar_lab
+    assert "gl.noSentencesTitle" in grammar_lab
+    assert "No grammar sentences yet" in en_locale
+    assert "Build Sentence" in en_locale
     assert "SurfacePanel" in grammar_lab
     assert "activeView === 'graph' && currentSentence" in grammar_lab
 
@@ -265,6 +272,26 @@ def test_playwright_specs_share_app_test_helpers():
     assert "from './test-utils/appTestHelpers'" in swipe_spec
     assert "page.route('**/api/library/filters?**'" not in swipe_spec
     assert "const MOCK_CARDS" not in swipe_spec
+
+
+def test_lazy_routes_do_not_share_static_imports_with_onboarding():
+    app_source = (FRONTEND_SRC / "App.tsx").read_text()
+    onboarding_wizard = (FRONTEND_SRC / "components" / "OnboardingWizard.tsx").read_text()
+
+    assert "lazy(() => import('./components/ImportKnownWords')" in app_source
+    assert "from './ImportKnownWords'" not in onboarding_wizard
+    assert "lazy(() => import('./ImportKnownWords')" in onboarding_wizard
+
+
+def test_vite_chunks_heavy_developer_dependencies_out_of_shared_vendor():
+    vite_config = (FRONTEND_ROOT / "vite.config.ts").read_text()
+
+    assert "mermaid-core" in vite_config
+    assert "mermaid-layout-cytoscape" in vite_config
+    assert "mermaid-layout-dagre" in vite_config
+    assert "mermaid-render" in vite_config
+    assert "capacitor-vendor" in vite_config
+    assert "chunkSizeWarningLimit: 2000" in vite_config
 
 
 def test_words_library_register_filter_is_wired_to_api_request():

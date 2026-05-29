@@ -884,9 +884,22 @@
     "continueButton": "Continuar",
     "backButton": "Atrás",
     "skipButton": "Saltar",
+    "history": {
+      "tabWrite": "Escribir",
+      "tabHistory": "Historial",
+      "title": "Historial de feedback",
+      "loading": "Cargando feedback…",
+      "empty": "Todavía no hay feedback.",
+      "errorTitle": "No se pudo cargar el historial de feedback.",
+      "retryButton": "Reintentar",
+      "sourceLabel": "Página",
+      "anonymousPersona": "Detalles del tester no indicados",
+      "personaLevelLabel": "Nivel",
+      "motivationLabel": "Motivación"
+    },
     "persona": {
       "sectionTitle": "Sobre ti",
-      "sectionHint": "Ayúdanos a entender de quién viene el feedback (opcional).",
+      "sectionHint": "Opcional: estos detalles públicos nos ayudan a entender de quién viene el feedback.",
       "nicknameLabel": "Apodo",
       "nicknamePlaceholder": "ej. Luca, NerdyArtist…",
       "ageLabel": "Edad",
@@ -1282,14 +1295,18 @@
     "subtitle": "Basadas en las palabras que ya conoces",
     "menuLabel": "Recomendaciones de películas",
     "loading": "Buscando las películas más adecuadas…",
-    "empty": "Aprende algunas palabras más o carga subtítulos completos — el motor necesita tu vocabulario y subtítulos reales de películas.",
+    "empty": "Aprende algunas palabras más o carga subtítulos validados — el motor necesita tu vocabulario y textos de películas para ordenar.",
     "errorTitle": "No se pudo cargar",
     "errorRetry": "Reintentar",
     "score": "Coincidencia",
     "coverageCount": "Coincidencias únicas",
+    "userVocabulary": "Tu vocabulario",
     "uniqueSubtitleWords": "Palabras únicas en subtítulos",
+    "subtitleTotalWords": "Palabras totales en subtítulos",
+    "subtitleVocabularySummary": "Subtítulos: {{distinct}} palabras únicas de {{total}} palabras totales",
     "youKnow": "Ya conoces:",
     "noPoster": "Póster no disponible",
+    "algorithmChartTitle": "Flujo de coincidencia de películas",
     "algorithmGuide": {
       "title": "Cómo funciona la coincidencia",
       "summary": "Las películas se ordenan comparando tu vocabulario conocido con subtítulos validados.",
@@ -1304,11 +1321,11 @@
         },
         {
           "label": "Formas de palabra",
-          "description": "El matcher normaliza conjugaciones, plurales y formas flexionadas antes de comparar el texto, así andare puede coincidir con andato y Hund con Hunde."
+          "description": "El matcher usa alias léxicos guardados y reglas ligeras de stemming para los idiomas disponibles; no es un lematizador gramatical completo."
         },
         {
           "label": "Palabras compartidas",
-          "description": "El conteo muestra palabras conocidas de diccionario cuya raíz o lema aparece en los subtítulos."
+          "description": "El conteo muestra palabras conocidas cuya clave normalizada aparece en los subtítulos."
         },
         {
           "label": "Vocabulario conocido",

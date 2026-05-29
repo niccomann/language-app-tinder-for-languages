@@ -65,9 +65,47 @@ so it'd be `pg_dump` → restore into a local Postgres, or a Postgres→SQLite e
   the EC2 and pulls it down to `./backups/` (gitignored). This is the real
   off-box copy — run it before risky operations and periodically.
 - **Frozen SQLite `app.db`** files (prod + local) are the pre-migration snapshot.
-- True off-site auto-backup (pg_dump → S3) needs an IAM instance role on the EC2
-  — not set up; the EC2 currently has no IAM role (also why feedback falls back
-  to a local jsonl instead of S3).
+- True off-site auto-backup (pg_dump → S3) needs an IAM instance role on the EC2.
+- Tester feedback is stored in the application database (`tester_feedback`).
+  Local development uses the same DB path; if the development database is
+  unavailable, the feedback service can fall back to JSONL under
+  `FEEDBACK_LOCAL_DIR`.
+
+## Movie subtitle corpus
+
+Movie recommendation subtitles are production data, not source code. The local
+`backend/app.db` copy is ignored by Git and must not be treated as a deployable
+artifact for the live corpus.
+
+The reproducible import input is:
+
+```text
+backend/app/data/movie_manifest_de.json
+```
+
+For the live Postgres database, run the importer through the configured app
+engine:
+
+```bash
+docker exec \
+  -e OPENSUBTITLES_USER_AGENT="customizeyourlingua/1.0 contact@example.com" \
+  -e OPENSUBTITLES_REQUEST_DELAY_SECONDS=1.0 \
+  -e OPENSUBTITLES_MIN_WORD_COUNT=1000 \
+  -e OPENSUBTITLES_REQUEST_RETRY_COUNT=2 \
+  -e OPENSUBTITLES_REQUEST_RETRY_DELAY_SECONDS=1.0 \
+  language-backend \
+  python scripts/import_opensubtitles_movies.py \
+    --app-database \
+    --manifest app/data/movie_manifest_de.json \
+    --language de
+```
+
+After importing, reset the in-process recommender cache with
+`POST /api/movies/recommendations/cache/reset` and the
+`MOVIE_RECOMMENDER_ADMIN_TOKEN` header. The token must be a random value of at
+least 32 characters; shorter values are treated as unset. Cache reset is also
+rate-limited by `MOVIE_RECOMMENDER_CACHE_RESET_MIN_INTERVAL_SECONDS` (default
+60 seconds). Always take a fresh `pg_dump` first.
 
 ## Schema (17 main tables in Postgres)
 

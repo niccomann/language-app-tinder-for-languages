@@ -884,9 +884,22 @@
     "continueButton": "Continuar",
     "backButton": "Voltar",
     "skipButton": "Pular",
+    "history": {
+      "tabWrite": "Escrever",
+      "tabHistory": "Histórico",
+      "title": "Histórico de feedback",
+      "loading": "Carregando feedback…",
+      "empty": "Ainda não há feedback.",
+      "errorTitle": "Não foi possível carregar o histórico de feedback.",
+      "retryButton": "Tentar novamente",
+      "sourceLabel": "Página",
+      "anonymousPersona": "Detalhes do tester não informados",
+      "personaLevelLabel": "Nível",
+      "motivationLabel": "Motivação"
+    },
     "persona": {
       "sectionTitle": "Sobre você",
-      "sectionHint": "Ajude-nos a entender de quem vem o feedback (opcional).",
+      "sectionHint": "Opcional: estes detalhes públicos ajudam a entender de quem vem o feedback.",
       "nicknameLabel": "Apelido",
       "nicknamePlaceholder": "ex. Luca, NerdyArtist…",
       "ageLabel": "Idade",
@@ -1282,14 +1295,18 @@
     "subtitle": "Baseados nas palavras que já conheces",
     "menuLabel": "Recomendações de filmes",
     "loading": "À procura dos filmes mais adequados…",
-    "empty": "Aprende mais algumas palavras ou carrega legendas completas — o motor precisa do teu vocabulário e de legendas reais de filmes.",
+    "empty": "Aprende mais algumas palavras ou carrega legendas validadas — o motor precisa do teu vocabulário e dos textos dos filmes para ordenar.",
     "errorTitle": "Não foi possível carregar",
     "errorRetry": "Tentar novamente",
     "score": "Compatibilidade",
     "coverageCount": "Matches únicos",
+    "userVocabulary": "O teu vocabulário",
     "uniqueSubtitleWords": "Palavras únicas das legendas",
+    "subtitleTotalWords": "Palavras totais das legendas",
+    "subtitleVocabularySummary": "Legendas: {{distinct}} palavras únicas em {{total}} palavras totais",
     "youKnow": "Já conheces:",
     "noPoster": "Cartaz indisponível",
+    "algorithmChartTitle": "Fluxo de compatibilidade dos filmes",
     "algorithmGuide": {
       "title": "Como funciona a compatibilidade",
       "summary": "Os filmes são ordenados comparando o teu vocabulário conhecido com legendas validadas.",
@@ -1304,11 +1321,11 @@
         },
         {
           "label": "Formas das palavras",
-          "description": "O matcher normaliza conjugações, plurais e formas flexionadas antes de comparar o texto, por isso andare pode corresponder a andato e Hund a Hunde."
+          "description": "O matcher usa aliases lexicais guardados e regras leves de stemming para os idiomas disponíveis; não é um lematizador gramatical completo."
         },
         {
           "label": "Palavras em comum",
-          "description": "A contagem mostra palavras conhecidas de dicionário cuja raiz ou lema aparece nas legendas."
+          "description": "A contagem mostra palavras conhecidas cuja chave normalizada aparece nas legendas."
         },
         {
           "label": "Vocabulário conhecido",

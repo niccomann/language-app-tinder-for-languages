@@ -166,7 +166,7 @@ export function MascotReaction({
           key={activeFrame.key}
           src={activeFrame.src}
           alt={`${mascotPersonas[persona].label} mascot ${mascotStateLabels[state]}`}
-          className="h-full w-full object-contain"
+          className="h-full w-full object-contain drop-shadow-sm"
           draggable={false}
         />
       </div>

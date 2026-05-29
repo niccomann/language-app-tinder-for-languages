@@ -1,4 +1,4 @@
-> Last updated: 2026-05-12 17:30
+> Last updated: 2026-05-28 20:45
 
 # AWS Single-Node Deploy Runbook
 
@@ -11,7 +11,9 @@ This runbook recreates the current low-cost AWS deploy for the language app.
 - Docker containers on the instance:
   - `language-frontend`: Nginx static frontend, public port `80`.
   - `language-backend`: FastAPI, private Docker network only.
-- SQLite database (`app.db`) mounted from host into the backend container.
+  - `language-postgres`: Postgres 16 on the private Docker network.
+- Production uses Postgres (`USE_SQLITE=false`). `app.db` is a local-dev and
+  rollback snapshot only, not the live production database.
 - No EKS, NAT Gateway, SageMaker, Bedrock, GPU, or cloud AI inference.
 - No OpenAI/Gemini/HF/BFL/AWS secret environment variables inside app containers.
 
@@ -46,6 +48,7 @@ From `tinder-for-languages`:
 git status --short
 backend/.venv/bin/python scripts/data_quality_report.py --min-german-words 500
 cd backend && .venv/bin/python -m pytest tests/test_cloud_ai_disabled.py -q
+.venv/bin/python -m pytest tests/test_opensubtitles_importer.py tests/test_recommendations_route.py -q
 cd ../frontend && npm run build:strict
 ```
 
@@ -56,13 +59,57 @@ Expected data quality minimums:
 - `german_verbs_without_conjugations = 0`
 - `german_verbs_with_sparse_conjugations = 0`
 
+## Movie Corpus Refresh
+
+The movie recommender does not get its real subtitles from Git-tracked
+`app.db`. The reproducible input is the manifest:
+
+```bash
+backend/app/data/movie_manifest_de.json
+```
+
+For current Postgres-backed production, run the importer inside the backend
+container so it reuses the app database configuration:
+
+```bash
+ssh -i "$SSH_KEY" ec2-user@"$PUBLIC_IP"
+
+docker exec \
+  -e OPENSUBTITLES_USER_AGENT="customizeyourlingua/1.0 contact@example.com" \
+  -e OPENSUBTITLES_REQUEST_DELAY_SECONDS=1.0 \
+  -e OPENSUBTITLES_MIN_WORD_COUNT=1000 \
+  -e OPENSUBTITLES_REQUEST_RETRY_COUNT=2 \
+  -e OPENSUBTITLES_REQUEST_RETRY_DELAY_SECONDS=1.0 \
+  -e OPENSUBTITLES_ALLOWED_DOWNLOAD_HOSTS="dl.opensubtitles.org,www.opensubtitles.org,opensubtitles.org" \
+  -e OPENSUBTITLES_MAX_DOWNLOAD_BYTES=5000000 \
+  -e OPENSUBTITLES_MAX_DECOMPRESSED_BYTES=20000000 \
+  language-backend \
+  python scripts/import_opensubtitles_movies.py \
+    --app-database \
+    --manifest app/data/movie_manifest_de.json \
+    --language de
+```
+
+Then reset the recommender cache:
+
+```bash
+curl -X POST "http://localhost/api/movies/recommendations/cache/reset" \
+  -H "X-Admin-Token: $MOVIE_RECOMMENDER_ADMIN_TOKEN"
+```
+
+Before refreshing production subtitles, run `scripts/backup_pg.sh` or otherwise
+take a fresh `pg_dump`. Confirm current OpenSubtitles API/terms before running a
+large import.
+
 ## Build Artifacts
 
 Use ARM64 images for Graviton:
 
 ```bash
 # Frontend dist
-cd frontend && npm run build && cd ..
+# VITE_OMDB_KEY optionally uses OMDb for movie posters in /movie-recommendations.
+# Without it, the frontend uses /api/movies/poster/{imdb_id}.
+cd frontend && VITE_OMDB_KEY="$VITE_OMDB_KEY" npm run build && cd ..
 
 # ARM64 frontend Docker image
 tmpdir="$(mktemp -d)"
@@ -77,10 +124,8 @@ CMD ["nginx", "-g", "daemon off;"]
 EOF
 docker build --platform linux/arm64 -t language-app-frontend:cloud "$tmpdir"
 
-# SQLite online backup (WAL-safe — do NOT use cp while backend is running)
-sqlite3 backend/app.db ".backup '/tmp/deploy-app.db'"
-# Verify integrity before continuing
-sqlite3 /tmp/deploy-app.db 'PRAGMA integrity_check;'   # must print: ok
+# Production DB backup
+scripts/backup_pg.sh
 
 # Save frontend image
 docker save language-app-frontend:cloud | gzip > /tmp/language-app-frontend.tar.gz
@@ -124,7 +169,6 @@ PUBLIC_IP="3.64.236.66"
 
 scp -i "$SSH_KEY" \
   /tmp/language-app-frontend.tar.gz \
-  /tmp/deploy-app.db \
   ec2-user@"$PUBLIC_IP":/home/ec2-user/deploy-incoming/
 ```
 
@@ -139,26 +183,37 @@ INCOMING="/home/ec2-user/deploy-incoming"
 # Create network if not exists
 docker network create language-app 2>/dev/null || true
 
-# Backup existing DB
-cp "$DEPLOY_DIR/backend/app.db" "$DEPLOY_DIR/backend/app.db.before-deploy-$(date +%Y%m%d-%H%M%S)" 2>/dev/null || true
+# Ensure Postgres is running before starting the backend. DB_PASSWORD must
+# already be present in the instance environment or secret manager.
+docker rm -f language-postgres 2>/dev/null || true
+docker run -d --name language-postgres \
+  --network language-app \
+  --network-alias language-postgres \
+  -e POSTGRES_DB="${DB_DATABASE:-tinder_languages}" \
+  -e POSTGRES_USER="${DB_USER:-tinder_user}" \
+  -e POSTGRES_PASSWORD="${DB_PASSWORD:?DB_PASSWORD is required}" \
+  -v language-pgdata:/var/lib/postgresql/data \
+  --restart unless-stopped \
+  postgres:16
 
-# STOP BACKEND FIRST — avoids WAL contention during file replacement
 docker stop language-backend 2>/dev/null || true
-
-# Swap app.db
-mkdir -p "$DEPLOY_DIR/backend"
-cp "$INCOMING/app.db" "$DEPLOY_DIR/backend/app.db"
 
 # Start backend
 docker rm -f language-backend 2>/dev/null || true
 docker run -d --name language-backend \
   --network language-app \
   --network-alias backend \
-  -e USE_SQLITE=true \
+  -e USE_SQLITE=false \
+  -e DB_HOST=language-postgres \
+  -e DB_PORT=5432 \
+  -e DB_USER="${DB_USER:-tinder_user}" \
+  -e DB_PASSWORD="${DB_PASSWORD:?DB_PASSWORD is required}" \
+  -e DB_DATABASE="${DB_DATABASE:-tinder_languages}" \
   -e ENV=prod \
   -e LOG_LEVEL=INFO \
   -e RECREATE_DB=False \
-  -v "$DEPLOY_DIR/backend/app.db:/app/app.db" \
+  -e MOVIE_RECOMMENDER_CACHE_RESET_MIN_INTERVAL_SECONDS="${MOVIE_RECOMMENDER_CACHE_RESET_MIN_INTERVAL_SECONDS:-60}" \
+  -e MOVIE_RECOMMENDER_ADMIN_TOKEN="${MOVIE_RECOMMENDER_ADMIN_TOKEN:?MOVIE_RECOMMENDER_ADMIN_TOKEN is required}" \
   --restart unless-stopped \
   language-app-backend:cloud
 
@@ -224,18 +279,26 @@ Expected:
 
 ## Common Pitfalls
 
-### Always use `sqlite3 .backup`, not `cp`
+### Legacy SQLite rollback: always use `sqlite3 .backup`, not `cp`
 
-Copying `app.db` while the backend is running produces a malformed file because of WAL (Write-Ahead Log) contention. The SQLite `.backup` command is the only safe way to snapshot a live database:
+Production now runs on Postgres, so this only applies if you intentionally
+switch to the frozen SQLite rollback path. Copying `app.db` while the backend is
+running produces a malformed file because of WAL (Write-Ahead Log) contention.
+The SQLite `.backup` command is the only safe way to snapshot a live SQLite
+database:
 
 ```bash
 sqlite3 backend/app.db ".backup '/tmp/deploy-app.db'"
 sqlite3 /tmp/deploy-app.db 'PRAGMA integrity_check;'   # must return: ok
 ```
 
-### Always stop the backend container before swapping app.db
+### Legacy SQLite rollback: stop backend before swapping app.db
 
-Even after a clean `.backup`, replacing `app.db` on disk while the backend has it open will corrupt the WAL state. Always `docker stop language-backend` before the file swap, then `docker start` or `docker run` after. This was the root cause of two separate production incidents.
+Even after a clean `.backup`, replacing `app.db` on disk while the backend has it
+open will corrupt the WAL state. If you intentionally run the SQLite rollback
+path, always `docker stop language-backend` before the file swap, then
+`docker start` or `docker run` after. This was the root cause of two separate
+production incidents.
 
 ### Cross-platform SQLite incompatibility
 

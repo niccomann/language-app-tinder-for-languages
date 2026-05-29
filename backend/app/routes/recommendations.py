@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+import os
+import re
 import threading
 import time
 from typing import Any
+from urllib.parse import urlparse
 
-from fastapi import APIRouter, Query, Request
+from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
+import requests
 from sqlalchemy import text
 from sqlmodel import Session, select
 
@@ -20,12 +25,17 @@ from app.services.user_vocab import extract_user_vocab
 
 router = APIRouter(prefix="/api/movies", tags=["movies"])
 
-_CACHE_TTL_SECONDS = 60 * 30
-MIN_SUBTITLE_TOKEN_COUNT = 1000
-MIN_SUBTITLE_UNIQUE_WORD_COUNT = 200
+_DEFAULT_CACHE_TTL_SECONDS = 60 * 30
+_MIN_ADMIN_TOKEN_LENGTH = 32
 _cache: RecommenderCache | None = None
 _cache_built_at: float | None = None
+_cache_reset_at: float | None = None
 _cache_lock = threading.Lock()
+_poster_cache: dict[str, str | None] = {}
+_poster_cache_lock = threading.Lock()
+_IMDB_ID_RE = re.compile(r"^tt\d{7,}$")
+_IMDB_SUGGEST_TIMEOUT_SECONDS = 4
+_IMDB_SUGGEST_USER_AGENT = "LanguageAppMoviePoster/1.0 (https://customizeyourlingua.com)"
 
 
 class MovieRecommendationOut(BaseModel):
@@ -33,8 +43,10 @@ class MovieRecommendationOut(BaseModel):
     title: str
     year: int | None = None
     score: float
+    user_vocab_count: int
     shared_vocab_count: int
     subtitle_unique_word_count: int
+    subtitle_token_count: int
     sample_known_words: list[str]
 
 
@@ -43,10 +55,102 @@ def _get_engine():
 
 
 def _reset_cache() -> None:
-    global _cache, _cache_built_at
+    global _cache, _cache_built_at, _cache_reset_at
     with _cache_lock:
         _cache = None
         _cache_built_at = None
+        _cache_reset_at = None
+
+
+def _reset_poster_cache() -> None:
+    with _poster_cache_lock:
+        _poster_cache.clear()
+
+
+def _is_safe_imdb_image_url(url: str) -> bool:
+    parsed = urlparse(url)
+    hostname = parsed.hostname or ""
+    return (
+        parsed.scheme == "https"
+        and (hostname == "m.media-amazon.com" or hostname.endswith(".media-amazon.com"))
+    )
+
+
+def _extract_imdb_image_url(payload: Any, imdb_id: str) -> str | None:
+    if not isinstance(payload, dict):
+        return None
+    candidates = payload.get("d")
+    if not isinstance(candidates, list):
+        return None
+
+    exact = next(
+        (
+            candidate
+            for candidate in candidates
+            if isinstance(candidate, dict) and candidate.get("id") == imdb_id
+        ),
+        None,
+    )
+    if exact is None:
+        exact = next((candidate for candidate in candidates if isinstance(candidate, dict)), None)
+    if not isinstance(exact, dict):
+        return None
+
+    image = exact.get("i")
+    if not isinstance(image, dict):
+        return None
+    image_url = image.get("imageUrl")
+    if not isinstance(image_url, str) or not _is_safe_imdb_image_url(image_url):
+        return None
+    return image_url
+
+
+def _fetch_imdb_poster_url(imdb_id: str) -> str | None:
+    if not _IMDB_ID_RE.match(imdb_id):
+        return None
+
+    with _poster_cache_lock:
+        if imdb_id in _poster_cache:
+            return _poster_cache[imdb_id]
+
+    suggest_url = f"https://v2.sg.media-imdb.com/suggestion/t/{imdb_id}.json"
+    try:
+        response = requests.get(
+            suggest_url,
+            headers={"User-Agent": _IMDB_SUGGEST_USER_AGENT},
+            timeout=_IMDB_SUGGEST_TIMEOUT_SECONDS,
+        )
+        response.raise_for_status()
+        poster_url = _extract_imdb_image_url(response.json(), imdb_id)
+    except (requests.RequestException, ValueError):
+        poster_url = None
+
+    with _poster_cache_lock:
+        _poster_cache[imdb_id] = poster_url
+    return poster_url
+
+
+def _cache_ttl_seconds() -> int:
+    raw = os.getenv("MOVIE_RECOMMENDER_CACHE_TTL_SECONDS", str(_DEFAULT_CACHE_TTL_SECONDS)).strip()
+    try:
+        return max(0, int(raw))
+    except ValueError:
+        return _DEFAULT_CACHE_TTL_SECONDS
+
+
+def _cache_reset_min_interval_seconds() -> int:
+    raw = os.getenv("MOVIE_RECOMMENDER_CACHE_RESET_MIN_INTERVAL_SECONDS", "60").strip()
+    try:
+        return max(0, int(raw))
+    except ValueError:
+        return 60
+
+
+def _admin_token() -> str:
+    token = os.getenv("MOVIE_RECOMMENDER_ADMIN_TOKEN", "").strip()
+    if len(token) < _MIN_ADMIN_TOKEN_LENGTH:
+        return ""
+    return token
 
 
 def _build_cache() -> RecommenderCache:
@@ -91,8 +195,6 @@ def _build_cache() -> RecommenderCache:
         corpus=corpus,
         metadata=metadata,
         lexical_aliases=lexical_aliases,
-        min_document_tokens=MIN_SUBTITLE_TOKEN_COUNT,
-        min_unique_tokens=MIN_SUBTITLE_UNIQUE_WORD_COUNT,
     )
 
 
@@ -147,15 +249,48 @@ def _add_lexical_alias(
 def _get_cache() -> RecommenderCache:
     global _cache, _cache_built_at
     now = time.monotonic()
-    cache_expired = _cache_built_at is not None and (now - _cache_built_at) > _CACHE_TTL_SECONDS
+    ttl_seconds = _cache_ttl_seconds()
+    cache_expired = _cache_built_at is not None and (now - _cache_built_at) > ttl_seconds
     if _cache is None or cache_expired:
         with _cache_lock:
             now = time.monotonic()
-            cache_expired = _cache_built_at is not None and (now - _cache_built_at) > _CACHE_TTL_SECONDS
+            ttl_seconds = _cache_ttl_seconds()
+            cache_expired = _cache_built_at is not None and (now - _cache_built_at) > ttl_seconds
             if _cache is None or cache_expired:
                 _cache = _build_cache()
                 _cache_built_at = now
     return _cache
+
+
+@router.get("/poster/{imdb_id}")
+def get_movie_poster(imdb_id: str):
+    poster_url = _fetch_imdb_poster_url(imdb_id)
+    if poster_url is None:
+        raise HTTPException(status_code=404, detail="Movie poster not found")
+    return RedirectResponse(
+        poster_url,
+        status_code=302,
+        headers={"Cache-Control": "public, max-age=86400"},
+    )
+
+
+@router.post("/recommendations/cache/reset")
+def reset_recommendations_cache(request: Request):
+    global _cache, _cache_built_at, _cache_reset_at
+    expected_token = _admin_token()
+    provided_token = request.headers.get("X-Admin-Token", "").strip()
+    if not expected_token or provided_token != expected_token:
+        raise HTTPException(status_code=403, detail="Invalid admin token")
+
+    now = time.monotonic()
+    min_interval = _cache_reset_min_interval_seconds()
+    with _cache_lock:
+        if _cache_reset_at is not None and (now - _cache_reset_at) < min_interval:
+            raise HTTPException(status_code=429, detail="Cache reset rate limit exceeded")
+        _cache = None
+        _cache_built_at = None
+        _cache_reset_at = now
+    return {"status": "reset"}
 
 
 @router.get("/recommendations", response_model=list[MovieRecommendationOut])

@@ -1,4 +1,4 @@
-import { useCallback, useState, type ReactNode } from 'react';
+import { lazy, Suspense, useCallback, useState, type ReactNode } from 'react';
 
 import { GoalStep } from './onboardingWizard/GoalStep';
 import { IdentityStep } from './onboardingWizard/IdentityStep';
@@ -15,9 +15,10 @@ import { formatCopy } from '../i18n/staticCopy';
 import { isTargetLanguage } from '../i18n/languageStorage';
 import { GoogleLoginButton } from './GoogleLoginButton';
 import { GOOGLE_CLIENT_ID } from '../config/appMode';
-import { ImportKnownWords } from './ImportKnownWords';
 
 export type WizardPhase = 'source' | 'welcome' | 'language' | 'level' | 'goal' | 'identity';
+
+const ImportKnownWords = lazy(() => import('./ImportKnownWords').then((module) => ({ default: module.ImportKnownWords })));
 
 interface OnboardingWizardProps {
   /** Fired after createUser + refreshProfile succeed. The parent then unmounts the wizard. */
@@ -160,7 +161,11 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         </button>
       </div>
       {stepNode}
-      {showImport && <ImportKnownWords onClose={() => setShowImport(false)} />}
+      {showImport && (
+        <Suspense fallback={<LoadingSpinner />}>
+          <ImportKnownWords onClose={() => setShowImport(false)} />
+        </Suspense>
+      )}
     </>
   );
 }

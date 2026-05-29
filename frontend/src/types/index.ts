@@ -127,8 +127,10 @@ export interface MovieRecommendation {
   title: string;
   year: number | null;
   score: number;
+  user_vocab_count: number;
   shared_vocab_count: number;
   subtitle_unique_word_count: number;
+  subtitle_token_count: number;
   sample_known_words: string[];
 }
 

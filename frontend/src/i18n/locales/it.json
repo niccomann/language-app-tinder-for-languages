@@ -884,9 +884,22 @@
     "continueButton": "Continua",
     "backButton": "Indietro",
     "skipButton": "Salta",
+    "history": {
+      "tabWrite": "Scrivi",
+      "tabHistory": "Storico",
+      "title": "Storico feedback",
+      "loading": "Caricamento feedback…",
+      "empty": "Ancora nessun feedback.",
+      "errorTitle": "Non riesco a caricare lo storico feedback.",
+      "retryButton": "Riprova",
+      "sourceLabel": "Pagina",
+      "anonymousPersona": "Dettagli tester non compilati",
+      "personaLevelLabel": "Livello",
+      "motivationLabel": "Motivazione"
+    },
     "persona": {
       "sectionTitle": "Chi sei",
-      "sectionHint": "Aiutaci a capire da chi arriva il feedback (opzionale).",
+      "sectionHint": "Opzionale: questi dettagli pubblici aiutano a capire da chi arriva il feedback.",
       "nicknameLabel": "Nickname",
       "nicknamePlaceholder": "es. Luca, NerdyArtist…",
       "ageLabel": "Età",
@@ -1282,14 +1295,18 @@
     "subtitle": "Basati sulle parole che già conosci",
     "menuLabel": "Film consigliati",
     "loading": "Sto cercando i film più adatti…",
-    "empty": "Studia ancora qualche parola oppure carica sottotitoli completi: il motore ha bisogno sia del tuo vocabolario sia di testi reali dei film.",
+    "empty": "Studia ancora qualche parola oppure carica sottotitoli validati: il motore ha bisogno sia del tuo vocabolario sia dei testi dei film per creare la classifica.",
     "errorTitle": "Non riesco a caricare",
     "errorRetry": "Riprova",
     "score": "Match",
     "coverageCount": "Match distinte",
-    "uniqueSubtitleWords": "Parole distinte sottotitoli",
+    "userVocabulary": "Il tuo vocabolario",
+    "uniqueSubtitleWords": "Parole distinte nei sottotitoli",
+    "subtitleTotalWords": "Parole totali nei sottotitoli",
+    "subtitleVocabularySummary": "Sottotitoli: {{distinct}} parole distinte su {{total}} parole totali",
     "youKnow": "Conosci già:",
     "noPoster": "Locandina non disponibile",
+    "algorithmChartTitle": "Flusso del match dei film",
     "algorithmGuide": {
       "title": "Come funziona il match",
       "summary": "I film vengono ordinati confrontando il tuo vocabolario noto con i sottotitoli validati.",
@@ -1304,11 +1321,11 @@
         },
         {
           "label": "Forme delle parole",
-          "description": "Il matcher normalizza coniugazioni, plurali e forme flesse prima del confronto, quindi andare può corrispondere ad andato e Hund a Hunde."
+          "description": "Il matcher usa alias lessicali salvati e regole leggere di stemming per le lingue disponibili; non è un lemmatizzatore grammaticale completo."
         },
         {
           "label": "Parole in comune",
-          "description": "Il conteggio mostra parole note di dizionario la cui radice o lemma compare nei sottotitoli."
+          "description": "Il conteggio mostra parole note la cui chiave normalizzata compare nei sottotitoli."
         },
         {
           "label": "Vocabolario noto",

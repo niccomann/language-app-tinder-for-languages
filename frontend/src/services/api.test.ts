@@ -68,4 +68,33 @@ describe('api user context', () => {
     expect(requestUrl.pathname).toBe('/api/progress');
     expect(requestUrl.search).toBe('');
   });
+
+  it('lists public feedback history with a capped limit', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(okJson({
+      items: [
+        {
+          id: 'fb-1',
+          created_at: 1710000000000,
+          message: 'Useful',
+          sentiment: 'like',
+        },
+      ],
+    }));
+    const api = await loadApi();
+
+    const items = await api.listFeedback(999);
+
+    const [url] = vi.mocked(fetch).mock.calls[0];
+    const requestUrl = new URL(String(url));
+    expect(requestUrl.pathname).toBe('/api/feedback');
+    expect(requestUrl.searchParams.get('limit')).toBe('100');
+    expect(items).toEqual([
+      {
+        id: 'fb-1',
+        created_at: 1710000000000,
+        message: 'Useful',
+        sentiment: 'like',
+      },
+    ]);
+  });
 });

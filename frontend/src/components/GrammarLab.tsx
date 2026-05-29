@@ -1,9 +1,9 @@
-import { lazy, Suspense, useState, useEffect, useCallback, useRef } from 'react';
+import { lazy, Suspense, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Play, Info, Volume2, Loader2, Puzzle } from 'lucide-react';
+import { Cloud, Info, Loader2, Map, Network, Play, Puzzle, Sparkles, Volume2 } from 'lucide-react';
 import { api } from '../services/api';
 import type { GrammarSentence, GrammarNode, FlashcardWithProgress, WordCloudItem } from '../types';
-import { SurfacePanel, UI_RADIUS } from './ui';
+import { GameSignalBadge, PillTabs, SurfacePanel, UI_RADIUS } from './ui';
 import { getNodeColor, getNodeLabel } from '../utils/grammarColors';
 import type { GrammarView } from '../routes/appRoutes';
 import { reportClientError } from '../utils/clientError';
@@ -11,6 +11,7 @@ import { CATEGORY_COLORS } from '../utils/wordDisplayMeta';
 import { useCopy, useTargetLanguage } from '../i18n/languageContext';
 import { formatCopy } from '../i18n/staticCopy';
 import { EASE_OUT_EXPO } from '../utils/animations';
+import { isOwnerMode, OWNER_ONLY_GRAMMAR_VIEWS } from '../config/ownerMode';
 
 const EmbeddedGrammarGraph = lazy(() => import('./EmbeddedGrammarGraph').then((module) => ({ default: module.EmbeddedGrammarGraph })));
 const EmbeddedWordCloud = lazy(() => import('./EmbeddedWordCloud').then((module) => ({ default: module.EmbeddedWordCloud })));
@@ -39,6 +40,16 @@ const VIEW_STORAGE_KEYS: Record<Exclude<GrammarView, 'hub'>, string> = {
   sunburst: 'grammar.sunburst',
 };
 
+const LAB_TABS = [
+  { value: 'graph', icon: <Network size={14} /> },
+  { value: 'wordcloud', icon: <Cloud size={14} /> },
+  { value: 'builder', icon: <Puzzle size={14} /> },
+  { value: 'funbuilder', icon: <Sparkles size={14} /> },
+  { value: 'clusters', icon: <Network size={14} /> },
+  { value: 'dialects', icon: <Map size={14} /> },
+  { value: 'sunburst', icon: <Sparkles size={14} /> },
+] as const;
+
 export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps) {
   const language = useTargetLanguage();
   const copy = useCopy();
@@ -56,15 +67,7 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    setSelectedNode(null);
-  }, [activeView]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
       const [sentencesData, wordsData] = await Promise.all([
@@ -99,7 +102,15 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
     } finally {
       setLoading(false);
     }
-  };
+  }, [language]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  useEffect(() => {
+    setSelectedNode(null);
+  }, [activeView]);
 
   const handleNextSentence = () => {
     setCurrentIndex((prev) => (prev + 1) % sentences.length);
@@ -182,6 +193,16 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
   const viewKey: Exclude<GrammarView, 'hub'> = activeView === 'hub' ? 'graph' : activeView;
   const viewMeta = gl.viewMeta[viewKey];
   const storageKey = VIEW_STORAGE_KEYS[viewKey];
+  const visibleLabTabs = useMemo(() => (
+    LAB_TABS.filter((tab) => isOwnerMode() || !OWNER_ONLY_GRAMMAR_VIEWS.has(tab.value))
+  ), []);
+  const labTabItems = useMemo(() => (
+    visibleLabTabs.map((tab) => ({
+      value: tab.value,
+      label: gl.viewMeta[tab.value].title,
+      icon: tab.icon,
+    }))
+  ), [gl.viewMeta, visibleLabTabs]);
 
   return (
     <SceneShell
@@ -201,6 +222,20 @@ export function GrammarLab({ activeView, onViewChange, onBack }: GrammarLabProps
         </button>
       ) : null}
     >
+      <div className="mb-4 flex flex-col gap-3">
+        <div className="flex flex-wrap gap-2">
+          <GameSignalBadge icon={<Puzzle size={14} />} label="Grammar Quest" tone="teal" />
+          <GameSignalBadge icon={<Sparkles size={14} />} label="Combo Lab" tone="amber" />
+        </div>
+        <PillTabs
+          items={labTabItems}
+          value={viewKey}
+          onChange={(nextView) => onViewChange(nextView)}
+          ariaLabel="Grammar Lab views"
+          className="justify-start sm:justify-start"
+        />
+      </div>
+
       {/* Sentence Display (only for graph view) */}
       {activeView === 'graph' && currentSentence && (
         <div className="text-center py-4 border-b border-hairline bg-canvas">

@@ -189,6 +189,20 @@ class AudioCacheEntity(BaseEntity, table=True):
     audio_base64: str = Field(nullable=False)
 
 
+class FeedbackEntity(BaseEntity, table=True):
+    """Tester feedback stored in the application database."""
+    __tablename__ = "tester_feedback"
+
+    external_id: str = Field(nullable=False, unique=True, index=True)
+    message: str = Field(sa_column=Column(Text, nullable=False))
+    sentiment: Optional[str] = Field(default=None, index=True)
+    source_url: Optional[str] = Field(default=None, sa_column=Column(Text))
+    user_agent: Optional[str] = Field(default=None, sa_column=Column(Text))
+    app_version: Optional[str] = Field(default=None, index=True)
+    persona_data: Optional[dict[str, Any]] = Field(default=None, sa_column=Column(JSON))
+    extra_data: Optional[dict[str, Any]] = Field(default=None, sa_column=Column(JSON))
+
+
 class UserWordStatisticsEntity(BaseEntity, table=True):
     """
     Statistics on word knowledge for each user.

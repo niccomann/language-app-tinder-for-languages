@@ -96,6 +96,10 @@ export function WordsLibraryEnriched({
   }), [language, searchQuery, categoryFilter, cefrFilter, genderFilter, frequencyFilter, registerFilter, posFilter, compoundFilter]);
 
   const loadWordsTokenRef = useRef(0);
+  const invalidateLoadWordsRequest = useCallback(() => {
+    loadWordsTokenRef.current++;
+  }, []);
+
   const loadWords = useCallback(async () => {
     const token = ++loadWordsTokenRef.current;
     try {
@@ -143,9 +147,9 @@ export function WordsLibraryEnriched({
     return () => {
       clearTimeout(debounce);
       // Invalidate any fetch that may still be in flight for the previous filters.
-      loadWordsTokenRef.current++;
+      invalidateLoadWordsRequest();
     };
-  }, [loadWords, statsOnly]);
+  }, [loadWords, statsOnly, invalidateLoadWordsRequest]);
 
   useEffect(() => {
     setSelectedWordId(initialWordId ?? null);

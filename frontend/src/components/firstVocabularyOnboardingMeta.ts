@@ -105,14 +105,30 @@ export function clearOnboardingPreferences() {
   removeStorageValue(ONBOARDING_PREFERENCES_STORAGE_KEY);
 }
 
+export function hasVocabularyHistory(
+  learningSummary: AdaptiveLearningSummary | null,
+  progress: UserProgress,
+) {
+  return (
+    (learningSummary?.total_words_practiced ?? 0) > 0
+    || progress.cards_reviewed > 0
+    || progress.known_count > 0
+    || progress.unknown_count > 0
+  );
+}
+
 export function shouldShowFirstVocabularyOnboarding(params: {
   mode: string;
   firstVocabularyOnboardingDone: boolean;
+  learningSummaryLoaded: boolean;
   learningSummary: AdaptiveLearningSummary | null;
   progress: UserProgress;
 }) {
   return (
     params.mode === 'path'
     && !params.firstVocabularyOnboardingDone
+    && params.learningSummaryLoaded
+    && params.learningSummary !== null
+    && !hasVocabularyHistory(params.learningSummary, params.progress)
   );
 }

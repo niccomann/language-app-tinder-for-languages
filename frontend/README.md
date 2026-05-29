@@ -1,4 +1,4 @@
-> Last updated: 2026-05-10 00:00
+> Last updated: 2026-05-28 20:45
 
 # React + TypeScript + Vite
 
@@ -96,4 +96,16 @@ The frontend follows the **Claude warm-editorial design system**. Spec:
   dramatic shadows, serif weights >400, glassmorphism, hover effects
   beyond background darkening on the primary button.
 
-Last updated: 2026-05-10
+## Environment
+
+Movie posters in `movie-recommendations` are loaded through OMDb's image
+endpoint when `VITE_OMDB_KEY` is set. Without it, the UI falls back to the
+backend `/api/movies/poster/{imdb_id}` redirect, which resolves poster URLs from
+IMDb Suggest and caches them server-side.
+
+```bash
+VITE_OMDB_KEY=your_omdb_key pnpm dev
+VITE_OMDB_KEY=your_omdb_key pnpm build:strict
+```
+
+Last updated: 2026-05-28

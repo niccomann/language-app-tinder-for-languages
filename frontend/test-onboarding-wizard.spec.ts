@@ -26,7 +26,6 @@ test.describe('Onboarding wizard', () => {
     // Capture browser console errors so failures are debuggable.
     page.on('console', (msg) => {
       if (msg.type() === 'error') {
-        // eslint-disable-next-line no-console
         console.log('[browser console error]', msg.text());
       }
     });

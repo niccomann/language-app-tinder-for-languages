@@ -1,12 +1,24 @@
 import { useEffect, useState } from 'react';
 import { Film, Info, Loader2, RotateCw } from 'lucide-react';
+import { API_BASE_URL } from '../config/appMode';
 import { api } from '../services/api';
 import type { MovieRecommendation } from '../types';
 import { useCopy, useTargetLanguage } from '../i18n/languageContext';
+import { formatCopy } from '../i18n/staticCopy';
 import { reportClientError } from '../utils/clientError';
+import { MermaidChart } from './MermaidChart';
 import { AppScreen, ScreenHeader, UI_INTERACTION, UI_RADIUS } from './ui';
 
-const RECOMMENDATION_LIMIT = 20;
+const RECOMMENDATION_LIMIT = 100;
+const MATCHING_FLOW_CHART = `flowchart LR
+  A["Your known words"] --> B["Apply lexical aliases and stemming rules"]
+  C["Validated subtitles"] --> I["Count total subtitle words"]
+  C --> D["Tokenize and remove stopwords"]
+  D --> E["Distinct subtitle vocabulary"]
+  B --> F["Known distinct words found in the film"]
+  E --> F
+  F --> G["score = known distinct words / total distinct subtitle words"]
+  G --> H["Rank recommended films"]`;
 
 type LoadState =
   | { status: 'loading' }
@@ -56,6 +68,7 @@ export function MovieRecommendations({ onBack }: MovieRecommendationsProps) {
       />
 
       <AlgorithmGuide guide={copy.algorithmGuide} />
+      <MermaidChart title={copy.algorithmChartTitle} chart={MATCHING_FLOW_CHART} />
 
       {state.status === 'loading' ? (
         <LoadingState message={copy.loading} />
@@ -187,6 +200,12 @@ function MovieCard({
             <div className="min-w-0">
               <h2 className="break-words text-title-md font-semibold leading-snug text-ink">{movie.title}</h2>
               {movie.year ? <p className="mt-1 text-caption font-medium text-muted">{movie.year}</p> : null}
+              <p className="mt-2 text-caption font-medium leading-5 text-muted">
+                {formatCopy(copy.subtitleVocabularySummary, {
+                  distinct: formatCount(movie.subtitle_unique_word_count),
+                  total: formatCount(movie.subtitle_token_count),
+                })}
+              </p>
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
               <Metric label={copy.score} value={formatScore(movie.score)} />
@@ -194,8 +213,10 @@ function MovieCard({
                 label={copy.coverageCount}
                 value={`${movie.shared_vocab_count} / ${movie.subtitle_unique_word_count}`}
               />
-              <Metric label={copy.uniqueSubtitleWords} value={movie.subtitle_unique_word_count.toString()} />
-              <Metric label={copy.youKnow} value={movie.shared_vocab_count.toString()} />
+              <Metric label={copy.userVocabulary} value={formatCount(movie.user_vocab_count)} />
+              <Metric label={copy.uniqueSubtitleWords} value={formatCount(movie.subtitle_unique_word_count)} />
+              <Metric label={copy.subtitleTotalWords} value={formatCount(movie.subtitle_token_count)} />
+              <Metric label={copy.youKnow} value={formatCount(movie.shared_vocab_count)} />
             </div>
           </div>
 
@@ -237,7 +258,7 @@ function MoviePoster({
   noPoster: string;
 }) {
   const [failed, setFailed] = useState(false);
-  const posterUrl = failed ? null : getOmdbPosterUrl(movie.imdb_id);
+  const posterUrl = failed ? null : getPosterUrl(movie.imdb_id);
 
   if (posterUrl) {
     return (
@@ -262,10 +283,12 @@ function MoviePoster({
   );
 }
 
-function getOmdbPosterUrl(imdbId: string) {
+function getPosterUrl(imdbId: string) {
   const key = (import.meta.env.VITE_OMDB_KEY as string | undefined)?.trim();
-  if (!key) return null;
-  return `https://img.omdbapi.com/?i=${encodeURIComponent(imdbId)}&apikey=${encodeURIComponent(key)}`;
+  if (key) {
+    return `https://img.omdbapi.com/?i=${encodeURIComponent(imdbId)}&apikey=${encodeURIComponent(key)}`;
+  }
+  return `${API_BASE_URL}/api/movies/poster/${encodeURIComponent(imdbId)}`;
 }
 
 function formatScore(score: number) {
@@ -277,4 +300,8 @@ function formatScore(score: number) {
     return `${percent.toFixed(1)}%`;
   }
   return `${Math.round(percent)}%`;
+}
+
+function formatCount(count: number) {
+  return new Intl.NumberFormat().format(count);
 }

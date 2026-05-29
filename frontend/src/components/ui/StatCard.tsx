@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { UI_INTERACTION, UI_SIZE } from './geometry';
+import { UI_INTERACTION, UI_RADIUS, UI_SIZE } from './geometry';
 
 interface StatCardProps {
   label: string;
@@ -15,7 +15,7 @@ export function StatCard({ label, value, icon, color, isActive, onClick }: StatC
   return (
     <div
       onClick={onClick}
-      className={`h-full bg-surface-card rounded-lg p-6 border ${UI_INTERACTION.transition} ${
+      className={`h-full bg-surface-card ${UI_RADIUS.surface} p-6 border ${UI_INTERACTION.transition} ${
         onClick ? 'cursor-pointer' : ''
       } ${isActive ? 'border-primary ring-2 ring-primary/20' : 'border-hairline'}`}
     >
@@ -26,7 +26,7 @@ export function StatCard({ label, value, icon, color, isActive, onClick }: StatC
             {value}
           </p>
         </div>
-        <div className={`${UI_SIZE.iconButton} bg-surface-soft rounded-full flex items-center justify-center text-muted`}>
+        <div className={`${UI_SIZE.iconButton} bg-surface-soft ${UI_RADIUS.touchIcon} flex items-center justify-center text-muted`}>
           {icon}
         </div>
       </div>

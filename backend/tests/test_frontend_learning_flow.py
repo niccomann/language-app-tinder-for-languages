@@ -20,10 +20,12 @@ def test_learning_screen_passes_swipe_direction_to_card_exit_animation():
 
 def test_learning_ui_explains_user_only_decides_known_or_unknown():
     learning_screen = (FRONTEND_SRC / "components" / "LearningScreen.tsx").read_text()
+    en_locale = (FRONTEND_SRC / "i18n" / "locales" / "en.json").read_text()
 
     expected_copy = "Just decide: know it or not."
-    assert expected_copy in learning_screen
-    assert "The algorithm adapts the learning path from there." in learning_screen
+    assert "subtitle={ls.headerSubtitle}" in learning_screen
+    assert expected_copy in en_locale
+    assert "The algorithm adapts the learning path from there." in en_locale
 
 
 def test_main_flow_starts_on_swipe_screen_with_embedded_filters():
@@ -31,6 +33,7 @@ def test_main_flow_starts_on_swipe_screen_with_embedded_filters():
     learning_screen = (FRONTEND_SRC / "components" / "LearningScreen.tsx").read_text()
     filters_panel = (FRONTEND_SRC / "components" / "LearningFiltersPanel.tsx").read_text()
     app_routes = (FRONTEND_SRC / "routes" / "appRoutes.ts").read_text()
+    en_locale = (FRONTEND_SRC / "i18n" / "locales" / "en.json").read_text()
 
     assert "CategorySelector" not in card_stack
     assert "showCategorySelector" not in card_stack
@@ -45,10 +48,12 @@ def test_main_flow_starts_on_swipe_screen_with_embedded_filters():
     assert "LearningFiltersPanel" in learning_screen
     assert 'label="Filters"' in learning_screen
     assert "selectedCategories.length" in learning_screen
-    assert "Just decide: know it or not." in learning_screen
+    assert "ls.headerSubtitle" in learning_screen
+    assert "Just decide: know it or not." in en_locale
     assert "filtersOpenRequest" not in learning_screen
 
-    assert "Apply categories without leaving the deck." in filters_panel
+    assert "lfp.subtitle" in filters_panel
+    assert "Apply categories without leaving the deck." in en_locale
     assert "Select All" in filters_panel
     assert "Clear" in filters_panel
 
@@ -133,11 +138,13 @@ def test_swipe_waits_for_adaptive_statistics_update_before_advancing():
 
 def test_swipe_surfaces_level_up_feedback_before_advancing():
     hook_source = (FRONTEND_SRC / "hooks" / "useLearningSession.ts").read_text()
+    en_locale = (FRONTEND_SRC / "i18n" / "locales" / "en.json").read_text()
 
     assert "learningFeedback" in hook_source
     assert "setLearningFeedback" in hook_source
     assert "updatedStatistics.knowledge_level > currentCard.knowledge_level" in hook_source
-    assert "Mastery " in hook_source
+    assert "copy.learningFeedback.masteryReached" in hook_source
+    assert "Mastery {{level}}" in en_locale
 
 
 def test_card_shows_word_mastery_badge_for_per_word_mastery():
@@ -159,16 +166,16 @@ def test_learning_path_home_is_primary_entry_to_swipe_session():
 
     assert path_home.exists()
     assert "LearningPathHome" in card_stack
-    assert "mode === 'path'" in card_stack
+    assert "isPathMode(mode)" in card_stack
     assert "onStartLearning" in card_stack
     assert "section === 'learn'" in app_routes
-    assert "Daily Learning Snapshot" in path_home.read_text()
-    assert "Review German Level" in path_home.read_text()
+    assert "Today's snapshot" in (FRONTEND_SRC / "i18n" / "locales" / "en.json").read_text()
+    assert "Ready to level up" in (FRONTEND_SRC / "i18n" / "locales" / "en.json").read_text()
     assert "learningSummary" in card_stack
     assert "getPathDisplayValues" in path_home.read_text()
-    assert "LEARNING_PATH_MILESTONES" in path_home.read_text()
+    assert "getMilestones" in path_home.read_text()
     assert "const pathSteps" not in path_home.read_text()
-    assert "400-level" in path_home.read_text()
+    assert "400-level" in (FRONTEND_SRC / "i18n" / "locales" / "en.json").read_text()
 
 
 def test_first_run_vocabulary_onboarding_starts_with_swipe_only_scan():
@@ -322,6 +329,7 @@ def test_first_run_intro_streaming_explains_preference_based_word_filtering():
 
 def test_developer_mermaid_charts_have_a_dedicated_route_and_global_button():
     app_source = (FRONTEND_SRC / "App.tsx").read_text()
+    app_header_menu = (FRONTEND_SRC / "components" / "scene" / "AppHeaderMenu.tsx").read_text()
     app_routes = (FRONTEND_SRC / "routes" / "appRoutes.ts").read_text()
     developer_screen = FRONTEND_SRC / "components" / "DeveloperChartsScreen.tsx"
     mermaid_chart = FRONTEND_SRC / "components" / "MermaidChart.tsx"
@@ -331,14 +339,14 @@ def test_developer_mermaid_charts_have_a_dedicated_route_and_global_button():
     assert mermaid_chart.exists()
     assert '"mermaid"' in package_json
 
-    assert "{ screen: 'developer' }" in app_routes
+    assert "{ screen: 'developer', chartSlug: feature }" in app_routes
     assert "section === 'developer'" in app_routes
-    assert "return '/developer'" in app_routes
+    assert "route.chartSlug ? `/developer/${route.chartSlug}` : '/developer'" in app_routes
 
     assert "DeveloperChartsScreen" in app_source
-    assert "Code2" in app_source
-    assert "Sviluppatore" in app_source
-    assert "navigateTo('/developer')" in app_source
+    assert "Code2" in app_header_menu
+    assert "Sviluppatore" in app_header_menu
+    assert "onNavigate('/developer')" in app_header_menu
     assert "route.screen === 'developer'" in app_source
 
 
@@ -454,9 +462,10 @@ def test_learning_path_home_offers_sentence_based_grammar_placement():
     assert "onNavigateToFeature" in path_home
     assert "sentence-placement" in feature_flow
     assert "route: '/placement/sentence'" in feature_flow
-    assert "Sentence Placement" in (FRONTEND_SRC / "i18n" / "locales" / "en.json").read_text()
-    assert "Compose sentences to check grammar, logic, and function words." in path_home
-    assert "Build a full German sentence" in placement_screen.read_text()
+    en_locale = (FRONTEND_SRC / "i18n" / "locales" / "en.json").read_text()
+    assert "Sentence Placement" in en_locale
+    assert "Compose sentences to check grammar, logic, and function words." in en_locale
+    assert "Build a full {{language}} sentence" in en_locale
     assert "SentencePlacementChallenge" in placement_screen.read_text()
     assert "Translate this sentence" in placement_challenge.read_text()
     assert "api.getSentenceChallenges" in placement_challenge.read_text()
@@ -484,13 +493,13 @@ def test_your_vocabulary_has_a_route_and_mastery_ranked_view():
     assert "/api/statistics/all" in api_source
     assert "WordStatistics" in types_source
     assert "route: '/vocabulary'" in (FRONTEND_SRC / "gamification" / "featureFlowRegistry.ts").read_text()
-    assert "Your Vocabulary" in path_home
+    assert "Your Vocabulary" in (FRONTEND_SRC / "i18n" / "locales" / "en.json").read_text()
     assert "sortVocabularyByMastery" in vocabulary_source
     assert "getVocabularyMasteryStars" in vocabulary_source
     assert "MasteryStars" in vocabulary_source
-    assert "bg-emerald" in vocabulary_source
-    assert "bg-yellow" in vocabulary_source
-    assert "bg-red" in vocabulary_source
+    assert "bg-success" in vocabulary_source
+    assert "bg-accent-amber" in vocabulary_source
+    assert "bg-error" in vocabulary_source
 
 
 def test_learning_path_milestones_are_centralized_outside_the_view():
@@ -499,10 +508,10 @@ def test_learning_path_milestones_are_centralized_outside_the_view():
 
     assert path_meta.exists()
     meta_source = path_meta.read_text()
-    assert "LEARNING_PATH_MILESTONES" in meta_source
+    assert "MILESTONE_LEVELS" in meta_source
     assert "getActiveMilestoneIndex" in meta_source
     assert "getPathDisplayValues" in meta_source
-    assert "level: 400" in meta_source
+    assert "TOTAL_PATH_LEVELS = 400" in meta_source
     assert "learningPathMeta" in path_home
 
 
@@ -542,14 +551,17 @@ def test_learning_filters_use_gamified_category_components():
     filters_panel = (FRONTEND_SRC / "components" / "LearningFiltersPanel.tsx").read_text()
     category_strip = (FRONTEND_SRC / "components" / "LearningCategoryStrip.tsx").read_text()
     category_meta = (FRONTEND_SRC / "components" / "learningCategoryMeta.tsx").read_text()
+    en_locale = (FRONTEND_SRC / "i18n" / "locales" / "en.json").read_text()
 
     assert "LearningCategoryStrip" in learning_screen
-    assert "Topic Deck" in category_strip
-    assert "Edit topic filters" in category_strip
+    assert "copy.learningStrip.title" in category_strip
+    assert "Topic Deck" in en_locale
+    assert "Change filters" in en_locale
 
-    assert "Build your topic deck" in filters_panel
-    assert "Pick the packs you want in the swipe deck." in filters_panel
-    assert "Game packs" in filters_panel
+    assert "lfp.title" in filters_panel
+    assert "Build your topic deck" in en_locale
+    assert "Pick the packs you want in the swipe deck." in en_locale
+    assert "Game packs" in en_locale
     assert "getLearningCategoryMeta" in filters_panel
 
     assert "Animal Pack" in category_meta
