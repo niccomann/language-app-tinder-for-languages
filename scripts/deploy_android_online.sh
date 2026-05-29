@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # =============================================================================
-# Deploy Android ONLINE - Remote Backend (AWS/localhost)
+# Deploy Android ONLINE - Remote Backend (production/localhost)
 # =============================================================================
 # Builds the Android app that connects to a remote backend.
 # Features: active remote-backend features enabled (TTS, grammar validation, infographics, etc.)
@@ -10,29 +10,29 @@ set -euo pipefail
 # Usage:
 #   scripts/deploy_android_online.sh                    # Build (localhost backend)
 #   scripts/deploy_android_online.sh --run              # Build and run
-#   scripts/deploy_android_online.sh --aws              # Build for AWS backend
-#   scripts/deploy_android_online.sh --aws --run        # Build for AWS and run
+#   scripts/deploy_android_online.sh --prod             # Build for production backend
+#   scripts/deploy_android_online.sh --prod --run       # Build for production and run
 #
 # Environment:
-#   VITE_API_URL - Backend URL (default: http://localhost:8500)
+#   VITE_API_URL - Backend URL (default: http://localhost:8500, or production with --prod)
 # =============================================================================
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FRONTEND_DIR="${ROOT_DIR}/frontend"
 
 RUN_APP=false
-USE_AWS=false
+USE_PROD=false
 API_URL="${VITE_API_URL:-http://localhost:8500}"
 
 for arg in "$@"; do
   case $arg in
     --run) RUN_APP=true ;;
-    --aws) USE_AWS=true ;;
+    --prod|--aws) USE_PROD=true ;;
   esac
 done
 
-if [[ "$USE_AWS" == true ]]; then
-  API_URL="${AWS_API_URL:-https://api.tinderforlanguages.com}"
+if [[ "$USE_PROD" == true ]]; then
+  API_URL="${PROD_API_URL:-${AWS_API_URL:-https://customizeyourlingua.com}}"
 fi
 
 log_info() { echo "[INFO] $*"; }
@@ -52,7 +52,7 @@ setup_android_env() {
 }
 
 setup_adb_reverse() {
-  if [[ "$USE_AWS" == false ]]; then
+  if [[ "$USE_PROD" == false ]]; then
     local adb_cmd="${ANDROID_HOME}/platform-tools/adb"
     if $adb_cmd devices | grep -q "device$"; then
       log_info "Setting up adb reverse for localhost backend..."
@@ -80,8 +80,8 @@ setup_android_env
 
 cd "$FRONTEND_DIR"
 
-log_info "Step 1: Building web app in ONLINE mode..."
-VITE_APP_MODE=online VITE_API_URL="$API_URL" npm run build
+log_info "Step 1: Building mobile web app in ONLINE mode..."
+VITE_APP_MODE=online VITE_API_URL="$API_URL" npm run build:mobile
 
 log_info "Step 2: Syncing Android project..."
 npx cap sync android

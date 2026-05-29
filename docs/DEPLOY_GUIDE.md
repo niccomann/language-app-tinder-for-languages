@@ -172,18 +172,18 @@ docker push <ECR_URI>:latest
 aws ecs create-service ...
 ```
 
-### 3.3 Deploy Frontend per AWS
+### 3.3 Deploy Frontend per produzione
 
 ```bash
-# Build con URL AWS
-export VITE_API_URL=https://api.tinderforlanguages.com
-./scripts/deploy_android_online.sh --aws --run
+# Build con URL produzione
+export VITE_API_URL=https://customizeyourlingua.com
+./scripts/deploy_android_online.sh --prod --run
 ```
 
 Oppure manualmente:
 ```bash
 cd frontend
-VITE_APP_MODE=online VITE_API_URL=https://api.tinderforlanguages.com npm run build
+VITE_APP_MODE=online VITE_API_URL=https://customizeyourlingua.com npm run build:mobile
 npx cap sync android
 npx cap run android
 ```
@@ -195,10 +195,10 @@ Per produzione, usa un reverse proxy (nginx/ALB) con certificato SSL:
 ```nginx
 server {
     listen 443 ssl;
-    server_name api.tinderforlanguages.com;
+    server_name customizeyourlingua.com;
     
-    ssl_certificate /etc/letsencrypt/live/api.tinderforlanguages.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/api.tinderforlanguages.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/customizeyourlingua.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/customizeyourlingua.com/privkey.pem;
     
     location / {
         proxy_pass http://localhost:8500;
@@ -299,7 +299,7 @@ GOOGLE_API_KEY=your_key
 | `scripts/package_native.sh android --run` | Build Android con backend locale |
 | `scripts/deploy_android_offline.sh --run` | Build Android offline (embedded Python) |
 | `scripts/deploy_android_online.sh --run` | Build Android online (localhost) |
-| `scripts/deploy_android_online.sh --aws --run` | Build Android per AWS |
+| `scripts/deploy_android_online.sh --prod --run` | Build Android per produzione |
 
 ---
 
