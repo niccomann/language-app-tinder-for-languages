@@ -1,4 +1,8 @@
 const { chromium } = require('playwright');
+const {
+  DEFAULT_BACKEND_URL: API_BASE_URL,
+  DEFAULT_FRONTEND_URL: FRONTEND_URL,
+} = require('../../helpers/testUrls');
 
 /**
  * Word Statistics E2E Test
@@ -50,7 +54,7 @@ const { chromium } = require('playwright');
   try {
     // Step 1: Test Statistics API directly
     console.log('📍 Step 1: Testing Statistics API...');
-    const apiResponse = await page.request.get('http://localhost:8500/api/statistics/summary');
+    const apiResponse = await page.request.get(`${API_BASE_URL}/api/statistics/summary`);
     if (apiResponse.ok()) {
       const data = await apiResponse.json();
       if (data.total_words_practiced !== undefined) {
@@ -64,7 +68,7 @@ const { chromium } = require('playwright');
     
     // Step 2: Navigate to app and start learning
     console.log('📍 Step 2: Starting learning session...');
-    await page.goto('http://localhost:5173', { waitUntil: 'networkidle' });
+    await page.goto(FRONTEND_URL, { waitUntil: 'networkidle' });
     await page.waitForTimeout(1000);
     
     const selectAllButton = page.getByRole('button', { name: 'Select All' }).first();
@@ -102,7 +106,7 @@ const { chromium } = require('playwright');
     
     // Step 4: Navigate to Words Library and check StatsSummary
     console.log('📍 Step 4: Checking StatsSummary in Words Library...');
-    await page.goto('http://localhost:5173', { waitUntil: 'networkidle' });
+    await page.goto(FRONTEND_URL, { waitUntil: 'networkidle' });
     await page.waitForTimeout(1000);
     
     const libraryButton = page.locator('button:has-text("View Library")').first();

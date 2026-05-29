@@ -12,9 +12,11 @@
 
 const { chromium } = require('playwright');
 const { execSync } = require('child_process');
+const {
+  DEFAULT_BACKEND_URL: BACKEND_URL,
+  DEFAULT_FRONTEND_URL: FRONTEND_URL,
+} = require('../../helpers/testUrls');
 
-const FRONTEND_URL = 'http://localhost:5173';
-const BACKEND_URL = 'http://localhost:8501';
 const TRACKING_DB = 'backend/tracking.db';
 
 // ============================================================================

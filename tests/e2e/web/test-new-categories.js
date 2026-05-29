@@ -1,4 +1,5 @@
 const { chromium } = require('playwright');
+const { DEFAULT_FRONTEND_URL: FRONTEND_URL } = require('../../helpers/testUrls');
 
 /**
  * Categories E2E Test
@@ -46,7 +47,7 @@ const { chromium } = require('playwright');
   try {
     // Step 1: Navigate to the app
     console.log('📍 Step 1: Opening the application...');
-    await page.goto('http://localhost:5173', { waitUntil: 'networkidle' });
+    await page.goto(FRONTEND_URL, { waitUntil: 'networkidle' });
     await page.waitForTimeout(1000);
     console.log('   ✅ Application loaded\n');
     

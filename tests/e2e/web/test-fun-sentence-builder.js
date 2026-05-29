@@ -15,8 +15,9 @@
  */
 
 const { chromium } = require('playwright');
+const { DEFAULT_FRONTEND_URL } = require('../../helpers/testUrls');
 
-const BASE_URL = process.env.TEST_URL || 'http://localhost:5173';
+const BASE_URL = process.env.TEST_URL || DEFAULT_FRONTEND_URL;
 
 async function runTests() {
   console.log('\n' + '='.repeat(60));

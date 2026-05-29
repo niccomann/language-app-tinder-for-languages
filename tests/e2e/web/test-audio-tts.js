@@ -1,4 +1,5 @@
 const { chromium } = require('playwright');
+const { DEFAULT_FRONTEND_URL: FRONTEND_URL } = require('../../helpers/testUrls');
 
 /**
  * Audio TTS E2E Test
@@ -50,7 +51,7 @@ const { chromium } = require('playwright');
   try {
     // Step 1: Navigate to app and start learning
     console.log('📍 Step 1: Opening the application...');
-    await page.goto('http://localhost:5173', { waitUntil: 'networkidle' });
+    await page.goto(FRONTEND_URL, { waitUntil: 'networkidle' });
     await page.waitForTimeout(1000);
     console.log('   ✅ Application loaded\n');
     
@@ -107,7 +108,7 @@ const { chromium } = require('playwright');
     
     // Step 6: Navigate to Words Library
     console.log('📍 Step 6: Checking AudioButton in Words Library...');
-    await page.goto('http://localhost:5173', { waitUntil: 'networkidle' });
+    await page.goto(FRONTEND_URL, { waitUntil: 'networkidle' });
     await page.waitForTimeout(1000);
     
     const libraryButton = page.locator('button:has-text("View Library")').first();

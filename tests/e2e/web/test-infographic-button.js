@@ -7,7 +7,7 @@
  * Run: node tests/e2e/web/test-infographic-button.js
  */
 
-const BACKEND_URL = 'http://localhost:8501';
+const { DEFAULT_BACKEND_URL: BACKEND_URL } = require('../../helpers/testUrls');
 
 function log(emoji, message) {
   console.log(`${emoji} ${message}`);

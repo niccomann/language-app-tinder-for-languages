@@ -1,4 +1,5 @@
 const { chromium } = require('playwright');
+const { DEFAULT_FRONTEND_URL: FRONTEND_URL } = require('../../helpers/testUrls');
 
 /**
  * Quick Check Test: Fast verification of core functionality
@@ -24,7 +25,7 @@ const { chromium } = require('playwright');
   
   try {
     console.log('1️⃣  Loading app...');
-    await page.goto('http://localhost:5173');
+    await page.goto(FRONTEND_URL);
     await page.waitForTimeout(1500);
     console.log('   ✅ App loaded');
     

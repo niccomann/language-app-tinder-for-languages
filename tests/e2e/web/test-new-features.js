@@ -1,4 +1,5 @@
 const { chromium } = require('playwright');
+const { DEFAULT_FRONTEND_URL: FRONTEND_URL } = require('../../helpers/testUrls');
 
 /**
  * New Features E2E Test
@@ -48,7 +49,7 @@ const { chromium } = require('playwright');
   try {
     // Step 1: Load app
     console.log('📍 Step 1: Loading application...');
-    await page.goto('http://localhost:5173', { waitUntil: 'networkidle' });
+    await page.goto(FRONTEND_URL, { waitUntil: 'networkidle' });
     await page.waitForTimeout(1000);
     testResults.appLoads = true;
     console.log('   ✅ Application loaded\n');
@@ -102,7 +103,7 @@ const { chromium } = require('playwright');
     
     // Step 5: Navigate to Words Library
     console.log('📍 Step 5: Navigating to Words Library...');
-    await page.goto('http://localhost:5173', { waitUntil: 'networkidle' });
+    await page.goto(FRONTEND_URL, { waitUntil: 'networkidle' });
     await page.waitForTimeout(1000);
     
     const libraryButton = page.locator('button:has-text("View Library")').first();

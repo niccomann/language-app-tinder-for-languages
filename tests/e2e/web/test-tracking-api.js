@@ -11,7 +11,7 @@
  * Run: node tests/e2e/web/test-tracking-api.js
  */
 
-const BACKEND_URL = 'http://localhost:8501';
+const { DEFAULT_BACKEND_URL: BACKEND_URL } = require('../../helpers/testUrls');
 
 function log(emoji, message) {
   console.log(`${emoji} ${message}`);
@@ -48,7 +48,7 @@ async function runApiTests() {
     }
   } catch (error) {
     log('❌', `Backend not reachable: ${error.message}`);
-    console.log('\n⚠️  Start backend first: cd backend && python -m uvicorn app.main:app --port 8501\n');
+    console.log(`\n⚠️  Backend not reachable at ${BACKEND_URL}. Start it first or set TEST_BACKEND_URL.\n`);
     process.exit(1);
   }
 

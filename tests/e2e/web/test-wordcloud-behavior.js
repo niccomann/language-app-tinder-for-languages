@@ -1,4 +1,5 @@
 const { chromium } = require('playwright');
+const { DEFAULT_FRONTEND_URL: FRONTEND_URL } = require('../../helpers/testUrls');
 
 /**
  * Word Cloud Behavior E2E Test
@@ -11,8 +12,6 @@ const { chromium } = require('playwright');
  * 
  * Duration: ~3-4 minutes
  */
-
-const FRONTEND_URL = 'http://localhost:5173';
 
 (async () => {
   console.log('\n═══════════════════════════════════════════════════════════');

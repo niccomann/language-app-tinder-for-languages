@@ -1,4 +1,8 @@
 const { chromium } = require('playwright');
+const {
+  DEFAULT_BACKEND_URL: API_BASE_URL,
+  DEFAULT_FRONTEND_URL: FRONTEND_URL,
+} = require('../../helpers/testUrls');
 
 /**
  * Word Cloud Details & Swipe Counter E2E Test
@@ -13,9 +17,6 @@ const { chromium } = require('playwright');
  * 
  * Duration: ~2-3 minutes
  */
-
-const API_BASE_URL = 'http://localhost:8500';
-const FRONTEND_URL = 'http://localhost:5173';
 
 async function testBackendAPI() {
   console.log('\n📡 BACKEND API TESTS\n');

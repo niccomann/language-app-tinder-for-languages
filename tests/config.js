@@ -12,12 +12,19 @@
  *   TEST_ENV=sa node tests/e2e/web/test-complete-flow.js
  */
 
+const {
+  DEFAULT_BACKEND_URL,
+  DEFAULT_FRONTEND_URL,
+} = require('./helpers/testUrls');
+
+const DEFAULT_API_URL = process.env.TEST_API_URL ?? `${DEFAULT_BACKEND_URL}/api`;
+
 const ENVIRONMENTS = {
   local: {
     name: 'Local Development',
-    frontendUrl: 'http://localhost:5173',
-    backendUrl: 'http://localhost:8500',
-    apiUrl: 'http://localhost:8500/api',
+    frontendUrl: DEFAULT_FRONTEND_URL,
+    backendUrl: DEFAULT_BACKEND_URL,
+    apiUrl: DEFAULT_API_URL,
   },
   eu: {
     name: 'EU Production (Frankfurt)',

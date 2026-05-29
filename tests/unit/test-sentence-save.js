@@ -5,7 +5,7 @@
  * to the grammar_sentences table and appear in Sentence Graph.
  */
 
-const API_BASE = 'http://localhost:8501';
+const { DEFAULT_BACKEND_URL: API_BASE } = require('../helpers/testUrls');
 
 async function testSaveSentence() {
   console.log('🧪 TEST: Save Validated Sentence\n');
