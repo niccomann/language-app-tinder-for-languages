@@ -2,7 +2,7 @@
  * App Mode Configuration
  * 
  * Determines whether the app runs in:
- * - ONLINE: Full features with remote backend (AWS/localhost)
+ * - ONLINE: Full features with remote backend (production/localhost)
  * - OFFLINE: Limited features with embedded Python backend (Chaquopy)
  * 
  * The mode is determined at build time via environment variable.

@@ -36,7 +36,7 @@ Questa guida descrive come deployare l'app in diverse configurazioni.
 cd backend
 source .venv/bin/activate
 python -m app.main
-# Backend running on http://localhost:8501
+# Backend running on http://localhost:8500
 ```
 
 ### Frontend Web
@@ -160,7 +160,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app/ ./app/
 COPY data/ ./data/
 
-EXPOSE 8501
+EXPOSE 8500
 CMD ["python", "-m", "app.main"]
 ```
 
@@ -203,7 +203,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/customizeyourlingua.com/privkey.pem;
     
     location / {
-        proxy_pass http://localhost:8501;
+        proxy_pass http://localhost:8500;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
     }
@@ -276,7 +276,7 @@ cp mobile-backend/embedded_backend.py frontend/android/app/src/main/python/
 ### Frontend (.env)
 ```bash
 VITE_APP_MODE=online|offline
-VITE_API_URL=http://localhost:8501
+VITE_API_URL=http://localhost:8500
 ```
 
 ### Backend (.env)
@@ -310,7 +310,7 @@ GOOGLE_API_KEY=your_key
 ### Android non si connette al backend
 ```bash
 # Verifica adb reverse
-adb reverse tcp:8501 tcp:8501
+adb reverse tcp:8500 tcp:8500
 ```
 
 ### Build Android fallisce (Java)

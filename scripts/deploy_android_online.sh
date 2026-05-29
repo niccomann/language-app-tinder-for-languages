@@ -115,7 +115,7 @@ else
   log_info "Run with --run to deploy to emulator."
 fi
 
-if [[ "$USE_AWS" == false ]]; then
+if [[ "$API_URL" == http://localhost:* || "$API_URL" == http://127.0.0.1:* ]]; then
   log_info ""
   log_warn "IMPORTANT: Make sure the backend is running!"
   log_info "  cd backend && source .venv/bin/activate && python -m app.main"

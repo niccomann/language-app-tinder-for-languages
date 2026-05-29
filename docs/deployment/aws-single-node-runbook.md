@@ -19,7 +19,8 @@ This runbook recreates the current low-cost AWS deploy for the language app.
 
 ## Current Production
 
-- URL: `http://3.64.236.66`
+- Public URL: `https://customizeyourlingua.com`
+- Instance HTTP URL: `http://3.64.236.66`
 - EC2 instance: `i-04fb87478e0a30ee0`
 - Instance type: `t4g.small`
 - Cost tag: `CostGuardrail=no-ai-single-node`
@@ -202,7 +203,6 @@ docker stop language-backend 2>/dev/null || true
 docker rm -f language-backend 2>/dev/null || true
 docker run -d --name language-backend \
   --network language-app \
-  --network-alias backend \
   -e USE_SQLITE=false \
   -e DB_HOST=language-postgres \
   -e DB_PORT=5432 \
@@ -230,14 +230,16 @@ docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
 EOS
 ```
 
-The `--network-alias backend` is required because `frontend/nginx.conf` proxies `/api` to `http://backend:8500`.
+The frontend Nginx config proxies `/api` to `http://language-backend:8500`,
+which is resolved by the backend container name on the `language-app` Docker
+network.
 
 ## Smoke Test
 
 From local machine:
 
 ```bash
-BASE="http://3.64.236.66"
+BASE="${BASE:-https://customizeyourlingua.com}"
 curl -I --max-time 10 "$BASE/"
 curl -fsS --max-time 20 "$BASE/api/library/stats?language=de" \
   | python3 -m json.tool
